@@ -1,5 +1,6 @@
+/obj/
 *.a
 *.o
-*.oa
+*.os
 *.so
 .sconsign.dblite
