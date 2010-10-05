@@ -1,0 +1,24 @@
+import os
+
+Import( "confenv" )
+
+# Configuration.
+sourcefiles  = Glob( "*.cpp" )
+#sourcefiles += Glob( "Engines/*.cpp" )
+
+incpaths     = ["../include/"]
+libpaths     = []
+addtlibs     = []
+bintarget    = "../lib/libsfgui.so"
+
+env = confenv.Clone( LIBPATH = libpaths, CPPPATH = incpaths )
+env.Append( LIBS = addtlibs )
+binlib = env.SharedLibrary( target = bintarget, source = sourcefiles )
+
+headers  = Glob( "../include/SFGUI/*.hpp" )
+headers += Glob( "../include/SFGUI/*.inl" )
+for header in headers:
+	env.Alias( "install", env.Install( os.path.join( confenv["prefix"], "include", "SFGUI" ), header ) )
+
+env.Alias( "install", env.Install( os.path.join( confenv["prefix"], "lib" ), binlib ) )
+env.Alias( "install", env.Install( os.path.join( confenv["prefix"], "include" ), ["../include/SFGUI"] ) )
