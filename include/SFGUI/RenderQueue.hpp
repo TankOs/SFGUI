@@ -7,6 +7,8 @@
 
 namespace sfg {
 
+/** Simple container for sf::Drawables.
+ */
 class RenderQueue : public sf::Drawable {
 	public:
 		/** Add drawable to the queue.
@@ -16,6 +18,10 @@ class RenderQueue : public sf::Drawable {
 		void Add( sf::Drawable* drawable );
 
 	protected:
+		/** Render.
+		 * @param target SFML render target.
+		 * @param renderer SFML renderer object.
+		 */
 		void Render( sf::RenderTarget& target, sf::Renderer& renderer ) const;
 
 	private:

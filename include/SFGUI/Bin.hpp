@@ -11,6 +11,9 @@ class SFGUI_API Bin : public Container {
 	public:
 		typedef boost::shared_ptr<Bin>  Ptr; //!< Shared pointer.
 
+		/** Get child widget.
+		 * @return Child widget.
+		 */
 		Widget::Ptr GetChild() const;
 
 	protected:

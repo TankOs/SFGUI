@@ -24,7 +24,7 @@ class SFGUI_API Container : public Widget {
 		 */
 		void Remove( Widget::Ptr widget );
 
-		/* Check if a widget is a child of this container.
+		/** Check if a widget is a child of this container.
 		 * @param widget Widget to search for.
 		 */
 		bool IsChild( Widget::Ptr widget ) const;
