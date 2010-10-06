@@ -4,8 +4,6 @@
 
 namespace sfg {
 
-class Widget;
-
 /** Build signals for widgets.
  * This class is an utility class to make the signal connection process more
  * intuitive. A signal can be connected just by calling Connect() and giving
@@ -18,7 +16,6 @@ class Widget;
 template <class SigType>
 class Signal {
 	public:
-		friend class Widget;
 		typedef boost::signals2::signal<SigType>  Type; // Signal type.
 
 		/** Connect signal to a slot.
@@ -58,8 +55,7 @@ class Signal {
 		template <class RetType, class ClassType, class ObjectType, class A1, class A2, class A3>
 		void Connect( RetType (ClassType::*memfunc)( A1, A2, A3 ), ObjectType* object );
 
-	private:
-		Type  m_signal;
+		Type  Sig;
 };
 
 }

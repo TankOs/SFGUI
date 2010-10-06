@@ -1,0 +1,16 @@
+Import( "confenv" )
+
+sources = Glob( "*.cpp" )
+libs = ["sfgui"]
+libpaths = ["../lib/"]
+incpaths = ["../include/"]
+target_dir = "./bin/"
+
+env = confenv.Clone()
+env.Append( LIBS = libs, LIBPATH = libpaths, CPPPATH = incpaths )
+
+for source in sources:
+	source_filename = str( source )
+	basename = source_filename[0:source_filename.rfind( ".cpp" )].lower()
+
+	env.Program( target = "%s/%s" % (target_dir, basename), source = source )

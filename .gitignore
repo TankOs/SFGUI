@@ -1,7 +1,8 @@
-/obj/
 *.a
 *.o
 *.os
 *.so
 .sconsign.dblite
-/doc/html
+/obj/
+/doc/html/
+/samples/bin/
