@@ -2,9 +2,9 @@
 opts = Variables( "custom.py" )
 
 opts.Add( BoolVariable( "debug", "Set to 1 to build with debug symbols and without optimization.", 1 ) )
-#opts.Add( BoolVariable( "samples", "Set to 1 to build samples.", 1 ) )
-#opts.Add( BoolVariable( "nocpp0x", "Don't use (experimental) C++0x support..", 0 ) )
 opts.Add( PathVariable( "prefix", "Installation directory.", "/usr/local/" ) )
+opts.Add( BoolVariable( "samples", "Set to 1 to build samples.", 1 ) )
+#opts.Add( BoolVariable( "nocpp0x", "Don't use (experimental) C++0x support..", 0 ) )
 
 # Base environment with help.
 confenv = Environment( variables = opts )
@@ -34,5 +34,5 @@ VariantDir( "obj", "src", duplicate = 0 )
 SConscript( "obj/SConscript" )
 
 # Samples.
-#if confenv["samples"] != 0:
-#SConscript( "samples/SConscript" )
+if confenv["samples"] != 0:
+	SConscript( "samples/SConscript" )

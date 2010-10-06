@@ -4,3 +4,4 @@
 *.os
 *.so
 .sconsign.dblite
+/doc/html
