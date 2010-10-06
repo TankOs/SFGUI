@@ -9,7 +9,7 @@ sourcefiles += Glob( "Engines/*.cpp" )
 incpaths     = ["../include/"]
 libpaths     = []
 addtlibs     = []
-bintarget    = "../lib/libsfgui.so"
+bintarget    = "../lib/sfgui"
 
 env = confenv.Clone( LIBPATH = libpaths, CPPPATH = incpaths )
 env.Append( LIBS = addtlibs )
