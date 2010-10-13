@@ -1,5 +1,4 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Theme.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -9,31 +8,25 @@ namespace eng {
 
 sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
 	RenderQueue*  queue( new RenderQueue );
-	sf::Color  border_color_light( Theme::ParseColor( GetProperty( "Window.border-color-light" ) ) );
-	sf::Color  border_color_dark( Theme::ParseColor( GetProperty( "Window.border-color-dark" ) ) );
-	sf::Color  title_background_color( Theme::ParseColor( GetProperty( "Window.title-background-color" ) ) );
-	float      border_width( static_cast<float>( Theme::ParseInt( GetProperty( "Window.border-width", "1" ), 1 ) ) );
-	float      title_size( static_cast<float>( Theme::ParseInt( GetProperty( "Window.title-size", "10" ), 10 ) ) );
-	float      shadow_distance( static_cast<float>( Theme::ParseInt( GetProperty( "Window.shadow-distance", "2" ), 2 ) ) );
-	sf::Uint8  shadow_alpha( static_cast<sf::Uint8>( Theme::ParseInt( GetProperty( "Window.shadow-alpha", "100" ), 100 ) ) );
-	int        title_font_size( Theme::ParseInt( GetProperty( "Window.title-font-size", "10" ), 10 ) );
+	sf::Color  border_color_light( Theme::ParseColor( GetProperty( "Window.border-color-light", "#ffffff" ) ) );
+	sf::Color  border_color_dark( Theme::ParseColor( GetProperty( "Window.border-color-dark", "#000000" ) ) );
+	sf::Color  title_background_color( Theme::ParseColor( GetProperty( "Window.title-background-color", "#999999" ) ) );
+	float      border_width( GetProperty( "Window.border-width", 1.f ) );
+	float      title_size( GetProperty( "Window.title-size", 10.f ) );
+	float      shadow_distance( GetProperty( "Window.shadow-distance", 2.f ) );
+	sf::Uint8  shadow_alpha( static_cast<sf::Uint8>( GetProperty( "Window.shadow-alpha", 100 ) ) );
+	int        title_font_size( GetProperty( "Window.title-font-size", 10 ) );
 
 	if( border_width > 0 ) {
-		queue->Add( new sf::Shape( sf::Shape::Rectangle( window->GetRect().Width - border_width, 0.f, border_width, window->GetRect().Height, border_color_dark ) ) ); // Right.
-		queue->Add( new sf::Shape( sf::Shape::Rectangle( 0.f, window->GetRect().Height - border_width, window->GetRect().Width, border_width, border_color_dark ) ) ); // Bottom.
-
-		for( float delta = 0.f; delta < border_width; delta += 1.f ) {
-			queue->Add( new sf::Shape( sf::Shape::Line( 0.f, delta, window->GetRect().Width - delta, delta, 1.f, border_color_light ) ) ); // Top.
-			queue->Add( new sf::Shape( sf::Shape::Line( delta, 0.f, delta, window->GetRect().Height - delta, 1.f, border_color_light ) ) ); // Left.
-		}
+		queue->Add( CreateBorder( window->GetAllocation(), border_width, border_color_light, border_color_dark ) );
 	}
 
 	// Shadow.
 	if( shadow_distance > 0.f ) {
 		sf::Color  shadow_color( 0, 0, 0, shadow_alpha );
 
-		queue->Add( new sf::Shape( sf::Shape::Rectangle( window->GetRect().Width, shadow_distance, shadow_distance, window->GetRect().Height - shadow_distance, shadow_color ) ) ); // Right.
-		queue->Add( new sf::Shape( sf::Shape::Rectangle( shadow_distance, window->GetRect().Height, window->GetRect().Width, shadow_distance, shadow_color ) ) ); // Bottom.
+		queue->Add( new sf::Shape( sf::Shape::Rectangle( window->GetAllocation().Width, shadow_distance, shadow_distance, window->GetAllocation().Height - shadow_distance, shadow_color ) ) ); // Right.
+		queue->Add( new sf::Shape( sf::Shape::Rectangle( shadow_distance, window->GetAllocation().Height, window->GetAllocation().Width, shadow_distance, shadow_color ) ) ); // Bottom.
 	}
 
 	sf::Shape*  background(
@@ -41,8 +34,8 @@ sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
 			sf::Shape::Rectangle(
 				border_width - 1, // FIXME: SFML bug!
 				border_width,
-				window->GetRect().Width - 2 * border_width + 1, // FIXME: SFML bug!
-				window->GetRect().Height - 2 * border_width,
+				window->GetAllocation().Width - 2 * border_width + 1, // FIXME: SFML bug!
+				window->GetAllocation().Height - 2 * border_width,
 				Theme::ParseColor( GetProperty( "Window.background-color", "#eeeeee" ) )
 			)
 		)
@@ -53,7 +46,7 @@ sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
 			sf::Shape::Rectangle(
 				border_width - 1, // FIXME: SFML bug!
 				border_width,
-				window->GetRect().Width - 2 * border_width + 1, // FIXME: SFML bug!
+				window->GetAllocation().Width - 2 * border_width + 1, // FIXME: SFML bug!
 				title_size,
 				title_background_color
 			)
@@ -80,6 +73,28 @@ sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
 	queue->Add( background );
 	queue->Add( title );
 	queue->Add( title_text );
+
+	return queue;
+}
+
+RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
+	RenderQueue* queue( new RenderQueue );
+
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Width - border_width, 0.f, border_width, rect.Height, dark_color ) ) ); // Right.
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( 0.f, rect.Height - border_width, rect.Width, border_width, dark_color ) ) ); // Bottom.
+
+	for( float delta = 0.f; delta < border_width; delta += 1.f ) {
+		queue->Add( new sf::Shape( sf::Shape::Line( 0.f, delta, rect.Width - delta, delta, 1.f, light_color ) ) ); // Top.
+		queue->Add( new sf::Shape( sf::Shape::Line( delta, 0.f, delta, rect.Height - delta, 1.f, light_color ) ) ); // Left.
+	}
+	
+	return queue;
+}
+
+sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
+	RenderQueue*  queue( new RenderQueue );
+
+	queue->Add( CreateBorder( button->GetAllocation(), 2.f, sf::Color( 255, 255, 255 ), sf::Color( 100, 100, 100 ) ) );
 
 	return queue;
 }

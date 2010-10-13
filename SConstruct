@@ -1,3 +1,5 @@
+import os
+
 # Options.
 opts = Variables( "custom.py" )
 
@@ -8,7 +10,7 @@ opts.Add( "CXX", "Compiler to use." )
 #opts.Add( BoolVariable( "nocpp0x", "Don't use (experimental) C++0x support..", 0 ) )
 
 # Base environment with help.
-confenv = Environment( variables = opts )
+confenv = Environment( variables = opts, ENV = {"PATH": os.environ["PATH"], "TERM": os.environ["TERM"], "HOME": os.environ["HOME"]} )
 Help( opts.GenerateHelpText( confenv ) )
 
 # Default properties.

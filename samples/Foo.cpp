@@ -1,6 +1,11 @@
 #include <SFGUI/Window.hpp>
+#include <SFGUI/Button.hpp>
+#include <SFGUI/Box.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFML/Graphics.hpp>
+#include <list>
+
+typedef std::list<sfg::Button::Ptr>  ButtonsList;
 
 int main() {
 	sf::RenderWindow  window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" );
@@ -9,8 +14,11 @@ int main() {
 	window.UseVerticalSync( true );
 
 	// Two top-level windows.
-	sfg::Window::Ptr  wndmain( sfg::Window::Create( sf::FloatRect( 50, 50, 150, 150 ) ) );
-	sfg::Window::Ptr  wndsecond( sfg::Window::Create( sf::FloatRect( 150, 100, 350, 150 ) ) );
+	sfg::Window::Ptr  wndmain( sfg::Window::Create() );
+	sfg::Window::Ptr  wndsecond( sfg::Window::Create() );
+	sfg::Box::Ptr     boxtest( sfg::Box::Create( sfg::Box::Horizontal ) );
+	sfg::Button::Ptr  btntest( sfg::Button::Create( L"Test" ) );
+	sfg::Button::Ptr  btnquit( sfg::Button::Create( L"Quit" ) );
 
 	// Create an instance of the "BREW" (Basic Rendering Engine for Widgets)
 	// rendering engine.
@@ -31,9 +39,23 @@ int main() {
 	// later by sfg::GUI.
 	wndmain->SetRenderEngine( engine );
 	wndsecond->SetRenderEngine( engine );
+	btntest->SetRenderEngine( engine );
+	btnquit->SetRenderEngine( engine );
 
 	wndmain->SetTitle( L"Hello world..." );
 	wndsecond->SetTitle( L"...from BREW!" );
+
+	wndmain->Add( boxtest );
+	boxtest->Pack( btntest );
+	boxtest->Pack( btnquit, false );
+
+	for( unsigned int num = 0; num < 4; ++num ) {
+		sfg::Button::Ptr  button( sfg::Button::Create( L"A button" ) );
+		button->SetRenderEngine( engine );
+		button->SetCaption( L"" );
+		boxtest->Pack( button, false );
+	}
+
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {

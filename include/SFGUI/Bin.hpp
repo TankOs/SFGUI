@@ -22,6 +22,9 @@ class SFGUI_API Bin : public Container {
 		Bin();
 
 	private:
+		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );
+
+	private:
 };
 
 }

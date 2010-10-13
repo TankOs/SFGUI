@@ -15,9 +15,8 @@ class SFGUI_API Window : public Bin {
 		typedef boost::shared_ptr<Window>  Ptr; //!< Shared pointer.
 
 		/** Create widget.
-		 * @param rect Initial rect.
 		 */
-		static Ptr Create( const sf::FloatRect& rect = sf::FloatRect( 0, 0, 0, 0 ) );
+		static Ptr Create();
 
 		/** Set window title.
 		 * @param title Title.
@@ -28,6 +27,11 @@ class SFGUI_API Window : public Bin {
 		 * @return Title.
 		 */
 		const sf::String& GetTitle() const;
+
+		/** Get client area.
+		 * @return Rect.
+		 */
+		sf::FloatRect GetClientRect() const;
 
 	protected:
 		/** Constructor.

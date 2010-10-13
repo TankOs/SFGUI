@@ -34,6 +34,9 @@ class SFGUI_API Container : public Widget {
 		 */
 		const WidgetsSet& GetChildren() const;
 
+		Signal<void( Widget::Ptr, Widget::Ptr )>  OnAdd; //!< Fired when child added.
+		Signal<void( Widget::Ptr, Widget::Ptr )>  OnRemove; //!< Fired when child removed.
+
 	protected:
 		/** Constructor.
 		 */
@@ -45,6 +48,8 @@ class SFGUI_API Container : public Widget {
 		WidgetsSet& GetChildren();
 
 	private:
+		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
+		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 
 		WidgetsSet  m_children;
 };

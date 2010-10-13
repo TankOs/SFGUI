@@ -1,4 +1,6 @@
 #include <SFGUI/RenderEngine.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <sstream>
 
 namespace sfg {
 
@@ -12,5 +14,29 @@ const std::string& RenderEngine::GetProperty( const std::string& property, const
 	return iter != m_props.end() ? iter->second : default_;
 }
 
+int RenderEngine::GetProperty( const std::string& property, int default_ ) const {
+	std::stringstream  sstr( GetProperty( property, "" ) );
+	int  value( default_ );
+
+	sstr >> value;
+
+	return value;
+}
+
+float RenderEngine::GetProperty( const std::string& property, float default_ ) const {
+	std::stringstream  sstr( GetProperty( property, "" ) );
+	float  value( default_ );
+
+	sstr >> value;
+
+	return value;
+}
+
+// TODO: Font and size.
+sf::Vector2f RenderEngine::GetTextMetrics( const sf::String& string ) const {
+	sf::Text  text( string );
+
+	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );
+}
 
 }

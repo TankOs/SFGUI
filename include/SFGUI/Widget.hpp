@@ -69,10 +69,20 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		void AllocateSize( const sf::FloatRect& rect );
 
-		/** Get rect (position and size).
+		/** Request size (requisition).
+		 * @param rect Rect.
+		 */
+		void RequestSize( const sf::FloatRect& rect );
+
+		/** Get allocated size (position and size).
 		 * @return Rect.
 		 */
-		const sf::FloatRect& GetRect() const;
+		const sf::FloatRect& GetAllocation() const;
+
+		/** Get requested size (requisition).
+		 * @return Rect.
+		 */
+		const sf::FloatRect& GetRequisition() const;
 
 		/** Set render engine.
 		 * @param engine Engine. (pointer gets stored)
@@ -88,22 +98,33 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 * Renders widget to given target.
 		 * @param target SFML render target.
 		 */
-		void Expose( sf::RenderTarget& target ) const;
+		void Expose( sf::RenderTarget& target );
 
 		/** Invalidate widget (redraw internally).
 		 * Implement InvalidateImpl() for your own code.
 		 */
 		void Invalidate();
 
+		/** Set parent widget.
+		 * Note that the parent must be a subclass of sfg::Container. You mostly
+		 * don't want to call this method directly.
+		 * @param parent Parent.
+		 */
+		void SetParent( Widget::Ptr parent );
+
 		// Signals.
 		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (new state)
 		Signal<void( Ptr )>         OnFocusChange; //!< Fired when focus grabbed or lost.
-		Signal<void( Ptr )>         OnConfigure; //!< Fired when widget's size changed.
+
+		Signal<void( Ptr, sf::RenderTarget& )>  OnExpose; //!< Fired when widget is being rendered.
+
+		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeAllocate; //!< Fired when widget's allocation changed.
+		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeRequest; //!< Fired when requested a new widget's size.
 
 		Signal<void( Ptr )>         OnMouseEnter; //!< Fired when mouse entered widget.
 		Signal<void( Ptr )>         OnMouseLeave; //!< Fired when mouse left widget.
-		Signal<bool( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
-		Signal<bool( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
+		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
+		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
 
 	protected:
 		/** Constructor.
@@ -132,7 +153,8 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		State  m_state;
 
 		std::string    m_name;
-		sf::FloatRect  m_rect;
+		sf::FloatRect  m_allocation;
+		sf::FloatRect  m_requisition;
 
 		const RenderEngine*  m_renderengine;
 		mutable boost::scoped_ptr<sf::Drawable>  m_drawable;
