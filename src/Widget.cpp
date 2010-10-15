@@ -1,6 +1,7 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Container.hpp>
-#include <SFGUI/RenderEngine.hpp>
+#include <SFGUI/Context.hpp>
+#include <iostream>
 
 namespace sfg {
 Widget::Widget() :
@@ -8,8 +9,8 @@ Widget::Widget() :
 	m_visible( true ),
 	m_state( Normal ),
 	m_allocation( 0, 0, 0, 0 ),
-	m_requisition( 0, 0, 0, 0 ),
-	m_renderengine( 0 )
+	m_requisition( 0, 0 ),
+	m_invalidated( false )
 {
 }
 
@@ -60,10 +61,12 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 	Invalidate();
 }
 
-void Widget::RequestSize( const sf::FloatRect& rect ) {
-	sf::FloatRect  oldrequisition( m_requisition );
+void Widget::RequestSize( const sf::Vector2f& size ) {
+	sf::Vector2f  oldrequisition( m_requisition );
 
-	m_requisition = rect;
+	m_requisition = size;
+	QueueResize( shared_from_this() );
+
 	OnSizeRequest.Sig( shared_from_this(), oldrequisition );
 }
 
@@ -72,37 +75,32 @@ const sf::FloatRect& Widget::GetAllocation() const {
 	return m_allocation;
 }
 
-const sf::FloatRect& Widget::GetRequisition() const {
+const sf::Vector2f& Widget::GetRequisition() const {
 	return m_requisition;
 }
 
 void Widget::Expose( sf::RenderTarget& target ) {
-	if( m_drawable ) {
-		target.Draw( *m_drawable );
+	if( m_invalidated ) {
+		m_invalidated = false;
+
+		m_drawable.reset( InvalidateImpl() );
+
+		if( m_drawable ) {
+			m_drawable->SetPosition( GetAllocation().Left, GetAllocation().Top );
+		}
 	}
 
-	OnExpose.Sig( shared_from_this(), target );
-}
+	if( IsVisible() ) {
+		if( m_drawable ) {
+			target.Draw( *m_drawable );
+		}
 
-const RenderEngine* Widget::GetRenderEngine() const {
-	return m_renderengine;
-}
-
-void Widget::SetRenderEngine( const RenderEngine& engine ) {
-	m_renderengine = &engine;
-	Invalidate();
+		OnExpose.Sig( shared_from_this(), target );
+	}
 }
 
 void Widget::Invalidate() {
-	if( !m_renderengine ) {
-		return;
-	}
-
-	m_drawable.reset( InvalidateImpl() );
-
-	if( m_drawable ) {
-		m_drawable->SetPosition( GetAllocation().Left, GetAllocation().Top );
-	}
+	m_invalidated = true;
 }
 
 sf::Drawable* Widget::InvalidateImpl() {
@@ -122,6 +120,32 @@ void Widget::SetParent( Widget::Ptr parent ) {
 	}
 
 	m_parent = cont;
+}
+
+void Widget::SetPosition( const sf::Vector2f& position ) {
+	sf::FloatRect  oldallocation( GetAllocation() );
+
+	m_allocation.Left = position.x;
+	m_allocation.Top = position.y;
+
+	if( m_drawable ) {
+		m_drawable->SetPosition( position );
+	}
+
+	OnSizeAllocate.Sig( shared_from_this(), oldallocation );
+}
+
+void Widget::QueueResize( Widget::Ptr widget ) {
+	if( !m_parent ) {
+		return;
+	}
+
+	Container::Ptr  container( boost::shared_dynamic_cast<Container>( m_parent ) );
+	if( !container ) {
+		return;
+	}
+
+	container->QueueResize( widget );
 }
 
 }

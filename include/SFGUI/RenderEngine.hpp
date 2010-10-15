@@ -28,7 +28,7 @@ class SFGUI_API RenderEngine {
 		 * @param string String.
 		 * @return Metrics.
 		 */
-		sf::Vector2f GetTextMetrics( const sf::String& string ) const;
+		sf::Vector2f GetMetrics( const sf::String& string ) const;
 
 		/** Set property.
 		 * @param property Name of property.

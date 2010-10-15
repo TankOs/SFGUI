@@ -31,6 +31,8 @@ class Box : public Container {
 		 */
 		void Pack( Widget::Ptr widget, bool expand = true, bool fill = true );
 
+		virtual void QueueResize( Widget::Ptr widget );
+
 	private:
 		struct ChildInfo {
 			Widget::Ptr  widget;
@@ -45,8 +47,11 @@ class Box : public Container {
 
 		Box( Orientation orientation = Horizontal );
 
+		sf::Vector2f AllocateChildrenSizes();
+
 		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );
 		void HandleRemove( Widget::Ptr widget, Widget::Ptr child );
+		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 
 		Orientation  m_orientation;
 		ChildrenCont  m_children;

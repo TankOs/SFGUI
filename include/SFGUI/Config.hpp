@@ -3,4 +3,6 @@
 
 #define SFGUI_API
 
+#include <iostream> // XXX Only for debugging purposes.
+
 #endif

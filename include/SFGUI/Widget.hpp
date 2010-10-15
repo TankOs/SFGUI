@@ -12,8 +12,6 @@
 
 namespace sfg {
 
-class RenderEngine;
-
 /** Base class for widgets.
  */
 class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_from_this<Widget> {
@@ -72,7 +70,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		/** Request size (requisition).
 		 * @param rect Rect.
 		 */
-		void RequestSize( const sf::FloatRect& rect );
+		void RequestSize( const sf::Vector2f& rect );
 
 		/** Get allocated size (position and size).
 		 * @return Rect.
@@ -82,17 +80,12 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		/** Get requested size (requisition).
 		 * @return Rect.
 		 */
-		const sf::FloatRect& GetRequisition() const;
+		const sf::Vector2f& GetRequisition() const;
 
-		/** Set render engine.
-		 * @param engine Engine. (pointer gets stored)
+		/** Set position.
+		 * @param position Position.
 		 */
-		void SetRenderEngine( const RenderEngine& engine );
-
-		/** Get current render engine.
-		 * @return Pointer to engine or 0 if none.
-		 */
-		const RenderEngine* GetRenderEngine() const;
+		void SetPosition( const sf::Vector2f& position );
 
 		/** Expose.
 		 * Renders widget to given target.
@@ -112,6 +105,13 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		void SetParent( Widget::Ptr parent );
 
+		/** Queue resize.
+		 * Asks the parent widget to allocate more space. Container widgets can
+		 * override the method to fetch resize requests.
+		 * @param widget Widget that requests a resize.
+		 */
+		virtual void QueueResize( Widget::Ptr widget );
+
 		// Signals.
 		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (new state)
 		Signal<void( Ptr )>         OnFocusChange; //!< Fired when focus grabbed or lost.
@@ -119,7 +119,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, sf::RenderTarget& )>  OnExpose; //!< Fired when widget is being rendered.
 
 		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeAllocate; //!< Fired when widget's allocation changed.
-		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeRequest; //!< Fired when requested a new widget's size.
+		Signal<void( Ptr, const sf::Vector2f& )>   OnSizeRequest; //!< Fired when requested a new widget's size.
 
 		Signal<void( Ptr )>         OnMouseEnter; //!< Fired when mouse entered widget.
 		Signal<void( Ptr )>         OnMouseLeave; //!< Fired when mouse left widget.
@@ -154,9 +154,10 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 
 		std::string    m_name;
 		sf::FloatRect  m_allocation;
-		sf::FloatRect  m_requisition;
+		sf::Vector2f   m_requisition;
 
-		const RenderEngine*  m_renderengine;
+		bool  m_invalidated;
+
 		mutable boost::scoped_ptr<sf::Drawable>  m_drawable;
 };
 

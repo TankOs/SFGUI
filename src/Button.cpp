@@ -1,4 +1,5 @@
 #include <SFGUI/Button.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/RenderEngine.hpp>
 #include <iostream> // XXX
 
@@ -19,19 +20,21 @@ Button::Ptr Button::Create( const sf::String& caption ) {
 }
 
 sf::Drawable* Button::InvalidateImpl() {
-	return GetRenderEngine()->CreateButtonDrawable( boost::shared_dynamic_cast<Button>( shared_from_this() ) );
+	return Context::Get().GetRenderEngine().CreateButtonDrawable( boost::shared_dynamic_cast<Button>( shared_from_this() ) );
 }
 
 void Button::SetCaption( const sf::String& caption ) {
 	m_caption = caption;
-	Invalidate();
 
-	if( !GetRenderEngine() ) {
-		RequestSize( sf::FloatRect( GetRequisition().Left, GetRequisition().Top, 10.f, 10.f ) );
-	}
-	else {
-		RequestSize( sf::FloatRect( GetRequisition().Left, GetRequisition().Top, 5.f /*GetRenderEngine()->GetTextMetrics( m_caption ).x*/, GetRenderEngine()->GetProperty( "Button.caption-font-size", 10.f ) ) );
-	}
+	// Request new size.
+	sf::Vector2f  metrics( Context::Get().GetRenderEngine().GetMetrics( m_caption ) );
+	RequestSize( metrics );
+
+	Invalidate();
+}
+
+const sf::String& Button::GetCaption() const {
+	return m_caption;
 }
 
 }

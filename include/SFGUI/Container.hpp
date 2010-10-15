@@ -48,6 +48,8 @@ class SFGUI_API Container : public Widget {
 		WidgetsSet& GetChildren();
 
 	private:
+		void FitChildren();
+
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 

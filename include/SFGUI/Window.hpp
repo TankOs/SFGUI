@@ -9,6 +9,7 @@
 namespace sfg {
 
 /** Window.
+ * TODO: Remove slot when child gets removed.
  */
 class SFGUI_API Window : public Bin {
 	public:
@@ -33,6 +34,8 @@ class SFGUI_API Window : public Bin {
 		 */
 		sf::FloatRect GetClientRect() const;
 
+		void QueueResize( Widget::Ptr widget );
+
 	protected:
 		/** Constructor.
 		 */
@@ -41,7 +44,11 @@ class SFGUI_API Window : public Bin {
 		virtual sf::Drawable* InvalidateImpl();
 
 	private:
+		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );
+		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
+
 		sf::String  m_title;
+		bool  m_skipreallocation;
 };
 
 }

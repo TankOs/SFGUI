@@ -16,6 +16,8 @@ class SFGUI_API Bin : public Container {
 		 */
 		Widget::Ptr GetChild() const;
 
+		virtual void QueueResize( Widget::Ptr widget );
+
 	protected:
 		/** Constructor.
 		 */

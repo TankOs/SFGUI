@@ -11,6 +11,10 @@ namespace eng {
  */
 class BREW : public RenderEngine {
 	public:
+		/** Ctor.
+		 */
+		BREW();
+
 		sf::Drawable* CreateWindowDrawable( Window::Ptr window ) const;
 		sf::Drawable* CreateButtonDrawable( Button::Ptr button ) const;
 

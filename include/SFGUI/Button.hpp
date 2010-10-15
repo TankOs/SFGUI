@@ -21,6 +21,11 @@ class Button : public Widget {
 		 */
 		void SetCaption( const sf::String& caption );
 
+		/* Get caption.
+		 * @return Caption.
+		 */
+		const sf::String& GetCaption() const;
+
 	protected:
 		sf::Drawable* InvalidateImpl();
 

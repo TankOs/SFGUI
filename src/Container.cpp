@@ -16,6 +16,7 @@ void Container::Add( Widget::Ptr widget ) {
 
 	m_children.insert( widget );
 	widget->SetParent( shared_from_this() );
+	widget->SetPosition( sf::Vector2f( GetAllocation().Left, GetAllocation().Top ) );
 
 	OnAdd.Sig( shared_from_this(), widget );
 }
@@ -52,19 +53,17 @@ void Container::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target )
 }
 
 void Container::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& oldallocation ) {
-	if( GetChildren().size() > 0 ) {
+	if( GetChildren().size() > 0 && (GetAllocation().Left != oldallocation.Left || GetAllocation().Top != oldallocation.Top) ) {
 		WidgetsSet::iterator  iter( m_children.begin() );
 		WidgetsSet::iterator  iterend( m_children.end() );
 		sf::Vector2f  delta( GetAllocation().Left - oldallocation.Left, GetAllocation().Top - oldallocation.Top );
 
 		// Move children accordingly.
 		for( ; iter != iterend; ++iter ) {
-			(*iter)->AllocateSize(
-				sf::FloatRect(
+			(*iter)->SetPosition(
+				sf::Vector2f(
 					(*iter)->GetAllocation().Left + delta.x,
-					(*iter)->GetAllocation().Top + delta.x,
-					(*iter)->GetAllocation().Width,
-					(*iter)->GetAllocation().Height
+					(*iter)->GetAllocation().Top + delta.x
 				)
 			);
 		}
