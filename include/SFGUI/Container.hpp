@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <set>
+#include <list>
 
 namespace sfg {
 
@@ -12,7 +12,7 @@ namespace sfg {
 class SFGUI_API Container : public Widget {
 	public:
 		typedef boost::shared_ptr<Container>  Ptr; //!< Shared pointer.
-		typedef std::set<Widget::Ptr>  WidgetsSet;
+		typedef std::list<Widget::Ptr>  WidgetsList;
 
 		/** Add child.
 		 * @param widget Widget to add.
@@ -32,7 +32,7 @@ class SFGUI_API Container : public Widget {
 		/** Get children.
 		 * @return std::set with children.
 		 */
-		const WidgetsSet& GetChildren() const;
+		const WidgetsList& GetChildren() const;
 
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnAdd; //!< Fired when child added.
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnRemove; //!< Fired when child removed.
@@ -45,15 +45,13 @@ class SFGUI_API Container : public Widget {
 		/** Get children.
 		 * @return std::set with children.
 		 */
-		WidgetsSet& GetChildren();
+		WidgetsList& GetChildren();
 
 	private:
-		void FitChildren();
-
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 
-		WidgetsSet  m_children;
+		WidgetsList  m_children;
 };
 
 }

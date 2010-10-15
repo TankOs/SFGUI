@@ -15,7 +15,8 @@ int main() {
 
 	// Two top-level windows.
 	sfg::Window::Ptr  wndmain( sfg::Window::Create() );
-	sfg::Box::Ptr     boxtest( sfg::Box::Create( sfg::Box::Vertical ) );
+	sfg::Box::Ptr     boxtest( sfg::Box::Create( sfg::Box::Horizontal ) );
+	sfg::Box::Ptr     boxsecond( sfg::Box::Create( sfg::Box::Vertical ) );
 	sfg::Button::Ptr  btntest( sfg::Button::Create( L"Test" ) );
 	sfg::Button::Ptr  btnquit( sfg::Button::Create( L"Quit" ) );
 
@@ -28,7 +29,19 @@ int main() {
 	//wndmain->AllocateSize( sf::FloatRect( 100.f, 100.f, 300.f, 300.f ) );
 	wndmain->Add( boxtest );
 	boxtest->Pack( btntest, false );
-	boxtest->Pack( btnquit, true );
+	boxtest->Pack( btnquit, false );
+	boxtest->Pack( boxsecond, true );
+
+	sfg::Box::Ptr  boxinside( sfg::Box::Create( sfg::Box::Horizontal ) );
+
+	boxsecond->Pack( sfg::Button::Create( L"Supi dupi" ), false );
+	boxsecond->Pack( boxinside, true );
+	boxsecond->Pack( sfg::Button::Create( L"Deine Mudda" ), false );
+
+	boxinside->Pack( sfg::Button::Create( L"Deine Mudda" ), false );
+	boxinside->Pack( sfg::Button::Create( L"treibt's" ), true );
+	boxinside->Pack( sfg::Button::Create( L"mit" ), false );
+	boxinside->Pack( sfg::Button::Create( L"Schafen" ), false );
 
 	/*for( unsigned int num = 0; num < 4; ++num ) {
 		sfg::Button::Ptr  button( sfg::Button::Create( L"A button" ) );

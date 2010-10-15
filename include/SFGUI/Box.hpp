@@ -1,6 +1,6 @@
 #pragma once
 #include <SFGUI/Container.hpp>
-#include <set>
+#include <list>
 
 namespace sfg {
 
@@ -40,10 +40,10 @@ class Box : public Container {
 			bool         fill;
 
 			ChildInfo( Widget::Ptr widget_, bool expand_ = true, bool fill_ = true );
-			bool operator<( const ChildInfo& rhs ) const;
+			bool operator==( const ChildInfo& rhs ) const;
 		};
 
-		typedef std::set<ChildInfo>  ChildrenCont;
+		typedef std::list<ChildInfo>  ChildrenCont;
 
 		Box( Orientation orientation = Horizontal );
 

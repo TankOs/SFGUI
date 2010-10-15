@@ -26,12 +26,12 @@ void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
 
 	// It's important to create the ChildInfo object first, so that the
 	// HandleAdd() method recognized the widget as a correctly packed one.
-	m_children.insert( ChildInfo( widget, expand, fill ) );
+	m_children.push_back( ChildInfo( widget, expand, fill ) );
 	Add( widget );
 }
 
 void Box::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
-	ChildrenCont::const_iterator  iter( m_children.find( child ) );
+	ChildrenCont::const_iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget
 	// manually, which is not allowed for this class.
@@ -46,18 +46,11 @@ void Box::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 }
 
 void Box::HandleRemove( Widget::Ptr /*widget*/, Widget::Ptr child ) {
-	m_children.erase( child );
-}
+	ChildrenCont::iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
 
-Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
-	widget( widget_ ),
-	expand( expand_ ),
-	fill( fill_ )
-{
-}
-
-bool Box::ChildInfo::operator<( const ChildInfo& rhs ) const {
-	return widget < rhs.widget;
+	if( iter != m_children.end() ) {
+		m_children.erase( iter );
+	}
 }
 
 void Box::QueueResize( Widget::Ptr widget ) {
@@ -128,6 +121,17 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 
 void Box::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
 	AllocateChildrenSizes();
+}
+
+Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
+	widget( widget_ ),
+	expand( expand_ ),
+	fill( fill_ )
+{
+}
+
+bool Box::ChildInfo::operator==( const ChildInfo& rhs ) const {
+	return widget == rhs.widget;
 }
 
 }

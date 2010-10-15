@@ -14,7 +14,7 @@ void Container::Add( Widget::Ptr widget ) {
 		return;
 	}
 
-	m_children.insert( widget );
+	m_children.push_back( widget );
 	widget->SetParent( shared_from_this() );
 	widget->SetPosition( sf::Vector2f( GetAllocation().Left, GetAllocation().Top ) );
 
@@ -22,30 +22,31 @@ void Container::Add( Widget::Ptr widget ) {
 }
 
 void Container::Remove( Widget::Ptr widget ) {
-	if( !IsChild( widget ) ) {
-		return;
-	}
+	WidgetsList::iterator  iter( std::find( m_children.begin(), m_children.end(), widget ) );
 
-	m_children.erase( widget );
-	OnRemove.Sig( shared_from_this(), widget );
+	if( iter != m_children.end() ) {
+		m_children.erase( iter );
+		OnRemove.Sig( shared_from_this(), widget );
+	}
 }
 
 bool Container::IsChild( Widget::Ptr widget ) const {
-	WidgetsSet::const_iterator  iter( m_children.find( widget ) );
+	WidgetsList::const_iterator  iter( std::find( m_children.begin(), m_children.end(), widget ) );
+
 	return iter != m_children.end();
 }
 
-const Container::WidgetsSet& Container::GetChildren() const {
+const Container::WidgetsList& Container::GetChildren() const {
 	return m_children;
 }
 
-Container::WidgetsSet& Container::GetChildren() {
+Container::WidgetsList& Container::GetChildren() {
 	return m_children;
 }
 
 void Container::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target ) {
-	WidgetsSet::iterator  iter( m_children.begin() );
-	WidgetsSet::iterator  iterend( m_children.end() );
+	WidgetsList::iterator  iter( m_children.begin() );
+	WidgetsList::iterator  iterend( m_children.end() );
 
 	for( ; iter != iterend; ++iter ) {
 		(*iter)->Expose( target );
@@ -54,8 +55,8 @@ void Container::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target )
 
 void Container::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& oldallocation ) {
 	if( GetChildren().size() > 0 && (GetAllocation().Left != oldallocation.Left || GetAllocation().Top != oldallocation.Top) ) {
-		WidgetsSet::iterator  iter( m_children.begin() );
-		WidgetsSet::iterator  iterend( m_children.end() );
+		WidgetsList::iterator  iter( m_children.begin() );
+		WidgetsList::iterator  iterend( m_children.end() );
 		sf::Vector2f  delta( GetAllocation().Left - oldallocation.Left, GetAllocation().Top - oldallocation.Top );
 
 		// Move children accordingly.
