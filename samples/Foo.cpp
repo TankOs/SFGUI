@@ -26,7 +26,6 @@ int main() {
 	btnquit->SetName( "btnquit" );
 	boxtest->SetName( "boxtest" );
 
-	//wndmain->AllocateSize( sf::FloatRect( 100.f, 100.f, 300.f, 300.f ) );
 	wndmain->Add( boxtest );
 	boxtest->Pack( btntest, false );
 	boxtest->Pack( btnquit, false );
@@ -36,18 +35,12 @@ int main() {
 
 	boxsecond->Pack( sfg::Button::Create( L"Supi dupi" ), false );
 	boxsecond->Pack( boxinside, true );
-	boxsecond->Pack( sfg::Button::Create( L"Deine Mudda" ), false );
+	boxsecond->Pack( sfg::Button::Create( L"This seems" ), false );
 
-	boxinside->Pack( sfg::Button::Create( L"Deine Mudda" ), false );
-	boxinside->Pack( sfg::Button::Create( L"treibt's" ), true );
-	boxinside->Pack( sfg::Button::Create( L"mit" ), false );
-	boxinside->Pack( sfg::Button::Create( L"Schafen" ), false );
-
-	/*for( unsigned int num = 0; num < 4; ++num ) {
-		sfg::Button::Ptr  button( sfg::Button::Create( L"A button" ) );
-		button->SetCaption( L"A button" );
-		boxtest->Pack( button, false );
-	}*/
+	boxinside->Pack( sfg::Button::Create( L"to work" ), false );
+	boxinside->Pack( sfg::Button::Create( L"like it's" ), true );
+	boxinside->Pack( sfg::Button::Create( L"supposed" ), false );
+	boxinside->Pack( sfg::Button::Create( L"to do!" ), false );
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {
