@@ -38,11 +38,13 @@ int main() {
 	boxsecond->Pack( sfg::Button::Create( L"This seems" ), false );
 
 	boxinside->Pack( sfg::Button::Create( L"to work" ), false );
-	boxinside->Pack( sfg::Button::Create( L"like it's" ), true, false );
+	boxinside->Pack( sfg::Button::Create( L"like it's" ), true, true );
 	boxinside->Pack( sfg::Button::Create( L"supposed" ), true );
 	boxinside->Pack( sfg::Button::Create( L"to do!" ), false );
 
 	wndmain->SetBorderWidth( 10.f );
+	boxinside->SetBorderWidth( 15.f );
+	boxsecond->SetBorderWidth( 3.f );
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {

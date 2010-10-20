@@ -64,11 +64,14 @@ void Box::QueueResize( Widget::Ptr widget ) {
 sf::Vector2f Box::AllocateChildrenSizes() {
 	ChildrenCont::iterator  iter( m_children.begin() );
 	ChildrenCont::iterator  iterend( m_children.end() );
-	sf::Vector2f  requisition( m_orientation == Horizontal ? 0.f : GetAllocation().Width, m_orientation == Vertical ? 0.f : GetAllocation().Height );
 	sf::Vector2f  allocation( 0.f, 0.f );
-	sf::Vector2f  position( GetAllocation().Left, GetAllocation().Top );
+	sf::Vector2f  position( GetAllocation().Left + GetBorderWidth(), GetAllocation().Top + GetBorderWidth() );
 	unsigned int  num_expand( 0 );
 	float  extra( 0.f );
+	sf::Vector2f  requisition(
+		m_orientation == Horizontal ? 2 * GetBorderWidth() : GetAllocation().Width,
+		m_orientation == Vertical ? 2 * GetBorderWidth() : GetAllocation().Height
+	);
 
 	for( ; iter != iterend; ++iter ) {
 		if( iter->expand ) {
@@ -77,10 +80,10 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 
 		if( m_orientation == Horizontal ) {
 			requisition.x += iter->widget->GetRequisition().x;
-			requisition.y = std::max( requisition.y, iter->widget->GetRequisition().y );
+			requisition.y = std::max( requisition.y, iter->widget->GetRequisition().y + 2 * GetBorderWidth() );
 		}
 		else {
-			requisition.x = std::max( requisition.x, iter->widget->GetRequisition().x );
+			requisition.x = std::max( requisition.x, iter->widget->GetRequisition().x + 2 * GetBorderWidth() );
 			requisition.y += iter->widget->GetRequisition().y;
 		}
 	}
@@ -97,19 +100,22 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 	for( iter = m_children.begin(); iter != iterend; ++iter ) {
 		if( m_orientation == Horizontal ) {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
-			allocation.y = requisition.y;
+			allocation.y = requisition.y - 2 * GetBorderWidth();
 
 			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
 			position.x += allocation.x;
 		}
 		else {
-			allocation.x = requisition.x;
+			allocation.x = requisition.x - 2 * GetBorderWidth();
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
 			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
 			position.y += allocation.y;
 		}
 	}
+
+	/*requisition.x += GetBorderWidth();
+	requisition.y += GetBorderWidth();*/
 
 	return requisition;
 }

@@ -28,13 +28,4 @@ void Bin::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 	QueueResize( child );
 }
 
-void Bin::QueueResize( Widget::Ptr widget ) {
-	if( widget != shared_from_this() && !IsChild( widget ) ) {
-		return;
-	}
-
-	// Set requisition of Bin to child's requisition.
-	RequestSize( widget->GetRequisition() );
-}
-
 }
