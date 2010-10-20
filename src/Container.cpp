@@ -3,7 +3,8 @@
 namespace sfg {
 
 Container::Container() :
-	Widget()
+	Widget(),
+	m_border_width( 0.f )
 {
 	OnExpose.Connect( &Container::HandleExpose, this );
 	OnSizeAllocate.Connect( &Container::HandleSizeAllocate, this );
@@ -69,6 +70,16 @@ void Container::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect&
 			);
 		}
 	}
+}
+
+void Container::SetBorderWidth( float width ) {
+	m_border_width = width;
+	QueueResize( shared_from_this() );
+	Invalidate();
+}
+
+float Container::GetBorderWidth() const {
+	return m_border_width;
 }
 
 }

@@ -54,12 +54,7 @@ void Box::HandleRemove( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 }
 
 void Box::QueueResize( Widget::Ptr widget ) {
-	if( widget == shared_from_this() ) {
-		Widget::QueueResize( widget );
-		return;
-	}
-
-	if( !IsChild( widget ) ) {
+	if( widget != shared_from_this() && !IsChild( widget ) ) {
 		return;
 	}
 
@@ -104,14 +99,14 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
 			allocation.y = requisition.y;
 
-			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x, allocation.y ) );
+			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
 			position.x += allocation.x;
 		}
 		else {
 			allocation.x = requisition.x;
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
-			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x, allocation.y ) );
+			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
 			position.y += allocation.y;
 		}
 	}

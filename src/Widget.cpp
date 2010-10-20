@@ -65,7 +65,14 @@ void Widget::RequestSize( const sf::Vector2f& size ) {
 	sf::Vector2f  oldrequisition( m_requisition );
 
 	m_requisition = size;
-	QueueResize( shared_from_this() );
+
+	if( m_parent ) {
+		Container::Ptr  container( boost::shared_dynamic_cast<Container>( m_parent ) );
+
+		if( container ) {
+			container->QueueResize( shared_from_this() );
+		}
+	}
 
 	OnSizeRequest.Sig( shared_from_this(), oldrequisition );
 }

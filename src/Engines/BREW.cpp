@@ -19,6 +19,9 @@ BREW::BREW() :
 	SetProperty( "Window.border-color-dark", "#555555" );
 	SetProperty( "Window.shadow-distance", "2.0" );
 	SetProperty( "Window.shadow-alpha", "100" );
+
+	SetProperty( "Button.border-color-light", "#cccccc" );
+	SetProperty( "Button.border-color-dark", "#555555" );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
@@ -107,9 +110,12 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 }
 
 sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
-	RenderQueue*  queue( new RenderQueue );
+	sf::Color  border_color_light( Theme::ParseColor( GetProperty( "Button.border-color-light", "#ffffff" ) ) );
+	sf::Color  border_color_dark( Theme::ParseColor( GetProperty( "Button.border-color-dark", "#000000" ) ) );
+	float  border_width( GetProperty( "Button.border-width", 1.f ) );
 
-	queue->Add( CreateBorder( button->GetAllocation(), 2.f, sf::Color( 255, 0, 0 ), sf::Color( 0, 0, 255 ) ) );
+	RenderQueue*  queue( new RenderQueue );
+	queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_light, border_color_dark ) );
 
 	// Caption.
 	sf::Text*  caption( new sf::Text( button->GetCaption(), sf::Font::GetDefaultFont(), 10.f ) );

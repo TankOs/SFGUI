@@ -88,12 +88,12 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		void SetPosition( const sf::Vector2f& position );
 
 		/** Expose.
-		 * Renders widget to given target.
+		 * Render widget to given target.
 		 * @param target SFML render target.
 		 */
 		void Expose( sf::RenderTarget& target );
 
-		/** Invalidate widget (redraw internally).
+		/** Invalidate widget (prepare internal sf::Drawable).
 		 * Implement InvalidateImpl() for your own code.
 		 */
 		void Invalidate();
@@ -107,7 +107,9 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 
 		/** Queue resize.
 		 * Asks the parent widget to allocate more space. Container widgets can
-		 * override the method to fetch resize requests.
+		 * override the method to fetch resize requests. Usually children request
+		 * their size with RequestSize() that is then, when possible, allocated by
+		 * the container.
 		 * @param widget Widget that requests a resize.
 		 */
 		virtual void QueueResize( Widget::Ptr widget );

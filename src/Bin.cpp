@@ -29,12 +29,7 @@ void Bin::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 }
 
 void Bin::QueueResize( Widget::Ptr widget ) {
-	if( widget == shared_from_this() ) {
-		Widget::QueueResize( widget );
-		return;
-	}
-
-	if( !IsChild( widget ) ) {
+	if( widget != shared_from_this() && !IsChild( widget ) ) {
 		return;
 	}
 

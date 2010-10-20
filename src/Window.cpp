@@ -40,10 +40,10 @@ sf::FloatRect Window::GetClientRect() const {
 	float  title_height( Context::Get().GetRenderEngine().GetProperty( "Window.title-height", 15.f ) );
 	float  border_width( Context::Get().GetRenderEngine().GetProperty( "Window.border-width", 2.f ) );
 
-	clientrect.Left += border_width;
-	clientrect.Top += title_height + border_width;
-	clientrect.Width -= 2 * border_width;
-	clientrect.Height -= title_height + 2 * border_width;
+	clientrect.Left += border_width + GetBorderWidth();
+	clientrect.Top += title_height + border_width + GetBorderWidth();
+	clientrect.Width -= 2 * border_width + 2 * GetBorderWidth();
+	clientrect.Height -= title_height + 2 * border_width + 2 * GetBorderWidth();
 
 	return clientrect;
 }
@@ -53,12 +53,7 @@ void Window::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 }
 
 void Window::QueueResize( Widget::Ptr widget ) {
-	if( widget == shared_from_this() ) {
-		Widget::QueueResize( widget );
-		return;
-	}
-
-	if( !IsChild( widget ) ) {
+	if( widget != shared_from_this() && !IsChild( widget ) ) {
 		return;
 	}
 
@@ -67,8 +62,8 @@ void Window::QueueResize( Widget::Ptr widget ) {
 
 	RequestSize(
 		sf::Vector2f(
-			widget->GetRequisition().x + 2 * border_width,
-			widget->GetRequisition().y + 2 * border_width + title_height
+			widget->GetRequisition().x + 2 * border_width + 2 * GetBorderWidth(),
+			widget->GetRequisition().y + 2 * border_width + title_height + 2 * GetBorderWidth()
 		)
 	);
 
@@ -86,7 +81,7 @@ void Window::QueueResize( Widget::Ptr widget ) {
 	}
 
 	// Make sure child is in the client area.
-	widget->SetPosition( sf::Vector2f( GetAllocation().Left + border_width, GetAllocation().Top + border_width + title_height ) );
+	widget->SetPosition( sf::Vector2f( GetAllocation().Left + border_width + GetBorderWidth(), GetAllocation().Top + border_width + title_height + GetBorderWidth() ) );
 }
 
 void Window::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {

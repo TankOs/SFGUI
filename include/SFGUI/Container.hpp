@@ -34,6 +34,16 @@ class SFGUI_API Container : public Widget {
 		 */
 		const WidgetsList& GetChildren() const;
 
+		/** Set border width.
+		 * @param width Border width.
+		 */
+		void SetBorderWidth( float width );
+
+		/** Get border width.
+		 * @return Border width.
+		 */
+		float GetBorderWidth() const;
+
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnAdd; //!< Fired when child added.
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnRemove; //!< Fired when child removed.
 
@@ -50,6 +60,8 @@ class SFGUI_API Container : public Widget {
 	private:
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
+
+		float  m_border_width;
 
 		WidgetsList  m_children;
 };
