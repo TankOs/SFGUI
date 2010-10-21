@@ -20,9 +20,10 @@ class Box : public Container {
 
 		/** Create box.
 		 * @param orientation Orientation.
+		 * @param padding Padding = space between widgets.
 		 * @return Box.
 		 */
-		static Ptr Create( Orientation orientation = Horizontal );
+		static Ptr Create( Orientation orientation = Horizontal, float padding = 0.f );
 
 		/** Add a widget to the box.
 		 * @param widget Widget.
@@ -30,6 +31,16 @@ class Box : public Container {
 		 * @param fill Fill calculated size.
 		 */
 		void Pack( Widget::Ptr widget, bool expand = true, bool fill = true );
+
+		/** Set padding.
+		 * @param padding Padding.
+		 */
+		void SetPadding( float padding );
+
+		/** Get padding.
+		 * @return Padding.
+		 */
+		float GetPadding() const;
 
 		virtual void QueueResize( Widget::Ptr widget );
 
@@ -45,7 +56,7 @@ class Box : public Container {
 
 		typedef std::list<ChildInfo>  ChildrenCont;
 
-		Box( Orientation orientation = Horizontal );
+		Box( Orientation orientation = Horizontal, float padding = 0.f );
 
 		sf::Vector2f AllocateChildrenSizes();
 
@@ -54,6 +65,7 @@ class Box : public Container {
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 
 		Orientation  m_orientation;
+		float  m_padding;
 		ChildrenCont  m_children;
 };
 

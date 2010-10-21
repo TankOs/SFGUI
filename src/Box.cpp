@@ -5,17 +5,18 @@
 
 namespace sfg {
 
-Box::Box( Orientation orientation ) :
+Box::Box( Orientation orientation, float padding ) :
 	Container(),
-	m_orientation( orientation )
+	m_orientation( orientation ),
+	m_padding( padding )
 {
 	OnAdd.Connect( &Box::HandleAdd, this );
 	OnRemove.Connect( &Box::HandleRemove, this );
 	OnSizeAllocate.Connect( &Box::HandleSizeAllocate, this );
 }
 
-Box::Ptr Box::Create( Orientation orientation ) {
-	Box::Ptr  ptr( new Box( orientation ) );
+Box::Ptr Box::Create( Orientation orientation, float padding ) {
+	Box::Ptr  ptr( new Box( orientation, padding ) );
 	return ptr;
 }
 
@@ -67,6 +68,7 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 	sf::Vector2f  allocation( 0.f, 0.f );
 	sf::Vector2f  position( GetAllocation().Left + GetBorderWidth(), GetAllocation().Top + GetBorderWidth() );
 	unsigned int  num_expand( 0 );
+	unsigned int  num_visible( 0 );
 	float  extra( 0.f );
 	sf::Vector2f  requisition(
 		m_orientation == Horizontal ? 2 * GetBorderWidth() : GetAllocation().Width,
@@ -78,6 +80,10 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 			++num_expand;
 		}
 
+		if( iter->widget->IsVisible() ) {
+			++num_visible;
+		}
+
 		if( m_orientation == Horizontal ) {
 			requisition.x += iter->widget->GetRequisition().x;
 			requisition.y = std::max( requisition.y, iter->widget->GetRequisition().y + 2 * GetBorderWidth() );
@@ -85,6 +91,16 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 		else {
 			requisition.x = std::max( requisition.x, iter->widget->GetRequisition().x + 2 * GetBorderWidth() );
 			requisition.y += iter->widget->GetRequisition().y;
+		}
+	}
+
+	// Add paddings.
+	if( num_visible > 1 ) {
+		if( m_orientation == Horizontal ) {
+			requisition.x += static_cast<float>( num_visible - 1 ) * GetPadding();
+		}
+		else {
+			requisition.y += static_cast<float>( num_visible - 1 ) * GetPadding();
 		}
 	}
 
@@ -103,19 +119,18 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 			allocation.y = requisition.y - 2 * GetBorderWidth();
 
 			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
-			position.x += allocation.x;
+			position.x += allocation.x + (num_visible > 1 ? GetPadding() : 0.f);
 		}
 		else {
 			allocation.x = requisition.x - 2 * GetBorderWidth();
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
 			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
-			position.y += allocation.y;
+			position.y += allocation.y + (num_visible > 1 ? GetPadding() : 0.f);
 		}
-	}
 
-	/*requisition.x += GetBorderWidth();
-	requisition.y += GetBorderWidth();*/
+		--num_visible;
+	}
 
 	return requisition;
 }
@@ -133,6 +148,16 @@ Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
 
 bool Box::ChildInfo::operator==( const ChildInfo& rhs ) const {
 	return widget == rhs.widget;
+}
+
+void Box::SetPadding( float padding ) {
+	m_padding = padding;
+	QueueResize( shared_from_this() );
+	Invalidate();
+}
+
+float Box::GetPadding() const {
+	return m_padding;
 }
 
 }

@@ -43,8 +43,9 @@ int main() {
 	boxinside->Pack( sfg::Button::Create( L"to do!" ), false );
 
 	wndmain->SetBorderWidth( 10.f );
-	boxinside->SetBorderWidth( 15.f );
-	boxsecond->SetBorderWidth( 3.f );
+	boxinside->SetBorderWidth( 0.f );
+	boxsecond->SetBorderWidth( 5.f );
+	boxinside->SetPadding( 10.f );
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {
