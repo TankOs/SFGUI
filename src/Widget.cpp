@@ -155,4 +155,8 @@ void Widget::QueueResize( Widget::Ptr widget ) {
 	container->QueueResize( widget );
 }
 
+bool Widget::HandleEvent( const sf::Event& /*event*/ ) {
+	return false;
+}
+
 }

@@ -59,7 +59,33 @@ void Box::QueueResize( Widget::Ptr widget ) {
 		return;
 	}
 
-	RequestSize( AllocateChildrenSizes() );
+	//RequestSize( AllocateChildrenSizes() );
+	ChildrenCont::iterator  iter( m_children.begin() );
+	ChildrenCont::iterator  iterend( m_children.end() );
+	sf::Vector2f  requisition( 0.f, 0.f );
+	unsigned int  num_visible( 0 );
+
+	for( ; iter != iterend; ++iter ) {
+		if( iter->widget->IsVisible() ) {
+			++num_visible;
+
+			if( m_orientation == Horizontal ) {
+				requisition.x += iter->widget->GetRequisition().x + GetPadding();
+				requisition.y = std::max( requisition.y, iter->widget->GetRequisition().y );
+			}
+			else {
+				requisition.x = std::max( requisition.x, iter->widget->GetRequisition().x );
+				requisition.y += iter->widget->GetRequisition().y + GetPadding();
+			}
+		}
+	}
+
+	if( num_visible > 0 ) {
+		requisition.x += GetBorderWidth() * 2;
+		requisition.y += GetBorderWidth() * 2;
+	}
+	
+	RequestSize( requisition );
 }
 
 sf::Vector2f Box::AllocateChildrenSizes() {

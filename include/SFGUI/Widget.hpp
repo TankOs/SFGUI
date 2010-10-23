@@ -114,6 +114,13 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		virtual void QueueResize( Widget::Ptr widget );
 
+		/** Handle SFML event.
+		 * Handle an SFML event and fire proper signals. Normally reimplemented by
+		 * containers only.
+		 * @return true when event has been processed (eaten).
+		 */
+		virtual bool HandleEvent( const sf::Event& event );
+
 		// Signals.
 		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (new state)
 		Signal<void( Ptr )>         OnFocusChange; //!< Fired when focus grabbed or lost.
