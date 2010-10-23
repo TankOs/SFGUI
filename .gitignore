@@ -7,3 +7,4 @@
 /doc/html/
 /samples/bin/
 /custom.py
+*.pyc
