@@ -26,6 +26,8 @@ class Button : public Widget {
 		 */
 		const sf::String& GetCaption() const;
 
+		Signal<void( Widget::Ptr )>  OnClick; //!< Fired when button clicked.
+
 	protected:
 		sf::Drawable* InvalidateImpl();
 
@@ -35,6 +37,9 @@ class Button : public Widget {
 		void HandleStateChange( sfg::Widget::Ptr widget, State oldstate );
 		void HandleMouseEnter( sfg::Widget::Ptr widget, int x, int y );
 		void HandleMouseLeave( sfg::Widget::Ptr widget, int x, int y );
+		void HandleMouseButtonClick( sfg::Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
+		void HandleMouseButtonPress( sfg::Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
+		void HandleMouseButtonRelease( sfg::Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 
 		sf::String  m_caption;
 };

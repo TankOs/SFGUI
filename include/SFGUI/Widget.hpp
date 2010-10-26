@@ -166,6 +166,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, int, int )>  OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
+		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
 
 	protected:
 		/** Constructor.
@@ -193,6 +194,11 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		void UnregisterEventHook( sf::Event::EventType event_type, Ptr widget );
 
+		/** Check if mouse is inside widget.
+		 * @return true if mouse is inside.
+		 */
+		bool IsMouseInWidget() const;
+
 	private:
 		typedef std::set<Ptr>  WidgetsSet;
 		typedef std::map<sf::Event::EventType, WidgetsSet>  HooksMap;
@@ -207,6 +213,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 
 		State  m_state;
 		bool  m_mouse_in;
+		int  m_mouse_button_down;
 
 		std::string    m_name;
 		sf::FloatRect  m_allocation;

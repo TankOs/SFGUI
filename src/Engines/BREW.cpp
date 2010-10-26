@@ -24,6 +24,10 @@ BREW::BREW() :
 	SetProperty( "Button.border-color-dark", "#555555" );
 	SetProperty( "Button.background-color", "#999999" );
 	SetProperty( "Button:prelight.background-color", "#aaaaaa" );
+	SetProperty( "Button:active.background-color", "#ffffbb" );
+	SetProperty( "Button.text-color", "#ffffff" );
+	SetProperty( "Button:prelight.text-color", "#ffffff" );
+	SetProperty( "Button:active.text-color", "#000000" );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
@@ -115,8 +119,17 @@ sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
 	sf::Color  border_color_light( Theme::ParseColor( GetProperty( "Button.border-color-light", "#ffffff" ) ) );
 	sf::Color  border_color_dark( Theme::ParseColor( GetProperty( "Button.border-color-dark", "#000000" ) ) );
 	sf::Color  background_color( Theme::ParseColor( GetProperty( "Button.background-color", "#888888" ) ) );
-	sf::Color  prelight_background_color( Theme::ParseColor( GetProperty( "Button:prelight.background-color", "#aaaaaa" ) ) );
+	sf::Color  text_color( Theme::ParseColor( GetProperty( "Button.text-color", "#ffffff" ) ) );
 	float  border_width( GetProperty( "Button.border-width", 1.f ) );
+
+	if( button->GetState() == Widget::Prelight ) {
+		background_color = Theme::ParseColor( GetProperty( "Button:prelight.background-color", "#888888" ) );
+		text_color = Theme::ParseColor( GetProperty( "Button:prelight.text-color", "#ffffff" ) );
+	}
+	else if( button->GetState() == Widget::Active ) {
+		background_color = Theme::ParseColor( GetProperty( "Button:active.background-color", "#ffffbb" ) );
+		text_color = Theme::ParseColor( GetProperty( "Button:active.text-color", "#000000" ) );
+	}
 
 	RenderQueue*  queue( new RenderQueue );
 
@@ -127,7 +140,7 @@ sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
 				0.f,
 				button->GetAllocation().Width,
 				button->GetAllocation().Height,
-				button->GetState() == Widget::Prelight ? prelight_background_color : background_color
+				background_color
 			)
 		)
 	);
@@ -137,6 +150,7 @@ sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
 	// Caption.
 	sf::Text*  caption( new sf::Text( button->GetCaption(), sf::Font::GetDefaultFont(), 10.f ) );
 
+	caption->SetColor( text_color );
 	caption->SetPosition(
 		sf::Vector2f(
 			std::floor( button->GetAllocation().Width / 2.f - caption->GetRect().Width / 2.f + .5f ),

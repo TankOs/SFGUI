@@ -9,6 +9,7 @@ Widget::Widget() :
 	m_visible( true ),
 	m_state( Normal ),
 	m_mouse_in( false ),
+	m_mouse_button_down( -1 ),
 	m_allocation( 0, 0, 0, 0 ),
 	m_requisition( 0, 0 ),
 	m_invalidated( false )
@@ -160,13 +161,19 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 	if( iter != m_hooks.end() ) {
 		WidgetsSet::iterator  witer( iter->second.begin() );
 		WidgetsSet::iterator  witerend( iter->second.end() );
+		WidgetsSet::iterator  wnext;
 
-		for( ; witer != witerend; ++witer ) {
+		while( witer != witerend ) {
+			wnext = witer;
+			++wnext;
+
 			result = (*witer)->HandleEvent( event );
 
 			if( result == EatEvent ) {
 				return result;
 			}
+
+			witer = wnext;
 		}
 	}
 
@@ -200,9 +207,37 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		}
 
 	}
-	else if( event.Type == sf::Event::MouseButtonPressed || event.Type == sf::Event::MouseButtonReleased ) {
-		if( GetAllocation().Contains( static_cast<float>( event.MouseButton.X ), static_cast<float>( event.MouseButton.Y ) ) ) {
-			OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+	else if( event.Type == sf::Event::MouseButtonPressed  ) {
+		// If a mouse button has already been pressed for this widget, drop further
+		// presses. This maybe needs changing, but up to now, I can't think of any
+		// cases where it would be useful to have such a functionality.
+		if( m_mouse_button_down == -1 ) {
+			if( m_mouse_in ) {
+				m_mouse_button_down = event.MouseButton.Button;
+				RegisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+
+				OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+			}
+			else {
+				return DropEvent;
+			}
+		}
+	}
+	else if( event.Type == sf::Event::MouseButtonReleased ) {
+		// Only process when mouse button has been clicked inside the widget before.
+		if( m_mouse_button_down == event.MouseButton.Button ) {
+			m_mouse_button_down = -1;
+			UnregisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+
+			// When released inside the widget, the event can be considered a click.
+			if( m_mouse_in ) {
+				OnMouseButtonClick.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+			}
+
+			OnMouseButtonRelease.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+		}
+		else if( !m_mouse_in ) {
+			return DropEvent;
 		}
 	}
 
@@ -248,6 +283,10 @@ void Widget::UnregisterEventHook( sf::Event::EventType event_type, Ptr widget ) 
 	}
 
 	m_hooks[event_type].erase( widget );
+}
+
+bool Widget::IsMouseInWidget() const {
+	return m_mouse_in;
 }
 
 }

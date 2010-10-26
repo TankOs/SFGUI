@@ -29,4 +29,10 @@ void Signal<SigType>::Connect( RetType (ClassType::*memfunc)( A1, A2, A3 ), Obje
 	Sig.connect( boost::bind( memfunc, object, _1, _2, _3 ) );
 }
 
+template <class SigType>
+template <class RetType, class ClassType, class ObjectType, class A1, class A2, class A3, class A4>
+void Signal<SigType>::Connect( RetType (ClassType::*memfunc)( A1, A2, A3, A4 ), ObjectType* object ) {
+	Sig.connect( boost::bind( memfunc, object, _1, _2, _3, _4 ) );
+}
+
 }

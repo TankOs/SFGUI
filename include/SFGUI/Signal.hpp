@@ -55,6 +55,13 @@ class Signal {
 		template <class RetType, class ClassType, class ObjectType, class A1, class A2, class A3>
 		void Connect( RetType (ClassType::*memfunc)( A1, A2, A3 ), ObjectType* object );
 
+		/** Connect signal to member function, 4 arguments.
+		 * @param memfunc Member function pointer.
+		 * @param object Pointer to class instance.
+		 */
+		template <class RetType, class ClassType, class ObjectType, class A1, class A2, class A3, class A4>
+		void Connect( RetType (ClassType::*memfunc)( A1, A2, A3, A4 ), ObjectType* object );
+
 		Type  Sig;
 };
 

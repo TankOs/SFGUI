@@ -12,6 +12,9 @@ Button::Button() :
 	OnStateChange.Connect( &Button::HandleStateChange, this );
 	OnMouseEnter.Connect( &Button::HandleMouseEnter, this );
 	OnMouseLeave.Connect( &Button::HandleMouseLeave, this );
+	OnMouseButtonClick.Connect( &Button::HandleMouseButtonClick, this );
+	OnMouseButtonPress.Connect( &Button::HandleMouseButtonPress, this );
+	OnMouseButtonRelease.Connect( &Button::HandleMouseButtonRelease, this );
 }
 
 Button::Ptr Button::Create( const sf::String& caption ) {
@@ -45,11 +48,31 @@ void Button::HandleStateChange( sfg::Widget::Ptr /*widget*/, State /*oldstate*/ 
 }
 
 void Button::HandleMouseEnter( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
-	SetState( Prelight );
+	if( GetState() != Active ) {
+		SetState( Prelight );
+	}
 }
 
 void Button::HandleMouseLeave( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
-	SetState( Normal );
+	if( GetState() != Active ) {
+		SetState( Normal );
+	}
+}
+
+void Button::HandleMouseButtonClick( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
+	if( button == sf::Mouse::Left ) {
+		OnClick.Sig( shared_from_this() );
+	}
+}
+
+void Button::HandleMouseButtonPress( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
+	if( button == sf::Mouse::Left ) {
+		SetState( Active );
+	}
+}
+
+void Button::HandleMouseButtonRelease( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button /*button*/ ) {
+	SetState( IsMouseInWidget() ? Prelight : Normal );
 }
 
 }
