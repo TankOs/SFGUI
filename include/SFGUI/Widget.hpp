@@ -8,7 +8,8 @@
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <string>
+#include <map>
+#include <set>
 
 namespace sfg {
 
@@ -26,6 +27,21 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 			Prelight, /*!< Prelight, e.g. when the mouse moves over a widget. */
 			Selected, /*!< Selected, e.g. when a list item in a list is selected. */
 			Insensitive /*!< Insensitive, disabled widget. */
+		};
+
+		/** Event handling result.
+		 * The result gives the caller information about what happened with the
+		 * event and how to go on. It can either be dropped (e.g. when a mouse move
+		 * occurs outside the widget) so that it won't get passed to children,
+		 * passed (e.g. a mouse move is inside the widget but no handler processed
+		 * it so that further processing should be continued for the children) or
+		 * eaten (e.g. button has been clicked, so no further event processing
+		 * should take place *at all*).
+		 */
+		enum HandleEventResult {
+			PassEvent = 0,
+			EatEvent,
+			DropEvent
 		};
 
 		/** Destructor.
@@ -105,6 +121,21 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		void SetParent( Widget::Ptr parent );
 
+		/** Get parent.
+		 * @return Parent.
+		 */
+		Ptr GetParent() const;
+
+		/** Set widget's state.
+		 * @param state State.
+		 */
+		void SetState( State state );
+
+		/** Get widget's state.
+		 * @return State.
+		 */
+		State GetState() const;
+
 		/** Queue resize.
 		 * Asks the parent widget to allocate more space. Container widgets can
 		 * override the method to fetch resize requests. Usually children request
@@ -119,10 +150,10 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 * containers only.
 		 * @return true when event has been processed (eaten).
 		 */
-		virtual bool HandleEvent( const sf::Event& event );
+		virtual HandleEventResult HandleEvent( const sf::Event& event );
 
 		// Signals.
-		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (new state)
+		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (old state)
 		Signal<void( Ptr )>         OnFocusChange; //!< Fired when focus grabbed or lost.
 
 		Signal<void( Ptr, sf::RenderTarget& )>  OnExpose; //!< Fired when widget is being rendered.
@@ -130,8 +161,9 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeAllocate; //!< Fired when widget's allocation changed.
 		Signal<void( Ptr, const sf::Vector2f& )>   OnSizeRequest; //!< Fired when requested a new widget's size.
 
-		Signal<void( Ptr )>         OnMouseEnter; //!< Fired when mouse entered widget.
-		Signal<void( Ptr )>         OnMouseLeave; //!< Fired when mouse left widget.
+		Signal<void( Ptr, int, int )>  OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
+		Signal<void( Ptr, int, int )>  OnMouseLeave; //!< Fired when mouse left widget. (x, y)
+		Signal<void( Ptr, int, int )>  OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
 
@@ -140,19 +172,33 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		Widget();
 
-		/** Internal grab focus method.
-		 * The request is delivered to the highest widget in the current hierarchy.
-		 * @param widget Widget that requested focus.
-		 */
-		void GrabFocus( Ptr widget );
-
 		/** Invalidate implementation (redraw internally).
 		 * Gets only called when a rendering engine has been set.
 		 * @return Pointer to new drawable -- ownership is taken by caller.
 		 */
 		virtual sf::Drawable* InvalidateImpl();
 
+		/** Register event hook.
+		 * Widgets that register an event hook get notifications of the proper
+		 * event type no matter if it fits or not. Mainly used to track the mouse
+		 * pointer when it leaves a widget.
+		 * @param event_type Type of event.
+		 * @param widget Widget that shall receive the events.
+		 */
+		void RegisterEventHook( sf::Event::EventType event_type, Ptr widget );
+
+		/** Unregister event hook.
+		 * @param event_type Type of event.
+		 * @param widget Widget that has previously registered the hook.
+		 */
+		void UnregisterEventHook( sf::Event::EventType event_type, Ptr widget );
+
 	private:
+		typedef std::set<Ptr>  WidgetsSet;
+		typedef std::map<sf::Event::EventType, WidgetsSet>  HooksMap;
+
+		void GrabFocus( Ptr widget );
+
 		Ptr  m_parent;
 
 		bool  m_sensitive;
@@ -160,12 +206,15 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Ptr   m_focus_widget;
 
 		State  m_state;
+		bool  m_mouse_in;
 
 		std::string    m_name;
 		sf::FloatRect  m_allocation;
 		sf::Vector2f   m_requisition;
 
 		bool  m_invalidated;
+
+		HooksMap  m_hooks;
 
 		mutable boost::scoped_ptr<sf::Drawable>  m_drawable;
 };

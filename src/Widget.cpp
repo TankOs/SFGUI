@@ -8,6 +8,7 @@ Widget::Widget() :
 	m_sensitive( true ),
 	m_visible( true ),
 	m_state( Normal ),
+	m_mouse_in( false ),
 	m_allocation( 0, 0, 0, 0 ),
 	m_requisition( 0, 0 ),
 	m_invalidated( false )
@@ -31,10 +32,6 @@ void Widget::SetName( const std::string& name ) {
 
 const std::string& Widget::GetName() const {
 	return m_name;
-}
-
-void Widget::GrabFocus() {
-	GrabFocus( shared_from_this() );
 }
 
 void Widget::GrabFocus( Ptr widget ) {
@@ -155,8 +152,102 @@ void Widget::QueueResize( Widget::Ptr widget ) {
 	container->QueueResize( widget );
 }
 
-bool Widget::HandleEvent( const sf::Event& /*event*/ ) {
-	return false;
+Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
+	// Hooks come first.
+	HooksMap::iterator  iter( m_hooks.find( event.Type ) );
+	HandleEventResult  result;
+
+	if( iter != m_hooks.end() ) {
+		WidgetsSet::iterator  witer( iter->second.begin() );
+		WidgetsSet::iterator  witerend( iter->second.end() );
+
+		for( ; witer != witerend; ++witer ) {
+			result = (*witer)->HandleEvent( event );
+
+			if( result == EatEvent ) {
+				return result;
+			}
+		}
+	}
+
+	if( event.Type == sf::Event::MouseMoved ) {
+		// Check if pointer inside of widget's allocation.
+		if( GetAllocation().Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
+			// Check for enter event.
+			if( m_mouse_in == false ) {
+				m_mouse_in = true;
+				OnMouseEnter.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
+
+				// Register hook to get notified when mouse leaves the widget.
+				RegisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+			}
+
+			OnMouseMove.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
+		}
+		else if( m_mouse_in == true ) { // Check for leave event.
+			m_mouse_in = false;
+			UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+
+			OnMouseLeave.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
+
+			// Mouse left the widget's region, so don't continue to pass the event to
+			// children. The event only reached the widget because the event got
+			// hooked.
+			return DropEvent;
+		}
+		else {
+			return DropEvent;
+		}
+
+	}
+	else if( event.Type == sf::Event::MouseButtonPressed || event.Type == sf::Event::MouseButtonReleased ) {
+		if( GetAllocation().Contains( static_cast<float>( event.MouseButton.X ), static_cast<float>( event.MouseButton.Y ) ) ) {
+			OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+		}
+	}
+
+	return PassEvent;
+}
+
+void Widget::SetState( State state ) {
+	State  oldstate( m_state );
+	m_state = state;
+
+	OnStateChange.Sig( shared_from_this(), oldstate );
+}
+
+Widget::State Widget::GetState() const {
+	return m_state;
+}
+
+Widget::Ptr Widget::GetParent() const {
+	return m_parent;
+}
+
+void Widget::GrabFocus() {
+	GrabFocus( shared_from_this() );
+}
+
+void Widget::RegisterEventHook( sf::Event::EventType event_type, Ptr widget ) {
+	if( m_parent ) {
+		m_parent->RegisterEventHook( event_type, widget );
+		return;
+	}
+
+	if( widget == shared_from_this() ) {
+		return;
+	}
+
+	m_hooks[event_type].insert( widget );
+}
+
+void Widget::UnregisterEventHook( sf::Event::EventType event_type, Ptr widget ) {
+	if( m_parent ) {
+		m_parent->UnregisterEventHook( event_type, widget );
+		return;
+	}
+
+	m_hooks[event_type].erase( widget );
 }
 
 }

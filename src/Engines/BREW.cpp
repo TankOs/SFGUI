@@ -22,6 +22,8 @@ BREW::BREW() :
 
 	SetProperty( "Button.border-color-light", "#cccccc" );
 	SetProperty( "Button.border-color-dark", "#555555" );
+	SetProperty( "Button.background-color", "#999999" );
+	SetProperty( "Button:prelight.background-color", "#aaaaaa" );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
@@ -112,9 +114,24 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
 	sf::Color  border_color_light( Theme::ParseColor( GetProperty( "Button.border-color-light", "#ffffff" ) ) );
 	sf::Color  border_color_dark( Theme::ParseColor( GetProperty( "Button.border-color-dark", "#000000" ) ) );
+	sf::Color  background_color( Theme::ParseColor( GetProperty( "Button.background-color", "#888888" ) ) );
+	sf::Color  prelight_background_color( Theme::ParseColor( GetProperty( "Button:prelight.background-color", "#aaaaaa" ) ) );
 	float  border_width( GetProperty( "Button.border-width", 1.f ) );
 
 	RenderQueue*  queue( new RenderQueue );
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Rectangle(
+				0.f,
+				0.f,
+				button->GetAllocation().Width,
+				button->GetAllocation().Height,
+				button->GetState() == Widget::Prelight ? prelight_background_color : background_color
+			)
+		)
+	);
+
 	queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_light, border_color_dark ) );
 
 	// Caption.

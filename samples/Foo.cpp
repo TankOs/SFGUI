@@ -13,6 +13,7 @@ int main() {
 
 	// Create widgets.
 	sfg::Window::Ptr  wndmain( sfg::Window::Create() );
+	wndmain->SetName( "wndmain" );
 	wndmain->SetTitle( L"Hello world..." );
 	wndmain->SetBorderWidth( 10.f );
 
@@ -21,6 +22,7 @@ int main() {
 
 	// Layout.
 	sfg::Box::Ptr  boxinside( sfg::Box::Create( sfg::Box::Horizontal ) );
+	boxinside->SetName( "boxinside" );
 	boxinside->SetPadding( 3.f );
 	boxinside->Pack( sfg::Button::Create( L"to work" ), false );
 	boxinside->Pack( sfg::Button::Create( L"like it's" ), true, false );
@@ -28,12 +30,14 @@ int main() {
 	boxinside->Pack( sfg::Button::Create( L"to do!" ), false );
 
 	sfg::Box::Ptr  boxsecond( sfg::Box::Create( sfg::Box::Vertical ) );
+	boxsecond->SetName( "boxsecond" );
 	boxsecond->SetPadding( 3.f );
 	boxsecond->Pack( sfg::Button::Create( L"Supi dupi" ), false );
 	boxsecond->Pack( boxinside, true );
 	boxsecond->Pack( sfg::Button::Create( L"This seems" ), false );
 
 	sfg::Box::Ptr  boxtest( sfg::Box::Create( sfg::Box::Horizontal ) );
+	boxtest->SetName( "boxtest" );
 	boxtest->SetPadding( 3.f );
 	boxtest->Pack( btntest, false );
 	boxtest->Pack( btnquit, false );
@@ -43,6 +47,10 @@ int main() {
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {
+			if( wndmain->HandleEvent( event ) ) {
+				continue;
+			}
+
 			if( event.Type == sf::Event::Closed ) {
 				window.Close();
 			}

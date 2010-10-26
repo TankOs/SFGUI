@@ -81,7 +81,14 @@ void Window::QueueResize( Widget::Ptr widget ) {
 	}
 
 	// Make sure child is in the client area.
-	widget->SetPosition( sf::Vector2f( GetAllocation().Left + border_width + GetBorderWidth(), GetAllocation().Top + border_width + title_height + GetBorderWidth() ) );
+	widget->AllocateSize(
+		sf::FloatRect(
+			GetAllocation().Left + border_width + GetBorderWidth(),
+			GetAllocation().Top + border_width + title_height + GetBorderWidth(),
+			GetAllocation().Width - 2 * border_width - 2 * GetBorderWidth(),
+			GetAllocation().Height - 2 * border_width - 2 * GetBorderWidth() - title_height
+		)
+	);
 }
 
 void Window::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {

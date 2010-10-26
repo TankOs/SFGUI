@@ -82,4 +82,26 @@ float Container::GetBorderWidth() const {
 	return m_border_width;
 }
 
+Container::HandleEventResult Container::HandleEvent( const sf::Event& event ) {
+	// Handle event for hooks and own widget first before passing it to children.
+	HandleEventResult  result( Widget::HandleEvent( event ) );
+
+	if( result != PassEvent ) {
+		return PassEvent;
+	}
+
+	WidgetsList::iterator  iter( m_children.begin() );
+	WidgetsList::iterator  iterend( m_children.end() );
+
+	for( ; iter != iterend; ++iter ) {
+		result = (*iter)->HandleEvent( event );
+		
+		if( result == EatEvent ) {
+			return EatEvent;
+		}
+	}
+
+	return PassEvent;
+}
+
 }

@@ -44,6 +44,8 @@ class SFGUI_API Container : public Widget {
 		 */
 		float GetBorderWidth() const;
 
+		HandleEventResult HandleEvent( const sf::Event& event );
+
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnAdd; //!< Fired when child added.
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnRemove; //!< Fired when child removed.
 

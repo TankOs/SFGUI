@@ -32,6 +32,10 @@ class Button : public Widget {
 	private:
 		Button();
 
+		void HandleStateChange( sfg::Widget::Ptr widget, State oldstate );
+		void HandleMouseEnter( sfg::Widget::Ptr widget, int x, int y );
+		void HandleMouseLeave( sfg::Widget::Ptr widget, int x, int y );
+
 		sf::String  m_caption;
 };
 

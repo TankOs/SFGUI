@@ -9,6 +9,9 @@ Button::Button() :
 	Widget(),
 	m_caption( L"" )
 {
+	OnStateChange.Connect( &Button::HandleStateChange, this );
+	OnMouseEnter.Connect( &Button::HandleMouseEnter, this );
+	OnMouseLeave.Connect( &Button::HandleMouseLeave, this );
 }
 
 Button::Ptr Button::Create( const sf::String& caption ) {
@@ -35,6 +38,18 @@ void Button::SetCaption( const sf::String& caption ) {
 
 const sf::String& Button::GetCaption() const {
 	return m_caption;
+}
+
+void Button::HandleStateChange( sfg::Widget::Ptr /*widget*/, State /*oldstate*/ ) {
+	Invalidate();
+}
+
+void Button::HandleMouseEnter( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+	SetState( Prelight );
+}
+
+void Button::HandleMouseLeave( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+	SetState( Normal );
 }
 
 }
