@@ -59,20 +59,22 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 	Invalidate();
 }
 
-void Widget::RequestSize( const sf::Vector2f& size ) {
-	sf::Vector2f  oldrequisition( m_requisition );
-
-	m_requisition = size;
-
+void Widget::RequestSize() {
 	if( m_parent ) {
-		Container::Ptr  container( boost::shared_dynamic_cast<Container>( m_parent ) );
-
-		if( container ) {
-			container->QueueResize( shared_from_this() );
-		}
+		m_parent->RequestSize();
 	}
+	else {
+		sf::Vector2f  requisition( GetRequisition() );
 
-	OnSizeRequest.Sig( shared_from_this(), oldrequisition );
+		sf::FloatRect  allocation(
+			GetAllocation().Left,
+			GetAllocation().Top,
+			std::max( GetAllocation().Width, requisition.x ),
+			std::max( GetAllocation().Height, requisition.y )
+		);
+
+		AllocateSize( allocation );
+	}
 }
 
 
@@ -80,9 +82,9 @@ const sf::FloatRect& Widget::GetAllocation() const {
 	return m_allocation;
 }
 
-const sf::Vector2f& Widget::GetRequisition() const {
+/*const sf::Vector2f& Widget::GetRequisition() const {
 	return m_requisition;
-}
+}*/
 
 void Widget::Expose( sf::RenderTarget& target ) {
 	if( m_invalidated ) {
@@ -138,19 +140,6 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	}
 
 	OnSizeAllocate.Sig( shared_from_this(), oldallocation );
-}
-
-void Widget::QueueResize( Widget::Ptr widget ) {
-	if( !m_parent ) {
-		return;
-	}
-
-	Container::Ptr  container( boost::shared_dynamic_cast<Container>( m_parent ) );
-	if( !container ) {
-		return;
-	}
-
-	container->QueueResize( widget );
 }
 
 Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {

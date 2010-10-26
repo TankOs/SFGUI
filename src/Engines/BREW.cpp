@@ -65,38 +65,45 @@ sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
 		)
 	);
 
-	sf::Shape*  title(
-		new sf::Shape(
-			sf::Shape::Rectangle(
-				border_width + .1f,
-				border_width + .1f,
-				window->GetAllocation().Width - 2 * border_width,
-				title_size,
-				title_background_color
-			)
-		)
-	);
-
-	sf::Text*  title_text(
-		new sf::Text(
-			window->GetTitle(),
-			sf::Font::GetDefaultFont(),
-			title_font_size
-		)
-	);
-
-	// Calculate title text position.
-	sf::Vector2f  title_position(
-		std::floor( border_width + 5.f + .5f ),
-		std::floor( border_width + ((title_size / 2.f) - (static_cast<float>( title_font_size ) / 2.f)) + .5f )
-	);
-
-	title_text->SetPosition( title_position );
-	title_text->SetColor( sf::Color( 0, 0, 0 ) );
-
 	queue->Add( background );
-	queue->Add( title );
-	queue->Add( title_text );
+
+	if( !window->HasStyle( Window::Titlebar ) ) {
+		title_size = 0;
+	}
+
+	if( title_size > 0 ) {
+		sf::Shape*  title(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					border_width + .1f,
+					border_width + .1f,
+					window->GetAllocation().Width - 2 * border_width,
+					title_size,
+					title_background_color
+				)
+			)
+		);
+
+		sf::Text*  title_text(
+			new sf::Text(
+				window->GetTitle(),
+				sf::Font::GetDefaultFont(),
+				title_font_size
+			)
+		);
+
+		// Calculate title text position.
+		sf::Vector2f  title_position(
+			std::floor( border_width + 5.f + .5f ),
+			std::floor( border_width + ((title_size / 2.f) - (static_cast<float>( title_font_size ) / 2.f)) + .5f )
+		);
+
+		title_text->SetPosition( title_position );
+		title_text->SetColor( sf::Color( 0, 0, 0 ) );
+
+		queue->Add( title );
+		queue->Add( title_text );
+	}
 
 	return queue;
 }

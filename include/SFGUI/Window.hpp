@@ -9,15 +9,22 @@
 namespace sfg {
 
 /** Window.
- * TODO: Remove slot when child gets removed.
  */
 class SFGUI_API Window : public Bin {
 	public:
 		typedef boost::shared_ptr<Window>  Ptr; //!< Shared pointer.
 
+		enum Style {
+			NoStyle = 0, //!< Transparent window.
+			Titlebar = 1 << 0, //!< Titlebar and background.
+			Resize = 2 << 0 //!< Resizable.
+		};
+
 		/** Create widget.
 		 */
 		static Ptr Create();
+
+		sf::Vector2f GetRequisition() const;
 
 		/** Set window title.
 		 * @param title Title.
@@ -34,7 +41,22 @@ class SFGUI_API Window : public Bin {
 		 */
 		sf::FloatRect GetClientRect() const;
 
-		void QueueResize( Widget::Ptr widget );
+		/** Set window style.
+		 * Can be a combination of Window::Style values.
+		 * @param style New style.
+		 */
+		void SetStyle( int style );
+
+		/** Get window style.
+		 * @return Window style.
+		 */
+		int GetStyle() const;
+
+		/** Check if the window has a specific style.
+		 * @param style Style to check.
+		 * @return true when window has desired style.
+		 */
+		bool HasStyle( Style style ) const;
 
 	protected:
 		/** Constructor.
@@ -49,6 +71,7 @@ class SFGUI_API Window : public Bin {
 
 		sf::String  m_title;
 		bool  m_skipreallocation;
+		int  m_style;
 };
 
 }

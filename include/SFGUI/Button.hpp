@@ -16,6 +16,8 @@ class Button : public Widget {
 		 */
 		static Ptr Create( const sf::String& caption = L"" );
 
+		sf::Vector2f GetRequisition() const;
+
 		/** Set caption.
 		 * @param caption Caption.
 		 */

@@ -74,7 +74,7 @@ void Container::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect&
 
 void Container::SetBorderWidth( float width ) {
 	m_border_width = width;
-	QueueResize( shared_from_this() );
+	RequestSize();
 	Invalidate();
 }
 

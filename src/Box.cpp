@@ -5,18 +5,18 @@
 
 namespace sfg {
 
-Box::Box( Orientation orientation, float padding ) :
+Box::Box( Orientation orientation, float spacing ) :
 	Container(),
 	m_orientation( orientation ),
-	m_padding( padding )
+	m_spacing( spacing )
 {
 	OnAdd.Connect( &Box::HandleAdd, this );
 	OnRemove.Connect( &Box::HandleRemove, this );
 	OnSizeAllocate.Connect( &Box::HandleSizeAllocate, this );
 }
 
-Box::Ptr Box::Create( Orientation orientation, float padding ) {
-	Box::Ptr  ptr( new Box( orientation, padding ) );
+Box::Ptr Box::Create( Orientation orientation, float spacing ) {
+	Box::Ptr  ptr( new Box( orientation, spacing ) );
 	return ptr;
 }
 
@@ -43,7 +43,7 @@ void Box::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 		return;
 	}
 
-	QueueResize( child );
+	RequestSize();
 }
 
 void Box::HandleRemove( Widget::Ptr /*widget*/, Widget::Ptr child ) {
@@ -54,41 +54,45 @@ void Box::HandleRemove( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 	}
 }
 
-void Box::QueueResize( Widget::Ptr widget ) {
-	if( widget != shared_from_this() && !IsChild( widget ) ) {
-		return;
-	}
-
-	//RequestSize( AllocateChildrenSizes() );
-	ChildrenCont::iterator  iter( m_children.begin() );
-	ChildrenCont::iterator  iterend( m_children.end() );
-	sf::Vector2f  requisition( 0.f, 0.f );
+sf::Vector2f Box::GetRequisition() const {
+	sf::Vector2f  requisition( 0, 0 );
+	ChildrenCont::const_iterator  iter( m_children.begin() );
+	ChildrenCont::const_iterator  iterend( m_children.end() );
 	unsigned int  num_visible( 0 );
 
 	for( ; iter != iterend; ++iter ) {
 		if( iter->widget->IsVisible() ) {
 			++num_visible;
+		}
 
-			if( m_orientation == Horizontal ) {
-				requisition.x += iter->widget->GetRequisition().x + GetPadding();
-				requisition.y = std::max( requisition.y, iter->widget->GetRequisition().y );
-			}
-			else {
-				requisition.x = std::max( requisition.x, iter->widget->GetRequisition().x );
-				requisition.y += iter->widget->GetRequisition().y + GetPadding();
-			}
+		sf::Vector2f  child_requisition( iter->widget->GetRequisition() );
+
+		if( m_orientation == Horizontal ) {
+			requisition.x += child_requisition.x + GetSpacing();
+			requisition.y = std::max( requisition.y, child_requisition.y );
+		}
+		else {
+			requisition.x = std::max( requisition.x, child_requisition.x );
+			requisition.y += child_requisition.y + GetSpacing();
 		}
 	}
 
 	if( num_visible > 0 ) {
 		requisition.x += GetBorderWidth() * 2;
 		requisition.y += GetBorderWidth() * 2;
+
+		if( m_orientation == Horizontal ) {
+			requisition.x -= GetSpacing();
+		}
+		else {
+			requisition.y -= GetSpacing();
+		}
 	}
-	
-	RequestSize( requisition );
+
+	return requisition;
 }
 
-sf::Vector2f Box::AllocateChildrenSizes() {
+void Box::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
 	ChildrenCont::iterator  iter( m_children.begin() );
 	ChildrenCont::iterator  iterend( m_children.end() );
 	sf::Vector2f  allocation( 0.f, 0.f );
@@ -102,6 +106,8 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 	);
 
 	for( ; iter != iterend; ++iter ) {
+		sf::Vector2f  child_requisition( iter->widget->GetRequisition() );
+
 		if( iter->expand ) {
 			++num_expand;
 		}
@@ -111,22 +117,22 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 		}
 
 		if( m_orientation == Horizontal ) {
-			requisition.x += iter->widget->GetRequisition().x;
-			requisition.y = std::max( requisition.y, iter->widget->GetRequisition().y + 2 * GetBorderWidth() );
+			requisition.x += child_requisition.x;
+			requisition.y = std::max( requisition.y, child_requisition.y + 2 * GetBorderWidth() );
 		}
 		else {
-			requisition.x = std::max( requisition.x, iter->widget->GetRequisition().x + 2 * GetBorderWidth() );
-			requisition.y += iter->widget->GetRequisition().y;
+			requisition.x = std::max( requisition.x, child_requisition.x + 2 * GetBorderWidth() );
+			requisition.y += child_requisition.y;
 		}
 	}
 
-	// Add paddings.
+	// Add spacings.
 	if( num_visible > 1 ) {
 		if( m_orientation == Horizontal ) {
-			requisition.x += static_cast<float>( num_visible - 1 ) * GetPadding();
+			requisition.x += static_cast<float>( num_visible - 1 ) * GetSpacing();
 		}
 		else {
-			requisition.y += static_cast<float>( num_visible - 1 ) * GetPadding();
+			requisition.y += static_cast<float>( num_visible - 1 ) * GetSpacing();
 		}
 	}
 
@@ -140,29 +146,27 @@ sf::Vector2f Box::AllocateChildrenSizes() {
 	}
 
 	for( iter = m_children.begin(); iter != iterend; ++iter ) {
+		if( !iter->widget->IsVisible() ) {
+			continue;
+		}
+
 		if( m_orientation == Horizontal ) {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
 			allocation.y = requisition.y - 2 * GetBorderWidth();
 
 			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
-			position.x += allocation.x + (num_visible > 1 ? GetPadding() : 0.f);
+			position.x += allocation.x + (num_visible > 1 ? GetSpacing() : 0.f);
 		}
 		else {
 			allocation.x = requisition.x - 2 * GetBorderWidth();
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
 			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
-			position.y += allocation.y + (num_visible > 1 ? GetPadding() : 0.f);
+			position.y += allocation.y + (num_visible > 1 ? GetSpacing() : 0.f);
 		}
 
 		--num_visible;
 	}
-
-	return requisition;
-}
-
-void Box::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
-	AllocateChildrenSizes();
 }
 
 Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
@@ -176,14 +180,14 @@ bool Box::ChildInfo::operator==( const ChildInfo& rhs ) const {
 	return widget == rhs.widget;
 }
 
-void Box::SetPadding( float padding ) {
-	m_padding = padding;
-	QueueResize( shared_from_this() );
+void Box::SetSpacing( float spacing ) {
+	m_spacing = spacing;
+	RequestSize();
 	Invalidate();
 }
 
-float Box::GetPadding() const {
-	return m_padding;
+float Box::GetSpacing() const {
+	return m_spacing;
 }
 
 }

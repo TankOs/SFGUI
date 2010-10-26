@@ -25,7 +25,7 @@ void Bin::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 	}
 
 	// Make sure the Bin is large enough.
-	QueueResize( child );
+	RequestSize();
 }
 
 }

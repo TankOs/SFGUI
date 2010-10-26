@@ -12,7 +12,9 @@ class SampleApp {
 		void OnAddButtonHClick( sfg::Widget::Ptr widget );
 		void OnAddButtonVClick( sfg::Widget::Ptr widget );
 		void OnNewButtonClick( sfg::Widget::Ptr widget );
+		void OnToggleTitlebarClick( sfg::Widget::Ptr widget );
 
+		sfg::Window::Ptr  m_wndmain;
 		sfg::Box::Ptr  m_boxbuttonsh;
 		sfg::Box::Ptr  m_boxbuttonsv;
 };
@@ -24,40 +26,43 @@ void SampleApp::Run() {
 	window.UseVerticalSync( true );
 
 	// Create widgets.
-	sfg::Window::Ptr  wndmain( sfg::Window::Create() );
-	wndmain->SetTitle( L"Example application" );
-	wndmain->SetBorderWidth( 10.f );
+	m_wndmain = sfg::Window::Create();
+	m_wndmain->SetTitle( L"Example application" );
+	m_wndmain->SetBorderWidth( 10.f );
 
 	sfg::Button::Ptr  btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
 	sfg::Button::Ptr  btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
+	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
-	boxtoolbar->SetPadding( 5.f );
+	boxtoolbar->SetSpacing( 5.f );
 	boxtoolbar->Pack( btnaddbuttonh, false );
 	boxtoolbar->Pack( btnaddbuttonv, false );
+	boxtoolbar->Pack( btntoggletitlebar, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
-	m_boxbuttonsh->SetPadding( 5.f );
+	m_boxbuttonsh->SetSpacing( 5.f );
 
 	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Vertical );
-	m_boxbuttonsv->SetPadding( 5.f );
+	m_boxbuttonsv->SetSpacing( 5.f );
 
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
-	boxmain->SetPadding( 5.f );
+	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( boxtoolbar, false );
-	boxmain->Pack( m_boxbuttonsh );
-	boxmain->Pack( m_boxbuttonsv );
+	boxmain->Pack( m_boxbuttonsh, false );
+	boxmain->Pack( m_boxbuttonsv, false );
 
-	wndmain->Add( boxmain );
+	m_wndmain->Add( boxmain );
 
 	// Signals.
 	btnaddbuttonh->OnClick.Connect( &SampleApp::OnAddButtonHClick, this );
 	btnaddbuttonv->OnClick.Connect( &SampleApp::OnAddButtonVClick, this );
+	btntoggletitlebar->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {
-			if( wndmain->HandleEvent( event ) == sfg::Widget::EatEvent ) {
+			if( m_wndmain->HandleEvent( event ) == sfg::Widget::EatEvent ) {
 				continue;
 			}
 
@@ -67,7 +72,7 @@ void SampleApp::Run() {
 		}
 
 		window.Clear( sf::Color( 80, 80, 80 ) );
-		wndmain->Expose( window );
+		m_wndmain->Expose( window );
 		window.Display();
 	}
 }
@@ -90,6 +95,10 @@ void SampleApp::OnNewButtonClick( sfg::Widget::Ptr widget ) {
 	sfg::Button::Ptr  button( boost::shared_dynamic_cast<sfg::Button>( widget ) );
 
 	button->SetCaption( "Ouch" );
+}
+
+void SampleApp::OnToggleTitlebarClick( sfg::Widget::Ptr /*widget*/ ) {
+	m_wndmain->SetStyle( m_wndmain->GetStyle() ^ sfg::Window::Titlebar );
 }
 
 int main() {

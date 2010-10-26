@@ -31,11 +31,7 @@ sf::Drawable* Button::InvalidateImpl() {
 
 void Button::SetCaption( const sf::String& caption ) {
 	m_caption = caption;
-
-	// Request new size.
-	sf::Vector2f  metrics( Context::Get().GetRenderEngine().GetMetrics( m_caption ) );
-	RequestSize( metrics );
-
+	RequestSize();
 	Invalidate();
 }
 
@@ -73,6 +69,10 @@ void Button::HandleMouseButtonPress( sfg::Widget::Ptr /*widget*/, int /*x*/, int
 
 void Button::HandleMouseButtonRelease( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button /*button*/ ) {
 	SetState( IsMouseInWidget() ? Prelight : Normal );
+}
+
+sf::Vector2f Button::GetRequisition() const {
+	return Context::Get().GetRenderEngine().GetMetrics( GetCaption() );
 }
 
 }

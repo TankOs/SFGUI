@@ -7,7 +7,8 @@ namespace sfg {
 
 Window::Window() :
 	Bin(),
-	m_skipreallocation( false )
+	m_skipreallocation( false ),
+	m_style( Titlebar )
 {
 	OnAdd.Connect( &Window::HandleAdd, this );
 	OnSizeAllocate.Connect( &Window::HandleSizeAllocate, this );
@@ -37,7 +38,7 @@ const sf::String& Window::GetTitle() const {
 
 sf::FloatRect Window::GetClientRect() const {
 	sf::FloatRect  clientrect( GetAllocation() );
-	float  title_height( Context::Get().GetRenderEngine().GetProperty( "Window.title-height", 15.f ) );
+	float  title_height( HasStyle( Titlebar ) ? Context::Get().GetRenderEngine().GetProperty( "Window.title-height", 15.f ) : 0.f );
 	float  border_width( Context::Get().GetRenderEngine().GetProperty( "Window.border-width", 2.f ) );
 
 	clientrect.Left += border_width + GetBorderWidth();
@@ -48,47 +49,8 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-void Window::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
-	QueueResize( child );
-}
-
-void Window::QueueResize( Widget::Ptr widget ) {
-	if( widget != shared_from_this() && !IsChild( widget ) ) {
-		return;
-	}
-
-	float  border_width( Context::Get().GetRenderEngine().GetProperty( "Window.border-width", 2.f ) );
-	float  title_height( Context::Get().GetRenderEngine().GetProperty( "Window.title-height", 15.f ) );
-
-	RequestSize(
-		sf::Vector2f(
-			widget->GetRequisition().x + 2 * border_width + 2 * GetBorderWidth(),
-			widget->GetRequisition().y + 2 * border_width + title_height + 2 * GetBorderWidth()
-		)
-	);
-
-	// Allocate size if current is smaller than requisition.
-	if( GetRequisition().x > GetAllocation().Width || GetRequisition().y > GetAllocation().Height ) {
-		m_skipreallocation = true;
-		AllocateSize(
-			sf::FloatRect(
-				GetAllocation().Left,
-				GetAllocation().Top,
-				std::max( GetRequisition().x, GetAllocation().Width ),
-				std::max( GetRequisition().y, GetAllocation().Height )
-			)
-		);
-	}
-
-	// Make sure child is in the client area.
-	widget->AllocateSize(
-		sf::FloatRect(
-			GetAllocation().Left + border_width + GetBorderWidth(),
-			GetAllocation().Top + border_width + title_height + GetBorderWidth(),
-			GetAllocation().Width - 2 * border_width - 2 * GetBorderWidth(),
-			GetAllocation().Height - 2 * border_width - 2 * GetBorderWidth() - title_height
-		)
-	);
+void Window::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr /*child*/ ) {
+	RequestSize();
 }
 
 void Window::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
@@ -100,6 +62,40 @@ void Window::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*
 	// This is only called when the window's allocation has been changed from the
 	// outside, i.e. not requested by a child.
 	GetChild()->AllocateSize( GetClientRect() );
+}
+
+void Window::SetStyle( int style ) {
+	m_style = style;
+	RequestSize();
+	InvalidateImpl();
+}
+
+int Window::GetStyle() const {
+	return m_style;
+}
+
+bool Window::HasStyle( Style style ) const {
+	return m_style & style;
+}
+
+sf::Vector2f Window::GetRequisition() const {
+	if( !GetChild() ) {
+		return sf::Vector2f( 0, 0 );
+	}
+
+	sf::Vector2f  requisition( 2 * GetBorderWidth(), 2 * GetBorderWidth() );
+
+	requisition += GetChild()->GetRequisition();
+
+	if( HasStyle( Titlebar ) ) {
+		float  visual_border_width( Context::Get().GetRenderEngine().GetProperty( "Window.border-width", 2.f ) );
+		float  title_height( Context::Get().GetRenderEngine().GetProperty( "Window.title-height", 20.f ) );
+
+		requisition.x += visual_border_width;
+		requisition.y += visual_border_width + title_height;
+	}
+
+	return requisition;
 }
 
 }

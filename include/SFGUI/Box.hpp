@@ -20,10 +20,15 @@ class Box : public Container {
 
 		/** Create box.
 		 * @param orientation Orientation.
-		 * @param padding Padding = space between widgets.
+		 * @param spacing Spacing = space between widgets.
 		 * @return Box.
 		 */
-		static Ptr Create( Orientation orientation = Horizontal, float padding = 0.f );
+		static Ptr Create( Orientation orientation = Horizontal, float spacing = 0.f );
+
+		/** Get requisition.
+		 * @return Requisition.
+		 */
+		sf::Vector2f GetRequisition() const;
 
 		/** Add a widget to the box.
 		 * @param widget Widget.
@@ -32,17 +37,15 @@ class Box : public Container {
 		 */
 		void Pack( Widget::Ptr widget, bool expand = true, bool fill = true );
 
-		/** Set padding.
-		 * @param padding Padding.
+		/** Set spacing.
+		 * @param spacing Spacing.
 		 */
-		void SetPadding( float padding );
+		void SetSpacing( float spacing );
 
-		/** Get padding.
-		 * @return Padding.
+		/** Get spacing.
+		 * @return Spacing.
 		 */
-		float GetPadding() const;
-
-		virtual void QueueResize( Widget::Ptr widget );
+		float GetSpacing() const;
 
 	private:
 		struct ChildInfo {
@@ -56,16 +59,14 @@ class Box : public Container {
 
 		typedef std::list<ChildInfo>  ChildrenCont;
 
-		Box( Orientation orientation = Horizontal, float padding = 0.f );
-
-		sf::Vector2f AllocateChildrenSizes();
+		Box( Orientation orientation = Horizontal, float spacing = 0.f );
 
 		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );
 		void HandleRemove( Widget::Ptr widget, Widget::Ptr child );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 
 		Orientation  m_orientation;
-		float  m_padding;
+		float  m_spacing;
 		ChildrenCont  m_children;
 };
 

@@ -83,10 +83,9 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		void AllocateSize( const sf::FloatRect& rect );
 
-		/** Request size (requisition).
-		 * @param rect Rect.
+		/** Request new allocation at parent.
 		 */
-		void RequestSize( const sf::Vector2f& rect );
+		void RequestSize();
 
 		/** Get allocated size (position and size).
 		 * @return Rect.
@@ -94,9 +93,9 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		const sf::FloatRect& GetAllocation() const;
 
 		/** Get requested size (requisition).
-		 * @return Rect.
+		 * @return Size.
 		 */
-		const sf::Vector2f& GetRequisition() const;
+		virtual sf::Vector2f GetRequisition() const = 0;
 
 		/** Set position.
 		 * @param position Position.
@@ -135,15 +134,6 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 * @return State.
 		 */
 		State GetState() const;
-
-		/** Queue resize.
-		 * Asks the parent widget to allocate more space. Container widgets can
-		 * override the method to fetch resize requests. Usually children request
-		 * their size with RequestSize() that is then, when possible, allocated by
-		 * the container.
-		 * @param widget Widget that requests a resize.
-		 */
-		virtual void QueueResize( Widget::Ptr widget );
 
 		/** Handle SFML event.
 		 * Handle an SFML event and fire proper signals. Normally reimplemented by
