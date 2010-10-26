@@ -9,9 +9,12 @@ class SampleApp {
 		void Run();
 
 	private:
-		void OnAddButtonClick( sfg::Widget::Ptr widget );
+		void OnAddButtonHClick( sfg::Widget::Ptr widget );
+		void OnAddButtonVClick( sfg::Widget::Ptr widget );
+		void OnNewButtonClick( sfg::Widget::Ptr widget );
 
-		sfg::Box::Ptr  m_boxbuttons;
+		sfg::Box::Ptr  m_boxbuttonsh;
+		sfg::Box::Ptr  m_boxbuttonsv;
 };
 
 void SampleApp::Run() {
@@ -25,27 +28,32 @@ void SampleApp::Run() {
 	wndmain->SetTitle( L"Example application" );
 	wndmain->SetBorderWidth( 10.f );
 
-	sfg::Button::Ptr  btnaddbutton( sfg::Button::Create( L"Add button" ) );
-	sfg::Button::Ptr  btnremovebutton( sfg::Button::Create( L"Remove button" ) );
+	sfg::Button::Ptr  btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
+	sfg::Button::Ptr  btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
 
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
 	boxtoolbar->SetPadding( 5.f );
-	boxtoolbar->Pack( btnaddbutton, false );
-	boxtoolbar->Pack( btnremovebutton, false );
+	boxtoolbar->Pack( btnaddbuttonh, false );
+	boxtoolbar->Pack( btnaddbuttonv, false );
 
-	m_boxbuttons = sfg::Box::Create( sfg::Box::Horizontal );
-	m_boxbuttons->SetPadding( 5.f );
+	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
+	m_boxbuttonsh->SetPadding( 5.f );
+
+	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Vertical );
+	m_boxbuttonsv->SetPadding( 5.f );
 
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetPadding( 5.f );
 	boxmain->Pack( boxtoolbar, false );
-	boxmain->Pack( m_boxbuttons );
+	boxmain->Pack( m_boxbuttonsh );
+	boxmain->Pack( m_boxbuttonsv );
 
 	wndmain->Add( boxmain );
 
 	// Signals.
-	btnaddbutton->OnClick.Connect( &SampleApp::OnAddButtonClick, this );
+	btnaddbuttonh->OnClick.Connect( &SampleApp::OnAddButtonHClick, this );
+	btnaddbuttonv->OnClick.Connect( &SampleApp::OnAddButtonVClick, this );
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {
@@ -64,9 +72,24 @@ void SampleApp::Run() {
 	}
 }
 
-void SampleApp::OnAddButtonClick( sfg::Widget::Ptr /*widget*/ ) {
+void SampleApp::OnAddButtonHClick( sfg::Widget::Ptr /*widget*/ ) {
+	sfg::Button::Ptr  button( sfg::Button::Create( L"<- New ->" ) );
+
+	button->OnClick.Connect( &SampleApp::OnNewButtonClick, this );
+	m_boxbuttonsh->Pack( button, true );
+}
+
+void SampleApp::OnAddButtonVClick( sfg::Widget::Ptr /*widget*/ ) {
 	sfg::Button::Ptr  button( sfg::Button::Create( L"New" ) );
-	m_boxbuttons->Pack( button, false );
+
+	button->OnClick.Connect( &SampleApp::OnNewButtonClick, this );
+	m_boxbuttonsv->Pack( button, false );
+}
+
+void SampleApp::OnNewButtonClick( sfg::Widget::Ptr widget ) {
+	sfg::Button::Ptr  button( boost::shared_dynamic_cast<sfg::Button>( widget ) );
+
+	button->SetCaption( "Ouch" );
 }
 
 int main() {
