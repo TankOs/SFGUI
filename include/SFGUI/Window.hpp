@@ -16,8 +16,10 @@ class SFGUI_API Window : public Bin {
 
 		enum Style {
 			NoStyle = 0, //!< Transparent window.
-			Titlebar = 1 << 0, //!< Titlebar and background.
-			Resize = 2 << 0 //!< Resizable.
+			Titlebar = 1 << 0, //!< Titlebar.
+			Background = 1 << 1, //!< Titlebar.
+			Resize = 1 << 2, //!< Resizable.
+			Toplevel = Titlebar | Background | Resize //!< Toplevel window.
 		};
 
 		/** Create widget.

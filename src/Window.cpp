@@ -8,7 +8,7 @@ namespace sfg {
 Window::Window() :
 	Bin(),
 	m_skipreallocation( false ),
-	m_style( Titlebar )
+	m_style( Toplevel )
 {
 	OnAdd.Connect( &Window::HandleAdd, this );
 	OnSizeAllocate.Connect( &Window::HandleSizeAllocate, this );

@@ -13,6 +13,7 @@ class SampleApp {
 		void OnAddButtonVClick( sfg::Widget::Ptr widget );
 		void OnNewButtonClick( sfg::Widget::Ptr widget );
 		void OnToggleTitlebarClick( sfg::Widget::Ptr widget );
+		void OnHideWindowClicked( sfg::Widget::Ptr widget );
 
 		sfg::Window::Ptr  m_wndmain;
 		sfg::Box::Ptr  m_boxbuttonsh;
@@ -33,6 +34,7 @@ void SampleApp::Run() {
 	sfg::Button::Ptr  btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
 	sfg::Button::Ptr  btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
 	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
+	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
@@ -40,6 +42,7 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( btnaddbuttonh, false );
 	boxtoolbar->Pack( btnaddbuttonv, false );
 	boxtoolbar->Pack( btntoggletitlebar, false );
+	boxtoolbar->Pack( btnhidewindow, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -59,6 +62,7 @@ void SampleApp::Run() {
 	btnaddbuttonh->OnClick.Connect( &SampleApp::OnAddButtonHClick, this );
 	btnaddbuttonv->OnClick.Connect( &SampleApp::OnAddButtonVClick, this );
 	btntoggletitlebar->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
+	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {
@@ -99,6 +103,10 @@ void SampleApp::OnNewButtonClick( sfg::Widget::Ptr widget ) {
 
 void SampleApp::OnToggleTitlebarClick( sfg::Widget::Ptr /*widget*/ ) {
 	m_wndmain->SetStyle( m_wndmain->GetStyle() ^ sfg::Window::Titlebar );
+}
+
+void SampleApp::OnHideWindowClicked( sfg::Widget::Ptr /*widget*/ ) {
+	m_wndmain->Show( !m_wndmain->IsVisible() );
 }
 
 int main() {

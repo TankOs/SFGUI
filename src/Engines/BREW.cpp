@@ -41,31 +41,33 @@ sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
 	sf::Uint8  shadow_alpha( static_cast<sf::Uint8>( GetProperty( "Window.shadow-alpha", 100 ) ) );
 	int        title_font_size( GetProperty( "Window.title-font-size", 10 ) );
 
-	if( border_width > 0 ) {
-		queue->Add( CreateBorder( window->GetAllocation(), border_width, border_color_light, border_color_dark ) );
-	}
+	if( window->HasStyle( Window::Background ) ) {
+		// Shadow.
+		if( shadow_distance > 0.f ) {
+			sf::Color  shadow_color( 0, 0, 0, shadow_alpha );
 
-	// Shadow.
-	if( shadow_distance > 0.f ) {
-		sf::Color  shadow_color( 0, 0, 0, shadow_alpha );
+			queue->Add( new sf::Shape( sf::Shape::Rectangle( window->GetAllocation().Width + .1f, shadow_distance + .1f, shadow_distance, window->GetAllocation().Height - shadow_distance, shadow_color ) ) ); // Right.
+			queue->Add( new sf::Shape( sf::Shape::Rectangle( shadow_distance + .1f, window->GetAllocation().Height + .1f, window->GetAllocation().Width, shadow_distance, shadow_color ) ) ); // Bottom.
+		}
 
-		queue->Add( new sf::Shape( sf::Shape::Rectangle( window->GetAllocation().Width + .1f, shadow_distance + .1f, shadow_distance, window->GetAllocation().Height - shadow_distance, shadow_color ) ) ); // Right.
-		queue->Add( new sf::Shape( sf::Shape::Rectangle( shadow_distance + .1f, window->GetAllocation().Height + .1f, window->GetAllocation().Width, shadow_distance, shadow_color ) ) ); // Bottom.
-	}
+		if( border_width > 0 ) {
+			queue->Add( CreateBorder( window->GetAllocation(), border_width, border_color_light, border_color_dark ) );
+		}
 
-	sf::Shape*  background(
-		new sf::Shape(
-			sf::Shape::Rectangle(
-				border_width + .1f,
-				border_width + .1f,
-				window->GetAllocation().Width - 2 * border_width,
-				window->GetAllocation().Height - 2 * border_width,
-				Theme::ParseColor( GetProperty( "Window.background-color", "#eeeeee" ) )
+		sf::Shape*  background(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					border_width + .1f,
+					border_width + .1f,
+					window->GetAllocation().Width - 2 * border_width,
+					window->GetAllocation().Height - 2 * border_width,
+					Theme::ParseColor( GetProperty( "Window.background-color", "#eeeeee" ) )
+				)
 			)
-		)
-	);
+		);
 
-	queue->Add( background );
+		queue->Add( background );
+	}
 
 	if( !window->HasStyle( Window::Titlebar ) ) {
 		title_size = 0;
@@ -104,6 +106,7 @@ sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
 		queue->Add( title );
 		queue->Add( title_text );
 	}
+
 
 	return queue;
 }

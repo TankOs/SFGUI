@@ -4,6 +4,7 @@
 #include <iostream>
 
 namespace sfg {
+
 Widget::Widget() :
 	m_sensitive( true ),
 	m_visible( true ),
@@ -82,10 +83,6 @@ const sf::FloatRect& Widget::GetAllocation() const {
 	return m_allocation;
 }
 
-/*const sf::Vector2f& Widget::GetRequisition() const {
-	return m_requisition;
-}*/
-
 void Widget::Expose( sf::RenderTarget& target ) {
 	if( m_invalidated ) {
 		m_invalidated = false;
@@ -143,27 +140,33 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 }
 
 Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
+	if( !IsVisible() ) {
+		return DropEvent;
+	}
+
 	// Hooks come first.
 	HooksMap::iterator  iter( m_hooks.find( event.Type ) );
-	HandleEventResult  result;
 
 	if( iter != m_hooks.end() ) {
-		WidgetsSet::iterator  witer( iter->second.begin() );
-		WidgetsSet::iterator  witerend( iter->second.end() );
-		WidgetsSet::iterator  wnext;
+		WidgetsList::iterator  w_iter( iter->second.begin() );
 
-		while( witer != witerend ) {
-			wnext = witer;
-			++wnext;
-
-			result = (*witer)->HandleEvent( event );
-
-			if( result == EatEvent ) {
-				return result;
+		while( w_iter != iter->second.end() ) {
+			// Remove hook if asked for it.
+			if( w_iter->remove == true ) {
+				w_iter = iter->second.erase( w_iter );
+				continue;
 			}
 
-			witer = wnext;
+			HandleEventResult  result( (*w_iter).widget->HandleEvent( event ) );
+
+			// Stop processing when event has been eaten.
+			if( result == EatEvent ) {
+				return EatEvent;
+			}
+
+			++w_iter;
 		}
+
 	}
 
 	if( event.Type == sf::Event::MouseMoved ) {
@@ -258,11 +261,21 @@ void Widget::RegisterEventHook( sf::Event::EventType event_type, Ptr widget ) {
 		return;
 	}
 
+	// No need to register hook for self.
 	if( widget == shared_from_this() ) {
 		return;
 	}
 
-	m_hooks[event_type].insert( widget );
+	// Check if hook for widget already registered. Clear delete flag if needed.
+	WidgetsList&  list( m_hooks[event_type] );
+	WidgetsList::iterator  iter( std::find( list.begin(), list.end(), widget ) );
+
+	if( iter != list.end() ) {
+		iter->remove = false;
+	}
+	else {
+		m_hooks[event_type].push_back( WidgetBoolPair( widget, false ) );
+	}
 }
 
 void Widget::UnregisterEventHook( sf::Event::EventType event_type, Ptr widget ) {
@@ -271,11 +284,34 @@ void Widget::UnregisterEventHook( sf::Event::EventType event_type, Ptr widget ) 
 		return;
 	}
 
-	m_hooks[event_type].erase( widget );
+	WidgetsList&  list( m_hooks[event_type] );
+	WidgetsList::iterator  iter( std::find( list.begin(), list.end(), widget ) );
+
+	if( iter != list.end() ) {
+		iter->remove = true;
+	}
 }
 
 bool Widget::IsMouseInWidget() const {
 	return m_mouse_in;
+}
+
+Widget::WidgetBoolPair::WidgetBoolPair( Ptr widget_, bool remove_ ) :
+	widget( widget_ ),
+	remove( remove_ )
+{
+}
+
+bool Widget::WidgetBoolPair::operator==( const WidgetBoolPair& rhs ) {
+	return widget == rhs.widget;
+}
+
+bool Widget::WidgetBoolPair::operator==( const Ptr& rhs ) {
+	return widget == rhs;
+}
+
+void Widget::Show( bool show ) {
+	m_visible = show;
 }
 
 }

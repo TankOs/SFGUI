@@ -17,7 +17,7 @@ void Container::Add( Widget::Ptr widget ) {
 
 	m_children.push_back( widget );
 	widget->SetParent( shared_from_this() );
-	widget->SetPosition( sf::Vector2f( GetAllocation().Left, GetAllocation().Top ) );
+	RequestSize();
 
 	OnAdd.Sig( shared_from_this(), widget );
 }
@@ -27,6 +27,8 @@ void Container::Remove( Widget::Ptr widget ) {
 
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
+		RequestSize();
+
 		OnRemove.Sig( shared_from_this(), widget );
 	}
 }

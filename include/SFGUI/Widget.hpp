@@ -9,7 +9,7 @@
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <map>
-#include <set>
+#include <list>
 
 namespace sfg {
 
@@ -57,6 +57,11 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 * @return true when visible.
 		 */
 		bool IsVisible() const;
+
+		/** Show (or hide) widget.
+		 * @param show true to show, false to hide.
+		 */
+		void Show( bool show = true );
 
 		/** Check if widget has the focus.
 		 * @return true when focussed.
@@ -190,8 +195,16 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		bool IsMouseInWidget() const;
 
 	private:
-		typedef std::set<Ptr>  WidgetsSet;
-		typedef std::map<sf::Event::EventType, WidgetsSet>  HooksMap;
+		struct WidgetBoolPair {
+			WidgetBoolPair( Ptr widget_, bool remove_ );
+			bool operator==( const WidgetBoolPair& rhs );
+			bool operator==( const Ptr& rhs );
+			Ptr  widget;
+			bool  remove;
+		};
+
+		typedef std::list<WidgetBoolPair>  WidgetsList;
+		typedef std::map<sf::Event::EventType, WidgetsList>  HooksMap;
 
 		void GrabFocus( Ptr widget );
 
