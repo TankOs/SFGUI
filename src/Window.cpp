@@ -14,6 +14,7 @@ Window::Window() :
 
 	OnAdd.Connect( &Window::HandleAdd, this );
 	OnSizeAllocate.Connect( &Window::HandleSizeAllocate, this );
+	OnDragMove.Connect( &Window::HandleDragMove, this );
 }
 
 Window::Ptr Window::Create() {
@@ -98,6 +99,17 @@ sf::Vector2f Window::GetRequisition() const {
 	}
 
 	return requisition;
+}
+
+void Window::HandleDragMove( Widget::Ptr /*widget*/, const DragInfo& drag_info ) {
+	if( HasStyle( Titlebar ) ) {
+		SetPosition(
+			sf::Vector2f(
+				GetAllocation().Left + drag_info.GetDelta().x,
+				GetAllocation().Top + drag_info.GetDelta().y
+			)
+		);
+	}
 }
 
 }

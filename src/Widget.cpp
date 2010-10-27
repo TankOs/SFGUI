@@ -145,15 +145,17 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		return DropEvent;
 	}
 
+	HandleEventResult  result( PassEvent );
+
 	if( event.Type == sf::Event::MouseMoved ) {
 		// Drag operations.
 		if( m_mouse_button_down == sf::Mouse::Left && HasFlag( Draggable ) ) {
 			if( !m_drag_info ) {
 				m_drag_info.reset( new DragInfo( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) );
-				std::cout << GetName() << " Drag starts." << std::endl;
 			}
 			else {
-				std::cout << GetName() << " Drag updated." << std::endl;
+				m_drag_info->Update( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) );
+				OnDragMove.Sig( shared_from_this(), *m_drag_info );
 			}
 		}
 
@@ -184,10 +186,10 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			// Mouse left the widget's region, so don't continue to pass the event to
 			// children. The event only reached the widget because the event got
 			// hooked.
-			return DropEvent;
+			result = DropEvent;
 		}
 		else {
-			return DropEvent;
+			result = DropEvent;
 		}
 
 	}
@@ -204,9 +206,10 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				}
 
 				OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+				result = EatEvent;
 			}
 			else {
-				return DropEvent;
+				result = DropEvent;
 			}
 		}
 	}
@@ -227,8 +230,6 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				if( m_parent ) {
 					m_parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
 				}
-
-				std::cout << GetName() << " Drag ended." << std::endl;
 			}
 
 			// When released inside the widget, the event can be considered a click.
@@ -237,13 +238,14 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			}
 
 			OnMouseButtonRelease.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+			result = EatEvent;
 		}
 		else if( !m_mouse_in ) {
-			return DropEvent;
+			result = DropEvent;
 		}
 	}
 
-	return PassEvent;
+	return result;
 }
 
 void Widget::SetState( State state ) {

@@ -55,10 +55,12 @@ void Button::HandleMouseLeave( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/
 	}
 }
 
-void Button::HandleMouseButtonClick( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
+bool Button::HandleMouseButtonClick( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
 	if( button == sf::Mouse::Left ) {
 		OnClick.Sig( shared_from_this() );
 	}
+
+	return true;
 }
 
 void Button::HandleMouseButtonPress( sfg::Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {

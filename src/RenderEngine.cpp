@@ -34,7 +34,7 @@ float RenderEngine::GetProperty( const std::string& property, float default_ ) c
 
 // TODO: Font and size.
 sf::Vector2f RenderEngine::GetMetrics( const sf::String& string ) const {
-	sf::Text  text( string );
+	sf::Text  text( string, sf::Font::GetDefaultFont(), 16.f );
 
 	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );
 }

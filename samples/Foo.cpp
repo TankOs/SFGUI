@@ -24,7 +24,7 @@ void SampleApp::Run() {
 	sf::RenderWindow  window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" );
 	sf::Event  event;
 
-	window.UseVerticalSync( true );
+	//window.UseVerticalSync( true );
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create();

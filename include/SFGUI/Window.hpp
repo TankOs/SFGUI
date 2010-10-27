@@ -70,6 +70,7 @@ class SFGUI_API Window : public Bin {
 	private:
 		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
+		void HandleDragMove( Widget::Ptr widget, const DragInfo& drag_info );
 
 		sf::String  m_title;
 		bool  m_skipreallocation;

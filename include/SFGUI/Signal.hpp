@@ -13,7 +13,7 @@ namespace sfg {
  * templates, the right one is automatically chosen if you're connecting a
  * signal to a member function.
  */
-template <class SigType>
+template <class SigType, class Combiner = boost::signals2::optional_last_value<typename boost::function_traits<SigType>::result_type> >
 class Signal {
 	public:
 		typedef boost::signals2::signal<SigType>  Type; // Signal type.

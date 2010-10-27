@@ -39,7 +39,7 @@ class Button : public Widget {
 		void HandleStateChange( sfg::Widget::Ptr widget, State oldstate );
 		void HandleMouseEnter( sfg::Widget::Ptr widget, int x, int y );
 		void HandleMouseLeave( sfg::Widget::Ptr widget, int x, int y );
-		void HandleMouseButtonClick( sfg::Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
+		bool HandleMouseButtonClick( sfg::Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		void HandleMouseButtonPress( sfg::Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		void HandleMouseButtonRelease( sfg::Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 

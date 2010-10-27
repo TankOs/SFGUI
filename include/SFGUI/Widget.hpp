@@ -3,6 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Signal.hpp>
 #include <SFGUI/DragInfo.hpp>
+#include <SFGUI/SlotResult.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
@@ -162,7 +163,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, int, int )>  OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
-		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
+		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
 
 		Signal<void( Ptr, const DragInfo& )>  OnDragStart; //!< Fired when dragging starts. (DragInfo)
 		Signal<void( Ptr, const DragInfo& )>  OnDragMove; //!< Fired when dragged. (DragInfo)
