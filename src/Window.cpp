@@ -10,6 +10,8 @@ Window::Window() :
 	m_skipreallocation( false ),
 	m_style( Toplevel )
 {
+	SetFlags( Draggable );
+
 	OnAdd.Connect( &Window::HandleAdd, this );
 	OnSizeAllocate.Connect( &Window::HandleSizeAllocate, this );
 }

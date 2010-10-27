@@ -46,6 +46,21 @@ class SFGUI_API Container : public Widget {
 
 		HandleEventResult HandleEvent( const sf::Event& event );
 
+		/** Register event hook.
+		 * Widgets that register an event hook get notifications of the proper
+		 * event type no matter if it fits or not. Mainly used to track the mouse
+		 * pointer when it leaves a widget.
+		 * @param event_type Type of event.
+		 * @param widget Widget that shall receive the events.
+		 */
+		void RegisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget );
+
+		/** Unregister event hook.
+		 * @param event_type Type of event.
+		 * @param widget Widget that has previously registered the hook.
+		 */
+		void UnregisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget );
+
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnAdd; //!< Fired when child added.
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnRemove; //!< Fired when child removed.
 
@@ -60,12 +75,27 @@ class SFGUI_API Container : public Widget {
 		WidgetsList& GetChildren();
 
 	private:
+		struct WidgetBoolPair {
+			WidgetBoolPair( Widget::Ptr widget_, bool remove_ );
+			bool operator==( const WidgetBoolPair& rhs );
+			bool operator==( const Widget::Ptr& rhs );
+			Widget::Ptr  widget;
+			bool  remove;
+		};
+
+		typedef std::list<WidgetBoolPair>  HookedWidgetsList;
+		typedef std::map<sf::Event::EventType, HookedWidgetsList>  HooksMap;
+
+		HandleEventResult ProcessHooks( const sf::Event& event );
+
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 
 		float  m_border_width;
 
 		WidgetsList  m_children;
+		HooksMap  m_hooks;
+
 };
 
 }

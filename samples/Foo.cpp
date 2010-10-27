@@ -28,6 +28,7 @@ void SampleApp::Run() {
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create();
+	m_wndmain->SetName( "wndmain" );
 	m_wndmain->SetTitle( L"Example application" );
 	m_wndmain->SetBorderWidth( 10.f );
 
@@ -38,6 +39,7 @@ void SampleApp::Run() {
 
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
+	boxtoolbar->SetName( "boxtoolbar" );
 	boxtoolbar->SetSpacing( 5.f );
 	boxtoolbar->Pack( btnaddbuttonh, false );
 	boxtoolbar->Pack( btnaddbuttonv, false );

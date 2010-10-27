@@ -85,15 +85,15 @@ float Container::GetBorderWidth() const {
 }
 
 Container::HandleEventResult Container::HandleEvent( const sf::Event& event ) {
-	// Handle event for hooks and own widget first before passing it to children.
-	HandleEventResult  result( Widget::HandleEvent( event ) );
-
-	if( result != PassEvent ) {
-		return PassEvent;
+	// Process hooks, first.
+	if( ProcessHooks( event ) == EatEvent ) {
+		return EatEvent;
 	}
 
+	// Pass event to children.
 	WidgetsList::iterator  iter( m_children.begin() );
 	WidgetsList::iterator  iterend( m_children.end() );
+	HandleEventResult  result;
 
 	for( ; iter != iterend; ++iter ) {
 		result = (*iter)->HandleEvent( event );
@@ -103,7 +103,92 @@ Container::HandleEventResult Container::HandleEvent( const sf::Event& event ) {
 		}
 	}
 
+	// Process event for own widget.
+	result = Widget::HandleEvent( event );
+	if( result != PassEvent ) {
+		return result;
+	}
+
 	return PassEvent;
 }
+
+Container::HandleEventResult Container::ProcessHooks( const sf::Event& event ) {
+	HooksMap::iterator  iter( m_hooks.find( event.Type ) );
+
+	if( iter != m_hooks.end() ) {
+		HookedWidgetsList::iterator  w_iter( iter->second.begin() );
+
+		while( w_iter != iter->second.end() ) {
+			// Remove hook if asked for it.
+			if( w_iter->remove == true ) {
+				w_iter = iter->second.erase( w_iter );
+				continue;
+			}
+
+			HandleEventResult  result( (*w_iter).widget->HandleEvent( event ) );
+
+			// Stop processing when event has been eaten.
+			if( result == EatEvent ) {
+				return EatEvent;
+			}
+
+			++w_iter;
+		}
+	}
+
+	return PassEvent;
+}
+
+void Container::RegisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget ) {
+	if( GetParent() ) {
+		GetParent()->RegisterEventHook( event_type, widget );
+		return;
+	}
+
+	// No need to register hook for self.
+	if( widget == shared_from_this() ) {
+		return;
+	}
+
+	// Check if hook for widget already registered. Clear delete flag if needed.
+	HookedWidgetsList&  list( m_hooks[event_type] );
+	HookedWidgetsList::iterator  iter( std::find( list.begin(), list.end(), widget ) );
+
+	if( iter != list.end() ) {
+		iter->remove = false;
+	}
+	else {
+		m_hooks[event_type].push_back( WidgetBoolPair( widget, false ) );
+	}
+}
+
+void Container::UnregisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget ) {
+	if( GetParent() ) {
+		GetParent()->UnregisterEventHook( event_type, widget );
+		return;
+	}
+
+	HookedWidgetsList&  list( m_hooks[event_type] );
+	HookedWidgetsList::iterator  iter( std::find( list.begin(), list.end(), widget ) );
+
+	if( iter != list.end() ) {
+		iter->remove = true;
+	}
+}
+
+Container::WidgetBoolPair::WidgetBoolPair( Widget::Ptr widget_, bool remove_ ) :
+	widget( widget_ ),
+	remove( remove_ )
+{
+}
+
+bool Container::WidgetBoolPair::operator==( const WidgetBoolPair& rhs ) {
+	return widget == rhs.widget;
+}
+
+bool Container::WidgetBoolPair::operator==( const Widget::Ptr& rhs ) {
+	return widget == rhs;
+}
+
 
 }

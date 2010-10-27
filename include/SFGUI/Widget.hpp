@@ -2,16 +2,17 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Signal.hpp>
+#include <SFGUI/DragInfo.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <map>
-#include <list>
 
 namespace sfg {
+
+class Container;
 
 /** Base class for widgets.
  */
@@ -128,7 +129,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		/** Get parent.
 		 * @return Parent.
 		 */
-		Ptr GetParent() const;
+		boost::shared_ptr<Container> GetParent() const;
 
 		/** Set widget's state.
 		 * @param state State.
@@ -163,7 +164,18 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
 		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
 
+		Signal<void( Ptr, const DragInfo& )>  OnDragStart; //!< Fired when dragging starts. (DragInfo)
+		Signal<void( Ptr, const DragInfo& )>  OnDragMove; //!< Fired when dragged. (DragInfo)
+		Signal<void( Ptr, const DragInfo& )>  OnDragEnd; //!< Fired when dragged. (DragInfo)
+
 	protected:
+		/** Several flags for widgets.
+		 */
+		enum Flags {
+			NoFlags = 0,
+			Draggable = 1
+		};
+
 		/** Constructor.
 		 */
 		Widget();
@@ -174,41 +186,25 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		virtual sf::Drawable* InvalidateImpl();
 
-		/** Register event hook.
-		 * Widgets that register an event hook get notifications of the proper
-		 * event type no matter if it fits or not. Mainly used to track the mouse
-		 * pointer when it leaves a widget.
-		 * @param event_type Type of event.
-		 * @param widget Widget that shall receive the events.
-		 */
-		void RegisterEventHook( sf::Event::EventType event_type, Ptr widget );
-
-		/** Unregister event hook.
-		 * @param event_type Type of event.
-		 * @param widget Widget that has previously registered the hook.
-		 */
-		void UnregisterEventHook( sf::Event::EventType event_type, Ptr widget );
-
 		/** Check if mouse is inside widget.
 		 * @return true if mouse is inside.
 		 */
 		bool IsMouseInWidget() const;
 
+		/** Set widget flags.
+		 * @param flags Flags.
+		 */
+		void SetFlags( int flags );
+
+		/** Check if flag set.
+		 * @return true when set.
+		 */
+		bool HasFlag( Flags flag ) const;
+
 	private:
-		struct WidgetBoolPair {
-			WidgetBoolPair( Ptr widget_, bool remove_ );
-			bool operator==( const WidgetBoolPair& rhs );
-			bool operator==( const Ptr& rhs );
-			Ptr  widget;
-			bool  remove;
-		};
-
-		typedef std::list<WidgetBoolPair>  WidgetsList;
-		typedef std::map<sf::Event::EventType, WidgetsList>  HooksMap;
-
 		void GrabFocus( Ptr widget );
 
-		Ptr  m_parent;
+		boost::shared_ptr<Container>  m_parent;
 
 		bool  m_sensitive;
 		bool  m_visible;
@@ -224,7 +220,8 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 
 		bool  m_invalidated;
 
-		HooksMap  m_hooks;
+		int  m_flags;
+		boost::scoped_ptr<DragInfo>  m_drag_info;
 
 		mutable boost::scoped_ptr<sf::Drawable>  m_drawable;
 };
