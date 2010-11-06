@@ -10,6 +10,8 @@
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/any.hpp>
+#include <map>
 
 namespace sfg {
 
@@ -149,6 +151,27 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		virtual HandleEventResult HandleEvent( const sf::Event& event );
 
+		/** Get property.
+		 * @param name Property name.
+		 * @param default_ Default value.
+		 * @return Property value or default if not set.
+		 */
+		template <typename T>
+		const T& GetProperty( const std::string& name, const T& default_ ) const;
+
+		/** Set property.
+		 * @param name Property name.
+		 * @param value Value.
+		 */
+		template <typename T>
+		void SetProperty( const std::string& name, const T& value );
+
+		/** Check if widget has a property.
+		 * @param property Name of property.
+		 * @return true if exists.
+		 */
+		bool HasProperty( const std::string& property ) const;
+
 		// Signals.
 		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (old state)
 		Signal<void( Ptr )>         OnFocusChange; //!< Fired when focus grabbed or lost.
@@ -203,6 +226,8 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		bool HasFlag( Flags flag ) const;
 
 	private:
+		typedef std::map<const std::string, boost::any> PropertiesMap;
+
 		void GrabFocus( Ptr widget );
 
 		boost::shared_ptr<Container>  m_parent;
@@ -224,7 +249,11 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		int  m_flags;
 		boost::scoped_ptr<DragInfo>  m_drag_info;
 
+		PropertiesMap  m_properties;
+
 		mutable boost::scoped_ptr<sf::Drawable>  m_drawable;
 };
 
 }
+
+#include "Widget.inl"

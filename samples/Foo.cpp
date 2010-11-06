@@ -37,6 +37,11 @@ void SampleApp::Run() {
 	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
+	btnaddbuttonh->SetProperty<std::string>( "Button.background-color", "#ff0000" );
+	btnaddbuttonh->SetProperty<std::string>( "Button:prelight.background-color", "#ff9999" );
+	btnaddbuttonv->SetProperty<std::string>( "Button.background-color", "#000055" );
+	btnaddbuttonv->SetProperty<std::string>( "Button:prelight.background-color", "#5555bb" );
+
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
 	boxtoolbar->SetName( "boxtoolbar" );

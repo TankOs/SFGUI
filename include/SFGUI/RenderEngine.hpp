@@ -3,6 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Button.hpp>
+#include <boost/any.hpp>
 #include <string>
 #include <map>
 
@@ -12,6 +13,10 @@ namespace sfg {
  */
 class SFGUI_API RenderEngine {
 	public:
+		/** Dtor.
+		 */
+		virtual ~RenderEngine();
+
 		/** Create drawable for window widgets.
 		 * @param window Widget.
 		 * @return New drawable object (unmanaged memory!).
@@ -34,33 +39,33 @@ class SFGUI_API RenderEngine {
 		 * @param property Name of property.
 		 * @param value Value.
 		 */
-		void SetProperty( const std::string& property, const std::string& value );
+		template <typename T>
+		void SetProperty( const std::string& property, const T& value );
 
 		/** Get property.
 		 * @param property Name of property.
-		 * @param default_ Returned value in case of property not found.
-		 * @return Value of property or default_.
+		 * @param default_ Default value.
+		 * @return Value or default_ in case property doesn't exist.
 		 */
-		const std::string& GetProperty( const std::string& property, const std::string& default_ ) const;
+		template <typename T>
+		const T& GetProperty( const std::string& property, const T& default_ ) const;
 
-		/** Get integer property.
-		 * @param property Name of property.
-		 * @param default_ Returned value in case of property not found.
-		 * @return Value of property or default_.
+	protected:
+		/** Utility method to get property of widget or, if it doesn't exist, of render engine.
+		 * @param widget Widget.
+		 * @param property Property name.
+		 * @param default_ Default value.
+		 * @return Widget's property value or render engine's property value or default_.
 		 */
-		int GetProperty( const std::string& property, int default_ ) const;
-
-		/** Get float property.
-		 * @param property Name of property.
-		 * @param default_ Returned value in case of property not found.
-		 * @return Value of property or default_.
-		 */
-		float GetProperty( const std::string& property, float default_ ) const;
+		template <typename T>
+		const T& GetWidgetProperty( Widget::Ptr widget, const std::string& property, const T& default_ ) const;
 
 	private:
-		typedef std::map<const std::string, std::string>  PropertiesMap;
+		typedef std::map<const std::string, boost::any>  PropertiesMap;
 
 		PropertiesMap  m_props;
 };
 
 }
+
+#include "RenderEngine.inl"

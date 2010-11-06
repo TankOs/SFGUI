@@ -283,4 +283,8 @@ bool Widget::HasFlag( Flags flag ) const {
 	return m_flags & flag;
 }
 
+bool Widget::HasProperty( const std::string& property ) const {
+	return m_properties.find( property ) != m_properties.end();
+}
+
 }
