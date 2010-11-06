@@ -105,7 +105,7 @@ void SampleApp::OnAddButtonVClick( sfg::Widget::Ptr /*widget*/ ) {
 void SampleApp::OnNewButtonClick( sfg::Widget::Ptr widget ) {
 	sfg::Button::Ptr  button( boost::shared_dynamic_cast<sfg::Button>( widget ) );
 
-	button->SetCaption( "Ouch" );
+	button->SetLabel( "Ouch" );
 }
 
 void SampleApp::OnToggleTitlebarClick( sfg::Widget::Ptr /*widget*/ ) {

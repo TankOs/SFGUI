@@ -26,8 +26,8 @@ Window::Ptr Window::Create() {
 	return window;
 }
 
-sf::Drawable* Window::InvalidateImpl() {
-	return Context::Get().GetRenderEngine().CreateWindowDrawable( boost::shared_dynamic_cast<Window>( shared_from_this() ) );
+sf::Drawable* Window::InvalidateImpl( const sf::RenderTarget& target ) {
+	return Context::Get().GetRenderEngine().CreateWindowDrawable( boost::shared_dynamic_cast<Window>( shared_from_this() ), target );
 }
 
 void Window::SetTitle( const sf::String& title ) {
@@ -70,7 +70,7 @@ void Window::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*
 void Window::SetStyle( int style ) {
 	m_style = style;
 	RequestSize();
-	InvalidateImpl();
+	Invalidate();
 }
 
 int Window::GetStyle() const {

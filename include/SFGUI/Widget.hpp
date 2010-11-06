@@ -184,8 +184,8 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, int, int )>  OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
 		Signal<void( Ptr, int, int )>  OnMouseLeave; //!< Fired when mouse left widget. (x, y)
 		Signal<void( Ptr, int, int )>  OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
-		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
-		Signal<void( Ptr, int, int, sf::Mouse::Button )>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
+		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
+		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
 		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
 
 		Signal<void( Ptr, const DragInfo& )>  OnDragStart; //!< Fired when dragging starts. (DragInfo)
@@ -208,7 +208,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 * Gets only called when a rendering engine has been set.
 		 * @return Pointer to new drawable -- ownership is taken by caller.
 		 */
-		virtual sf::Drawable* InvalidateImpl();
+		virtual sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
 
 		/** Check if mouse is inside widget.
 		 * @return true if mouse is inside.

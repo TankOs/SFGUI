@@ -19,7 +19,7 @@ const T& RenderEngine::GetProperty( const std::string& property, const T& defaul
 }
 
 template <typename T>
-const T& RenderEngine::GetWidgetProperty( Widget::Ptr widget, const std::string& property, const T& default_ ) const {
+const T& RenderEngine::GetWidgetProperty( boost::shared_ptr<Widget> widget, const std::string& property, const T& default_ ) const {
 	if( !widget->HasProperty( property ) ) {
 		return GetProperty<T>( property, default_ );
 	}

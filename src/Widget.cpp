@@ -88,7 +88,7 @@ void Widget::Expose( sf::RenderTarget& target ) {
 	if( m_invalidated ) {
 		m_invalidated = false;
 
-		m_drawable.reset( InvalidateImpl() );
+		m_drawable.reset( InvalidateImpl( target ) );
 
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAllocation().Left, GetAllocation().Top );
@@ -108,7 +108,7 @@ void Widget::Invalidate() {
 	m_invalidated = true;
 }
 
-sf::Drawable* Widget::InvalidateImpl() {
+sf::Drawable* Widget::InvalidateImpl( const sf::RenderTarget& /*target*/ ) {
 	return 0;
 }
 
@@ -205,8 +205,10 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 					m_parent->RegisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
 				}
 
-				OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
-				result = EatEvent;
+				if( OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
+					std::cout << "Eaten!" << std::endl;
+					result = EatEvent;
+				}
 			}
 			else {
 				result = DropEvent;
@@ -237,8 +239,9 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				OnMouseButtonClick.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
 			}
 
-			OnMouseButtonRelease.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
-			result = EatEvent;
+			if( OnMouseButtonRelease.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
+				result = EatEvent;
+			}
 		}
 		else if( !m_mouse_in ) {
 			result = DropEvent;

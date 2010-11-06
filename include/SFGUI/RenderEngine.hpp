@@ -1,13 +1,18 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Button.hpp>
+#include <SFGUI/Widget.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/System/String.hpp>
 #include <boost/any.hpp>
 #include <string>
 #include <map>
 
 namespace sfg {
+
+class Window;
+class Button;
+class Label;
 
 /** Abstract base class for widget rendering.
  */
@@ -19,15 +24,24 @@ class SFGUI_API RenderEngine {
 
 		/** Create drawable for window widgets.
 		 * @param window Widget.
+		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual sf::Drawable* CreateWindowDrawable( Window::Ptr window ) const = 0;
+		virtual sf::Drawable* CreateWindowDrawable( boost::shared_ptr<Window> window, const sf::RenderTarget& target ) const = 0;
 
 		/** Create drawable for button widgets.
 		 * @param button Widget.
+		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual sf::Drawable* CreateButtonDrawable( Button::Ptr button ) const = 0;
+		virtual sf::Drawable* CreateButtonDrawable( boost::shared_ptr<Button> button, const sf::RenderTarget& target ) const = 0;
+
+		/** Create drawable for label widgets.
+		 * @param label Widget.
+		 * @param target Render target the drawable is created for.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const = 0;
 
 		/** Get metrics of a text string.
 		 * @param string String.
@@ -58,7 +72,7 @@ class SFGUI_API RenderEngine {
 		 * @return Widget's property value or render engine's property value or default_.
 		 */
 		template <typename T>
-		const T& GetWidgetProperty( Widget::Ptr widget, const std::string& property, const T& default_ ) const;
+		const T& GetWidgetProperty( boost::shared_ptr<Widget> widget, const std::string& property, const T& default_ ) const;
 
 	private:
 		typedef std::map<const std::string, boost::any>  PropertiesMap;

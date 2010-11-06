@@ -1,5 +1,9 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Theme.hpp>
+#include <SFGUI/Window.hpp>
+#include <SFGUI/Button.hpp>
+#include <SFGUI/Label.hpp>
+#include <SFGUI/Scissor.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 
@@ -11,7 +15,7 @@ BREW::BREW() :
 {
 	// Set defaults.
 	SetProperty<float>( "Window.title-height", 15.f );
-	SetProperty<int>( "Window.title-font-size", 10 );
+	SetProperty<unsigned int>( "Window.title-font-size", 10 );
 	SetProperty<std::string>( "Window.title-background-color", "#999999" );
 	SetProperty<std::string>( "Window.background-color", "#888888" );
 	SetProperty<float>( "Window.border-width", 2.f );
@@ -28,19 +32,22 @@ BREW::BREW() :
 	SetProperty<std::string>( "Button.text-color", "#ffffff" );
 	SetProperty<std::string>( "Button:prelight.text-color", "#ffffff" );
 	SetProperty<std::string>( "Button:active.text-color", "#000000" );
+
+	SetProperty<std::string>( "Label.font-family", "arial.ttf" );
+	SetProperty<unsigned int>( "Label.font-size", 10 );
 }
 
-sf::Drawable* BREW::CreateWindowDrawable( Window::Ptr window ) const {
+sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window, const sf::RenderTarget& /*target*/ ) const {
 	RenderQueue*  queue( new RenderQueue );
 	sf::Color  background_color( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.background-color", "#eeeeee" ) ) );
 	sf::Color  border_color_light( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.border-color-light", "#ffffff" ) ) );
 	sf::Color  border_color_dark( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.border-color-dark", "#000000" ) ) );
 	sf::Color  title_background_color( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.title-background-color", "#999999" ) ) );
-	float      border_width( GetWidgetProperty( window, "Window.border-width", 1.f ) );
-	float      title_size( GetWidgetProperty( window, "Window.title-height", 15.f ) );
-	float      shadow_distance( GetWidgetProperty( window, "Window.shadow-distance", 2.f ) );
-	sf::Uint8  shadow_alpha( static_cast<sf::Uint8>( GetWidgetProperty( window, "Window.shadow-alpha", 100 ) ) );
-	int        title_font_size( GetWidgetProperty( window, "Window.title-font-size", 10 ) );
+	float      border_width( GetWidgetProperty<float>( window, "Window.border-width", 1.f ) );
+	float      title_size( GetWidgetProperty<float>( window, "Window.title-height", 15.f ) );
+	float      shadow_distance( GetWidgetProperty<float>( window, "Window.shadow-distance", 2.f ) );
+	sf::Uint8  shadow_alpha( GetWidgetProperty<sf::Uint8>( window, "Window.shadow-alpha", 100 ) );
+	int        title_font_size( GetWidgetProperty<unsigned int>( window, "Window.title-font-size", 10 ) );
 
 	if( window->HasStyle( Window::Background ) ) {
 		// Shadow.
@@ -126,7 +133,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	return queue;
 }
 
-sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
+sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, const sf::RenderTarget& /*target*/ ) const {
 	sf::Color  border_color_light( Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.border-color-light", "#ffffff" ) ) );
 	sf::Color  border_color_dark( Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.border-color-dark", "#000000" ) ) );
 	sf::Color  background_color( Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.background-color", "#888888" ) ) );
@@ -159,7 +166,7 @@ sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
 	queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_light, border_color_dark ) );
 
 	// Caption.
-	sf::Text*  caption( new sf::Text( button->GetCaption(), sf::Font::GetDefaultFont(), 10.f ) );
+	/*sf::Text*  caption( new sf::Text( button->GetLabel(), sf::Font::GetDefaultFont(), 10.f ) );
 
 	caption->SetColor( text_color );
 	caption->SetPosition(
@@ -169,9 +176,59 @@ sf::Drawable* BREW::CreateButtonDrawable( Button::Ptr button ) const {
 		)
 	);
 
-	queue->Add( caption );
+	queue->Add( caption );*/
 
 	return queue;
+}
+
+sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const {
+	const sf::Font&  font( LoadFontFromFile( GetWidgetProperty<std::string>( label, "Label.font-family", "arial.ttf" ) ) );
+	const unsigned int&  font_size( GetWidgetProperty<unsigned int>( label, "Label.font-size", 10 ) );
+
+	RenderQueue*  queue( new RenderQueue );
+	sf::IntRect  scree_rect(
+		0,
+		0,
+		target.GetWidth(),
+		target.GetHeight()
+	);
+
+	queue->Add(
+		new Scissor(
+			true,
+			sf::FloatRect(
+				label->GetAllocation().Left,
+				label->GetAllocation().Top,
+				label->GetAllocation().Width,
+				label->GetAllocation().Height
+			)
+		)
+	);
+
+	std::cout << label->GetAllocation().Left << ", " << label->GetAllocation().Top << ", " << label->GetAllocation().Width << ", " << label->GetAllocation().Height << std::endl;
+
+	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );
+
+	queue->Add( vis_label );
+	queue->Add( new Scissor( false ) );
+
+	return queue;
+}
+
+const sf::Font& BREW::LoadFontFromFile( const std::string& filename ) const {
+	FontsMap::const_iterator  iter( m_fonts.find( filename ) );
+
+	if( iter != m_fonts.end() ) {
+		return iter->second;
+	}
+
+	sf::Font  font;
+	if( !font.LoadFromFile( filename ) ) {
+		return sf::Font::GetDefaultFont();
+	}
+
+	m_fonts[filename] = font;
+	return m_fonts[filename];
 }
 
 }

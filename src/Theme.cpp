@@ -24,13 +24,4 @@ sf::Color Theme::ParseColor( const std::string& str, const sf::Color& default_ )
 	);
 }
 
-int Theme::ParseInt( const std::string& str, int default_ ) {
-	std::stringstream  sstr( str );
-	int  result( default_ );
-
-	sstr >> result;
-
-	return result;
-}
-
 }

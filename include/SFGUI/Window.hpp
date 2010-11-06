@@ -65,7 +65,7 @@ class SFGUI_API Window : public Bin {
 		 */
 		Window();
 
-		virtual sf::Drawable* InvalidateImpl();
+		virtual sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
 
 	private:
 		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );
