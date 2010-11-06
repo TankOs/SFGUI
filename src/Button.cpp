@@ -7,7 +7,8 @@ namespace sfg {
 
 Button::Button() :
 	Bin(),
-	m_label( Label::Create( L"" ) )
+	m_label( Label::Create( L"" ) ),
+	m_padding( 5.f )
 {
 	OnStateChange.Connect( &Button::HandleStateChange, this );
 	OnMouseEnter.Connect( &Button::HandleMouseEnter, this );
@@ -81,10 +82,10 @@ bool Button::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int /*
 
 void Button::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*old_allocation*/ ) {
 	sf::FloatRect  label_allocation(
-		GetAllocation().Left + GetBorderWidth(),
-		GetAllocation().Top + GetBorderWidth(),
-		GetAllocation().Width - 2 * GetBorderWidth(),
-		GetAllocation().Height - 2 * GetBorderWidth()
+		GetAllocation().Left + GetBorderWidth() + m_padding,
+		GetAllocation().Top + GetBorderWidth() + m_padding,
+		GetAllocation().Width - 2 * GetBorderWidth() - 2 * m_padding,
+		GetAllocation().Height - 2 * GetBorderWidth() - 2 * m_padding
 	);
 
 	m_label->AllocateSize( label_allocation );
@@ -93,10 +94,20 @@ void Button::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*
 sf::Vector2f Button::GetRequisitionImpl() const {
 	sf::Vector2f  requisition( m_label->GetRequisition() );
 
-	requisition.x += GetBorderWidth();
-	requisition.y += GetBorderWidth();
+	requisition.x += 2 * GetBorderWidth() + 2 * m_padding;
+	requisition.y += 2 * GetBorderWidth() + 2 * m_padding;
 
 	return requisition;
+}
+
+void Button::SetPadding( float padding ) {
+	m_padding = padding;
+	RequestSize();
+	Invalidate();
+}
+
+float Button::GetPadding() const {
+	return m_padding;
 }
 
 }

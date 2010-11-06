@@ -33,7 +33,7 @@ BREW::BREW() :
 	SetProperty<std::string>( "Button:active.text-color", "#000000" );
 
 	SetProperty<std::string>( "Label.font-family", "arial.ttf" );
-	SetProperty<unsigned int>( "Label.font-size", 10 );
+	SetProperty<unsigned int>( "Label.font-size", 14 );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window, const sf::RenderTarget& /*target*/ ) const {

@@ -27,6 +27,16 @@ class Button : public Bin {
 		 */
 		const sf::String& GetLabel() const;
 
+		/** Set padding.
+		 * @param padding Padding.
+		 */
+		void SetPadding( float padding );
+
+		/** Get padding.
+		 * @return Padding.
+		 */
+		float GetPadding() const;
+
 		Signal<void( Widget::Ptr )>  OnClick; //!< Fired when button clicked.
 
 	protected:
@@ -45,6 +55,7 @@ class Button : public Bin {
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& old_allocation );
 
 		Label::Ptr  m_label;
+		float m_padding;
 };
 
 }

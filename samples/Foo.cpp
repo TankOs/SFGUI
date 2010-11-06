@@ -42,6 +42,10 @@ void SampleApp::Run() {
 	btnaddbuttonv->SetProperty<std::string>( "Button.background-color", "#000055" );
 	btnaddbuttonv->SetProperty<std::string>( "Button:prelight.background-color", "#5555bb" );
 
+	btnaddbuttonh->GetChild()->SetProperty<unsigned int>( "Label.font-size", 20 );
+	btntoggletitlebar->GetChild()->SetProperty<unsigned int>( "Label.font-size", 28 );
+	btntoggletitlebar->SetPadding( 15.f );
+
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
 	boxtoolbar->SetName( "boxtoolbar" );

@@ -35,7 +35,7 @@ sf::Vector2f Label::GetRequisitionImpl() const {
 	std::string default_( "arial.ttf" );
 	const std::string& font_name( Context::Get().GetRenderEngine().GetWidgetProperty<std::string>( shared_from_this(), "Label.font", "arial.ttf" ) );
 	const sf::Font& font( Context::Get().GetRenderEngine().LoadFontFromFile( font_name ) );
-	unsigned int font_size( Context::Get().GetRenderEngine().GetWidgetProperty<unsigned int>( shared_from_this(), "Label.font", 10 ) );
+	unsigned int font_size( Context::Get().GetRenderEngine().GetWidgetProperty<unsigned int>( shared_from_this(), "Label.font-size", 10 ) );
 
 	return Context::Get().GetRenderEngine().GetTextMetrics( m_text, font, font_size );
 }
