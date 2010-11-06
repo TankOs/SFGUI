@@ -36,12 +36,23 @@ class SFGUI_API Label : public Widget {
 		 */
 		const sf::String& GetText() const;
 
+		/** Set alignment
+		 * @param alignment Alignment (0..1 for x and y).
+		 */
+		void SetAlignment( const sf::Vector2f& alignment );
+
+		/** Get alignment.
+		 * @return Alignment.
+		 */
+		const sf::Vector2f& GetAlignment() const;
+
 	protected:
 		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
 		sf::String  m_text;
+		sf::Vector2f m_alignment;
 };
 
 }
