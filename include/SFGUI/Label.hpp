@@ -36,10 +36,9 @@ class SFGUI_API Label : public Widget {
 		 */
 		const sf::String& GetText() const;
 
-		sf::Vector2f GetRequisition() const;
-
 	protected:
 		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
 		sf::String  m_text;

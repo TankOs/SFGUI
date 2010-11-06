@@ -25,11 +25,6 @@ class Box : public Container {
 		 */
 		static Ptr Create( Orientation orientation = Horizontal, float spacing = 0.f );
 
-		/** Get requisition.
-		 * @return Requisition.
-		 */
-		sf::Vector2f GetRequisition() const;
-
 		/** Add a widget to the box.
 		 * @param widget Widget.
 		 * @param expand Expand widget to highest possible size.
@@ -46,6 +41,12 @@ class Box : public Container {
 		 * @return Spacing.
 		 */
 		float GetSpacing() const;
+
+	protected:
+		/** Get requisition.
+		 * @return Requisition.
+		 */
+		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
 		struct ChildInfo {

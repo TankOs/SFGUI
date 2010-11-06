@@ -17,8 +17,6 @@ class Button : public Bin {
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
-		sf::Vector2f GetRequisition() const;
-
 		/** Set label.
 		 * @param label Label.
 		 */
@@ -33,6 +31,7 @@ class Button : public Bin {
 
 	protected:
 		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
 		Button();

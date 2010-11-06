@@ -7,11 +7,26 @@ namespace sfg {
 RenderEngine::~RenderEngine() {
 }
 
-// TODO: Font and size.
-sf::Vector2f RenderEngine::GetMetrics( const sf::String& string ) const {
-	sf::Text  text( string, sf::Font::GetDefaultFont(), 16.f );
-
+sf::Vector2f RenderEngine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) {
+	sf::Text  text( string, font, font_size );
 	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );
 }
+
+const sf::Font& RenderEngine::LoadFontFromFile( const std::string& filename ) const {
+	FontsMap::const_iterator  iter( m_fonts.find( filename ) );
+
+	if( iter != m_fonts.end() ) {
+		return iter->second;
+	}
+
+	sf::Font  font;
+	if( !font.LoadFromFile( filename ) ) {
+		return sf::Font::GetDefaultFont();
+	}
+
+	m_fonts[filename] = font;
+	return m_fonts[filename];
+}
+
 
 }

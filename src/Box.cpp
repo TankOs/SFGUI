@@ -54,7 +54,7 @@ void Box::HandleRemove( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 	}
 }
 
-sf::Vector2f Box::GetRequisition() const {
+sf::Vector2f Box::GetRequisitionImpl() const {
 	sf::Vector2f  requisition( 0, 0 );
 	ChildrenCont::const_iterator  iter( m_children.begin() );
 	ChildrenCont::const_iterator  iterend( m_children.end() );

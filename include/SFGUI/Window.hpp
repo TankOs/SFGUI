@@ -26,8 +26,6 @@ class SFGUI_API Window : public Bin {
 		 */
 		static Ptr Create();
 
-		sf::Vector2f GetRequisition() const;
-
 		/** Set window title.
 		 * @param title Title.
 		 */
@@ -66,6 +64,8 @@ class SFGUI_API Window : public Bin {
 		Window();
 
 		virtual sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+
+		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
 		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );

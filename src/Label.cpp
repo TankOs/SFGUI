@@ -31,8 +31,13 @@ sf::Drawable* Label::InvalidateImpl( const sf::RenderTarget& target ) {
 	return Context::Get().GetRenderEngine().CreateLabelDrawable( boost::shared_dynamic_cast<Label>( shared_from_this() ), target );
 }
 
-sf::Vector2f Label::GetRequisition() const {
-	return sf::Vector2f( 50, 50 );
+sf::Vector2f Label::GetRequisitionImpl() const {
+	std::string default_( "arial.ttf" );
+	const std::string& font_name( Context::Get().GetRenderEngine().GetWidgetProperty<std::string>( shared_from_this(), "Label.font", "arial.ttf" ) );
+	const sf::Font& font( Context::Get().GetRenderEngine().LoadFontFromFile( font_name ) );
+	unsigned int font_size( Context::Get().GetRenderEngine().GetWidgetProperty<unsigned int>( shared_from_this(), "Label.font", 10 ) );
+
+	return Context::Get().GetRenderEngine().GetTextMetrics( m_text, font, font_size );
 }
 
 }

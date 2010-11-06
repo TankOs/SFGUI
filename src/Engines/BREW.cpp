@@ -3,7 +3,6 @@
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Label.hpp>
-#include <SFGUI/Scissor.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 
@@ -181,54 +180,16 @@ sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, cons
 	return queue;
 }
 
-sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const {
+sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& /*target*/ ) const {
 	const sf::Font&  font( LoadFontFromFile( GetWidgetProperty<std::string>( label, "Label.font-family", "arial.ttf" ) ) );
 	const unsigned int&  font_size( GetWidgetProperty<unsigned int>( label, "Label.font-size", 10 ) );
 
-	RenderQueue*  queue( new RenderQueue );
-	sf::IntRect  scree_rect(
-		0,
-		0,
-		target.GetWidth(),
-		target.GetHeight()
-	);
-
-	queue->Add(
-		new Scissor(
-			true,
-			sf::FloatRect(
-				label->GetAllocation().Left,
-				label->GetAllocation().Top,
-				label->GetAllocation().Width,
-				label->GetAllocation().Height
-			)
-		)
-	);
-
-	std::cout << label->GetAllocation().Left << ", " << label->GetAllocation().Top << ", " << label->GetAllocation().Width << ", " << label->GetAllocation().Height << std::endl;
-
 	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );
 
+	RenderQueue*  queue( new RenderQueue );
 	queue->Add( vis_label );
-	queue->Add( new Scissor( false ) );
 
 	return queue;
-}
-
-const sf::Font& BREW::LoadFontFromFile( const std::string& filename ) const {
-	FontsMap::const_iterator  iter( m_fonts.find( filename ) );
-
-	if( iter != m_fonts.end() ) {
-		return iter->second;
-	}
-
-	sf::Font  font;
-	if( !font.LoadFromFile( filename ) ) {
-		return sf::Font::GetDefaultFont();
-	}
-
-	m_fonts[filename] = font;
-	return m_fonts[filename];
 }
 
 }

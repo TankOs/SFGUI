@@ -90,7 +90,7 @@ void Button::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*
 	m_label->AllocateSize( label_allocation );
 }
 
-sf::Vector2f Button::GetRequisition() const {
+sf::Vector2f Button::GetRequisitionImpl() const {
 	sf::Vector2f  requisition( m_label->GetRequisition() );
 
 	requisition.x += GetBorderWidth();

@@ -104,7 +104,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		/** Get requested size (requisition).
 		 * @return Size.
 		 */
-		virtual sf::Vector2f GetRequisition() const = 0;
+		const sf::Vector2f& GetRequisition() const;
 
 		/** Set position.
 		 * @param position Position.
@@ -210,6 +210,11 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		virtual sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
 
+		/** Requisition implementation (recalculate requisition).
+		 * @return New requisition.
+		 */
+		virtual sf::Vector2f GetRequisitionImpl() const = 0;
+
 		/** Check if mouse is inside widget.
 		 * @return true if mouse is inside.
 		 */
@@ -242,9 +247,10 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 
 		std::string    m_name;
 		sf::FloatRect  m_allocation;
-		sf::Vector2f   m_requisition;
+		mutable sf::Vector2f   m_requisition;
 
 		bool  m_invalidated;
+		mutable bool  m_recalc_requisition;
 
 		int  m_flags;
 		boost::scoped_ptr<DragInfo>  m_drag_info;

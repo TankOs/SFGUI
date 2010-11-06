@@ -1,7 +1,7 @@
 namespace sfg {
 
 template <typename T>
-const T& RenderEngine::GetProperty( const std::string& property, const T& default_ ) const {
+const T RenderEngine::GetProperty( const std::string& property, const T& default_ ) const {
 	PropertiesMap::const_iterator  iter( m_props.find( property ) );
 
 	if( iter == m_props.end() ) {
@@ -19,7 +19,7 @@ const T& RenderEngine::GetProperty( const std::string& property, const T& defaul
 }
 
 template <typename T>
-const T& RenderEngine::GetWidgetProperty( boost::shared_ptr<Widget> widget, const std::string& property, const T& default_ ) const {
+const T RenderEngine::GetWidgetProperty( boost::shared_ptr<const Widget> widget, const std::string& property, const T& default_ ) const {
 	if( !widget->HasProperty( property ) ) {
 		return GetProperty<T>( property, default_ );
 	}

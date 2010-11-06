@@ -3,8 +3,6 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/RenderEngine.hpp>
 #include <SFGUI/RenderQueue.hpp>
-#include <SFML/Graphics/Font.hpp>
-#include <map>
 
 namespace sfg {
 namespace eng {
@@ -30,17 +28,7 @@ class BREW : public RenderEngine {
 		 */
 		static RenderQueue* CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
 
-		/** Load a fron from file.
-		 * If the proper file was loaded before, it gets returned immediately.
-		 * @param filename Filename.
-		 * @return Font or sf::Font::GetDefaultFont() if failed to load.
-		 */
-		const sf::Font& LoadFontFromFile( const std::string& filename ) const;
-
 	private:
-		typedef std::map<const std::string, sf::Font>  FontsMap;
-
-		mutable FontsMap  m_fonts;
 };
 
 }

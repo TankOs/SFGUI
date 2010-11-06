@@ -13,7 +13,8 @@ Widget::Widget() :
 	m_mouse_button_down( -1 ),
 	m_allocation( 0, 0, 0, 0 ),
 	m_requisition( 0, 0 ),
-	m_invalidated( false ),
+	m_invalidated( true ),
+	m_recalc_requisition( true ),
 	m_flags( NoFlags )
 {
 }
@@ -62,6 +63,8 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 }
 
 void Widget::RequestSize() {
+	m_recalc_requisition = true;
+
 	if( m_parent ) {
 		m_parent->RequestSize();
 	}
@@ -206,7 +209,6 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				}
 
 				if( OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
-					std::cout << "Eaten!" << std::endl;
 					result = EatEvent;
 				}
 			}
@@ -288,6 +290,15 @@ bool Widget::HasFlag( Flags flag ) const {
 
 bool Widget::HasProperty( const std::string& property ) const {
 	return m_properties.find( property ) != m_properties.end();
+}
+
+const sf::Vector2f& Widget::GetRequisition() const {
+	if( m_recalc_requisition ) {
+		m_requisition = GetRequisitionImpl();
+		m_recalc_requisition = false;
+	}
+
+	return m_requisition;
 }
 
 }

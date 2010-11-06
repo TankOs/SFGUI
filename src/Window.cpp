@@ -81,7 +81,7 @@ bool Window::HasStyle( Style style ) const {
 	return m_style & style;
 }
 
-sf::Vector2f Window::GetRequisition() const {
+sf::Vector2f Window::GetRequisitionImpl() const {
 	if( !GetChild() ) {
 		return sf::Vector2f( 0, 0 );
 	}
