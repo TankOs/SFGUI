@@ -1,0 +1,43 @@
+SFGUI -- GUI library for SFML 2
+
+IMPORTANT: SFGUI is heavily under development, so this ReadMe is neither
+complete nor very useful. Keep in mind that code which is actively being
+developed may fail on your system or behave strangely.
+
+1. Installing
+
+Dependencies:
+	- SFML 2 (http://sfml-dev.org/)
+		There's currently no SFML 2 release, therefore you need to build from the
+		sources (use the public SVN repository).
+	- Boost (http://boost.org/)
+		In detail: Smart pointers, non-copyable, any, pointer lists, signals2,
+		bind, function.
+
+The current build system in use is SCons (http://scons.org/). It's available
+for all major platforms.
+
+To build the library together with the samples, just invoke
+
+	scons
+
+at SFGUI's root directory. The SFGUI lib is saved to lib/, the samples to
+samples/bin/. Installing the library isn't implemented at the moment, so be
+sure to copy the shared library to the proper place (or use LD_LIBRARY_PATH and
+-L for Linux/GCC).
+
+If you're using Code::Blocks, then you may want to test the experimental
+support for it. To create a project file, invoke
+
+	scons codeblocks=1
+
+Thereafter open the project which is located in build/codeblocks/SFGUI.cbp.
+
+2. Contributing/Contact
+
+Since SFGUI is true Open Source software, any help is greatly appreciated.
+However tasks should be coordinated, which works best in IRC. Join #sfml at
+irc.boxbox.org.
+
+Otherwise check the list of developers in the CONTRIB file to get some e-mail
+addresses.

@@ -7,4 +7,5 @@
 /doc/html/
 /samples/bin/
 /custom.py
+/build/codeblocks/*.cbp
 *.pyc
