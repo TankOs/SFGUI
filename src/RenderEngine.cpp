@@ -13,6 +13,10 @@ sf::Vector2f RenderEngine::GetTextMetrics( const sf::String& string, const sf::F
 }
 
 const sf::Font& RenderEngine::LoadFontFromFile( const std::string& filename ) const {
+	if( filename.empty() ) {
+		return sf::Font::GetDefaultFont();
+	}
+
 	FontsMap::const_iterator  iter( m_fonts.find( filename ) );
 
 	if( iter != m_fonts.end() ) {
