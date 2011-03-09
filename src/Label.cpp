@@ -21,6 +21,7 @@ Label::Ptr Label::Create( const sf::String& text ) {
 
 void Label::SetText( const sf::String& text ) {
 	m_text = text;
+	RequestSize();
 	Invalidate();
 }
 

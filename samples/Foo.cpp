@@ -93,16 +93,20 @@ void SampleApp::Run() {
 }
 
 void SampleApp::OnAddButtonHClick( sfg::Widget::Ptr /*widget*/ ) {
-	sfg::Button::Ptr  button( sfg::Button::Create( L"<- New ->" ) );
+	sfg::Button::Ptr  button( sfg::Button::Create( L"New ->" ) );
 
+	boost::shared_dynamic_cast<sfg::Label>( button->GetChild() )->SetAlignment( sf::Vector2f( 1.f, .5f ) );
 	button->OnClick.Connect( &SampleApp::OnNewButtonClick, this );
+
 	m_boxbuttonsh->Pack( button, true );
 }
 
 void SampleApp::OnAddButtonVClick( sfg::Widget::Ptr /*widget*/ ) {
-	sfg::Button::Ptr  button( sfg::Button::Create( L"New" ) );
+	sfg::Button::Ptr  button( sfg::Button::Create( L"<- New" ) );
 
+	boost::shared_dynamic_cast<sfg::Label>( button->GetChild() )->SetAlignment( sf::Vector2f( 0.f, .5f ) );
 	button->OnClick.Connect( &SampleApp::OnNewButtonClick, this );
+
 	m_boxbuttonsv->Pack( button, false );
 }
 

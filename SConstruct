@@ -15,8 +15,8 @@ confenv = Environment( variables = opts, ENV = {"PATH": os.environ["PATH"], "TER
 Help( opts.GenerateHelpText( confenv ) )
 
 # Default properties.
-cflags   = "-fno-strict-aliasing -Wall -Wextra -Werror -Wconversion -Wfatal-errors"
-sfmllibs = ["sfml2-system", "sfml2-window", "sfml2-graphics", "sfml2-audio"]
+cflags   = "-fno-strict-aliasing -Wall -Wextra -Werror -Wconversion -Wfatal-errors -std=c++0x"
+sfmllibs = ["sfml-system", "sfml-window", "sfml-graphics", "sfml-audio"]
 
 #cflags += " -std=c++0x -pedantic -pedantic-errors"
 
