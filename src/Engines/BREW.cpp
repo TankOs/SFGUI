@@ -13,42 +13,42 @@ BREW::BREW() :
 	RenderEngine()
 {
 	// Set defaults.
-	SetProperty<float>( "Window.Title.Height", 15.f );
-	SetProperty<unsigned int>( "Window.Title.FontSize", 10 );
-	SetProperty<std::string>( "Window.Title.BackgroundColor", "#999999" );
-	SetProperty<std::string>( "Window.BackgroundColor", "#888888" );
-	SetProperty<float>( "Window.BorderWidth", 2.f );
-	SetProperty<std::string>( "Window.LightBorderColor", "#cccccc" );
-	SetProperty<std::string>( "Window.DarkBorderColor", "#555555" );
-	SetProperty<float>( "Window.ShadowDistance", 2.f );
-	SetProperty<int>( "Window.ShadowAlpha", 100 );
+	SetProperty( "Window.Title.Height", 15.f );
+	SetProperty( "Window.Title.FontSize", 10 );
+	SetProperty( "Window.Title.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty( "Window.BackgroundColor", sf::Color( 0x88, 0x88, 0x88 ) );
+	SetProperty( "Window.BorderWidth", 2.f );
+	SetProperty( "Window.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty( "Window.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "Window.ShadowDistance", 2.f );
+	SetProperty<sf::Uint8>( "Window.ShadowAlpha", 100 );
 
-	SetProperty<std::string>( "Button.Normal.LightBorderColor", "#cccccc" );
-	SetProperty<std::string>( "Button.Normal.DarkBorderColor", "#555555" );
-	SetProperty<std::string>( "Button.Normal.BackgroundColor", "#999999" );
-	SetProperty<std::string>( "Button.Normal.TextColor", "#ffffff" );
-	SetProperty<std::string>( "Button.Prelight.BackgroundColor", "#aaaaaa" );
-	SetProperty<std::string>( "Button.Prelight.TextColor", "#000000" );
-	SetProperty<std::string>( "Button.Active.BackgroundColor", "#777777" );
-	SetProperty<std::string>( "Button.Active.TextColor", "#000000" );
-	SetProperty<std::string>( "Button.Active.LightBorderColor", "#555555" );
-	SetProperty<std::string>( "Button.Active.DarkBorderColor", "#cccccc" );
+	SetProperty( "Button.Normal.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty( "Button.Normal.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty( "Button.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
+	SetProperty( "Button.Prelight.BackgroundColor", sf::Color( 0xAA, 0xAA, 0xAA ) );
+	SetProperty( "Button.Prelight.TextColor", sf::Color( 0x00, 0x00, 0x00 ) );
+	SetProperty( "Button.Active.BackgroundColor", sf::Color( 0x77, 0x77, 0x77 ) );
+	SetProperty( "Button.Active.TextColor", sf::Color( 0x00, 0x00, 0x00 ) );
+	SetProperty( "Button.Active.LightBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "Button.Active.DarkBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 
-	SetProperty<std::string>( "Label.Font", "" );
-	SetProperty<unsigned int>( "Label.FontSize", 14 );
+	SetProperty( "Label.Font", std::string( "" ) );
+	SetProperty<unsigned int>( "Label.FontSize", 12 );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window, const sf::RenderTarget& /*target*/ ) const {
-	RenderQueue*  queue( new RenderQueue );
-	sf::Color  background_color( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.BackgroundColor", "#eeeeee" ) ) );
-	sf::Color  border_color_light( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.LightBorderColor", "#ffffff" ) ) );
-	sf::Color  border_color_dark( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.DarkBorderColor", "#000000" ) ) );
-	sf::Color  title_background_color( Theme::ParseColor( GetWidgetProperty<std::string>( window, "Window.Title.BackgroundColor", "#999999" ) ) );
-	float      border_width( GetWidgetProperty<float>( window, "Window.BorderWidth", 1.f ) );
-	float      title_size( GetWidgetProperty<float>( window, "Window.Title.Height", 15.f ) );
-	float      shadow_distance( GetWidgetProperty<float>( window, "Window.ShadowDistance", 2.f ) );
-	sf::Uint8  shadow_alpha( GetWidgetProperty<sf::Uint8>( window, "Window.ShadowAlpha", 100 ) );
-	int        title_font_size( GetWidgetProperty<unsigned int>( window, "Window.Title.FontSize", 10 ) );
+	RenderQueue* queue( new RenderQueue );
+	sf::Color background_color( GetWidgetProperty( window, "Window.BackgroundColor", sf::Color( 0xEE, 0xEE, 0xEE ) ) );
+	sf::Color border_color_light( GetWidgetProperty( window, "Window.LightBorderColor", sf::Color( 0xFF, 0xFF, 0xFF ) ) );
+	sf::Color border_color_dark( GetWidgetProperty( window, "Window.DarkBorderColor", sf::Color( 0x00, 0x00, 0x00 ) ) );
+	sf::Color title_background_color( GetWidgetProperty( window, "Window.Title.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) ) );
+	float border_width( GetWidgetProperty( window, "Window.BorderWidth", 1.f ) );
+	float title_size( GetWidgetProperty( window, "Window.Title.Height", 15.f ) );
+	float shadow_distance( GetWidgetProperty( window, "Window.ShadowDistance", 2.f ) );
+	sf::Uint8 shadow_alpha( GetWidgetProperty( window, "Window.ShadowAlpha", sf::Uint8( 100 ) ) );
+	int title_font_size( GetWidgetProperty( window, "Window.Title.FontSize", 10 ) );
 
 	if( window->HasStyle( Window::Background ) ) {
 		// Shadow.
@@ -135,21 +135,21 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 }
 
 sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, const sf::RenderTarget& /*target*/ ) const {
-	sf::Color  border_color_light( Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Normal.LightBorderColor", "#ffffff" ) ) );
-	sf::Color  border_color_dark( Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Normal.DarkBorderColor", "#000000" ) ) );
-	sf::Color  background_color( Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Normal.BackgroundColor", "#888888" ) ) );
-	sf::Color  text_color( Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Normal.TextColor", "#ffffff" ) ) );
+	sf::Color  border_color_light( GetWidgetProperty( button, "Button.Normal.LightBorderColor", sf::Color( 0xFF, 0xFF, 0xFF ) ) );
+	sf::Color  border_color_dark( GetWidgetProperty( button, "Button.Normal.DarkBorderColor", sf::Color( 0x00, 0x00, 0x00 ) ) );
+	sf::Color  background_color( GetWidgetProperty( button, "Button.Normal.BackgroundColor", sf::Color( 0x88, 0x88, 0x88 ) ) );
+	sf::Color  text_color( GetWidgetProperty( button, "Button.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) ) );
 	float  border_width( GetWidgetProperty( button, "Button.Normal.BorderWidth", 1.f ) );
 
 	if( button->GetState() == Widget::Prelight ) {
-		background_color = Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Prelight.BackgroundColor", "#888888" ) );
-		text_color = Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Prelight.TextColor", "#ffffff" ) );
+		background_color = GetWidgetProperty( button, "Button.Prelight.BackgroundColor", sf::Color( 0x88, 0x88, 0x88 ) );
+		text_color = GetWidgetProperty( button, "Button.Prelight.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
 	}
 	else if( button->GetState() == Widget::Active ) {
-		background_color = Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Active.BackgroundColor", "#ffffbb" ) );
-		text_color = Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Active.TextColor", "#000000" ) );
-		border_color_light = Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Active.LightBorderColor", "#000000" ) );
-		border_color_dark = Theme::ParseColor( GetWidgetProperty<std::string>( button, "Button.Active.DarkBorderColor", "#ffffff" ) );
+		background_color = GetWidgetProperty( button, "Button.Active.BackgroundColor", sf::Color( 0xFF, 0xFF, 0xBB ) );
+		text_color = GetWidgetProperty( button, "Button.Active.TextColor", sf::Color( 0x00, 0x00, 0x00 ) );
+		border_color_light = GetWidgetProperty( button, "Button.Active.LightBorderColor", sf::Color( 0x00, 0x00, 0x00 ) );
+		border_color_dark = GetWidgetProperty( button, "Button.Active.DarkBorderColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
 	}
 
 	RenderQueue*  queue( new RenderQueue );
@@ -172,7 +172,7 @@ sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, cons
 }
 
 sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& /*target*/ ) const {
-	const sf::Font&  font( LoadFontFromFile( GetWidgetProperty<std::string>( label, "Label.Font", "" ) ) );
+	const sf::Font&  font( LoadFontFromFile( GetWidgetProperty( label, "Label.Font", std::string() ) ) );
 	const unsigned int&  font_size( GetWidgetProperty<unsigned int>( label, "Label.FontSize", 10 ) );
 
 	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );

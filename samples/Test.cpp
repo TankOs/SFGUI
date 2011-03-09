@@ -24,6 +24,7 @@ void SampleApp::Run() {
 	sf::RenderWindow  window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" );
 	sf::Event  event;
 
+	window.SetFramerateLimit( 60 );
 	//window.UseVerticalSync( true );
 
 	// Create widgets.
@@ -37,10 +38,10 @@ void SampleApp::Run() {
 	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
-	btnaddbuttonh->SetProperty<std::string>( "Button.Normal.BackgroundColor", "#ff0000" );
-	btnaddbuttonh->SetProperty<std::string>( "Button.Hover.BackgroundColor", "#ff9999" );
-	btnaddbuttonv->SetProperty<std::string>( "Button.Normal.BackgroundColor", "#000055" );
-	btnaddbuttonv->SetProperty<std::string>( "Button.Hover.BackgroundColor", "#5555bb" );
+	btnaddbuttonh->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0xFF, 0x00, 0x00 ) );
+	btnaddbuttonh->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0xFF, 0x99, 0x99 ) );
+	btnaddbuttonv->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0x00, 0x00, 0x55 ) );
+	btnaddbuttonv->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0x55, 0x55, 0xBB ) );
 
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
