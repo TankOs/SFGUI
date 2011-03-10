@@ -1,6 +1,6 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Context.hpp>
-#include <SFGUI/RenderEngine.hpp>
+#include <SFGUI/Engine.hpp>
 #include <iostream> // XXX
 
 namespace sfg {
@@ -29,7 +29,7 @@ Button::Ptr Button::Create( const sf::String& label ) {
 }
 
 sf::Drawable* Button::InvalidateImpl( const sf::RenderTarget& target ) {
-	return Context::Get().GetRenderEngine().CreateButtonDrawable( boost::shared_dynamic_cast<Button>( shared_from_this() ), target );
+	return Context::Get().GetEngine().CreateButtonDrawable( boost::shared_dynamic_cast<Button>( shared_from_this() ), target );
 }
 
 void Button::SetLabel( const sf::String& label ) {

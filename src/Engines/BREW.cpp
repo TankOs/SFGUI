@@ -1,5 +1,4 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Theme.hpp>
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Label.hpp>
@@ -10,7 +9,7 @@ namespace sfg {
 namespace eng {
 
 BREW::BREW() :
-	RenderEngine()
+	Engine()
 {
 	// Set defaults.
 	SetProperty<float>( "Window.Title.Height", 20.f );

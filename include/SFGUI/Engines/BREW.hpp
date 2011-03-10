@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/RenderEngine.hpp>
+#include <SFGUI/Engine.hpp>
 #include <SFGUI/RenderQueue.hpp>
 
 namespace sfg {
@@ -9,7 +9,7 @@ namespace eng {
 
 /** BREW -- Basic Rendering Engine for Widget (reference implementation).
  */
-class BREW : public RenderEngine {
+class BREW : public Engine {
 	public:
 		/** Ctor.
 		 */

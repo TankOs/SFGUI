@@ -1,6 +1,5 @@
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Context.hpp>
-#include <SFGUI/RenderEngine.hpp>
 #include <iostream>
 
 namespace sfg {

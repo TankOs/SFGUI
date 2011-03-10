@@ -4,7 +4,7 @@
 
 namespace sfg {
 
-class RenderEngine;
+class Engine;
 
 /** GUI context.
  * A context saves several semi-global information for widgets, such as the
@@ -15,7 +15,7 @@ class SFGUI_API Context {
 		/** Constructor.
 		 * @param engine Rendering engine.
 		 */
-		Context( RenderEngine& engine );
+		Context( Engine& engine );
 
 		/** Get the active context.
 		 * If no custom context has been activated, the default context is returned.
@@ -35,15 +35,15 @@ class SFGUI_API Context {
 		static bool Deactivate();
 
 		/** Get render engine.
-		 * @return RenderEngine.
+		 * @return Engine.
 		 */
-		RenderEngine& GetRenderEngine() const;
+		Engine& GetEngine() const;
 
 	private:
 		static Context*  active_context;
 
 
-		RenderEngine&  m_renderengine;
+		Engine&  m_renderengine;
 };
 
 }

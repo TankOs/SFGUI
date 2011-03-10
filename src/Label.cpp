@@ -1,6 +1,6 @@
 #include <SFGUI/Label.hpp>
 #include <SFGUI/Context.hpp>
-#include <SFGUI/RenderEngine.hpp>
+#include <SFGUI/Engine.hpp>
 
 namespace sfg {
 
@@ -29,15 +29,15 @@ const sf::String& Label::GetText() const {
 }
 
 sf::Drawable* Label::InvalidateImpl( const sf::RenderTarget& target ) {
-	return Context::Get().GetRenderEngine().CreateLabelDrawable( boost::shared_dynamic_cast<Label>( shared_from_this() ), target );
+	return Context::Get().GetEngine().CreateLabelDrawable( boost::shared_dynamic_cast<Label>( shared_from_this() ), target );
 }
 
 sf::Vector2f Label::GetRequisitionImpl() const {
-	const std::string& font_name( Context::Get().GetRenderEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
-	const sf::Font& font( Context::Get().GetRenderEngine().LoadFontFromFile( font_name ) );
-	unsigned int font_size( Context::Get().GetRenderEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
+	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
 
-	return Context::Get().GetRenderEngine().GetTextMetrics( m_text, font, font_size );
+	return Context::Get().GetEngine().GetTextMetrics( m_text, font, font_size );
 }
 
 void Label::SetAlignment( const sf::Vector2f& alignment ) {

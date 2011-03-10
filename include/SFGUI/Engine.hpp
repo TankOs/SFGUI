@@ -17,11 +17,11 @@ class Label;
 
 /** Abstract base class for widget rendering.
  */
-class SFGUI_API RenderEngine {
+class SFGUI_API Engine {
 	public:
 		/** Dtor.
 		 */
-		virtual ~RenderEngine();
+		virtual ~Engine();
 
 		/** Create drawable for window widgets.
 		 * @param window Widget.
@@ -85,4 +85,4 @@ class SFGUI_API RenderEngine {
 
 }
 
-#include "RenderEngine.inl"
+#include "Engine.inl"

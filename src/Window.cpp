@@ -1,5 +1,5 @@
 #include <SFGUI/Window.hpp>
-#include <SFGUI/RenderEngine.hpp>
+#include <SFGUI/Engine.hpp>
 #include <SFGUI/Context.hpp>
 #include <iostream>
 
@@ -27,7 +27,7 @@ Window::Ptr Window::Create() {
 }
 
 sf::Drawable* Window::InvalidateImpl( const sf::RenderTarget& target ) {
-	return Context::Get().GetRenderEngine().CreateWindowDrawable( boost::shared_dynamic_cast<Window>( shared_from_this() ), target );
+	return Context::Get().GetEngine().CreateWindowDrawable( boost::shared_dynamic_cast<Window>( shared_from_this() ), target );
 }
 
 void Window::SetTitle( const sf::String& title ) {
@@ -41,8 +41,8 @@ const sf::String& Window::GetTitle() const {
 
 sf::FloatRect Window::GetClientRect() const {
 	sf::FloatRect  clientrect( GetAllocation() );
-	float  title_height( HasStyle( Titlebar ) ? Context::Get().GetRenderEngine().GetProperty<float>( "Window.Title.Height" ) : 0.f );
-	float  border_width( Context::Get().GetRenderEngine().GetProperty<float>( "Window.BorderWidth" ) );
+	float  title_height( HasStyle( Titlebar ) ? Context::Get().GetEngine().GetProperty<float>( "Window.Title.Height" ) : 0.f );
+	float  border_width( Context::Get().GetEngine().GetProperty<float>( "Window.BorderWidth" ) );
 
 	clientrect.Left += border_width + GetBorderWidth();
 	clientrect.Top += title_height + border_width + GetBorderWidth();
@@ -91,8 +91,8 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 	requisition += GetChild()->GetRequisition();
 
 	if( HasStyle( Titlebar ) ) {
-		float  visual_border_width( Context::Get().GetRenderEngine().GetProperty<float>( "Window.BorderWidth", shared_from_this() ) );
-		float  title_height( Context::Get().GetRenderEngine().GetProperty<float>( "Window.Title.Height", shared_from_this() ) );
+		float  visual_border_width( Context::Get().GetEngine().GetProperty<float>( "Window.BorderWidth", shared_from_this() ) );
+		float  title_height( Context::Get().GetEngine().GetProperty<float>( "Window.Title.Height", shared_from_this() ) );
 
 		requisition.x += visual_border_width;
 		requisition.y += visual_border_width + title_height;

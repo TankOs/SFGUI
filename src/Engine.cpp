@@ -1,18 +1,19 @@
-#include <SFGUI/RenderEngine.hpp>
+#include <SFGUI/Engine.hpp>
+
 #include <SFML/Graphics/Text.hpp>
 #include <sstream>
 
 namespace sfg {
 
-RenderEngine::~RenderEngine() {
+Engine::~Engine() {
 }
 
-sf::Vector2f RenderEngine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) {
+sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) {
 	sf::Text  text( string, font, font_size );
 	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );
 }
 
-const sf::Font& RenderEngine::LoadFontFromFile( const std::string& filename ) const {
+const sf::Font& Engine::LoadFontFromFile( const std::string& filename ) const {
 	if( filename.empty() ) {
 		return sf::Font::GetDefaultFont();
 	}
