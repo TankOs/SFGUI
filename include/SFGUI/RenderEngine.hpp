@@ -61,11 +61,10 @@ class SFGUI_API RenderEngine {
 
 		/** Get property.
 		 * @param property Name of property.
-		 * @param default_ Default value.
-		 * @return Value or default_ in case property doesn't exist.
+		 * @return Value or T() in case property doesn't exist.
 		 */
 		template <typename T>
-		const T GetProperty( const std::string& property, const T& default_ ) const;
+		const T& GetProperty( const std::string& property ) const;
 
 		/** Load a fron from file.
 		 * If the proper file was loaded before, it gets returned immediately.
@@ -77,11 +76,10 @@ class SFGUI_API RenderEngine {
 		/** Utility method to get property of widget or, if it doesn't exist, of render engine.
 		 * @param widget Widget.
 		 * @param property Property name.
-		 * @param default_ Default value.
-		 * @return Widget's property value or render engine's property value or default_.
+		 * @return Widget's property value or render engine's property value or T().
 		 */
 		template <typename T>
-		const T GetWidgetProperty( boost::shared_ptr<const Widget> widget, const std::string& property, const T& default_ ) const;
+		const T GetWidgetProperty( boost::shared_ptr<const Widget> widget, const std::string& property ) const;
 
 	private:
 		typedef std::map<const std::string, boost::any>  PropertiesMap;

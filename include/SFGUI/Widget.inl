@@ -1,7 +1,8 @@
 namespace sfg {
 
 template <typename T>
-const T& Widget::GetProperty( const std::string& name, const T& default_ ) const {
+const T& Widget::GetProperty( const std::string& name ) const {
+	static const T default_ = T();
 	PropertiesMap::const_iterator  iter( m_properties.find( name ) );
 
 	if( iter == m_properties.end() ) {

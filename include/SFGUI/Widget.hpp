@@ -153,11 +153,10 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 
 		/** Get property.
 		 * @param name Property name.
-		 * @param default_ Default value.
-		 * @return Property value or default if not set.
+		 * @return Property value or T() if not set.
 		 */
 		template <typename T>
-		const T& GetProperty( const std::string& name, const T& default_ ) const;
+		const T& GetProperty( const std::string& name ) const;
 
 		/** Set property.
 		 * @param name Property name.
