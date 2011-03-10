@@ -91,8 +91,8 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 	requisition += GetChild()->GetRequisition();
 
 	if( HasStyle( Titlebar ) ) {
-		float  visual_border_width( Context::Get().GetRenderEngine().GetWidgetProperty<float>( shared_from_this(), "Window.BorderWidth" ) );
-		float  title_height( Context::Get().GetRenderEngine().GetWidgetProperty<float>( shared_from_this(), "Window.Title.Height" ) );
+		float  visual_border_width( Context::Get().GetRenderEngine().GetProperty<float>( "Window.BorderWidth", shared_from_this() ) );
+		float  title_height( Context::Get().GetRenderEngine().GetProperty<float>( "Window.Title.Height", shared_from_this() ) );
 
 		requisition.x += visual_border_width;
 		requisition.y += visual_border_width + title_height;
