@@ -36,6 +36,10 @@ BREW::BREW() :
 
 	SetProperty<std::string>( "Label.Font", "" );
 	SetProperty<unsigned int>( "Label.FontSize", 12 );
+
+	// Register property types.
+	RegisterProperty( "Button.Normal.BackgroundColor", Color );
+	RegisterProperty( "Window.Title.FontSize", UnsignedInteger );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window, const sf::RenderTarget& /*target*/ ) const {

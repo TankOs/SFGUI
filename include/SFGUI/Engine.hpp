@@ -19,6 +19,17 @@ class Label;
  */
 class SFGUI_API Engine {
 	public:
+		/** Property type.
+		 */
+		enum PropertyType {
+			Integer = 0,
+			UnsignedInteger,
+			Float,
+			String,
+			Color,
+			Undefined = -1
+		};
+
 		/** Dtor.
 		 */
 		virtual ~Engine();
@@ -75,12 +86,29 @@ class SFGUI_API Engine {
 		 */
 		const sf::Font& LoadFontFromFile( const std::string& filename ) const;
 
-	private:
-		typedef std::map<const std::string, boost::any>  PropertiesMap;
-		typedef std::map<const std::string, sf::Font>  FontsMap;
+		/** Get type of registered property.
+		 * @param name Property name.
+		 * @return Type or Undefined if not set.
+		 */
+		PropertyType GetPropertyType( const std::string& name ) const;
 
-		PropertiesMap  m_props;
-		mutable FontsMap  m_fonts;
+	protected:
+		/** Register property string and type.
+		 * This is mainly used by theme loaders to determine what properties exist
+		 * with what types.
+		 * @param name Property name.
+		 * @param type Type.
+		 */
+		void RegisterProperty( const std::string& name, PropertyType type );
+
+	private:
+		typedef std::map<const std::string, boost::any> PropertiesMap;
+		typedef std::map<const std::string, PropertyType> PropertyTypesMap;
+		typedef std::map<const std::string, sf::Font> FontsMap;
+
+		PropertiesMap m_props;
+		PropertyTypesMap m_prop_types;
+		mutable FontsMap m_fonts;
 };
 
 }

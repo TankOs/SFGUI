@@ -2,6 +2,10 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Engines/BREW.hpp>
+//#include <SFGUI/Loaders/YAML.hpp>
+#include <SFGUI/ThemeLoader.hpp>
+#include <SFGUI/Context.hpp>
+
 #include <SFML/Graphics.hpp>
 
 class SampleApp {
@@ -71,6 +75,10 @@ void SampleApp::Run() {
 	btnaddbuttonv->OnClick.Connect( &SampleApp::OnAddButtonVClick, this );
 	btntoggletitlebar->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
 	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
+
+	// Load theme.
+	//sfg::ThemeLoader::LoadFromFile<sfg::loaders::YAML>( "data/default.yaml", sfg::Context::Get().GetEngine() );
+	// TODO: Reinvalidate widgets when loading theme.
 
 	while( window.IsOpened() ) {
 		while( window.GetEvent( event ) ) {
