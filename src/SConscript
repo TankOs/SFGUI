@@ -7,8 +7,10 @@ Import( "confenv" )
 # Configuration.
 sourcefiles = Glob( "*.cpp" )
 sourcefiles += Glob( "Engines/*.cpp" )
+sourcefiles += Glob( "Loaders/*.cpp" )
+sourcefiles += Glob( "../ext/yaml-cpp-0.2.5/src/*.cpp" )
 
-incpaths     = ["../include/"]
+incpaths     = ["../include/", "../ext/yaml-cpp-0.2.5/include/"]
 libpaths     = []
 addtlibs     = []
 bintarget    = "../lib/sfgui"

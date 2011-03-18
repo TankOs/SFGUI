@@ -33,5 +33,18 @@ const sf::Font& Engine::LoadFontFromFile( const std::string& filename ) const {
 	return m_fonts[filename];
 }
 
+void Engine::RegisterProperty( const std::string& name, PropertyType type ) {
+	m_prop_types[name] = type;
+}
+
+Engine::PropertyType Engine::GetPropertyType( const std::string& name ) const {
+	PropertyTypesMap::const_iterator iter( m_prop_types.find( name ) );
+
+	if( iter == m_prop_types.end() ) {
+		return Undefined;
+	}
+
+	return iter->second;
+}
 
 }
