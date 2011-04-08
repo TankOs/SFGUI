@@ -178,6 +178,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, sf::RenderTarget& )>  OnExpose; //!< Fired when widget is being rendered.
 
 		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeAllocate; //!< Fired when widget's allocation changed.
+		Signal<void( Ptr, const sf::FloatRect& )>  OnPositionChange; //!< Fired when widget's position changed.
 		Signal<void( Ptr, const sf::Vector2f& )>   OnSizeRequest; //!< Fired when requested a new widget's size.
 
 		Signal<void( Ptr, int, int )>  OnMouseEnter; //!< Fired when mouse entered widget. (x, y)

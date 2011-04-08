@@ -8,6 +8,7 @@ Container::Container() :
 {
 	OnExpose.Connect( &Container::HandleExpose, this );
 	OnSizeAllocate.Connect( &Container::HandleSizeAllocate, this );
+	OnPositionChange.Connect( &Container::HandlePositionChange, this );
 }
 
 void Container::Add( Widget::Ptr widget ) {
@@ -137,6 +138,22 @@ Container::HandleEventResult Container::ProcessHooks( const sf::Event& event ) {
 	}
 
 	return PassEvent;
+}
+
+void Container::HandlePositionChange( Widget::Ptr /*widget*/, const sf::FloatRect& oldallocation ) {
+	// Move all children by difference of new and old position.
+	sf::Vector2f delta( GetAllocation().Left - oldallocation.Left, GetAllocation().Top - oldallocation.Top );
+	WidgetsList::iterator iter( m_children.begin() );
+	WidgetsList::iterator iter_end( m_children.end() );
+
+	for( ; iter != iter_end; ++iter ) {
+		(*iter)->SetPosition(
+			sf::Vector2f(
+				(*iter)->GetAllocation().Left + delta.x,
+				(*iter)->GetAllocation().Top + delta.y
+			)
+		);
+	}
 }
 
 void Container::RegisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget ) {

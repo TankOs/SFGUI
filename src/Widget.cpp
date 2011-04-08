@@ -140,7 +140,7 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 		m_drawable->SetPosition( position );
 	}
 
-	OnSizeAllocate.Sig( shared_from_this(), oldallocation );
+	OnPositionChange.Sig( shared_from_this(), oldallocation );
 }
 
 Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {

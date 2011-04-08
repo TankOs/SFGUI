@@ -90,6 +90,7 @@ class SFGUI_API Container : public Widget {
 
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
+		void HandlePositionChange( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 
 		float  m_border_width;
 

@@ -53,6 +53,7 @@ class Button : public Bin {
 		bool HandleMouseButtonPress( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		bool HandleMouseButtonRelease( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& old_allocation );
+		void HandlePositionChange( Widget::Ptr widget, const sf::FloatRect& old_allocation );
 
 		Label::Ptr  m_label;
 		float m_padding;
