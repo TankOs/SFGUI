@@ -81,7 +81,7 @@ void SampleApp::Run() {
 	// TODO: Reinvalidate widgets when loading theme.
 
 	while( window.IsOpened() ) {
-		while( window.GetEvent( event ) ) {
+		while( window.PollEvent( event ) ) {
 			if( m_wndmain->HandleEvent( event ) == sfg::Widget::EatEvent ) {
 				continue;
 			}
