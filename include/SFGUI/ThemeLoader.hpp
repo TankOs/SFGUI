@@ -23,8 +23,8 @@ class SFGUI_API ThemeLoader {
 
 	private:
 		struct Observer : public KeyValueLoader::Observer {
-			inline Observer( Engine& engine_ );
-			inline void operator()( const std::string& key, const std::string& value );
+			Observer( Engine& engine_ );
+			void operator()( const std::string& key, const std::string& value );
 
 			Engine& engine;
 		};
