@@ -195,38 +195,38 @@ sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, c
 	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "TextBox.Font", textbox ) ) );
 	const unsigned int&  font_size( GetProperty<unsigned int>( "TextBox.FontSize", textbox ) );
 
-    RenderQueue* queue( new RenderQueue );
+	RenderQueue* queue( new RenderQueue );
 
-    sf::FloatRect textalloc = textbox->GetAllocation();
-    textalloc.Height = font_size * 1.4f;
+	sf::FloatRect textalloc = textbox->GetAllocation();
+	textalloc.Height = font_size * 1.4f;
 
-    queue->Add(
-        new sf::Shape(
-            sf::Shape::Rectangle(
-                0.f, 0.f,
-                textalloc.Width,
-                textalloc.Height,
-                background_color)));
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Rectangle(
+				0.f, 0.f,
+				textalloc.Width,
+				textalloc.Height,
+				background_color)));
 
 
-    queue->Add(
-        CreateBorder(
-            textalloc, border_width, border_color_dark, border_color_light));
+	queue->Add(
+		CreateBorder(
+			textalloc, border_width, border_color_dark, border_color_light));
 
 
 	sf::Text*  vis_label( new sf::Text( textbox->GetText(), font, font_size ) );
 
 	queue->Add( vis_label );
 
-    float cursorx = GetTextMetrics(textbox->GetLeft(), font, font_size ).x;
-    float cursorheight = GetTextMetrics(textbox->GetText(), font, font_size).y;
+	float cursorx = GetTextMetrics(textbox->GetLeft(), font, font_size ).x;
+	float cursorheight = GetTextMetrics(textbox->GetText(), font, font_size).y;
 
-    queue->Add(
-        new sf::Shape(
-            sf::Shape::Line(
-                cursorx, 0.f,
-                cursorx, cursorheight,
-                2, cursor_color)));
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				cursorx, 0.f,
+				cursorx, cursorheight,
+				2, cursor_color)));
 	return queue;
 }
 
