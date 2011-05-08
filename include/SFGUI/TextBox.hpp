@@ -54,6 +54,7 @@ class TextBox : public Widget {
 		bool HandleMouseButtonClick( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		void HandleText( Widget::Ptr widget, sf::Uint32 unicode );
 		void HandleKeyRelease( Widget::Ptr widget, sf::Event::KeyEvent );
+		void HandleFocusChange( Widget::Ptr widget );
 
 		// The cursor is implicitly located between 'left' and 'right'
 		u32string left, right;

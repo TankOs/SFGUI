@@ -9,6 +9,7 @@ TextBox::TextBox(float width)
 	, right()
 	, width(width)
 {
+	OnFocusChange.Connect( &TextBox::HandleFocusChange, this );
 	OnStateChange.Connect( &TextBox::HandleStateChange, this );
 	OnMouseEnter.Connect( &TextBox::HandleMouseEnter, this );
 	OnMouseLeave.Connect( &TextBox::HandleMouseLeave, this );
@@ -145,8 +146,17 @@ void TextBox::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
 }
 
 bool TextBox::HandleMouseButtonClick( Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button /*button*/ ) {
-	SetState( Active );
+	GrabFocus();
 	return true;
+}
+
+void TextBox::HandleFocusChange( Widget::Ptr /*widget*/ ) {
+	if( GetState() == Active ) {
+		SetState( Normal );
+	}
+	else {
+		SetState( Active );
+	}
 }
 
 sf::Vector2f TextBox::GetRequisitionImpl() const {
