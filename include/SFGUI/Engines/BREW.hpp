@@ -19,7 +19,7 @@ class BREW : public Engine {
 		sf::Drawable* CreateButtonDrawable( boost::shared_ptr<Button> button, const sf::RenderTarget& target ) const;
 		sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const;
 
-        sf::Drawable* CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, const sf::RenderTarget& target ) const;
+		sf::Drawable* CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, const sf::RenderTarget& target ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.

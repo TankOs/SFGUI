@@ -150,8 +150,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 
 	HandleEventResult  result( PassEvent );
 
-    switch(event.Type) {
-    case sf::Event::MouseMoved: {
+	switch(event.Type) {
+	case sf::Event::MouseMoved: {
 		// Drag operations.
 		if( m_mouse_button_down == sf::Mouse::Left && HasFlag( Draggable ) ) {
 			if( !m_drag_info ) {
@@ -197,7 +197,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		}
 
 	} break;
-    case sf::Event::MouseButtonPressed: {
+	case sf::Event::MouseButtonPressed: {
 		// If a mouse button has already been pressed for this widget, drop further
 		// presses. This maybe needs changing, but up to now, I can't think of any
 		// cases where it would be useful to have such a functionality.
@@ -218,7 +218,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			}
 		}
 	} break;
-    case sf::Event::MouseButtonReleased: {
+	case sf::Event::MouseButtonReleased: {
 		// Only process when mouse button has been clicked inside the widget before.
 		if( m_mouse_button_down == event.MouseButton.Button ) {
 			m_mouse_button_down = -1;
@@ -249,27 +249,27 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		else if( !m_mouse_in ) {
 			result = DropEvent;
 		}
-    } break;
-    case sf::Event::KeyPressed: {
-        if( GetState() == Active ) {
-            OnKeyPress.Sig( shared_from_this(), event.Key );
-            result = EatEvent;
-        }
-    } break;
-    case sf::Event::KeyReleased: {
-        if( GetState() == Active ) {
-            OnKeyRelease.Sig( shared_from_this(), event.Key );
-            result = EatEvent;
-        }
-    } break;
-    case sf::Event::TextEntered: {
-        if( GetState() == Active ) {
-            OnText.Sig( shared_from_this(), event.Text.Unicode );
-            result = EatEvent;
-        }
-    } break;
-    default: break;
-    }
+	} break;
+	case sf::Event::KeyPressed: {
+		if( GetState() == Active ) {
+			OnKeyPress.Sig( shared_from_this(), event.Key );
+			result = EatEvent;
+		}
+	} break;
+	case sf::Event::KeyReleased: {
+		if( GetState() == Active ) {
+			OnKeyRelease.Sig( shared_from_this(), event.Key );
+			result = EatEvent;
+		}
+	} break;
+	case sf::Event::TextEntered: {
+		if( GetState() == Active ) {
+			OnText.Sig( shared_from_this(), event.Text.Unicode );
+			result = EatEvent;
+		}
+	} break;
+	default: break;
+	}
 
 	return result;
 }
