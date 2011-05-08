@@ -198,7 +198,7 @@ sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, c
 	RenderQueue* queue( new RenderQueue );
 
 	sf::FloatRect textalloc = textbox->GetAllocation();
-	textalloc.Height = font_size * 1.4f;
+	textalloc.Height = float(font_size) * 1.4f;
 
 	queue->Add(
 		new sf::Shape(
