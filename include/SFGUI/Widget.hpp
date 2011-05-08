@@ -192,6 +192,10 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		Signal<void( Ptr, const DragInfo& )>  OnDragMove; //!< Fired when dragged. (DragInfo)
 		Signal<void( Ptr, const DragInfo& )>  OnDragEnd; //!< Fired when dragged. (DragInfo)
 
+        Signal<void( Ptr, sf::Event::KeyEvent )> OnKeyPress; //!< Fired when a key is pressed while State == Active.
+        Signal<void( Ptr, sf::Event::KeyEvent )> OnKeyRelease; //!< Fired when a key is released while State == Active.
+        Signal<void( Ptr, sf::Uint32 Unicode )> OnText; //!< Fired when text is entered while State == Active.
+
 	protected:
 		/** Several flags for widgets.
 		 */

@@ -8,7 +8,7 @@ namespace sfg {
 Engine::~Engine() {
 }
 
-sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) {
+sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {
 	sf::Text  text( string, font, font_size );
 	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );
 }

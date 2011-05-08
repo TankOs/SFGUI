@@ -14,6 +14,7 @@ namespace sfg {
 class Window;
 class Button;
 class Label;
+class TextBox;
 
 /** Abstract base class for widget rendering.
  */
@@ -55,13 +56,15 @@ class SFGUI_API Engine {
 		 */
 		virtual sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const = 0;
 
+        virtual sf::Drawable* CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, const sf::RenderTarget& target ) const = 0;
+
 		/** Get metrics of a text string.
 		 * @param string String.
 		 * @param font Font.
 		 * @param font_size Font size.
 		 * @return Metrics.
 		 */
-		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size );
+		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Set property.
 		 * @param property Name of property.
