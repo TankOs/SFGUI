@@ -76,8 +76,9 @@ bool Scrollbar::IsIncreaseStepperPressed() const {
 	return m_increase_pressed;
 }
 
-sf::Drawable* Scrollbar::InvalidateImpl( const sf::RenderTarget& target ) {
-	return Context::Get().GetEngine().CreateScrollbarDrawable( boost::shared_dynamic_cast<Scrollbar>( shared_from_this() ), target );
+
+sf::Drawable* Scrollbar::InvalidateImpl() {
+	return Context::Get().GetEngine().CreateScrollbarDrawable( boost::shared_dynamic_cast<Scrollbar>( shared_from_this() ) );
 }
 
 sf::Vector2f Scrollbar::GetRequisitionImpl() const {

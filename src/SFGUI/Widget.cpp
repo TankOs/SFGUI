@@ -72,7 +72,7 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 void Widget::RequestSize() {
 	m_recalc_requisition = true;
 	Container::Ptr parent = m_parent.lock();
-	
+
 	if( parent ) {
 		parent->RequestSize();
 	}
@@ -99,7 +99,7 @@ void Widget::Expose( sf::RenderTarget& target ) {
 	if( m_invalidated ) {
 		m_invalidated = false;
 
-		m_drawable.reset( InvalidateImpl( target ) );
+		m_drawable.reset( InvalidateImpl() );
 
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAllocation().Left, GetAllocation().Top );
@@ -119,7 +119,7 @@ void Widget::Invalidate() {
 	m_invalidated = true;
 }
 
-sf::Drawable* Widget::InvalidateImpl( const sf::RenderTarget& /*target*/ ) {
+sf::Drawable* Widget::InvalidateImpl() {
 	return 0;
 }
 
@@ -129,7 +129,7 @@ void Widget::SetParent( Widget::Ptr parent ) {
 	if( !cont ) {
 		return;
 	}
-	
+
 	Container::Ptr oldparent = m_parent.lock();
 
 	if( oldparent ) {

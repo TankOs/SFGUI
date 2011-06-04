@@ -43,7 +43,7 @@ class SFGUI_API Scale : public Range {
 		const sf::FloatRect GetSliderRect() const;
 
 	protected:
-		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Drawable* InvalidateImpl();
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:

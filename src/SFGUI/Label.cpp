@@ -28,8 +28,8 @@ const sf::String& Label::GetText() const {
 	return m_text;
 }
 
-sf::Drawable* Label::InvalidateImpl( const sf::RenderTarget& target ) {
-	return Context::Get().GetEngine().CreateLabelDrawable( boost::shared_dynamic_cast<Label>( shared_from_this() ), target );
+sf::Drawable* Label::InvalidateImpl() {
+	return Context::Get().GetEngine().CreateLabelDrawable( boost::shared_dynamic_cast<Label>( shared_from_this() ) );
 }
 
 sf::Vector2f Label::GetRequisitionImpl() const {

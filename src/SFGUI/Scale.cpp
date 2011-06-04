@@ -54,8 +54,9 @@ const sf::FloatRect Scale::GetSliderRect() const {
 	}
 }
 
-sf::Drawable* Scale::InvalidateImpl( const sf::RenderTarget& target ) {
-	return Context::Get().GetEngine().CreateScaleDrawable( boost::shared_dynamic_cast<Scale>( shared_from_this() ), target );
+
+sf::Drawable* Scale::InvalidateImpl() {
+	return Context::Get().GetEngine().CreateScaleDrawable( boost::shared_dynamic_cast<Scale>( shared_from_this() ) );
 }
 
 sf::Vector2f Scale::GetRequisitionImpl() const {

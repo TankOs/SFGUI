@@ -40,7 +40,7 @@ class SFGUI_API Button : public Bin {
 		Signal<void( Widget::Ptr )>  OnClick; //!< Fired when button clicked.
 
 	protected:
-		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Drawable* InvalidateImpl();
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:

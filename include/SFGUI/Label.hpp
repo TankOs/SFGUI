@@ -47,7 +47,7 @@ class SFGUI_API Label : public Widget {
 		const sf::Vector2f& GetAlignment() const;
 
 	protected:
-		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Drawable* InvalidateImpl();
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:

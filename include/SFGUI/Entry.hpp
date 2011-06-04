@@ -41,7 +41,7 @@ class SFGUI_API Entry : public Widget {
 		 * @return Cursor position.
 		 */
 		std::size_t GetCursorPosition() const;
-		
+
 		/** Set cursor position.
 		 * @param pos Position.
 		 */
@@ -51,12 +51,12 @@ class SFGUI_API Entry : public Widget {
 		 * @return true if visible./
 		 */
 		bool IsCursorVisible() const;
-		
+
 		/** Hide all characters of the string with the given character.
 		 * @param c UTF-32 Character (0 to not hide text).
 		 */
 		void HideText( sf::Uint32 c );
-		
+
 		/** Get the character that hides all characters of the string.
 		 * @return UTF-32 Character.
 		 */
@@ -65,24 +65,24 @@ class SFGUI_API Entry : public Widget {
 		Signal<void( Widget::Ptr )> OnTextChanged; //!< Fired when the text changes.
 
 	protected:
-		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Drawable* InvalidateImpl();
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
 		/** Ctor.
 		 */
 		Entry();
-		
+
 		/** Get closest cursor position to x coordinate.
 		 * @param mouse_pos_x x coordinate.
 		 * @return Closest cursor position.
 		 */
 		std::size_t GetPositionFromMouseX( int mouse_pos_x );
-		
+
 		/** Recalculate visible string.
 		 */
 		void RecalculateVisibleString();
-		
+
 		/** Move cursor.
 		 * @param delta Number of units to move cursor by. Negative to move left. Positive to move right.
 		 */
@@ -107,7 +107,7 @@ class SFGUI_API Entry : public Widget {
 		std::size_t m_cursor_position;
 		sf::Clock m_cursor_timer;
 		bool m_cursor_status;
-		
+
 		// The UTF-32 character which hides each character of the string
 		sf::Uint32 m_text_placeholder;
 };

@@ -78,7 +78,7 @@ BREW::BREW() :
 	RegisterProperty( "Window.Title.FontSize", UnsignedInteger );
 }
 
-sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window, const sf::RenderTarget& /*target*/ ) const {
+sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window ) const {
 	RenderQueue* queue( new RenderQueue );
 	sf::Color background_color( GetProperty<sf::Color>( "Window.BackgroundColor", window ) );
 	sf::Color border_color_light( GetProperty<sf::Color>( "Window.LightBorderColor", window ) );
@@ -170,11 +170,11 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 		queue->Add( new sf::Shape( sf::Shape::Line( .1f, delta + .1f, rect.Width - delta, delta, 1.f, light_color ) ) ); // Top.
 		queue->Add( new sf::Shape( sf::Shape::Line( delta + .1f, .1f, delta, rect.Height - delta, 1.f, light_color ) ) ); // Left.
 	}
-	
+
 	return queue;
 }
 
-sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, const sf::RenderTarget& /*target*/ ) const {
+sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "Button.Normal.LightBorderColor", button ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "Button.Normal.DarkBorderColor", button ) );
 	sf::Color background_color( GetProperty<sf::Color>( "Button.Normal.BackgroundColor", button ) );
@@ -211,7 +211,7 @@ sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, cons
 	return queue;
 }
 
-sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& /*target*/ ) const {
+sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label ) const {
 	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "Label.Font", label ) ) );
 	const unsigned int font_size( GetProperty<unsigned int>( "Label.FontSize", label ) );
 	const sf::Color font_color( GetProperty<sf::Color>( "Label.TextColor", label ) );
@@ -231,7 +231,7 @@ sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const s
 	return queue;
 }
 
-sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const sf::RenderTarget& /*target*/ ) const {
+sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "Entry.Normal.LightBorderColor", entry ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "Entry.Normal.DarkBorderColor", entry ) );
 	sf::Color background_color( GetProperty<sf::Color>( "Entry.Normal.BackgroundColor", entry ) );
@@ -257,13 +257,13 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 	);
 
 	queue->Add( CreateBorder( entry->GetAllocation(), border_width, border_color_dark, border_color_light) );
-	
+
 	sf::Text*  vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
 	vis_label->SetPosition( text_padding, text_padding );
 
 	queue->Add( vis_label );
-	
+
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->GetState() == Widget::Active && entry->IsCursorVisible() ) {
 		sf::String cursor_string( entry->GetVisibleText() );
@@ -281,7 +281,7 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );
 	}
-	
+
 	return queue;
 }
 
@@ -315,7 +315,7 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	return queue;
 }
 
-sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const sf::RenderTarget& /*target*/ ) const {
+sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "Scale.Trough.Color", scale ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "Scale.Slider.BackgroundColor", scale ) );
 	sf::Color border_color_light( GetProperty<sf::Color>( "Scale.Slider.LightBorderColor", scale ) );
@@ -386,7 +386,7 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	return queue;
 }
 
-sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar, const sf::RenderTarget& /*target*/ ) const {
+sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "Scrollbar.Trough.Color", scrollbar ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "Scrollbar.Slider.BackgroundColor", scrollbar ) );
 	sf::Color slider_border_color_light( GetProperty<sf::Color>( "Scrollbar.Slider.LightBorderColor", scrollbar ) );

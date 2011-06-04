@@ -210,7 +210,7 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 * to Invalidate().
 		 * @return Pointer to new drawable -- ownership is taken by caller.
 		 */
-		virtual sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		virtual sf::Drawable* InvalidateImpl();
 
 		/** Requisition implementation (recalculate requisition).
 		 * @return New requisition.

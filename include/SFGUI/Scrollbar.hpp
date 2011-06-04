@@ -52,7 +52,7 @@ class SFGUI_API Scrollbar : public Range {
 		bool IsIncreaseStepperPressed() const;
 
 	protected:
-		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Drawable* InvalidateImpl();
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
