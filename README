@@ -49,6 +49,9 @@ If you're using CMake for your project and you've properly installed SFGUI (see
   add_executable( my_program ... )
   target_link_libraries( my_program ... ${SFGUI_LIBRARY} )
 
+In case CMake can't find your SFGUI installation, you can still specify the
+path manually by setting the SFGUIDIR CMake variable properly.
+
 Keep in mind that you still have to link to SFML2.
 
 
