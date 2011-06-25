@@ -1,10 +1,10 @@
 
 
-																		 SFGUI
-														 GUI library for SFML 2
+                                     SFGUI
+                             GUI library for SFML 2
 
-										(c) Stefan Schindler, 2011 (BoxBox.org)
-										 zlib license (see LICENSE for details)
+                    (c) Stefan Schindler, 2011 (BoxBox.org)
+                     zlib license (see LICENSE for details)
 
 
 IMPORTANT: SFGUI is heavily under development, so this ReadMe is neither
@@ -12,30 +12,30 @@ complete nor very useful. Keep in mind that code which is actively being
 developed may fail on your system or behave strangely.
 
 
-																 1. Installing
+                                 1. Installing
 
 Dependencies:
-	- SFML 2 (http://sfml-dev.org/)
-		There's currently no SFML 2 release, therefore you need to build from the
-		sources (use the public SVN repository).
-	- Boost (http://boost.org/)
-		In detail: Smart pointers, non-copyable, any, pointer lists, signals2,
-		bind, function.
+  - SFML 2 (http://sfml-dev.org/)
+    There's currently no SFML 2 release, therefore you need to build from the
+    sources (use the public SVN repository).
+  - Boost (http://boost.org/)
+    In detail: Smart pointers, non-copyable, any, pointer lists, signals2,
+    bind, function.
 
 The current build system in use is CMake (http://cmake.org/). It's available
 for all major platforms.
 
 To build, perform the following steps:
 
-	- Create a separate directory for the build files, e.g. "build".
-	- Move into that directory.
-	- cmake ..
-	- make install
+  - Create a separate directory for the build files, e.g. "build".
+  - Move into that directory.
+  - cmake ..
+  - make install
 
 The library is now ready to use.
 
 
-												 2. Using SFGUI in own projects
+                         2. Using SFGUI in own projects
 
 To use SFGUI in your projects, you have to link to the SFGUI library (see 2 for
 building), e.g. libsfgui.so on Linux. Also make sure that your compiler is able
@@ -44,21 +44,21 @@ to find SFGUI's include files.
 If you're using CMake for your project and you've properly installed SFGUI (see
 2), you can automate the process of finding SFGUI by doing:
 
-	find_package( SFGUI REQUIRED )
-	include_directories( ${SFGUI_INCLUDE_DIR} )
-	add_executable( my_program ... )
-	target_link_libraries( my_program ... ${SFGUI_LIBRARY} )
+  find_package( SFGUI REQUIRED )
+  include_directories( ${SFGUI_INCLUDE_DIR} )
+  add_executable( my_program ... )
+  target_link_libraries( my_program ... ${SFGUI_LIBRARY} )
 
 Keep in mind that you still have to link to SFML2.
 
 
-																3. Documentation
+                                3. Documentation
 
 You can find the API documentation in the doc sub-directory. Create it with
 Doxygen (http://www.stack.nl/~dimitri/doxygen/).
 
 
-														4. Contributing/Contact
+                            4. Contributing/Contact
 
 Since SFGUI is true Open Source software, any help is greatly appreciated.
 However tasks should be coordinated, which works best in IRC. Join #sfml at
