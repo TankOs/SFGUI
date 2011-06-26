@@ -2,10 +2,5 @@
 *.o
 *.os
 *.so
-.sconsign.dblite
-/obj/
 /doc/html/
 /samples/bin/
-/custom.py
-/build/codeblocks/*.cbp
-*.pyc

@@ -2,9 +2,12 @@ cmake_minimum_required( VERSION 2.8 )
 project( SFGUI )
 
 find_package( SFML 2.0 REQUIRED )
+find_package( Boost 1.46 REQUIRED )
 
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
 set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
+
+add_definitions( -D SFGUI_EXPORTS )
 
 set(
 	SOURCES
@@ -48,15 +51,17 @@ set(
 
 include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
+include_directories( ${Boost_INCLUDE_DIR} )
 
 add_library( sfgui SHARED ${SOURCES} )
 
-target_link_libraries( sfgui sfml-graphics sfml-window sfml-system )
+target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} )
 
 install(
 	TARGETS sfgui
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION bin COMPONENT bin
+	LIBRARY DESTINATION lib COMPONENT bin
+	ARCHIVE DESTINATION lib COMPONENT dev
 )
 
 install(
