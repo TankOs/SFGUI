@@ -133,8 +133,8 @@ void Widget::SetParent( Widget::Ptr parent ) {
 void Widget::SetPosition( const sf::Vector2f& position ) {
 	sf::FloatRect  oldallocation( GetAllocation() );
 
-	m_allocation.Left = position.x;
-	m_allocation.Top = position.y;
+	m_allocation.Left = std::floor( position.x + .5f );
+	m_allocation.Top = std::floor( position.y + .5f );
 
 	if( m_drawable ) {
 		m_drawable->SetPosition( position );
