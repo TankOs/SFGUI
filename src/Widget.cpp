@@ -137,7 +137,7 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	m_allocation.Top = std::floor( position.y + .5f );
 
 	if( m_drawable ) {
-		m_drawable->SetPosition( position );
+		m_drawable->SetPosition( sf::Vector2f( m_allocation.Left, m_allocation.Top ) );
 	}
 
 	OnPositionChange.Sig( shared_from_this(), oldallocation );
