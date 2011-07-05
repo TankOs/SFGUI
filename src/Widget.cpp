@@ -56,7 +56,12 @@ void Widget::GrabFocus( Ptr widget ) {
 void Widget::AllocateSize( const sf::FloatRect& rect ) {
 	sf::FloatRect  oldallocation( m_allocation );
 
-	m_allocation = rect;
+	// Make sure allocation is pixel-aligned.
+	m_allocation.Left = std::floor( rect.Left + .5f );
+	m_allocation.Top = std::floor( rect.Top + .5f );
+	m_allocation.Width = std::floor( rect.Width + .5f );
+	m_allocation.Height = std::floor( rect.Height + .5f );
+
 	OnSizeAllocate.Sig( shared_from_this(), oldallocation );
 
 	Invalidate();
@@ -133,6 +138,7 @@ void Widget::SetParent( Widget::Ptr parent ) {
 void Widget::SetPosition( const sf::Vector2f& position ) {
 	sf::FloatRect  oldallocation( GetAllocation() );
 
+	// Make sure allocation is pixel-aligned.
 	m_allocation.Left = std::floor( position.x + .5f );
 	m_allocation.Top = std::floor( position.y + .5f );
 
