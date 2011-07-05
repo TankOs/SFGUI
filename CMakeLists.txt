@@ -1,13 +1,19 @@
 cmake_minimum_required( VERSION 2.8 )
 project( SFGUI )
 
-find_package( SFML 2.0 REQUIRED )
+find_package( SFML 2.0 REQUIRED GRAPHICS WINDOW SYSTEM )
 find_package( Boost 1.46 REQUIRED )
+
+set( SFGUI_STATIC false CACHE BOOL "Build static library." )
 
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
 set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
 
 add_definitions( -D SFGUI_EXPORTS )
+
+if( SFGUI_STATIC )
+	add_definitions( -D SFGUI_STATIC )
+endif()
 
 set(
 	SOURCES
@@ -53,7 +59,11 @@ include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${Boost_INCLUDE_DIR} )
 
-add_library( sfgui SHARED ${SOURCES} )
+if( NOT SFGUI_STATIC )
+	add_library( sfgui SHARED ${SOURCES} )
+else()
+	add_library( sfgui ${SOURCES} )
+endif()
 
 target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} )
 
