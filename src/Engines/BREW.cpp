@@ -176,10 +176,12 @@ sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, cons
 }
 
 sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& /*target*/ ) const {
-	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "Label.Font", label ) ) );
-	const unsigned int&  font_size( GetProperty<unsigned int>( "Label.FontSize", label ) );
+	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "Label.Font", label ) ) );
+	const unsigned int font_size( GetProperty<unsigned int>( "Label.FontSize", label ) );
+	const sf::Color font_color( GetProperty<sf::Color>( "Label.TextColor", label ) );
 
 	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );
+	vis_label->SetColor( font_color );
 
 	// Calculate alignment.
 	sf::Vector2f  avail_space( label->GetAllocation().Width - label->GetRequisition().x, label->GetAllocation().Height - label->GetRequisition().y );
