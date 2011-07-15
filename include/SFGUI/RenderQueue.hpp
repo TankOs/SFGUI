@@ -9,7 +9,7 @@ namespace sfg {
 
 /** Simple container for sf::Drawables.
  */
-class RenderQueue : public sf::Drawable {
+class SFGUI_API RenderQueue : public sf::Drawable {
 	public:
 		/** Add drawable to the queue.
 		 * Keep in mind that the queue takes ownership of the drawable.

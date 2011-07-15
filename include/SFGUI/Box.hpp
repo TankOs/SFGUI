@@ -7,7 +7,7 @@ namespace sfg {
 /** Box sizer.
  * Widgets are arranged horizontally or vertically.
  */
-class Box : public Container {
+class SFGUI_API Box : public Container {
 	public:
 		typedef boost::shared_ptr<Box>  Ptr; //!< Shared pointer.
 
