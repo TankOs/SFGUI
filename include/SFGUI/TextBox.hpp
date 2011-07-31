@@ -87,7 +87,7 @@ class TextBox : public Widget {
 		void HideText( sf::Uint32 c );
 		
 		/** Get the character that hides all characters of the string.
-		 * @return c UTF-32 Character.
+		 * @return UTF-32 Character.
 		 */
 		sf::Uint32 GetHideChar() const { return m_text_placeholder; }
 
