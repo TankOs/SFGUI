@@ -213,10 +213,9 @@ sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, c
 		)
 	);
 
-
 	queue->Add( CreateBorder( textbox->GetAllocation(), border_width, border_color_dark, border_color_light) );
 	
-	sf::Text*  vis_label( new sf::Text( textbox->GetText(), font, font_size ) );
+	sf::Text*  vis_label( new sf::Text( textbox->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
 	vis_label->SetPosition( text_padding, 0.f );
 
@@ -225,7 +224,7 @@ sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, c
 	// Draw cursor if it is currently visible
 	if( textbox->GetCursorStatus() ) {
 		sf::Sprite*  vis_cursor( new sf::Sprite() );
-		vis_cursor->SetPosition( GetTextMetrics( textbox->GetLeft(), font, font_size ).x + text_padding, 2.f );
+		vis_cursor->SetPosition( GetTextMetrics( textbox->GetVisibleLeft(), font, font_size ).x + text_padding, 2.f );
 		vis_cursor->Resize( cursor_thickness, textbox->GetAllocation().Height - 4.f );
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );

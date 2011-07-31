@@ -41,6 +41,21 @@ class TextBox : public Widget {
 		 */
 		u32string const& GetRight() const { return m_right_string; }
 		
+		/** Get visible text.
+		 * @return Visible text.
+		 */
+		sf::String GetVisibleText();
+		
+		/** Get partial visible string left of cursor.
+		 * @return Visible UTF-32 string left of cursor.
+		 */
+		u32string const GetVisibleLeft();
+		
+		/** Get partial visible string right of cursor.
+		 * @return Visible UTF-32 string right of cursor.
+		 */
+		u32string const GetVisibleRight();
+		
 		/** Set border width.
 		 * @param width Border width.
 		 */
@@ -59,12 +74,22 @@ class TextBox : public Widget {
 		/** Set cursor position.
 		 * @param pos Position.
 		 */
-		void SetCursorPos(std::size_t const pos);
+		void SetCursorPos( std::size_t pos );
 		
 		/** Get cursor status.
 		 * @return true when cursor is currently being displayed.
 		 */
 		bool GetCursorStatus() const { return m_cursor_status; }
+		
+		/** Hide all characters of the string with the given character.
+		 * @param c UTF-32 Character ( 0 to not hide text ).
+		 */
+		void HideText( sf::Uint32 c );
+		
+		/** Get the character that hides all characters of the string.
+		 * @return c UTF-32 Character.
+		 */
+		sf::Uint32 GetHideChar() const { return m_text_placeholder; }
 
 		Signal<void( Widget::Ptr )>  OnTextChanged; //!< Fired when the text changes.
 
@@ -83,6 +108,18 @@ class TextBox : public Widget {
 		 * @return Closest cursor position.
 		 */
 		std::size_t GetPositionFromMouseX( int mouse_pos_x );
+		
+		/** Recalculate visible strings.
+		 */
+		void RecalculateVisibleStrings();
+		
+		/** Move cursor 1 unit to the left.
+		 */
+		void MoveCursorLeft();
+		
+		/** Move cursor 1 unit to the right.
+		 */
+		void MoveCursorRight();
 
 		void HandleStateChange( Widget::Ptr widget, State oldstate );
 		void HandleMouseEnter( Widget::Ptr widget, int x, int y );
@@ -95,12 +132,16 @@ class TextBox : public Widget {
 
 		// The cursor is implicitly located between 'left' and 'right'
 		u32string m_left_string, m_right_string;
+		u32string m_visible_left_string, m_visible_right_string;
 		
 		float m_width;
 		float m_border_width;
 		
 		sf::Clock m_cursor_timer;
 		bool m_cursor_status;
+		
+		// The UTF-32 character which hides each character of the string
+		sf::Uint32 m_text_placeholder;
 };
 
 }
