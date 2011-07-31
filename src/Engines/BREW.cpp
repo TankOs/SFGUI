@@ -5,6 +5,7 @@
 #include <SFGUI/TextBox.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 
 namespace sfg {
 namespace eng {
@@ -35,11 +36,13 @@ BREW::BREW() :
 	SetProperty<sf::Color>( "Button.Active.LightBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty<sf::Color>( "Button.Active.DarkBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 
-	SetProperty<sf::Color>( "TextBox.Normal.LightBorderColor", sf::Color(0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "TextBox.Normal.DarkBorderColor", sf::Color(0x55, 0x55, 0x55) );
-	SetProperty<sf::Color>( "TextBox.Normal.BackgroundColor", sf::Color(0x99, 0x99, 0x99) );
-	SetProperty<sf::Color>( "TextBox.Normal.TextColor", sf::Color(0xFF, 0xFF, 0xFF) );
-	SetProperty<sf::Color>( "TextBox.Normal.CursorColor", sf::Color(0x00, 0x00, 0x00) );
+	SetProperty<sf::Color>( "TextBox.Normal.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty<sf::Color>( "TextBox.Normal.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<sf::Color>( "TextBox.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty<sf::Color>( "TextBox.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
+	SetProperty<float>( "TextBox.Normal.TextPadding", 2.f );
+	SetProperty<sf::Color>( "TextBox.Normal.CursorColor", sf::Color( 0x00, 0x00, 0x00 ) );
+	SetProperty<float>( "TextBox.Normal.CursorThickness", 1.f );
 	SetProperty<float>( "TextBox.Normal.BorderWidth", 1.f );
 	SetProperty<std::string>( "TextBox.Font", "" );
 	SetProperty<unsigned int>( "TextBox.FontSize", 12 );
@@ -191,42 +194,43 @@ sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, c
 	sf::Color background_color( GetProperty<sf::Color>( "TextBox.Normal.BackgroundColor", textbox ) );
 	sf::Color text_color( GetProperty<sf::Color>( "TextBox.Normal.TextColor", textbox ) );
 	sf::Color cursor_color( GetProperty<sf::Color>( "TextBox.Normal.CursorColor", textbox ) );
+	float text_padding( GetProperty<float>( "TextBox.Normal.TextPadding", textbox ) );
+	float cursor_thickness( GetProperty<float>( "TextBox.Normal.CursorThickness", textbox ) );
 	float border_width( GetProperty<float>( "TextBox.Normal.BorderWidth", textbox ) );
 	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "TextBox.Font", textbox ) ) );
 	const unsigned int&  font_size( GetProperty<unsigned int>( "TextBox.FontSize", textbox ) );
 
 	RenderQueue* queue( new RenderQueue );
 
-	sf::FloatRect textalloc = textbox->GetAllocation();
-	textalloc.Height = float(font_size) * 1.4f;
-
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Rectangle(
 				0.f, 0.f,
-				textalloc.Width,
-				textalloc.Height,
-				background_color)));
+				textbox->GetAllocation().Width,
+				font_size * 1.4f,
+				background_color
+			)
+		)
+	);
 
 
-	queue->Add(
-		CreateBorder(
-			textalloc, border_width, border_color_dark, border_color_light));
-
-
+	queue->Add( CreateBorder( textbox->GetAllocation(), border_width, border_color_dark, border_color_light) );
+	
 	sf::Text*  vis_label( new sf::Text( textbox->GetText(), font, font_size ) );
+	vis_label->SetColor( text_color );
+	vis_label->SetPosition( text_padding, 0.f );
 
 	queue->Add( vis_label );
-
-	float cursorx = GetTextMetrics(textbox->GetLeft(), font, font_size ).x;
-	float cursorheight = GetTextMetrics(textbox->GetText(), font, font_size).y;
-
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				cursorx, 0.f,
-				cursorx, cursorheight,
-				2, cursor_color)));
+	
+	// Draw cursor if it is currently visible
+	if( textbox->GetCursorStatus() ) {
+		sf::Sprite*  vis_cursor( new sf::Sprite() );
+		vis_cursor->SetPosition( GetTextMetrics( textbox->GetLeft(), font, font_size ).x + text_padding, 2.f );
+		vis_cursor->Resize( cursor_thickness, textbox->GetAllocation().Height - 4.f );
+		vis_cursor->SetColor( cursor_color );
+		queue->Add( vis_cursor );
+	}
+	
 	return queue;
 }
 
