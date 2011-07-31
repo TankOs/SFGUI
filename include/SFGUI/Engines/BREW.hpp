@@ -9,7 +9,7 @@ namespace eng {
 
 /** BREW -- Basic Rendering Engine for Widget (reference implementation).
  */
-class BREW : public Engine {
+class SFGUI_API BREW : public Engine {
 	public:
 		/** Ctor.
 		 */

@@ -29,6 +29,9 @@ Button::Ptr Button::Create( const sf::String& label ) {
 }
 
 sf::Drawable* Button::InvalidateImpl( const sf::RenderTarget& target ) {
+	// Make sure label gets text color property of button.
+	m_label->SetProperty<sf::Color>( "Label.TextColor", Context::Get().GetEngine().GetProperty<sf::Color>( "Button.Normal.TextColor", shared_from_this() ) );
+
 	return Context::Get().GetEngine().CreateButtonDrawable( boost::shared_dynamic_cast<Button>( shared_from_this() ), target );
 }
 

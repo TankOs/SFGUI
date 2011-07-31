@@ -7,7 +7,7 @@ namespace sfg {
 
 /** Pushbutton.
  */
-class Button : public Bin {
+class SFGUI_API Button : public Bin {
 	public:
 		typedef boost::shared_ptr<Button>  Ptr; //!< Shared pointer.
 
