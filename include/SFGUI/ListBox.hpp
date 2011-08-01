@@ -15,6 +15,13 @@ class ListBox : public Widget {
 		typedef boost::shared_ptr<ListBox>  Ptr; //!< Shared pointer.
 		typedef std::basic_string<sf::Uint32>  u32string; //!< UTF-32 string.
 
+    enum Style {
+			None = 0, //!< No style.
+			Hover = 1 << 0, //!< Allow hovering over entries.
+			AutoScroll = 1 << 1, //!< Auto scroll to bottom of list when new entry is inserted.
+			Default = Hover //!< Default style.
+		};
+
 		/** Create list box.
 		 * @param num_entries Entries.
 		 * @param width Maximum displayed entry width.
@@ -96,6 +103,23 @@ class ListBox : public Widget {
 		 */
     bool IsDownPressed() const { return m_down_pressed; }
 
+    /** Set list box style.
+		 * Can be a combination of ListBox::Style values.
+		 * @param style New style.
+		 */
+		void SetStyle( int style );
+
+		/** Get list box style.
+		 * @return ListBox style.
+		 */
+		int GetStyle() const;
+
+		/** Check if the list box has a specific style.
+		 * @param style Style to check.
+		 * @return true when list box has desired style.
+		 */
+		bool HasStyle( Style style ) const;
+
 		Signal<void( Widget::Ptr )>  OnSelectionChanged; //!< Fired when the selection changes.
 
 	protected:
@@ -116,6 +140,8 @@ class ListBox : public Widget {
 		bool HandleMouseButtonRelease( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 		void HandleFocusChange( Widget::Ptr widget );
+
+		int  m_style;
 
     std::size_t m_num_entries;
     float m_width;

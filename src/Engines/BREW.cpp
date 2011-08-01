@@ -459,7 +459,7 @@ sf::Drawable* BREW::CreateListBoxDrawable( boost::shared_ptr<ListBox> listbox, c
       );
       vis_entry->SetColor( font_color_selected );
     }
-    else if( listbox->IsHovered(i) ) {
+    else if( listbox->IsHovered(i) && listbox->HasStyle( ListBox::Hover ) ) {
       // Background around a hovered entry
       queue->Add(
         new sf::Shape(
