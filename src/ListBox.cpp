@@ -139,12 +139,14 @@ void ListBox::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
     m_display_start++;
     units -= 1.f;
     m_slide_last_y = y;
+    Invalidate();
   }
 
   while( units < -.5f && ( m_display_start > 0 ) ) {
     m_display_start--;
     units += 1.f;
     m_slide_last_y = y;
+    Invalidate();
   }
 
 }
@@ -221,11 +223,17 @@ bool ListBox::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int /
 	m_sliding = false;
 	m_slide_last_y = (-1);
 
+  Invalidate();
+
 	return true;
 }
 
 void ListBox::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ ) {
 	float scroll_speed( Context::Get().GetEngine().GetProperty<float>( "ListBox.ScrollSpeed", shared_from_this() ) );
+
+  if( GetMaxDisplayedEntries() >= GetNumEntries() ) {
+    return;
+  }
 
   if( ( m_up_pressed || m_down_pressed ) && ( (float)( m_scroll_timer.GetElapsedTime() ) > 1000.f / scroll_speed ) ) {
     if( m_up_pressed && ( m_display_start > 0 ) ) {
@@ -235,6 +243,7 @@ void ListBox::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/
     if( m_down_pressed && ( m_display_start < m_entries.size() - m_num_entries ) ) {
       m_display_start++;
     }
+    Invalidate();
     m_scroll_timer.Reset();
   }
 
