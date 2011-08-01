@@ -55,14 +55,15 @@ void ListBox::AddEntry( const sf::String& entry ) {
   m_entries.push_back( ListBox::u32string( entry.GetData() ) );
   if( HasStyle( AutoScroll ) ) {
     m_display_start = m_entries.size() - m_num_entries;
-    Invalidate();
   }
+  Invalidate();
 }
 
 void ListBox::RemoveEntry( std::size_t index ) {
   for( std::deque<u32string>::iterator i = m_entries.begin(); i != m_entries.end(); i++ ) {
     if( index == 0 ) {
       m_entries.erase( i );
+      Invalidate();
       return;
     }
     index--;
