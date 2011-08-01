@@ -4,6 +4,7 @@
 #include <deque>
 #include <SFGUI/Widget.hpp>
 #include <SFML/System/String.hpp>
+#include <SFML/System/Clock.hpp>
 
 namespace sfg {
 
@@ -16,6 +17,7 @@ class ListBox : public Widget {
 
 		/** Create list box.
 		 * @param num_entries Entries.
+		 * @param width Maximum displayed entry width.
 		 * @return ListBox.
 		 */
 		static Ptr Create( std::size_t num_entries = 1, float width = 40.f );
@@ -79,6 +81,21 @@ class ListBox : public Widget {
 		 */
     std::size_t GetSelected() const { return m_active_index; }
 
+    /** Get index of the first displayed entry.
+		 * @return Index of the first displayed entry.
+		 */
+    std::size_t GetDisplayStart() const { return m_display_start; }
+
+    /** Is up scroll button currently pressed.
+		 * @return true if it is pressed.
+		 */
+    bool IsUpPressed() const { return m_up_pressed; }
+
+    /** Is down scroll button currently pressed.
+		 * @return true if it is pressed.
+		 */
+    bool IsDownPressed() const { return m_down_pressed; }
+
 		Signal<void( Widget::Ptr )>  OnSelectionChanged; //!< Fired when the selection changes.
 
 	protected:
@@ -88,21 +105,31 @@ class ListBox : public Widget {
 	private:
 		/** Ctor.
 		 * @param entries Entries.
+		 * @param width Maximum displayed entry width.
 		 */
 		ListBox( std::size_t num_entries = 1, float width = 40.f );
 
 		void HandleStateChange( Widget::Ptr widget, State oldstate );
 		void HandleMouseMove( Widget::Ptr widget, int x, int y );
 		void HandleMouseLeave( Widget::Ptr widget, int x, int y );
-		bool HandleMouseButtonClick( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
+		bool HandleMouseButtonPress( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
+		bool HandleMouseButtonRelease( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
+		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 		void HandleFocusChange( Widget::Ptr widget );
 
     std::size_t m_num_entries;
     float m_width;
 		std::deque<u32string> m_entries;
 		std::size_t m_display_start;
+
 		int m_active_index;
 		int m_hover_index;
+
+		bool m_up_pressed;
+		bool m_down_pressed;
+		bool m_sliding;
+		sf::Clock m_scroll_timer;
+		int m_slide_last_y;
 };
 
 }
