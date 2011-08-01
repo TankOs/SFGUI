@@ -3,6 +3,7 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Label.hpp>
 #include <SFGUI/TextBox.hpp>
+#include <SFGUI/ListBox.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -36,6 +37,9 @@ BREW::BREW() :
 	SetProperty<sf::Color>( "Button.Active.LightBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty<sf::Color>( "Button.Active.DarkBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 
+	SetProperty<std::string>( "Label.Font", "" );
+	SetProperty<unsigned int>( "Label.FontSize", 12 );
+
 	SetProperty<sf::Color>( "TextBox.Normal.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 	SetProperty<sf::Color>( "TextBox.Normal.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty<sf::Color>( "TextBox.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
@@ -47,8 +51,19 @@ BREW::BREW() :
 	SetProperty<std::string>( "TextBox.Font", "" );
 	SetProperty<unsigned int>( "TextBox.FontSize", 12 );
 
-	SetProperty<std::string>( "Label.Font", "" );
-	SetProperty<unsigned int>( "Label.FontSize", 12 );
+	SetProperty<sf::Color>( "ListBox.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty<sf::Color>( "ListBox.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<sf::Color>( "ListBox.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty<sf::Color>( "ListBox.Prelight.BackgroundColor", sf::Color( 0x77, 0x77, 0x77 ) );
+	SetProperty<sf::Color>( "ListBox.Active.BackgroundColor", sf::Color( 0xEE, 0xEE, 0xEE ) );
+	SetProperty<sf::Color>( "ListBox.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
+	SetProperty<sf::Color>( "ListBox.Prelight.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
+	SetProperty<sf::Color>( "ListBox.Active.TextColor", sf::Color( 0x33, 0x33, 0x33 ) );
+	SetProperty<std::string>( "ListBox.Font", "" );
+	SetProperty<unsigned int>( "ListBox.FontSize", 12 );
+	SetProperty<float>( "ListBox.BorderWidth", 1.f );
+	SetProperty<float>( "ListBox.TextPadding", 2.f );
+	SetProperty<float>( "ListBox.EntrySpacing", 2.f );
 
 	// Register property types.
 	RegisterProperty( "Button.Normal.BackgroundColor", Color );
@@ -188,6 +203,26 @@ sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button, cons
 	return queue;
 }
 
+sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& /*target*/ ) const {
+	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "Label.Font", label ) ) );
+	const unsigned int font_size( GetProperty<unsigned int>( "Label.FontSize", label ) );
+	const sf::Color font_color( GetProperty<sf::Color>( "Label.TextColor", label ) );
+
+	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );
+	vis_label->SetColor( font_color );
+
+	// Calculate alignment.
+	sf::Vector2f  avail_space( label->GetAllocation().Width - label->GetRequisition().x, label->GetAllocation().Height - label->GetRequisition().y );
+	sf::Vector2f  position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
+
+	vis_label->SetPosition( std::floor( position.x + .5f ), std::floor( position.y + .5f ) );
+
+	RenderQueue*  queue( new RenderQueue );
+	queue->Add( vis_label );
+
+	return queue;
+}
+
 sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, const sf::RenderTarget& /*target*/ ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "TextBox.Normal.LightBorderColor", textbox ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "TextBox.Normal.DarkBorderColor", textbox ) );
@@ -233,22 +268,72 @@ sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, c
 	return queue;
 }
 
-sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& /*target*/ ) const {
-	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "Label.Font", label ) ) );
-	const unsigned int font_size( GetProperty<unsigned int>( "Label.FontSize", label ) );
-	const sf::Color font_color( GetProperty<sf::Color>( "Label.TextColor", label ) );
+sf::Drawable* BREW::CreateListBoxDrawable( boost::shared_ptr<ListBox> listbox, const sf::RenderTarget& /*target*/ ) const {
+  sf::Color border_color_light( GetProperty<sf::Color>( "ListBox.LightBorderColor", listbox ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "ListBox.DarkBorderColor", listbox ) );
+	sf::Color background_color( GetProperty<sf::Color>( "ListBox.Normal.BackgroundColor", listbox ) );
+	sf::Color hover_color( GetProperty<sf::Color>( "ListBox.Prelight.BackgroundColor", listbox ) );
+	sf::Color selected_color( GetProperty<sf::Color>( "ListBox.Active.BackgroundColor", listbox ) );
+	float border_width( GetProperty<float>( "ListBox.BorderWidth", listbox ) );
+	float text_padding( GetProperty<float>( "ListBox.TextPadding", listbox ) );
+	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "ListBox.Font", listbox ) ) );
+	const unsigned int font_size( GetProperty<unsigned int>( "ListBox.FontSize", listbox ) );
+	const sf::Color font_color( GetProperty<sf::Color>( "ListBox.Normal.TextColor", listbox ) );
+	const sf::Color font_color_selected( GetProperty<sf::Color>( "ListBox.Active.TextColor", listbox ) );
+	float entry_spacing( GetProperty<float>( "ListBox.EntrySpacing", listbox ) );
 
-	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );
-	vis_label->SetColor( font_color );
+  float text_height = GetTextMetrics( L"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", font, font_size ).y;
 
-	// Calculate alignment.
-	sf::Vector2f  avail_space( label->GetAllocation().Width - label->GetRequisition().x, label->GetAllocation().Height - label->GetRequisition().y );
-	sf::Vector2f  position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
+  RenderQueue*  queue( new RenderQueue );
 
-	vis_label->SetPosition( std::floor( position.x + .5f ), std::floor( position.y + .5f ) );
+  queue->Add(
+		new sf::Shape(
+			sf::Shape::Rectangle(
+				0.f, 0.f,
+				listbox->GetAllocation().Width,
+				listbox->GetAllocation().Height,
+				background_color
+			)
+		)
+	);
 
-	RenderQueue*  queue( new RenderQueue );
-	queue->Add( vis_label );
+  queue->Add( CreateBorder( listbox->GetAllocation(), border_width, border_color_dark, border_color_light) );
+
+  for( std::size_t i = 0; i < listbox->GetMaxDisplayedEntries() && i < listbox->GetNumEntries(); i++ ) {
+    sf::Text*  vis_entry( new sf::Text( listbox->GetDisplayedEntry( i ), font, font_size ) );
+    vis_entry->SetColor( font_color );
+    vis_entry->SetPosition( border_width + text_padding, border_width + (text_height + entry_spacing) * i );
+
+    if( listbox->IsSelected(i) ) {
+      queue->Add(
+        new sf::Shape(
+          sf::Shape::Rectangle(
+            border_width,
+            border_width + (text_height + entry_spacing) * i,
+            listbox->GetAllocation().Width - 2 * border_width,
+            text_height,
+            selected_color
+          )
+        )
+      );
+      vis_entry->SetColor( font_color_selected );
+    }
+    else if( listbox->IsHovered(i) ) {
+      queue->Add(
+        new sf::Shape(
+          sf::Shape::Rectangle(
+            border_width,
+            border_width + (text_height + entry_spacing) * i,
+            listbox->GetAllocation().Width - 2 * border_width,
+            text_height,
+            hover_color
+          )
+        )
+      );
+    }
+
+    queue->Add( vis_entry );
+  }
 
 	return queue;
 }

@@ -14,7 +14,7 @@ class TextBox : public Widget {
 		typedef boost::shared_ptr<TextBox>  Ptr; //!< Shared pointer.
 		typedef std::basic_string<sf::Uint32>  u32string; //!< UTF-32 string.
 
-		/** Create button.
+		/** Create text box.
 		 * @param width Width.
 		 * @param text Text.
 		 * @return TextBox.

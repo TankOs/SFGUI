@@ -18,8 +18,8 @@ class SFGUI_API BREW : public Engine {
 		sf::Drawable* CreateWindowDrawable( boost::shared_ptr<Window> window, const sf::RenderTarget& target ) const;
 		sf::Drawable* CreateButtonDrawable( boost::shared_ptr<Button> button, const sf::RenderTarget& target ) const;
 		sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const;
-
 		sf::Drawable* CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, const sf::RenderTarget& target ) const;
+		sf::Drawable* CreateListBoxDrawable( boost::shared_ptr<ListBox> listbox, const sf::RenderTarget& target ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.
