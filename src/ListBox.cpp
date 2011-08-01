@@ -7,6 +7,7 @@
 namespace sfg {
 
 ListBox::ListBox( std::size_t num_entries, float width ) :
+  m_style( Default ),
   m_num_entries( num_entries ),
   m_width( width ),
 	m_entries(),
@@ -52,6 +53,10 @@ ListBox::u32string ListBox::GetDisplayedEntry( std::size_t index ) {
 
 void ListBox::AddEntry( const sf::String& entry ) {
   m_entries.push_back( ListBox::u32string( entry.GetData() ) );
+  if( HasStyle( AutoScroll ) ) {
+    m_display_start = m_entries.size() - m_num_entries;
+    Invalidate();
+  }
 }
 
 void ListBox::RemoveEntry( std::size_t index ) {
@@ -78,6 +83,20 @@ bool ListBox::IsSelected( std::size_t index ) const {
   }
 
   return m_active_index == ( m_display_start + index );
+}
+
+void ListBox::SetStyle( int style ) {
+	m_style = style;
+	RequestSize();
+	Invalidate();
+}
+
+int ListBox::GetStyle() const {
+	return m_style;
+}
+
+bool ListBox::HasStyle( Style style ) const {
+	return m_style & style;
 }
 
 sf::Drawable* ListBox::InvalidateImpl( const sf::RenderTarget& target ) {
