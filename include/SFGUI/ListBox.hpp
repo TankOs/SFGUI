@@ -56,10 +56,16 @@ class ListBox : public Widget {
 		 */
 		u32string GetEntry( std::size_t index );
 
-		/** Add entry.
+		/** Add entry to end of list.
 		 * @param entry Entry string.
 		 */
 		void AddEntry( const sf::String& entry );
+
+		/** Insert entry at position into list.
+		 * @param entry Entry string.
+		 * @param pos Position to insert at.
+		 */
+		void AddEntry( const sf::String& entry, std::size_t pos );
 
 		/** Remove entry by index.
 		 * @param index Entry index.
