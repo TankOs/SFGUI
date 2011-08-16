@@ -29,11 +29,13 @@ set(
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
 	${INC_DIR}/SFGUI/KeyValueLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
+	${INC_DIR}/SFGUI/ListBox.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
 	${INC_DIR}/SFGUI/SlotResult.hpp
 	${INC_DIR}/SFGUI/SlotResult.inl
+	${INC_DIR}/SFGUI/TextBox.hpp
 	${INC_DIR}/SFGUI/ThemeLoader.hpp
 	${INC_DIR}/SFGUI/ThemeLoader.inl
 	${INC_DIR}/SFGUI/Widget.hpp
@@ -49,7 +51,9 @@ set(
 	${SRC_DIR}/Engines/BREW.cpp
 	${SRC_DIR}/KeyValueLoader.cpp
 	${SRC_DIR}/Label.cpp
+	${SRC_DIR}/ListBox.cpp
 	${SRC_DIR}/RenderQueue.cpp
+	${SRC_DIR}/TextBox.cpp
 	${SRC_DIR}/ThemeLoader.cpp
 	${SRC_DIR}/Widget.cpp
 	${SRC_DIR}/Window.cpp
