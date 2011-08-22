@@ -6,6 +6,7 @@
 namespace sfg {
 
 Widget::Widget() :
+	Object(),
 	m_sensitive( true ),
 	m_visible( true ),
 	m_state( Normal ),

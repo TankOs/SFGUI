@@ -1,14 +1,13 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+#include <SFGUI/Object.hpp>
 #include <SFGUI/Signal.hpp>
 #include <SFGUI/DragInfo.hpp>
 #include <SFGUI/SlotResult.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/any.hpp>
 #include <map>
@@ -19,7 +18,7 @@ class Container;
 
 /** Base class for widgets.
  */
-class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_from_this<Widget> {
+class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Widget> {
 	public:
 		typedef boost::shared_ptr<Widget>  Ptr; //!< Shared pointer.
 
