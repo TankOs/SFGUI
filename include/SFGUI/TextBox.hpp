@@ -1,5 +1,4 @@
-#ifndef SFGUI_TEXTBOX_HPP
-#define SFGUI_TEXTBOX_HPP
+#pragma once
 
 #include <SFGUI/Widget.hpp>
 #include <SFML/System/String.hpp>
@@ -145,6 +144,3 @@ class TextBox : public Widget {
 };
 
 }
-
-#endif // SFGUI_TEXTBOX_HPP
-

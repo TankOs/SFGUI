@@ -1,10 +1,9 @@
-#ifndef SFGUI_LISTBOX_HPP
-#define SFGUI_LISTBOX_HPP
+#pragma once
 
-#include <deque>
 #include <SFGUI/Widget.hpp>
 #include <SFML/System/String.hpp>
 #include <SFML/System/Clock.hpp>
+#include <deque>
 
 namespace sfg {
 
@@ -165,5 +164,3 @@ class ListBox : public Widget {
 };
 
 }
-
-#endif // SFGUI_LISTBOX_HPP

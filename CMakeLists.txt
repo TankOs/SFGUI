@@ -17,6 +17,7 @@ endif()
 
 set(
 	SOURCES
+	${INC_DIR}/SFGUI/Adjustment.hpp
 	${INC_DIR}/SFGUI/Bin.hpp
 	${INC_DIR}/SFGUI/Box.hpp
 	${INC_DIR}/SFGUI/Button.hpp
@@ -27,20 +28,27 @@ set(
 	${INC_DIR}/SFGUI/Engine.hpp
 	${INC_DIR}/SFGUI/Engine.inl
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
+	${INC_DIR}/SFGUI/HScrollbar.hpp
 	${INC_DIR}/SFGUI/KeyValueLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/ListBox.hpp
+	${INC_DIR}/SFGUI/Object.hpp
+	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
+	${INC_DIR}/SFGUI/Scrollbar.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
+	${INC_DIR}/SFGUI/Slider.hpp
 	${INC_DIR}/SFGUI/SlotResult.hpp
 	${INC_DIR}/SFGUI/SlotResult.inl
 	${INC_DIR}/SFGUI/TextBox.hpp
 	${INC_DIR}/SFGUI/ThemeLoader.hpp
 	${INC_DIR}/SFGUI/ThemeLoader.inl
+	${INC_DIR}/SFGUI/VScrollbar.hpp
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Widget.inl
 	${INC_DIR}/SFGUI/Window.hpp
+	${SRC_DIR}/Adjustment.cpp
 	${SRC_DIR}/Bin.cpp
 	${SRC_DIR}/Box.cpp
 	${SRC_DIR}/Button.cpp
@@ -49,10 +57,16 @@ set(
 	${SRC_DIR}/DragInfo.cpp
 	${SRC_DIR}/Engine.cpp
 	${SRC_DIR}/Engines/BREW.cpp
+	${SRC_DIR}/HScrollbar.cpp
 	${SRC_DIR}/KeyValueLoader.cpp
 	${SRC_DIR}/Label.cpp
 	${SRC_DIR}/ListBox.cpp
+	${SRC_DIR}/Object.cpp
+	${SRC_DIR}/Range.cpp
 	${SRC_DIR}/RenderQueue.cpp
+	${SRC_DIR}/Scrollbar.cpp
+	${SRC_DIR}/Slider.cpp
+	${SRC_DIR}/VScrollbar.cpp
 	${SRC_DIR}/TextBox.cpp
 	${SRC_DIR}/ThemeLoader.cpp
 	${SRC_DIR}/Widget.cpp
