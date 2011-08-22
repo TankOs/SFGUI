@@ -44,20 +44,20 @@ set(
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Widget.inl
 	${INC_DIR}/SFGUI/Window.hpp
-	${SRC_DIR}/Bin.cpp
-	${SRC_DIR}/Box.cpp
-	${SRC_DIR}/Button.cpp
-	${SRC_DIR}/Container.cpp
-	${SRC_DIR}/Context.cpp
-	${SRC_DIR}/DragInfo.cpp
-	${SRC_DIR}/Engine.cpp
-	${SRC_DIR}/Engines/BREW.cpp
-	${SRC_DIR}/KeyValueLoader.cpp
-	${SRC_DIR}/Label.cpp
-	${SRC_DIR}/RenderQueue.cpp
-	${SRC_DIR}/ThemeLoader.cpp
-	${SRC_DIR}/Widget.cpp
-	${SRC_DIR}/Window.cpp
+	${SRC_DIR}/SFGUI/Bin.cpp
+	${SRC_DIR}/SFGUI/Box.cpp
+	${SRC_DIR}/SFGUI/Button.cpp
+	${SRC_DIR}/SFGUI/Container.cpp
+	${SRC_DIR}/SFGUI/Context.cpp
+	${SRC_DIR}/SFGUI/DragInfo.cpp
+	${SRC_DIR}/SFGUI/Engine.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW.cpp
+	${SRC_DIR}/SFGUI/KeyValueLoader.cpp
+	${SRC_DIR}/SFGUI/Label.cpp
+	${SRC_DIR}/SFGUI/RenderQueue.cpp
+	${SRC_DIR}/SFGUI/ThemeLoader.cpp
+	${SRC_DIR}/SFGUI/Widget.cpp
+	${SRC_DIR}/SFGUI/Window.cpp
 )
 
 include_directories( ${INC_DIR} )
