@@ -5,6 +5,11 @@ find_package( SFML 2.0 REQUIRED GRAPHICS WINDOW SYSTEM )
 find_package( Boost 1.46 REQUIRED )
 
 set( SFGUI_STATIC false CACHE BOOL "Build static library." )
+set( BUILD_SAMPLES true CACHE BOOL "Build SFGUI sample applications." )
+
+if( WINDOWS )
+	set( BIN_EXTENSION ".exe" )
+endif()
 
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
 set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
@@ -83,3 +88,7 @@ install(
 	FILES ${PROJECT_SOURCE_DIR}/cmake/FindSFGUI.cmake
 	DESTINATION ${CMAKE_ROOT}/Modules/
 )
+
+if( BUILD_SAMPLES )
+	add_subdirectory( "samples" )
+endif()
