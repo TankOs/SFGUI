@@ -14,7 +14,7 @@ namespace sfg {
 class Window;
 class Button;
 class Label;
-class TextBox;
+class Entry;
 class ListBox;
 
 /** Abstract base class for widget rendering.
@@ -57,14 +57,14 @@ class SFGUI_API Engine {
 		 */
 		virtual sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const = 0;
 
-    /** Create drawable for textbox widgets.
-		 * @param textbox Widget.
+		/** Create drawable for entry widgets.
+		 * @param entry Widget.
 		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual sf::Drawable* CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, const sf::RenderTarget& target ) const = 0;
+		virtual sf::Drawable* CreateEntryDrawable( boost::shared_ptr<Entry> entry, const sf::RenderTarget& target ) const = 0;
 
-    /** Create drawable for listbox widgets.
+		/** Create drawable for listbox widgets.
 		 * @param listbox Widget.
 		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).

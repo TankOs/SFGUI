@@ -2,7 +2,7 @@
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Label.hpp>
-#include <SFGUI/TextBox.hpp>
+#include <SFGUI/Entry.hpp>
 #include <SFGUI/ListBox.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -40,16 +40,16 @@ BREW::BREW() :
 	SetProperty<std::string>( "Label.Font", "" );
 	SetProperty<unsigned int>( "Label.FontSize", 12 );
 
-	SetProperty<sf::Color>( "TextBox.Normal.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "TextBox.Normal.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<sf::Color>( "TextBox.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
-	SetProperty<sf::Color>( "TextBox.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
-	SetProperty<float>( "TextBox.Normal.TextPadding", 2.f );
-	SetProperty<sf::Color>( "TextBox.Normal.CursorColor", sf::Color( 0x00, 0x00, 0x00 ) );
-	SetProperty<float>( "TextBox.Normal.CursorThickness", 1.f );
-	SetProperty<float>( "TextBox.Normal.BorderWidth", 1.f );
-	SetProperty<std::string>( "TextBox.Font", "" );
-	SetProperty<unsigned int>( "TextBox.FontSize", 12 );
+	SetProperty<sf::Color>( "Entry.Normal.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty<sf::Color>( "Entry.Normal.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<sf::Color>( "Entry.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty<sf::Color>( "Entry.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
+	SetProperty<float>( "Entry.Normal.TextPadding", 2.f );
+	SetProperty<sf::Color>( "Entry.Normal.CursorColor", sf::Color( 0x00, 0x00, 0x00 ) );
+	SetProperty<float>( "Entry.Normal.CursorThickness", 1.f );
+	SetProperty<float>( "Entry.Normal.BorderWidth", 1.f );
+	SetProperty<std::string>( "Entry.Font", "" );
+	SetProperty<unsigned int>( "Entry.FontSize", 12 );
 
 	SetProperty<sf::Color>( "ListBox.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 	SetProperty<sf::Color>( "ListBox.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
@@ -231,17 +231,17 @@ sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label, const s
 	return queue;
 }
 
-sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, const sf::RenderTarget& /*target*/ ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "TextBox.Normal.LightBorderColor", textbox ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "TextBox.Normal.DarkBorderColor", textbox ) );
-	sf::Color background_color( GetProperty<sf::Color>( "TextBox.Normal.BackgroundColor", textbox ) );
-	sf::Color text_color( GetProperty<sf::Color>( "TextBox.Normal.TextColor", textbox ) );
-	sf::Color cursor_color( GetProperty<sf::Color>( "TextBox.Normal.CursorColor", textbox ) );
-	float text_padding( GetProperty<float>( "TextBox.Normal.TextPadding", textbox ) );
-	float cursor_thickness( GetProperty<float>( "TextBox.Normal.CursorThickness", textbox ) );
-	float border_width( GetProperty<float>( "TextBox.Normal.BorderWidth", textbox ) );
-	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "TextBox.Font", textbox ) ) );
-	const unsigned int&  font_size( GetProperty<unsigned int>( "TextBox.FontSize", textbox ) );
+sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const sf::RenderTarget& /*target*/ ) const {
+	sf::Color border_color_light( GetProperty<sf::Color>( "Entry.Normal.LightBorderColor", entry ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "Entry.Normal.DarkBorderColor", entry ) );
+	sf::Color background_color( GetProperty<sf::Color>( "Entry.Normal.BackgroundColor", entry ) );
+	sf::Color text_color( GetProperty<sf::Color>( "Entry.Normal.TextColor", entry ) );
+	sf::Color cursor_color( GetProperty<sf::Color>( "Entry.Normal.CursorColor", entry ) );
+	float text_padding( GetProperty<float>( "Entry.Normal.TextPadding", entry ) );
+	float cursor_thickness( GetProperty<float>( "Entry.Normal.CursorThickness", entry ) );
+	float border_width( GetProperty<float>( "Entry.Normal.BorderWidth", entry ) );
+	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "Entry.Font", entry ) ) );
+	const unsigned int&  font_size( GetProperty<unsigned int>( "Entry.FontSize", entry ) );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -249,26 +249,26 @@ sf::Drawable* BREW::CreateTextBoxDrawable( boost::shared_ptr<TextBox> textbox, c
 		new sf::Shape(
 			sf::Shape::Rectangle(
 				0.f, 0.f,
-				textbox->GetAllocation().Width,
+				entry->GetAllocation().Width,
 				font_size * 1.4f,
 				background_color
 			)
 		)
 	);
 
-	queue->Add( CreateBorder( textbox->GetAllocation(), border_width, border_color_dark, border_color_light) );
+	queue->Add( CreateBorder( entry->GetAllocation(), border_width, border_color_dark, border_color_light) );
 	
-	sf::Text*  vis_label( new sf::Text( textbox->GetVisibleText(), font, font_size ) );
+	sf::Text*  vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
 	vis_label->SetPosition( text_padding, 0.f );
 
 	queue->Add( vis_label );
 	
 	// Draw cursor if it is currently visible
-	if( textbox->GetCursorStatus() ) {
+	if( entry->GetCursorStatus() ) {
 		sf::Sprite*  vis_cursor( new sf::Sprite() );
-		vis_cursor->SetPosition( GetTextMetrics( textbox->GetVisibleLeft(), font, font_size ).x + text_padding, 2.f );
-		vis_cursor->Resize( cursor_thickness, textbox->GetAllocation().Height - 4.f );
+		vis_cursor->SetPosition( entry->GetCursorOffset(), 2.f );
+		vis_cursor->Resize( cursor_thickness, entry->GetAllocation().Height - 4.f );
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );
 	}

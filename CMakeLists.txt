@@ -35,7 +35,7 @@ set(
 	${INC_DIR}/SFGUI/Signal.inl
 	${INC_DIR}/SFGUI/SlotResult.hpp
 	${INC_DIR}/SFGUI/SlotResult.inl
-	${INC_DIR}/SFGUI/TextBox.hpp
+	${INC_DIR}/SFGUI/Entry.hpp
 	${INC_DIR}/SFGUI/ThemeLoader.hpp
 	${INC_DIR}/SFGUI/ThemeLoader.inl
 	${INC_DIR}/SFGUI/Widget.hpp
@@ -53,7 +53,7 @@ set(
 	${SRC_DIR}/Label.cpp
 	${SRC_DIR}/ListBox.cpp
 	${SRC_DIR}/RenderQueue.cpp
-	${SRC_DIR}/TextBox.cpp
+	${SRC_DIR}/Entry.cpp
 	${SRC_DIR}/ThemeLoader.cpp
 	${SRC_DIR}/Widget.cpp
 	${SRC_DIR}/Window.cpp
