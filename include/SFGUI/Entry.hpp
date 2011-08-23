@@ -12,11 +12,10 @@ class Entry : public Widget {
 		typedef boost::shared_ptr<Entry>  Ptr; //!< Shared pointer.
 
 		/** Create entry.
-		 * @param width Width.
 		 * @param text Text.
 		 * @return Entry.
 		 */
-		static Ptr Create( float width = 40.f, const sf::String& text = L"" );
+		static Ptr Create( const sf::String& text = L"" );
 
 		/** Set text.
 		 * @param text Text.
@@ -26,44 +25,44 @@ class Entry : public Widget {
 		/** Get text.
 		 * @return Text.
 		 */
-		sf::String GetText() const { return m_string; }
+		const sf::String& GetText() const;
 
 		/** Get visible text.
 		 * @return Visible text.
 		 */
-		sf::String GetVisibleText() const { return m_visible_string; }
+		const sf::String& GetVisibleText() const;
+
+		/** Get offset to the beginning of the visible text.
+		 * @return Offset.
+		 */
+		std::size_t GetVisibleOffset() const;
 
 		/** Get current cursor position.
 		 * @return Cursor position.
 		 */
-		std::size_t GetCursorPos() const { return m_cursor_position; }
+		std::size_t GetCursorPosition() const;
 		
 		/** Set cursor position.
 		 * @param pos Position.
 		 */
-		void SetCursorPos( std::size_t pos );
-		
-		/** Get cursor status.
-		 * @return true when cursor is currently being displayed.
-		 */
-		bool GetCursorStatus() const { return m_cursor_status; }
-		
-		/** Get distance from left side of the widget at which the cursor is rendered.
-		 * @return distance from left side of the widget at which the cursor is rendered.
-		 */
-		float GetCursorOffset() const { return m_cursor_offset; }
+		void SetCursorPosition( std::size_t pos );
 
+		/** Check if cursor is visible.
+		 * @return true if visible./
+		 */
+		bool IsCursorVisible() const;
+		
 		/** Hide all characters of the string with the given character.
-		 * @param c UTF-32 Character ( 0 to not hide text ).
+		 * @param c UTF-32 Character (0 to not hide text).
 		 */
 		void HideText( sf::Uint32 c );
 		
 		/** Get the character that hides all characters of the string.
 		 * @return UTF-32 Character.
 		 */
-		sf::Uint32 GetHideChar() const { return m_text_placeholder; }
+		sf::Uint32 GetHideCharacter() const;
 
-		Signal<void( Widget::Ptr )>  OnTextChanged; //!< Fired when the text changes.
+		Signal<void( Widget::Ptr )> OnTextChanged; //!< Fired when the text changes.
 
 	protected:
 		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
@@ -71,9 +70,8 @@ class Entry : public Widget {
 
 	private:
 		/** Ctor.
-		 * @param width Width.
 		 */
-		Entry( float width = 40.f );
+		Entry();
 		
 		/** Get closest cursor position to x coordinate.
 		 * @param mouse_pos_x x coordinate.
@@ -106,13 +104,9 @@ class Entry : public Widget {
 		// The offset in the string at which the visible portion starts
 		std::size_t m_visible_offset;
 
-		// Widget width
-		float m_width;
-		
 		std::size_t m_cursor_position;
 		sf::Clock m_cursor_timer;
 		bool m_cursor_status;
-		float m_cursor_offset;
 		
 		// The UTF-32 character which hides each character of the string
 		sf::Uint32 m_text_placeholder;

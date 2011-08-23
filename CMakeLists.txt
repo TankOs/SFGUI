@@ -35,7 +35,6 @@ set(
 	${INC_DIR}/SFGUI/Entry.hpp
 	${INC_DIR}/SFGUI/KeyValueLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
-	${INC_DIR}/SFGUI/ListBox.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
@@ -46,7 +45,6 @@ set(
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Widget.inl
 	${INC_DIR}/SFGUI/Window.hpp
-	${SRC_DIR}/Entry.cpp
 	${SRC_DIR}/SFGUI/Bin.cpp
 	${SRC_DIR}/SFGUI/Box.cpp
 	${SRC_DIR}/SFGUI/Button.cpp
@@ -55,6 +53,7 @@ set(
 	${SRC_DIR}/SFGUI/DragInfo.cpp
 	${SRC_DIR}/SFGUI/Engine.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
+	${SRC_DIR}/SFGUI/Entry.cpp
 	${SRC_DIR}/SFGUI/KeyValueLoader.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp

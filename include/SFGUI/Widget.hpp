@@ -67,11 +67,6 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 		 */
 		void Show( bool show = true );
 
-		/** Check if widget has the focus.
-		 * @return true when focussed.
-		 */
-		bool HasFocus() const;
-
 		/** Set name of widget.
 		 * Used to identify the widget to find it in containers, for example.
 		 * @param name Name.

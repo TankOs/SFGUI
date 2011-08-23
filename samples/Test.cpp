@@ -1,6 +1,7 @@
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Box.hpp>
+#include <SFGUI/Entry.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 //#include <SFGUI/Loaders/YAML.hpp>
 #include <SFGUI/ThemeLoader.hpp>
@@ -19,9 +20,10 @@ class SampleApp {
 		void OnToggleTitlebarClick( sfg::Widget::Ptr widget );
 		void OnHideWindowClicked( sfg::Widget::Ptr widget );
 
-		sfg::Window::Ptr  m_wndmain;
-		sfg::Box::Ptr  m_boxbuttonsh;
-		sfg::Box::Ptr  m_boxbuttonsv;
+		sfg::Window::Ptr m_wndmain;
+		sfg::Box::Ptr m_boxbuttonsh;
+		sfg::Box::Ptr m_boxbuttonsv;
+		sfg::Entry::Ptr m_entry;
 };
 
 void SampleApp::Run() {
@@ -42,6 +44,8 @@ void SampleApp::Run() {
 	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
+	m_entry = sfg::Entry::Create();
+
 	btnaddbuttonh->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0xFF, 0x00, 0x00 ) );
 	btnaddbuttonh->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0xFF, 0x99, 0x99 ) );
 	btnaddbuttonv->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0x00, 0x00, 0x55 ) );
@@ -55,6 +59,7 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( btnaddbuttonv, false );
 	boxtoolbar->Pack( btntoggletitlebar, false );
 	boxtoolbar->Pack( btnhidewindow, false );
+	boxtoolbar->Pack( m_entry, true );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );

@@ -6,14 +6,12 @@
 
 namespace sfg {
 
-Entry::Entry( float width ) :
+Entry::Entry() :
 	m_string(),
 	m_visible_string(),
 	m_visible_offset( 0 ),
-	m_width( width ),
 	m_cursor_position( 0 ),
 	m_cursor_status( false ),
-	m_cursor_offset( 0 ),
 	m_text_placeholder( 0 )
 {
 	OnFocusChange.Connect( &Entry::HandleFocusChange, this );
@@ -26,8 +24,8 @@ Entry::Entry( float width ) :
 	OnExpose.Connect( &Entry::HandleExpose, this );
 }
 
-Entry::Ptr Entry::Create( float width, const sf::String& text ) {
-	Entry::Ptr  ptr( new Entry( width ) );
+Entry::Ptr Entry::Create( const sf::String& text ) {
+	Entry::Ptr  ptr( new Entry );
 	
 	ptr->SetText( text );
 	
@@ -46,15 +44,13 @@ void Entry::SetText( const sf::String& text ) {
 	OnTextChanged.Sig(shared_from_this());
 }
 
-void Entry::SetCursorPos( std::size_t new_position ) {
+void Entry::SetCursorPosition( std::size_t new_position ) {
 	if( new_position == m_cursor_position ) {
 		return;
 	}
-	else {
-		int delta = (int)new_position - (int)( m_cursor_position );
 
-		MoveCursor( delta );
-	}
+	int delta = static_cast<int>( new_position ) - static_cast<int>( m_cursor_position );
+	MoveCursor( delta );
 }
 
 void Entry::HideText( sf::Uint32 c ) {
@@ -91,17 +87,14 @@ std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 
 
 void Entry::RecalculateVisibleString() {
-  float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.Normal.TextPadding", shared_from_this() ) );
+  float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
   const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
   const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
   unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
 
   if( m_string.IsEmpty() ) {
     m_visible_string.Clear();
-    m_cursor_offset = text_padding;
-
     Invalidate();
-
     return;
   }
 
@@ -130,8 +123,6 @@ void Entry::RecalculateVisibleString() {
   }
 
   m_visible_string = string;
-  m_cursor_offset = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, ( m_cursor_position - m_visible_offset ) ), font, font_size ).x + text_padding;
-
   Invalidate();
 }
 
@@ -177,13 +168,13 @@ void Entry::HandleKeyPress( Widget::Ptr /*widget*/, sf::Event::KeyEvent event ) 
 	case sf::Keyboard::Home: {
 		if( m_string.GetSize() > 0 ) {
 			m_visible_offset = 0;
-      SetCursorPos( 0 );
+      SetCursorPosition( 0 );
 		}
 	} break;
 	case sf::Keyboard::End: {
 		if( m_string.GetSize() > 0 ) {
 			m_visible_offset = 0;
-      SetCursorPos( m_string.GetSize() );
+      SetCursorPosition( m_string.GetSize() );
 		}
 	} break;
 	case sf::Keyboard::Left: {
@@ -219,7 +210,7 @@ bool Entry::HandleMouseButtonClick( Widget::Ptr /*widget*/, int x, int /*y*/, sf
 		return true;
 	}
 	
-	SetCursorPos( GetPositionFromMouseX( x ) );
+	SetCursorPosition( GetPositionFromMouseX( x ) );
 	
 	return true;
 }
@@ -227,12 +218,9 @@ bool Entry::HandleMouseButtonClick( Widget::Ptr /*widget*/, int x, int /*y*/, sf
 void Entry::HandleFocusChange( Widget::Ptr /*widget*/ ) {
 	if( GetState() == Active ) {
 		SetState( Normal );
-		m_cursor_status = false;
 	}
 	else {
 		SetState( Active );
-		m_cursor_timer.Reset();
-		m_cursor_status = true;
 	}
 }
 
@@ -250,16 +238,33 @@ void Entry::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ )
 }
 
 sf::Vector2f Entry::GetRequisitionImpl() const {
-	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Entry.Font", shared_from_this() ) );
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
-	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Entry.FontSize", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "Entry.Normal.BorderWidth", shared_from_this() ) );
+  float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
 
-	sf::Vector2f m = Context::Get().GetEngine().GetTextMetrics(
-		L"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", font, font_size );
-	m.x = m_width + 2 * border_width;
-	m.y += 2 * border_width;
+	sf::Vector2f m = Context::Get().GetEngine().GetTextMetrics( m_string, font, font_size );
+	m.x += 2 * border_width + 2 * text_padding;
+	m.y += 2 * border_width + 2 * text_padding;
+
 	return m;
+}
+
+bool Entry::IsCursorVisible() const {
+	return m_cursor_status;
+}
+
+std::size_t Entry::GetVisibleOffset() const {
+	return m_visible_offset;
+}
+
+std::size_t Entry::GetCursorPosition() const {
+	return m_cursor_position;
+}
+
+const sf::String& Entry::GetVisibleText() const {
+	return m_visible_string;
 }
 
 }

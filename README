@@ -1,5 +1,3 @@
-
-
                                      SFGUI
                              GUI library for SFML 2
 
@@ -12,7 +10,7 @@ complete nor very useful. Keep in mind that code which is actively being
 developed may fail on your system or behave strangely.
 
 
-                                 1. Installing
+1. INSTALLING
 
 Dependencies:
   - SFML 2 (http://sfml-dev.org/)
@@ -35,7 +33,7 @@ To build, perform the following steps:
 The library is now ready to use.
 
 
-                         2. Using SFGUI in own projects
+2. USING SFGUI IN OWN PROJECTS
 
 To use SFGUI in your projects, you have to link to the SFGUI library (see 2 for
 building), e.g. libsfgui.so on Linux. Also make sure that your compiler is able
@@ -55,17 +53,20 @@ path manually by setting the SFGUIDIR CMake variable properly.
 Keep in mind that you still have to link to SFML2.
 
 
-                                3. Documentation
+3. DOCUMENTATION
 
 You can find the API documentation in the doc sub-directory. Create it with
 Doxygen (http://www.stack.nl/~dimitri/doxygen/).
 
 
-                            4. Contributing/Contact
+4. CONTRIBUTING/CONTACT
 
 Since SFGUI is true Open Source software, any help is greatly appreciated.
 However tasks should be coordinated, which works best in IRC. Join #sfml at
 irc.boxbox.org.
+
+If you want to contribute source code, please read the doc/GUIDELINES file to
+match SFGUI's coding guidelines.
 
 Otherwise check the list of developers in the CONTRIB file to get some e-mail
 addresses.

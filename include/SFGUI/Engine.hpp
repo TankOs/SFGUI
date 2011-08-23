@@ -15,7 +15,6 @@ class Window;
 class Button;
 class Label;
 class Entry;
-class ListBox;
 
 /** Abstract base class for widget rendering.
  */
@@ -63,13 +62,6 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateEntryDrawable( boost::shared_ptr<Entry> entry, const sf::RenderTarget& target ) const = 0;
-
-		/** Create drawable for listbox widgets.
-		 * @param listbox Widget.
-		 * @param target Render target the drawable is created for.
-		 * @return New drawable object (unmanaged memory!).
-		 */
-		virtual sf::Drawable* CreateListBoxDrawable( boost::shared_ptr<ListBox> listbox, const sf::RenderTarget& target ) const = 0;
 
 		/** Get metrics of a text string.
 		 * @param string String.
