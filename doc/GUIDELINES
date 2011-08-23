@@ -1,0 +1,49 @@
+                             SFGUI code guidelines
+                            Last change: 2011-08-23
+
+1. INTRODUCTION
+
+This file gives information about some code guidelines for the SFGUI project.
+The main reason is to keep the code style and behaviour of the whole library as
+consistent as possible.
+
+
+2. CODE STYLE
+
+Check the sources of SFGUI to see how code is formatted. Formatting code is
+like a religion for programmers, but please stick to SFGUI's style if you're
+about to contribute source code.
+
+
+3. GENERAL RULES
+
+  1. No definitions in class declarations: Do not define something within a
+     class declaration. That includes methods: Even if they're short, do not
+     auto-inline by defining it.
+
+     NO:
+     class Foo {
+       void Bar() { ... }
+     };
+
+     YES:
+     class Foo {
+       void Bar();
+     };
+
+  2. Pay attention at const-correct method signatures. Getters mostly return
+     const references — an exception are built-in C++ types like int, char etc.
+
+     NO:
+     sf::String GetText();
+
+     YES:
+     const sf::String& GetText() const;
+
+  3. Use clear and full names, especially for method names.
+
+     NO:
+     void SetPos();
+
+     YES:
+     void SetPosition();
