@@ -63,7 +63,8 @@ Doxygen (http://www.stack.nl/~dimitri/doxygen/).
 
 Since SFGUI is true Open Source software, any help is greatly appreciated.
 However tasks should be coordinated, which works best in IRC. Join #sfml at
-irc.boxbox.org.
+irc.boxbox.org. SFGUI also has an own bugtracker & discussion boards at
+http://redmine.boxbox.org/projects/sfgui.
 
 If you want to contribute source code, please read the doc/GUIDELINES file to
 match SFGUI's coding guidelines.
