@@ -14,6 +14,8 @@ namespace sfg {
 class Window;
 class Button;
 class Label;
+class Entry;
+class ListBox;
 
 /** Abstract base class for widget rendering.
  */
@@ -55,13 +57,27 @@ class SFGUI_API Engine {
 		 */
 		virtual sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label, const sf::RenderTarget& target ) const = 0;
 
+		/** Create drawable for entry widgets.
+		 * @param entry Widget.
+		 * @param target Render target the drawable is created for.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual sf::Drawable* CreateEntryDrawable( boost::shared_ptr<Entry> entry, const sf::RenderTarget& target ) const = 0;
+
+		/** Create drawable for listbox widgets.
+		 * @param listbox Widget.
+		 * @param target Render target the drawable is created for.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual sf::Drawable* CreateListBoxDrawable( boost::shared_ptr<ListBox> listbox, const sf::RenderTarget& target ) const = 0;
+
 		/** Get metrics of a text string.
 		 * @param string String.
 		 * @param font Font.
 		 * @param font_size Font size.
 		 * @return Metrics.
 		 */
-		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size );
+		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Set property.
 		 * @param property Name of property.

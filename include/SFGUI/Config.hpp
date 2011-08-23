@@ -3,7 +3,10 @@
 
 #if defined( _WIN32 ) || defined( __WIN32__ )
 	#define WIN32_LEAN_AND_MEAN
-	#define NOMINMAX
+	
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
 
 	#ifdef SFGUI_EXPORTS
 		#define SFGUI_API __declspec( dllexport )

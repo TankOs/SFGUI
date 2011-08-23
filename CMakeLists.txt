@@ -32,8 +32,10 @@ set(
 	${INC_DIR}/SFGUI/Engine.hpp
 	${INC_DIR}/SFGUI/Engine.inl
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
+	${INC_DIR}/SFGUI/Entry.hpp
 	${INC_DIR}/SFGUI/KeyValueLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
+	${INC_DIR}/SFGUI/ListBox.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
@@ -44,6 +46,7 @@ set(
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Widget.inl
 	${INC_DIR}/SFGUI/Window.hpp
+	${SRC_DIR}/Entry.cpp
 	${SRC_DIR}/SFGUI/Bin.cpp
 	${SRC_DIR}/SFGUI/Box.cpp
 	${SRC_DIR}/SFGUI/Button.cpp
