@@ -7,7 +7,7 @@ namespace sfg {
 
 /** Entry widget
  */
-class Entry : public Widget {
+class SFGUI_API Entry : public Widget {
 	public:
 		typedef boost::shared_ptr<Entry>  Ptr; //!< Shared pointer.
 
