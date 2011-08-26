@@ -34,21 +34,19 @@ set(
 	${INC_DIR}/SFGUI/Engine.inl
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
 	${INC_DIR}/SFGUI/Entry.hpp
-	${INC_DIR}/SFGUI/HScrollbar.hpp
 	${INC_DIR}/SFGUI/KeyValueLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/Object.hpp
 	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
+	${INC_DIR}/SFGUI/Scale.hpp
 	${INC_DIR}/SFGUI/Scrollbar.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
-	${INC_DIR}/SFGUI/Slider.hpp
 	${INC_DIR}/SFGUI/SlotResult.hpp
 	${INC_DIR}/SFGUI/SlotResult.inl
 	${INC_DIR}/SFGUI/ThemeLoader.hpp
 	${INC_DIR}/SFGUI/ThemeLoader.inl
-	${INC_DIR}/SFGUI/VScrollbar.hpp
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Widget.inl
 	${INC_DIR}/SFGUI/Window.hpp
@@ -62,15 +60,13 @@ set(
 	${SRC_DIR}/SFGUI/Engine.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
 	${SRC_DIR}/SFGUI/Entry.cpp
-	${SRC_DIR}/SFGUI/HScrollbar.cpp
 	${SRC_DIR}/SFGUI/KeyValueLoader.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/Object.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
+	${SRC_DIR}/SFGUI/Scale.cpp
 	${SRC_DIR}/SFGUI/Scrollbar.cpp
-	${SRC_DIR}/SFGUI/Slider.cpp
-	${SRC_DIR}/SFGUI/VScrollbar.cpp
 	${SRC_DIR}/SFGUI/ThemeLoader.cpp
 	${SRC_DIR}/SFGUI/Widget.cpp
 	${SRC_DIR}/SFGUI/Window.cpp

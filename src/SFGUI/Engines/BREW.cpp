@@ -3,6 +3,7 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Label.hpp>
 #include <SFGUI/Entry.hpp>
+#include <SFGUI/Scale.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -49,6 +50,15 @@ BREW::BREW() :
 	SetProperty<float>( "Entry.Normal.BorderWidth", 1.f );
 	SetProperty<std::string>( "Entry.Font", "" );
 	SetProperty<unsigned int>( "Entry.FontSize", 12 );
+
+	SetProperty<float>( "Scale.Trough.Thickness", 5.f );
+	SetProperty<sf::Color>( "Scale.Trough.Color", sf::Color( 0x77, 0x77, 0x77 ) );
+	SetProperty<float>( "Scale.Slider.Length", 12.f );
+	SetProperty<float>( "Scale.Slider.Width", 16.f );
+	SetProperty<sf::Color>( "Scale.Slider.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty<sf::Color>( "Scale.Slider.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty<sf::Color>( "Scale.Slider.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<float>( "Scale.Slider.BorderWidth", 1.f );
 
 	// Register property types.
 	RegisterProperty( "Button.Normal.BackgroundColor", Color );
@@ -243,9 +253,6 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 	
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->GetState() == Widget::Active && entry->IsCursorVisible() ) {
-		// Get text from entry beginning to cursor.
-		std::size_t visible_cursor_position( entry->GetCursorPosition() - entry->GetVisibleOffset() );
-
 		sf::String cursor_string( entry->GetVisibleText() );
 		if( entry->GetCursorPosition() - entry->GetVisibleOffset() < cursor_string.GetSize() ) {
 			cursor_string.Erase( entry->GetCursorPosition() - entry->GetVisibleOffset(), cursor_string.GetSize() );
@@ -261,6 +268,174 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 		queue->Add( vis_cursor );
 	}
 	
+	return queue;
+}
+
+sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const sf::RenderTarget& /*target*/ ) const {
+	sf::Color trough_color( GetProperty<sf::Color>( "Scale.Trough.Color", scale ) );
+	sf::Color slider_color( GetProperty<sf::Color>( "Scale.Slider.BackgroundColor", scale ) );
+	sf::Color border_color_light( GetProperty<sf::Color>( "Scale.Slider.LightBorderColor", scale ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "Scale.Slider.DarkBorderColor", scale ) );
+	float trough_thickness( GetProperty<float>( "Scale.Trough.Thickness", scale ) );
+	float border_width( GetProperty<float>( "Scale.Slider.BorderWidth", scale ) );
+
+	RenderQueue* queue( new RenderQueue );
+
+	Scale::Orientation orientation = scale->GetOrientation();
+
+	sf::FloatRect slider_rect = scale->GetSliderRect();
+
+	if( orientation == Scale::Horizontal ) {
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					slider_rect.Width / 2.f,
+					( scale->GetAllocation().Height - trough_thickness ) / 2.f,
+					scale->GetAllocation().Width - slider_rect.Width,
+					trough_thickness,
+					trough_color
+				)
+			)
+		);
+
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					slider_rect.Left,
+					slider_rect.Top,
+					slider_rect.Width,
+					slider_rect.Height,
+					slider_color
+				)
+			)
+		);
+
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					slider_rect.Left + slider_rect.Width - border_width + .1f,
+					slider_rect.Top + .1f,
+					border_width,
+					slider_rect.Height,
+					border_color_dark
+				)
+			)
+		); // Right.
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					slider_rect.Left + .1f,
+					slider_rect.Top + slider_rect.Height - border_width + .1f,
+					slider_rect.Width,
+					border_width,
+					border_color_dark
+				)
+			)
+		); // Bottom.
+
+		for( float delta = 0.f; delta < border_width; delta += 1.f ) {
+			queue->Add(
+				new sf::Shape(
+					sf::Shape::Line(
+						slider_rect.Left + .1f,
+						slider_rect.Top + delta + .1f,
+						slider_rect.Left + slider_rect.Width - delta,
+						slider_rect.Top + delta,
+						1.f,
+						border_color_light
+					)
+				)
+			); // Top.
+			queue->Add(
+				new sf::Shape(
+					sf::Shape::Line(
+						slider_rect.Left + delta + .1f,
+						slider_rect.Top + .1f,
+						slider_rect.Left + delta,
+						slider_rect.Top + slider_rect.Height - delta,
+						1.f,
+						border_color_light
+					)
+				)
+			); // Left.
+		}
+	}
+	else {
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					( scale->GetAllocation().Width - trough_thickness ) / 2.f,
+					slider_rect.Height / 2.f,
+					trough_thickness,
+					scale->GetAllocation().Height - slider_rect.Height,
+					trough_color
+				)
+			)
+		);
+
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					slider_rect.Left,
+					slider_rect.Top,
+					slider_rect.Width,
+					slider_rect.Height,
+					slider_color
+				)
+			)
+		);
+
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					slider_rect.Left + slider_rect.Width - border_width + .1f,
+					slider_rect.Top + .1f,
+					border_width,
+					slider_rect.Height,
+					border_color_dark
+				)
+			)
+		); // Right.
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					slider_rect.Left + .1f,
+					slider_rect.Top + slider_rect.Height - border_width + .1f,
+					slider_rect.Width,
+					border_width,
+					border_color_dark
+				)
+			)
+		); // Bottom.
+
+		for( float delta = 0.f; delta < border_width; delta += 1.f ) {
+			queue->Add(
+				new sf::Shape(
+					sf::Shape::Line(
+						slider_rect.Left + .1f,
+						slider_rect.Top + delta + .1f,
+						slider_rect.Left + slider_rect.Width - delta,
+						slider_rect.Top + delta,
+						1.f,
+						border_color_light
+					)
+				)
+			); // Top.
+			queue->Add(
+				new sf::Shape(
+					sf::Shape::Line(
+						slider_rect.Left + delta + .1f,
+						slider_rect.Top + .1f,
+						slider_rect.Left + delta,
+						slider_rect.Top + slider_rect.Height - delta,
+						1.f,
+						border_color_light
+					)
+				)
+			); // Left.
+		}
+	}
+
 	return queue;
 }
 
