@@ -10,7 +10,7 @@ class SFGUI_API Scale : public Range {
 	public:
 		typedef boost::shared_ptr<Scale>  Ptr; //!< Shared pointer.
 
-    /** Scale orientation.
+		/** Scale orientation.
 		 */
 		enum Orientation {
 			Horizontal = 0, //!< Horizontal scale.
@@ -42,32 +42,32 @@ class SFGUI_API Scale : public Range {
 		 */
 		float GetWidth() const;
 
-    /** Set length of this scale widget
-     * @param new_length new length
-     */
+		/** Set length of this scale widget
+		 * @param new_length new length
+		 */
 		void SetLength( float new_length );
 
-    /** Set width of this scale widget
-     * @param new_width new width
-     */
+		/** Set width of this scale widget
+		 * @param new_width new width
+		 */
 		void SetWidth( float new_width );
 
-    /** Get the orientation of this scale widget
-     * @return orientation of this scale widget
-     */
-    Orientation GetOrientation();
+		/** Get the orientation of this scale widget
+		 * @return orientation of this scale widget
+		 */
+		const Orientation GetOrientation() const;
 
-    /** Get slider rectangle ( position and dimensions )
-     * @return slider rect
-     */
-    const sf::FloatRect GetSliderRect() const;
+		/** Get slider rectangle ( position and dimensions )
+		 * @return slider rect
+		 */
+		const sf::FloatRect GetSliderRect() const;
 
-  protected:
+	protected:
 		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
 		sf::Vector2f GetRequisitionImpl() const;
 
-  private:
-    /** Ctor.
+	private:
+		/** Ctor.
 		 */
 		Scale( Orientation orientation = Horizontal );
 
@@ -75,12 +75,12 @@ class SFGUI_API Scale : public Range {
 		bool HandleMouseButtonRelease( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		void HandleMouseMove( Widget::Ptr widget, int x, int y );
 
-    Orientation m_orientation;
+		Orientation m_orientation;
 
-    float m_length;
-    float m_width;
+		float m_length;
+		float m_width;
 
-    bool m_dragging;
+		bool m_dragging;
 };
 
 }

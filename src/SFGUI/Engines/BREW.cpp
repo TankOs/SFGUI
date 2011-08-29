@@ -4,6 +4,7 @@
 #include <SFGUI/Label.hpp>
 #include <SFGUI/Entry.hpp>
 #include <SFGUI/Scale.hpp>
+#include <SFGUI/Scrollbar.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -59,6 +60,18 @@ BREW::BREW() :
 	SetProperty<sf::Color>( "Scale.Slider.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 	SetProperty<sf::Color>( "Scale.Slider.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty<float>( "Scale.Slider.BorderWidth", 1.f );
+
+	SetProperty<float>( "Scrollbar.BorderWidth", 1.f );
+	SetProperty<sf::Color>( "Scrollbar.Trough.Color", sf::Color( 0x77, 0x77, 0x77 ) );
+	SetProperty<float>( "Scrollbar.Slider.MinimumLength", 2.f );
+	SetProperty<sf::Color>( "Scrollbar.Slider.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty<sf::Color>( "Scrollbar.Slider.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty<sf::Color>( "Scrollbar.Slider.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<float>( "Scrollbar.Stepper.Length", 16.f );
+	SetProperty<sf::Color>( "Scrollbar.Stepper.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
+	SetProperty<sf::Color>( "Scrollbar.Stepper.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty<sf::Color>( "Scrollbar.Stepper.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<sf::Color>( "Scrollbar.Stepper.ArrowColor", sf::Color( 0x55, 0x55, 0x55 ) );
 
 	// Register property types.
 	RegisterProperty( "Button.Normal.BackgroundColor", Color );
@@ -271,6 +284,29 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 	return queue;
 }
 
+RenderQueue* BREW::CreateAbsoluteBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
+	RenderQueue* queue( new RenderQueue );
+
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + rect.Width - border_width + .1f, rect.Top + .1f, border_width, rect.Height, dark_color ) ) ); // Right.
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + .1f, rect.Top + rect.Height - border_width + .1f, rect.Width, border_width, dark_color ) ) ); // Bottom.
+
+	for( float delta = 0.f; delta < border_width; delta += 1.f ) {
+		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + .1f, rect.Top + delta + .1f, rect.Left + rect.Width - delta, rect.Top + delta, 1.f, light_color ) ) ); // Top.
+		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + delta + .1f, rect.Top + .1f, rect.Left + delta, rect.Top + rect.Height - delta, 1.f, light_color ) ) ); // Left.
+	}
+
+	return queue;
+}
+
+RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
+	RenderQueue* queue( new RenderQueue );
+
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left, rect.Top, rect.Width, rect.Height, background ) ) ); // Background.
+	queue->Add( CreateAbsoluteBorder( rect, border_width, light_color, dark_color ) ); // Border
+
+	return queue;
+}
+
 sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const sf::RenderTarget& /*target*/ ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "Scale.Trough.Color", scale ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "Scale.Slider.BackgroundColor", scale ) );
@@ -286,6 +322,7 @@ sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const s
 	sf::FloatRect slider_rect = scale->GetSliderRect();
 
 	if( orientation == Scale::Horizontal ) {
+		// Trough
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Rectangle(
@@ -297,70 +334,9 @@ sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const s
 				)
 			)
 		);
-
-		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					slider_rect.Left,
-					slider_rect.Top,
-					slider_rect.Width,
-					slider_rect.Height,
-					slider_color
-				)
-			)
-		);
-
-		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					slider_rect.Left + slider_rect.Width - border_width + .1f,
-					slider_rect.Top + .1f,
-					border_width,
-					slider_rect.Height,
-					border_color_dark
-				)
-			)
-		); // Right.
-		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					slider_rect.Left + .1f,
-					slider_rect.Top + slider_rect.Height - border_width + .1f,
-					slider_rect.Width,
-					border_width,
-					border_color_dark
-				)
-			)
-		); // Bottom.
-
-		for( float delta = 0.f; delta < border_width; delta += 1.f ) {
-			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						slider_rect.Left + .1f,
-						slider_rect.Top + delta + .1f,
-						slider_rect.Left + slider_rect.Width - delta,
-						slider_rect.Top + delta,
-						1.f,
-						border_color_light
-					)
-				)
-			); // Top.
-			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						slider_rect.Left + delta + .1f,
-						slider_rect.Top + .1f,
-						slider_rect.Left + delta,
-						slider_rect.Top + slider_rect.Height - delta,
-						1.f,
-						border_color_light
-					)
-				)
-			); // Left.
-		}
 	}
 	else {
+		// Trough
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Rectangle(
@@ -372,69 +348,220 @@ sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const s
 				)
 			)
 		);
+	}
 
+	// Slider
+	queue->Add( CreateSlider( slider_rect, slider_color, border_width, border_color_light, border_color_dark ) );
+
+	return queue;
+}
+
+RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color, bool pressed ) {
+	RenderQueue* queue( new RenderQueue );
+
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left, rect.Top, rect.Width, rect.Height, background ) ) ); // Background.
+
+	if( pressed ) {
+		queue->Add( CreateAbsoluteBorder( rect, border_width, dark_color, light_color ) );
+	}
+	else {
+		queue->Add( CreateAbsoluteBorder( rect, border_width, light_color, dark_color ) );
+	}
+
+	return queue;
+}
+
+sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar, const sf::RenderTarget& /*target*/ ) const {
+	sf::Color trough_color( GetProperty<sf::Color>( "Scrollbar.Trough.Color", scrollbar ) );
+	sf::Color slider_color( GetProperty<sf::Color>( "Scrollbar.Slider.BackgroundColor", scrollbar ) );
+	sf::Color slider_border_color_light( GetProperty<sf::Color>( "Scrollbar.Slider.LightBorderColor", scrollbar ) );
+	sf::Color slider_border_color_dark( GetProperty<sf::Color>( "Scrollbar.Slider.DarkBorderColor", scrollbar ) );
+	sf::Color stepper_color( GetProperty<sf::Color>( "Scrollbar.Stepper.BackgroundColor", scrollbar ) );
+	sf::Color stepper_border_color_light( GetProperty<sf::Color>( "Scrollbar.Stepper.LightBorderColor", scrollbar ) );
+	sf::Color stepper_border_color_dark( GetProperty<sf::Color>( "Scrollbar.Stepper.DarkBorderColor", scrollbar ) );
+	sf::Color stepper_arrow_color( GetProperty<sf::Color>( "Scrollbar.Stepper.ArrowColor", scrollbar ) );
+	float border_width( GetProperty<float>( "Scrollbar.BorderWidth", scrollbar ) );
+	float stepper_length( GetProperty<float>( "Scrollbar.Stepper.Length", scrollbar ) );
+
+	RenderQueue* queue( new RenderQueue );
+
+	Scrollbar::Orientation orientation = scrollbar->GetOrientation();
+
+	if( orientation == Scrollbar::Horizontal ) {
+		// Trough
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Rectangle(
-					slider_rect.Left,
-					slider_rect.Top,
-					slider_rect.Width,
-					slider_rect.Height,
-					slider_color
+					stepper_length,
+					0.f,
+					scrollbar->GetAllocation().Width - 2.f * stepper_length,
+					scrollbar->GetWidth(),
+					trough_color
 				)
 			)
 		);
 
+		// Stepper left
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					slider_rect.Left + slider_rect.Width - border_width + .1f,
-					slider_rect.Top + .1f,
-					border_width,
-					slider_rect.Height,
-					border_color_dark
-				)
+			CreateStepper(
+				sf::FloatRect(
+					0.f,
+					0.f,
+					stepper_length,
+					scrollbar->GetWidth()
+				),
+				stepper_color,
+				border_width,
+				stepper_border_color_light,
+				stepper_border_color_dark,
+				scrollbar->IsDecreaseStepperPressed()
 			)
-		); // Right.
-		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					slider_rect.Left + .1f,
-					slider_rect.Top + slider_rect.Height - border_width + .1f,
-					slider_rect.Width,
-					border_width,
-					border_color_dark
-				)
-			)
-		); // Bottom.
+		);
 
-		for( float delta = 0.f; delta < border_width; delta += 1.f ) {
-			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						slider_rect.Left + .1f,
-						slider_rect.Top + delta + .1f,
-						slider_rect.Left + slider_rect.Width - delta,
-						slider_rect.Top + delta,
-						1.f,
-						border_color_light
-					)
-				)
-			); // Top.
-			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						slider_rect.Left + delta + .1f,
-						slider_rect.Top + .1f,
-						slider_rect.Left + delta,
-						slider_rect.Top + slider_rect.Height - delta,
-						1.f,
-						border_color_light
-					)
-				)
-			); // Left.
-		}
+		sf::Shape* arrow_left = new sf::Shape();
+		arrow_left->AddPoint(
+			stepper_length * .66f,
+			scrollbar->GetWidth() * .33f,
+			stepper_arrow_color
+		);
+		arrow_left->AddPoint(
+			stepper_length * .33f,
+			scrollbar->GetWidth() * .5f,
+			stepper_arrow_color
+		);
+		arrow_left->AddPoint(
+			stepper_length * .66f,
+			scrollbar->GetWidth() * .66f,
+			stepper_arrow_color
+		);
+
+		queue->Add(arrow_left);
+
+		// Stepper right
+		queue->Add(
+			CreateStepper(
+				sf::FloatRect(
+					scrollbar->GetAllocation().Width - stepper_length,
+					0.f,
+					stepper_length,
+					scrollbar->GetWidth()
+				),
+				stepper_color,
+				border_width,
+				stepper_border_color_light,
+				stepper_border_color_dark,
+				scrollbar->IsIncreaseStepperPressed()
+			)
+		);
+
+		sf::Shape* arrow_right = new sf::Shape();
+		arrow_right->AddPoint(
+			scrollbar->GetAllocation().Width - stepper_length * .66f,
+			scrollbar->GetWidth() * .33f,
+			stepper_arrow_color
+		);
+		arrow_right->AddPoint(
+			scrollbar->GetAllocation().Width - stepper_length * .33f,
+			scrollbar->GetWidth() * .5f,
+			stepper_arrow_color
+		);
+		arrow_right->AddPoint(
+			scrollbar->GetAllocation().Width - stepper_length * .66f,
+			scrollbar->GetWidth() * .66f,
+			stepper_arrow_color
+		);
+
+		queue->Add(arrow_right);
 	}
+	else {
+		// Trough
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					0.f,
+					stepper_length,
+					scrollbar->GetWidth(),
+					scrollbar->GetAllocation().Height - 2.f * stepper_length,
+					trough_color
+				)
+			)
+		);
+
+		// Stepper top
+		queue->Add(
+			CreateStepper(
+				sf::FloatRect(
+					0.f,
+					0.f,
+					scrollbar->GetWidth(),
+					stepper_length
+				),
+				stepper_color,
+				border_width,
+				stepper_border_color_light,
+				stepper_border_color_dark,
+				scrollbar->IsDecreaseStepperPressed()
+			)
+		);
+
+		sf::Shape* arrow_up = new sf::Shape();
+		arrow_up->AddPoint(
+			scrollbar->GetWidth() * .33f,
+			stepper_length * .66f,
+			stepper_arrow_color
+		);
+		arrow_up->AddPoint(
+			scrollbar->GetWidth() * .66f,
+			stepper_length * .66f,
+			stepper_arrow_color
+		);
+		arrow_up->AddPoint(
+			scrollbar->GetWidth() * .5f,
+			stepper_length * .33f,
+			stepper_arrow_color
+		);
+
+		queue->Add(arrow_up);
+
+		// Stepper bottom
+		queue->Add(
+			CreateStepper(
+				sf::FloatRect(
+					0.f,
+					scrollbar->GetAllocation().Height - stepper_length,
+					scrollbar->GetWidth(),
+					stepper_length
+				),
+				stepper_color,
+				border_width,
+				stepper_border_color_light,
+				stepper_border_color_dark,
+				scrollbar->IsIncreaseStepperPressed()
+			)
+		);
+
+		sf::Shape* arrow_down = new sf::Shape();
+		arrow_down->AddPoint(
+			scrollbar->GetWidth() * .33f,
+			scrollbar->GetAllocation().Height - stepper_length * .66f,
+			stepper_arrow_color
+		);
+		arrow_down->AddPoint(
+			scrollbar->GetWidth() * .66f,
+			scrollbar->GetAllocation().Height - stepper_length * .66f,
+			stepper_arrow_color
+		);
+		arrow_down->AddPoint(
+			scrollbar->GetWidth() * .5f,
+			scrollbar->GetAllocation().Height - stepper_length * .33f,
+			stepper_arrow_color
+		);
+
+		queue->Add(arrow_down);
+	}
+
+	// Slider
+	queue->Add( CreateSlider( scrollbar->GetSliderRect(), slider_color, border_width, slider_border_color_light, slider_border_color_dark ) );
 
 	return queue;
 }

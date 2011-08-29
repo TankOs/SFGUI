@@ -39,10 +39,17 @@ float Adjustment::GetValue() const {
 }
 
 void Adjustment::SetValue( float new_value ) {
-	if( ( new_value >= m_lower ) && ( new_value <= m_upper ) ) {
-		m_value = new_value;
-		OnChange.Sig( shared_from_this() );
+	m_value = new_value;
+
+	// Clamp value within limits
+	if( m_value < m_lower ) {
+		m_value = m_lower;
 	}
+	if( new_value > m_upper ) {
+		m_value = m_upper;
+	}
+
+	OnChange.Sig( shared_from_this() );
 }
 
 float Adjustment::GetLower() const {
@@ -118,6 +125,14 @@ void Adjustment::Increment() {
 
 void Adjustment::Decrement() {
 	SetValue( GetValue() - GetMinorStep() );
+}
+
+void Adjustment::IncrementPage() {
+	SetValue( GetValue() + GetMajorStep() );
+}
+
+void Adjustment::DecrementPage() {
+	SetValue( GetValue() - GetMajorStep() );
 }
 
 }

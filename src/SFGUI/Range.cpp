@@ -10,9 +10,6 @@ Range::Range() :
 	m_adjustment->OnChange.Connect( &Range::HandleAdjustmentChange, this );
 }
 
-Range::~Range() {
-}
-
 Adjustment::Ptr Range::GetAdjustment() const {
 	return m_adjustment;
 }

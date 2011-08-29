@@ -11,10 +11,6 @@ class SFGUI_API Range : public Widget {
 	public:
 		typedef boost::shared_ptr<Range>  Ptr; //!< Shared pointer.
 
-		/** Dtor.
-		 */
-		~Range();
-
 		/** Get the Adjustment for this Range widget.
 		 * @return Adjustment for this Range widget.
 		 */

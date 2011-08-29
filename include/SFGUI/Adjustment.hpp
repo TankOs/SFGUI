@@ -109,6 +109,14 @@ class SFGUI_API Adjustment : public Object, public boost::enable_shared_from_thi
 		 */
 		void Decrement();
 
+		/** Increment current value by a page
+		 */
+		void IncrementPage();
+
+		/** Decrement current value by a page
+		 */
+		void DecrementPage();
+
 		// Signals.
 		Signal<void( Ptr )>  OnChange; //!< Fired when parameter changed.
 
