@@ -2,6 +2,8 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Entry.hpp>
+#include <SFGUI/Table.hpp>
+#include <SFGUI/Label.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 //#include <SFGUI/Loaders/YAML.hpp>
 #include <SFGUI/ThemeLoader.hpp>
@@ -24,6 +26,7 @@ class SampleApp {
 		sfg::Box::Ptr m_boxbuttonsh;
 		sfg::Box::Ptr m_boxbuttonsv;
 		sfg::Entry::Ptr m_entry;
+		sfg::Table::Ptr m_table;
 };
 
 void SampleApp::Run() {
@@ -39,10 +42,10 @@ void SampleApp::Run() {
 	m_wndmain->SetTitle( L"Example application" );
 	m_wndmain->SetBorderWidth( 10.f );
 
-	sfg::Button::Ptr  btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
-	sfg::Button::Ptr  btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
-	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
-	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
+	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
+	sfg::Button::Ptr btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
+	sfg::Button::Ptr btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
+	sfg::Button::Ptr btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
 	m_entry = sfg::Entry::Create();
 
@@ -51,8 +54,11 @@ void SampleApp::Run() {
 	btnaddbuttonv->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0x00, 0x00, 0x55 ) );
 	btnaddbuttonv->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0x55, 0x55, 0xBB ) );
 
+	sfg::Label::Ptr test_label( sfg::Label::Create( L"Foobar?" ) );
+	sfg::Label::Ptr another_label( sfg::Label::Create( L"Meow?" ) );
+
 	// Layout.
-	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
+	sfg::Box::Ptr boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
 	boxtoolbar->SetName( "boxtoolbar" );
 	boxtoolbar->SetSpacing( 5.f );
 	boxtoolbar->Pack( btnaddbuttonh, false );
@@ -67,11 +73,18 @@ void SampleApp::Run() {
 	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Vertical );
 	m_boxbuttonsv->SetSpacing( 5.f );
 
+	m_table = sfg::Table::Create();
+	m_table->Attach( sfg::Label::Create( L"FOOBAR" ), 0, 1, 0, 1 );
+	m_table->Attach( sfg::Label::Create( L"MIAU MIAU" ), 1, 2, 0, 1 );
+	m_table->Attach( sfg::Label::Create( L"UL" ), 0, 1, 1, 2 );
+	m_table->Attach( sfg::Label::Create( L"UR" ), 1, 2, 1, 2 );
+
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( boxtoolbar, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
+	boxmain->Pack( m_table );
 
 	m_wndmain->Add( boxmain );
 

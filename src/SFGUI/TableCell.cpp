@@ -1,0 +1,15 @@
+#include <SFGUI/TableCell.hpp>
+
+namespace sfg {
+namespace priv {
+
+TableCell::TableCell( sfg::Widget::Ptr child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_ ) :
+	child( child_ ),
+	rect( rect_ ),
+	x_options( x_options_ ),
+	y_options( y_options )
+{
+}
+
+}
+}
