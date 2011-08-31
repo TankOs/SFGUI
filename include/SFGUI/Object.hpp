@@ -6,6 +6,7 @@
 #include <boost/enable_shared_from_this.hpp>
 
 namespace sfg {
+namespace priv {
 
 /** Base class for all Widget, Adjustment and Tooltip objects.
  */
@@ -21,4 +22,5 @@ class SFGUI_API Object : public boost::noncopyable {
 	private:
 };
 
+}
 }
