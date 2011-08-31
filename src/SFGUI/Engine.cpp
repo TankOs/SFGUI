@@ -8,6 +8,10 @@ namespace sfg {
 Engine::~Engine() {
 }
 
+float Engine::GetLineHeight( const sf::Font& font, unsigned int font_size ) const {
+	return font.GetLineSpacing( font_size ) + std::floor( static_cast<float>( font_size ) / 20.f ); // Last part from experimentation
+}
+
 sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {
 	sf::Text  text( string, font, font_size );
 	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );

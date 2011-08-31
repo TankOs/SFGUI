@@ -245,19 +245,23 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 
 	RenderQueue* queue( new RenderQueue );
 
+	sf::FloatRect allocation = entry->GetAllocation();
+	allocation.Width = entry->GetSize().x;
+	allocation.Height = entry->GetSize().y;
+
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Rectangle(
 				0.f, 0.f,
-				entry->GetAllocation().Width,
-				entry->GetAllocation().Height,
+				allocation.Width,
+				allocation.Height,
 				background_color
 			)
 		)
 	);
 
-	queue->Add( CreateBorder( entry->GetAllocation(), border_width, border_color_dark, border_color_light) );
-	
+	queue->Add( CreateBorder( allocation, border_width, border_color_dark, border_color_light) );
+
 	sf::Text*  vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
 	vis_label->SetPosition( text_padding, text_padding );
@@ -273,10 +277,11 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 
 		// Get metrics.
 		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
+		float line_height = GetLineHeight( font, font_size );
 
 		sf::Sprite* vis_cursor( new sf::Sprite() );
-		vis_cursor->SetPosition( metrics.x + text_padding, text_padding );
-		vis_cursor->Resize( cursor_thickness, static_cast<float>( font_size ) );
+		vis_cursor->SetPosition( metrics.x + text_padding, border_width + text_padding );
+		vis_cursor->Resize( cursor_thickness, line_height );
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );
 	}
@@ -327,8 +332,8 @@ sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const s
 			new sf::Shape(
 				sf::Shape::Rectangle(
 					slider_rect.Width / 2.f,
-					( scale->GetAllocation().Height - trough_thickness ) / 2.f,
-					scale->GetAllocation().Width - slider_rect.Width,
+					( scale->GetSize().y - trough_thickness ) / 2.f,
+					scale->GetSize().x - slider_rect.Width,
 					trough_thickness,
 					trough_color
 				)
@@ -340,8 +345,8 @@ sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const s
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Rectangle(
-					( scale->GetAllocation().Width - trough_thickness ) / 2.f,
-					slider_rect.Height / 2.f,
+					( scale->GetSize().x - trough_thickness ) / 2.f,
+					scale->GetSize().y / 2.f,
 					trough_thickness,
 					scale->GetAllocation().Height - slider_rect.Height,
 					trough_color
@@ -388,14 +393,16 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 	Scrollbar::Orientation orientation = scrollbar->GetOrientation();
 
 	if( orientation == Scrollbar::Horizontal ) {
+		float height = scrollbar->GetSize().y;
+
 		// Trough
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Rectangle(
 					stepper_length,
 					0.f,
-					scrollbar->GetAllocation().Width - 2.f * stepper_length,
-					scrollbar->GetWidth(),
+					scrollbar->GetSize().x - 2.f * stepper_length,
+					height,
 					trough_color
 				)
 			)
@@ -408,7 +415,7 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 					0.f,
 					0.f,
 					stepper_length,
-					scrollbar->GetWidth()
+					height
 				),
 				stepper_color,
 				border_width,
@@ -421,17 +428,17 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 		sf::Shape* arrow_left = new sf::Shape();
 		arrow_left->AddPoint(
 			stepper_length * .66f,
-			scrollbar->GetWidth() * .33f,
+			height * .33f,
 			stepper_arrow_color
 		);
 		arrow_left->AddPoint(
 			stepper_length * .33f,
-			scrollbar->GetWidth() * .5f,
+			height * .5f,
 			stepper_arrow_color
 		);
 		arrow_left->AddPoint(
 			stepper_length * .66f,
-			scrollbar->GetWidth() * .66f,
+			height * .66f,
 			stepper_arrow_color
 		);
 
@@ -441,10 +448,10 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 		queue->Add(
 			CreateStepper(
 				sf::FloatRect(
-					scrollbar->GetAllocation().Width - stepper_length,
+					scrollbar->GetSize().x - stepper_length,
 					0.f,
 					stepper_length,
-					scrollbar->GetWidth()
+					height
 				),
 				stepper_color,
 				border_width,
@@ -456,32 +463,34 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 
 		sf::Shape* arrow_right = new sf::Shape();
 		arrow_right->AddPoint(
-			scrollbar->GetAllocation().Width - stepper_length * .66f,
-			scrollbar->GetWidth() * .33f,
+			scrollbar->GetSize().x - stepper_length * .66f,
+			height * .33f,
 			stepper_arrow_color
 		);
 		arrow_right->AddPoint(
-			scrollbar->GetAllocation().Width - stepper_length * .33f,
-			scrollbar->GetWidth() * .5f,
+			scrollbar->GetSize().x - stepper_length * .33f,
+			height * .5f,
 			stepper_arrow_color
 		);
 		arrow_right->AddPoint(
-			scrollbar->GetAllocation().Width - stepper_length * .66f,
-			scrollbar->GetWidth() * .66f,
+			scrollbar->GetSize().x - stepper_length * .66f,
+			height * .66f,
 			stepper_arrow_color
 		);
 
 		queue->Add(arrow_right);
 	}
 	else {
+		float width = scrollbar->GetSize().x;
+
 		// Trough
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Rectangle(
 					0.f,
 					stepper_length,
-					scrollbar->GetWidth(),
-					scrollbar->GetAllocation().Height - 2.f * stepper_length,
+					width,
+					scrollbar->GetSize().y - 2.f * stepper_length,
 					trough_color
 				)
 			)
@@ -493,7 +502,7 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 				sf::FloatRect(
 					0.f,
 					0.f,
-					scrollbar->GetWidth(),
+					width,
 					stepper_length
 				),
 				stepper_color,
@@ -506,17 +515,17 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 
 		sf::Shape* arrow_up = new sf::Shape();
 		arrow_up->AddPoint(
-			scrollbar->GetWidth() * .33f,
+			width * .33f,
 			stepper_length * .66f,
 			stepper_arrow_color
 		);
 		arrow_up->AddPoint(
-			scrollbar->GetWidth() * .66f,
+			width * .66f,
 			stepper_length * .66f,
 			stepper_arrow_color
 		);
 		arrow_up->AddPoint(
-			scrollbar->GetWidth() * .5f,
+			width * .5f,
 			stepper_length * .33f,
 			stepper_arrow_color
 		);
@@ -528,8 +537,8 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 			CreateStepper(
 				sf::FloatRect(
 					0.f,
-					scrollbar->GetAllocation().Height - stepper_length,
-					scrollbar->GetWidth(),
+					scrollbar->GetSize().y - stepper_length,
+					width,
 					stepper_length
 				),
 				stepper_color,
@@ -542,18 +551,18 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 
 		sf::Shape* arrow_down = new sf::Shape();
 		arrow_down->AddPoint(
-			scrollbar->GetWidth() * .33f,
-			scrollbar->GetAllocation().Height - stepper_length * .66f,
+			width * .33f,
+			scrollbar->GetSize().y - stepper_length * .66f,
 			stepper_arrow_color
 		);
 		arrow_down->AddPoint(
-			scrollbar->GetWidth() * .66f,
-			scrollbar->GetAllocation().Height - stepper_length * .66f,
+			width * .66f,
+			scrollbar->GetSize().y - stepper_length * .66f,
 			stepper_arrow_color
 		);
 		arrow_down->AddPoint(
-			scrollbar->GetWidth() * .5f,
-			scrollbar->GetAllocation().Height - stepper_length * .33f,
+			width * .5f,
+			scrollbar->GetSize().y - stepper_length * .33f,
 			stepper_arrow_color
 		);
 

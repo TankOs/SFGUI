@@ -110,6 +110,11 @@ class SFGUI_API Widget : public priv::Object, public boost::enable_shared_from_t
 		 */
 		void SetRequisition( const sf::Vector2f& requisition = sf::Vector2f( 0.f, 0.f ) );
 
+		/** Get size.
+		 * @return Size of the widget
+		 */
+		const sf::Vector2f GetSize() const;
+
 		/** Set position.
 		 * @param position Position.
 		 */

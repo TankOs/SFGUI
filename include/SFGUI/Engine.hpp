@@ -79,6 +79,13 @@ class SFGUI_API Engine {
 		 */
 		virtual sf::Drawable* CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar, const sf::RenderTarget& target ) const = 0;
 
+		/** Get line height of a font.
+		 * @param font Font.
+		 * @param font_size Font size.
+		 * @return Line height.
+		 */
+		float GetLineHeight( const sf::Font& font, unsigned int font_size ) const;
+
 		/** Get metrics of a text string.
 		 * @param string String.
 		 * @param font Font.
