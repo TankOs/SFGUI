@@ -256,7 +256,7 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry, const s
 
 		sf::Sprite* vis_cursor( new sf::Sprite() );
 		vis_cursor->SetPosition( metrics.x + text_padding, text_padding );
-		vis_cursor->Resize( cursor_thickness, entry->GetAllocation().Height - (text_padding * 2.f) );
+		vis_cursor->Resize( cursor_thickness, static_cast<float>( font_size ) );
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );
 	}
