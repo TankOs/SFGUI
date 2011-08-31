@@ -44,7 +44,7 @@ void SampleApp::Run() {
 	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
-	m_entry = sfg::Entry::Create();
+	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, 0.f ) );
 
 	btnaddbuttonh->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0xFF, 0x00, 0x00 ) );

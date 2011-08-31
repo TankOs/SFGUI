@@ -110,7 +110,7 @@ void Entry::RecalculateVisibleString() {
   // While the string is too long for the given space keep chopping off characters
   // on the right end of the string until the cursor is reached, then start
   // chopping off characters on the left side of the string.
-  while( length > GetAllocation().Width - 2.f * text_padding ) {
+	while( (GetAllocation().Width > 0) && (length > GetAllocation().Width - (2.f * text_padding)) ) {
     if( ( m_cursor_position - m_visible_offset ) < string.size() ) {
       string = string.substr( 0, string.size() - 1 );
     }
