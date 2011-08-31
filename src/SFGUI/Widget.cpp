@@ -39,7 +39,8 @@ const std::string& Widget::GetName() const {
 }
 
 void Widget::GrabFocus( Ptr widget ) {
-	if( !m_parent ) {
+	Container::Ptr parent = m_parent.lock();
+	if( !parent ) {
 		// Notify old focused widget.
 		if( m_focus_widget ) {
 			m_focus_widget->OnFocusChange.Sig( m_focus_widget );
@@ -49,7 +50,7 @@ void Widget::GrabFocus( Ptr widget ) {
 		m_focus_widget->OnFocusChange.Sig( m_focus_widget );
 	}
 	else {
-		m_parent->GrabFocus( widget );
+		parent->GrabFocus( widget );
 	}
 }
 
@@ -69,9 +70,10 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 
 void Widget::RequestSize() {
 	m_recalc_requisition = true;
-
-	if( m_parent ) {
-		m_parent->RequestSize();
+	Container::Ptr parent = m_parent.lock();
+	
+	if( parent ) {
+		parent->RequestSize();
 	}
 	else {
 		sf::Vector2f  requisition( GetRequisition() );
@@ -126,9 +128,10 @@ void Widget::SetParent( Widget::Ptr parent ) {
 	if( !cont ) {
 		return;
 	}
+	
+	Container::Ptr oldparent = m_parent.lock();
 
-	if( m_parent ) {
-		Container::Ptr  oldparent( boost::shared_dynamic_cast<Container>( m_parent ) );
+	if( oldparent ) {
 		oldparent->Remove( shared_from_this() );
 	}
 
@@ -154,6 +157,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		return DropEvent;
 	}
 
+	Container::Ptr parent = m_parent.lock();
 	HandleEventResult  result( PassEvent );
 
 	switch(event.Type) {
@@ -177,8 +181,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				OnMouseEnter.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
 
 				// Register hook to get notified when mouse leaves the widget.
-				if( m_parent ) {
-					m_parent->RegisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+				if( parent ) {
+					parent->RegisterEventHook( sf::Event::MouseMoved, shared_from_this() );
 				}
 			}
 
@@ -187,8 +191,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		else if( m_mouse_in == true ) { // Check for leave event.
 			m_mouse_in = false;
 
-			if( !m_drag_info && m_parent ) {
-				m_parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+			if( !m_drag_info && parent ) {
+				parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
 			}
 
 			OnMouseLeave.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
@@ -211,8 +215,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			if( m_mouse_in ) {
 				m_mouse_button_down = event.MouseButton.Button;
 
-				if( m_parent ) {
-					m_parent->RegisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+				if( parent ) {
+					parent->RegisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
 				}
 
 				if( OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
@@ -229,8 +233,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		if( m_mouse_button_down == event.MouseButton.Button ) {
 			m_mouse_button_down = -1;
 
-			if( m_parent ) {
-				m_parent->UnregisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+			if( parent ) {
+				parent->UnregisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
 			}
 
 			// Dragged?
@@ -238,8 +242,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				OnDragEnd.Sig( shared_from_this(), *m_drag_info );
 				m_drag_info.reset( 0 );
 
-				if( m_parent ) {
-					m_parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+				if( parent ) {
+					parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
 				}
 			}
 
@@ -292,7 +296,7 @@ Widget::State Widget::GetState() const {
 }
 
 Container::Ptr Widget::GetParent() const {
-	return m_parent;
+	return m_parent.lock();
 }
 
 void Widget::GrabFocus() {

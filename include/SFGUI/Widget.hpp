@@ -234,7 +234,7 @@ class SFGUI_API Widget : public boost::noncopyable, public boost::enable_shared_
 
 		void GrabFocus( Ptr widget );
 
-		boost::shared_ptr<Container>  m_parent;
+		boost::weak_ptr<Container>  m_parent;
 
 		bool  m_sensitive;
 		bool  m_visible;
