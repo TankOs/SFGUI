@@ -50,7 +50,6 @@ void SampleApp::Run() {
 	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
-	m_entry = sfg::Entry::Create();
 	m_scale = sfg::Scale::Create( 0.f, 100.f, 1.f, sfg::Scale::Horizontal );
 	m_scrollbar = sfg::Scrollbar::Create( m_scale->GetAdjustment(), sfg::Scrollbar::Horizontal );
 	m_scrollbar->GetAdjustment()->SetMajorStep( 10.f );
@@ -61,6 +60,9 @@ void SampleApp::Run() {
 	m_scale->SetWidth( 20.f );
 	m_scrollbar->SetLength( 80.f );
 	m_scrollbar->SetWidth( 20.f );
+
+	m_entry = sfg::Entry::Create( L"Type something!" );
+	m_entry->SetRequisition( sf::Vector2f( 100.f, 0.f ) );
 
 	btnaddbuttonh->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0xFF, 0x00, 0x00 ) );
 	btnaddbuttonh->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0xFF, 0x99, 0x99 ) );
