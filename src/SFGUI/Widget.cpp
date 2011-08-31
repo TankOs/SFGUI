@@ -6,6 +6,7 @@
 namespace sfg {
 
 Widget::Widget() :
+	Object(),
 	m_sensitive( true ),
 	m_visible( true ),
 	m_state( Normal ),
@@ -221,6 +222,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 
 				if( OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
 					result = EatEvent;
+					GrabFocus();
 				}
 			}
 			else {

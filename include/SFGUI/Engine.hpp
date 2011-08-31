@@ -15,6 +15,8 @@ class Window;
 class Button;
 class Label;
 class Entry;
+class Scale;
+class Scrollbar;
 
 /** Abstract base class for widget rendering.
  */
@@ -62,6 +64,20 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateEntryDrawable( boost::shared_ptr<Entry> entry, const sf::RenderTarget& target ) const = 0;
+
+		/** Create drawable for scale widgets.
+		 * @param scale Widget.
+		 * @param target Render target the drawable is created for.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual sf::Drawable* CreateScaleDrawable( boost::shared_ptr<Scale> scale, const sf::RenderTarget& target ) const = 0;
+
+		/** Create drawable for scrollbar widgets.
+		 * @param scrollbar Widget.
+		 * @param target Render target the drawable is created for.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual sf::Drawable* CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar, const sf::RenderTarget& target ) const = 0;
 
 		/** Get metrics of a text string.
 		 * @param string String.

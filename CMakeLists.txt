@@ -22,6 +22,7 @@ endif()
 
 set(
 	SOURCES
+	${INC_DIR}/SFGUI/Adjustment.hpp
 	${INC_DIR}/SFGUI/Bin.hpp
 	${INC_DIR}/SFGUI/Box.hpp
 	${INC_DIR}/SFGUI/Button.hpp
@@ -35,7 +36,11 @@ set(
 	${INC_DIR}/SFGUI/Entry.hpp
 	${INC_DIR}/SFGUI/KeyValueLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
+	${INC_DIR}/SFGUI/Object.hpp
+	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
+	${INC_DIR}/SFGUI/Scale.hpp
+	${INC_DIR}/SFGUI/Scrollbar.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
 	${INC_DIR}/SFGUI/SlotResult.hpp
@@ -45,6 +50,7 @@ set(
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Widget.inl
 	${INC_DIR}/SFGUI/Window.hpp
+	${SRC_DIR}/SFGUI/Adjustment.cpp
 	${SRC_DIR}/SFGUI/Bin.cpp
 	${SRC_DIR}/SFGUI/Box.cpp
 	${SRC_DIR}/SFGUI/Button.cpp
@@ -56,7 +62,11 @@ set(
 	${SRC_DIR}/SFGUI/Entry.cpp
 	${SRC_DIR}/SFGUI/KeyValueLoader.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
+	${SRC_DIR}/SFGUI/Object.cpp
+	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
+	${SRC_DIR}/SFGUI/Scale.cpp
+	${SRC_DIR}/SFGUI/Scrollbar.cpp
 	${SRC_DIR}/SFGUI/ThemeLoader.cpp
 	${SRC_DIR}/SFGUI/Widget.cpp
 	${SRC_DIR}/SFGUI/Window.cpp
