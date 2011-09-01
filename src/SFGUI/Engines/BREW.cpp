@@ -301,8 +301,15 @@ RenderQueue* BREW::CreateAbsoluteBorder( const sf::FloatRect& rect, float border
 RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
 	RenderQueue* queue( new RenderQueue );
 
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left, rect.Top, rect.Width, rect.Height, background ) ) ); // Background.
-	queue->Add( CreateAbsoluteBorder( rect, border_width, light_color, dark_color ) ); // Border
+	// Align rect to pixels
+	sf::FloatRect aligned_rect;
+	aligned_rect.Left = std::floor( rect.Left + .5f );
+	aligned_rect.Top = std::floor( rect.Top + .5f );
+	aligned_rect.Width = std::floor( rect.Width + .5f );
+	aligned_rect.Height = std::floor( rect.Height + .5f );
+
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( aligned_rect, background ) ) ); // Background.
+	queue->Add( CreateAbsoluteBorder( aligned_rect, border_width, light_color, dark_color ) ); // Border
 
 	return queue;
 }
@@ -359,13 +366,20 @@ sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale, const s
 RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color, bool pressed ) {
 	RenderQueue* queue( new RenderQueue );
 
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left, rect.Top, rect.Width, rect.Height, background ) ) ); // Background.
+	// Align rect to pixels
+	sf::FloatRect aligned_rect;
+	aligned_rect.Left = std::floor( rect.Left + .5f );
+	aligned_rect.Top = std::floor( rect.Top + .5f );
+	aligned_rect.Width = std::floor( rect.Width + .5f );
+	aligned_rect.Height = std::floor( rect.Height + .5f );
+
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( aligned_rect, background ) ) ); // Background.
 
 	if( pressed ) {
-		queue->Add( CreateAbsoluteBorder( rect, border_width, dark_color, light_color ) );
+		queue->Add( CreateAbsoluteBorder( aligned_rect, border_width, dark_color, light_color ) );
 	}
 	else {
-		queue->Add( CreateAbsoluteBorder( rect, border_width, light_color, dark_color ) );
+		queue->Add( CreateAbsoluteBorder( aligned_rect, border_width, light_color, dark_color ) );
 	}
 
 	return queue;
