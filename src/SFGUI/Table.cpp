@@ -191,12 +191,13 @@ void Table::AllocateChildrenSizes() {
 	TableCellList::iterator cell_iter_end( m_cells.end() );
 
 	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
+		// Check for FILL flag.
 		cell_iter->child->AllocateSize(
 			sf::FloatRect(
 				m_columns[cell_iter->rect.Left].position,
 				m_rows[cell_iter->rect.Top].position,
-				m_columns[cell_iter->rect.Left].allocation,
-				m_rows[cell_iter->rect.Top].allocation
+				(cell_iter->x_options & FILL) ? m_columns[cell_iter->rect.Left].allocation : cell_iter->child->GetRequisition().x,
+				(cell_iter->y_options & FILL) ? m_rows[cell_iter->rect.Top].allocation : cell_iter->child->GetRequisition().y
 			)
 		);
 	}
