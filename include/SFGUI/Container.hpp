@@ -14,6 +14,13 @@ class SFGUI_API Container : public Widget {
 		typedef boost::shared_ptr<Container>  Ptr; //!< Shared pointer.
 		typedef std::list<Widget::Ptr>  WidgetsList;
 
+		/** Pack options.
+		 */
+		enum PackOptions {
+			EXPAND = 1 << 0, ///< Expand widget to maximum possible size.
+			FILL = 1 << 1 ///< Fill widget to allocated size.
+		};
+
 		/** Add child.
 		 * @param widget Widget to add.
 		 */

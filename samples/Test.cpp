@@ -2,6 +2,8 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Entry.hpp>
+#include <SFGUI/Table.hpp>
+#include <SFGUI/Label.hpp>
 #include <SFGUI/Scale.hpp>
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/Engines/BREW.hpp>
@@ -28,8 +30,10 @@ class SampleApp {
 		sfg::Box::Ptr m_boxbuttonsh;
 		sfg::Box::Ptr m_boxbuttonsv;
 		sfg::Entry::Ptr m_entry;
+		sfg::Table::Ptr m_table;
 		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
+		sfg::Label::Ptr m_range_value;
 };
 
 void SampleApp::Run() {
@@ -45,10 +49,10 @@ void SampleApp::Run() {
 	m_wndmain->SetTitle( L"Example application" );
 	m_wndmain->SetBorderWidth( 10.f );
 
-	sfg::Button::Ptr  btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
-	sfg::Button::Ptr  btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
-	sfg::Button::Ptr  btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
-	sfg::Button::Ptr  btnhidewindow( sfg::Button::Create( L"Close window" ) );
+	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
+	sfg::Button::Ptr btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
+	sfg::Button::Ptr btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
+	sfg::Button::Ptr btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
 	m_scale = sfg::Scale::Create( 0.f, 100.f, 1.f, sfg::Scale::Horizontal );
 	m_scale->SetRequisition( sf::Vector2f( 80.f, 20.f ) );
@@ -63,13 +67,14 @@ void SampleApp::Run() {
 	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, 0.f ) );
 
-	btnaddbuttonh->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0xFF, 0x00, 0x00 ) );
-	btnaddbuttonh->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0xFF, 0x99, 0x99 ) );
-	btnaddbuttonv->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0x00, 0x00, 0x55 ) );
-	btnaddbuttonv->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0x55, 0x55, 0xBB ) );
+	sfg::Label::Ptr test_label( sfg::Label::Create( L"Foobar?" ) );
+	sfg::Label::Ptr another_label( sfg::Label::Create( L"Meow?" ) );
+
+	m_range_value = sfg::Label::Create( L"n/a" );
+	m_range_value->SetRequisition( sf::Vector2f( 40.f, 0.f ) );
 
 	// Layout.
-	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
+	sfg::Box::Ptr boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
 	boxtoolbar->SetName( "boxtoolbar" );
 	boxtoolbar->SetSpacing( 5.f );
 	boxtoolbar->Pack( btnaddbuttonh, false );
@@ -79,6 +84,7 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( m_entry, true );
 	boxtoolbar->Pack( m_scale, true );
 	boxtoolbar->Pack( m_scrollbar, true );
+	boxtoolbar->Pack( m_range_value, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -86,11 +92,21 @@ void SampleApp::Run() {
 	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Vertical );
 	m_boxbuttonsv->SetSpacing( 5.f );
 
+	m_table = sfg::Table::Create();
+	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), 0, 0 );
+	m_table->SetRowSpacings( 5.f );
+	m_table->SetColumnSpacings( 5.f );
+
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( boxtoolbar, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
+	boxmain->Pack( m_table );
 
 	m_wndmain->Add( boxmain );
 
@@ -155,8 +171,8 @@ void SampleApp::OnHideWindowClicked( sfg::Widget::Ptr /*widget*/ ) {
 
 void SampleApp::OnRangeValueChange( sfg::Adjustment::Ptr adjustment ) {
 	std::stringstream ss;
-	ss << "Range widget value: " << adjustment->GetValue();
-	m_wndmain->SetTitle( ss.str() );
+	ss << adjustment->GetValue();
+	m_range_value->SetText( ss.str() );
 }
 
 int main() {
