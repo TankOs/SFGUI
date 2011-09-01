@@ -213,7 +213,8 @@ class SFGUI_API Widget : public priv::Object, public boost::enable_shared_from_t
 		Widget();
 
 		/** Invalidate implementation (redraw internally).
-		 * Gets only called when a rendering engine has been set.
+		 * Gets called whenever the widget needs to be redrawn, e.g. due to a call
+		 * to Invalidate().
 		 * @return Pointer to new drawable -- ownership is taken by caller.
 		 */
 		virtual sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );

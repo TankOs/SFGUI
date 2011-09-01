@@ -68,11 +68,6 @@ void SampleApp::Run() {
 	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, 0.f ) );
 
-	btnaddbuttonh->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0xFF, 0x00, 0x00 ) );
-	btnaddbuttonh->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0xFF, 0x99, 0x99 ) );
-	btnaddbuttonv->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0x00, 0x00, 0x55 ) );
-	btnaddbuttonv->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0x55, 0x55, 0xBB ) );
-
 	sfg::Label::Ptr test_label( sfg::Label::Create( L"Foobar?" ) );
 	sfg::Label::Ptr another_label( sfg::Label::Create( L"Meow?" ) );
 
@@ -99,10 +94,11 @@ void SampleApp::Run() {
 	m_boxbuttonsv->SetSpacing( 5.f );
 
 	m_table = sfg::Table::Create();
-	m_table->Attach( sfg::Label::Create( L"FOOBAR" ), 0, 1, 0, 1, false );
-	m_table->Attach( sfg::Button::Create( L"MIAU MIAU" ), 1, 2, 0, 1 );
-	m_table->Attach( sfg::Button::Create( L"UL" ), 0, 1, 1, 2, false );
-	m_table->Attach( sfg::Label::Create( L"UR" ), 1, 2, 1, 2 );
+	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL );
+	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL );
+	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL );
+	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL );
 
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetSpacing( 5.f );

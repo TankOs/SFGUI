@@ -29,14 +29,11 @@ class SFGUI_API Table : public Container {
 
 		/** Attach widget to table.
 		 * @param widget Widget to attach.
-		 * @param left Left column index to attach widget to.
-		 * @param right Right column index + 1 to attach widget to.
-		 * @param top Top row index to attach widget to.
-		 * @param bottom Bottom row index + 1 to attach widget to.
+		 * @param rect Rect to attach widget to (Left = column, Top = row, Width = column span, Height = row span).
 		 * @param x_options Pack options for x axis.
 		 * @param y_options Pack options for y axis.
 		 */
-		void Attach( Widget::Ptr widget, sf::Uint32 left, sf::Uint32 right, sf::Uint32 top, sf::Uint32 bottom, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL );
+		void Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL );
 
 	private:
 		typedef std::list<priv::TableCell> TableCellList;

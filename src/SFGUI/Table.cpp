@@ -37,20 +37,20 @@ sf::Vector2f Table::GetRequisitionImpl() const {
 	return size;
 }
 
-void Table::Attach( Widget::Ptr widget, sf::Uint32 left, sf::Uint32 right, sf::Uint32 top, sf::Uint32 bottom, int x_options, int y_options ) {
-	assert( right > left );
-	assert( bottom > top );
+void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options ) {
+	assert( rect.Width > 0 );
+	assert( rect.Height > 0 );
 
 	// Store widget in a table cell object.
-	m_cells.push_back( priv::TableCell( widget, sf::Rect<sf::Uint32>( left, top, right - left, bottom - top ), x_options, y_options ) );
+	m_cells.push_back( priv::TableCell( widget, rect, x_options, y_options ) );
 
 	// Check if we need to enlarge rows/columns.
-	if( left >= m_columns.size() ) {
-		m_columns.resize( left + 1 );
+	if( rect.Left + rect.Width >= m_columns.size() ) {
+		m_columns.resize( rect.Left + rect.Width );
 	}
 
-	if( top >= m_rows.size() ) {
-		m_rows.resize( top + 1 );
+	if( rect.Top + rect.Height >= m_rows.size() ) {
+		m_rows.resize( rect.Top + rect.Height );
 	}
 
 	// Add widget to container.
@@ -69,11 +69,13 @@ void Table::UpdateRequisitions() const {
 	// Reset requisitions and expand flags, at first.
 	for( std::size_t column_index = 0; column_index < m_columns.size(); ++column_index ) {
 		m_columns[column_index].requisition = 0.f;
+		m_columns[column_index].allocation = 0.f;
 		m_columns[column_index].expand = false;
 	}
 
 	for( std::size_t row_index = 0; row_index < m_rows.size(); ++row_index ) {
 		m_rows[row_index].requisition = 0.f;
+		m_rows[row_index].allocation = 0.f;
 		m_rows[row_index].expand = false;
 	}
 
@@ -133,6 +135,11 @@ void Table::AllocateChildrenSizes() {
 			}
 
 			m_columns[column_index].allocation += extra;
+
+			// Position of next column must be increased.
+			if( column_index + 1 < m_columns.size() ) {
+				m_columns[column_index + 1].position += extra;
+			}
 		}
 	}
 
@@ -171,6 +178,11 @@ void Table::AllocateChildrenSizes() {
 			}
 
 			m_rows[row_index].allocation += extra;
+
+			// Position of next row must be increased.
+			if( row_index + 1 < m_rows.size() ) {
+				m_rows[row_index + 1].position += extra;
+			}
 		}
 	}
 
