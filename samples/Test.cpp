@@ -30,6 +30,7 @@ class SampleApp {
 		sfg::Entry::Ptr m_entry;
 		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
+		sfg::Label::Ptr m_range_value;
 };
 
 void SampleApp::Run() {
@@ -69,6 +70,9 @@ void SampleApp::Run() {
 	btnaddbuttonv->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0x00, 0x00, 0x55 ) );
 	btnaddbuttonv->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0x55, 0x55, 0xBB ) );
 
+	m_range_value = sfg::Label::Create( L"n/a" );
+	m_range_value->SetRequisition( sf::Vector2f( 40.f, 0.f ) );
+
 	// Layout.
 	sfg::Box::Ptr  boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
 	boxtoolbar->SetName( "boxtoolbar" );
@@ -80,6 +84,7 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( m_entry, true );
 	boxtoolbar->Pack( m_scale, true );
 	boxtoolbar->Pack( m_scrollbar, true );
+	boxtoolbar->Pack( m_range_value, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -156,8 +161,8 @@ void SampleApp::OnHideWindowClicked( sfg::Widget::Ptr /*widget*/ ) {
 
 void SampleApp::OnRangeValueChange( sfg::Adjustment::Ptr adjustment ) {
 	std::stringstream ss;
-	ss << "Range widget value: " << adjustment->GetValue();
-	m_wndmain->SetTitle( ss.str() );
+	ss << adjustment->GetValue();
+	m_range_value->SetText( ss.str() );
 }
 
 int main() {
