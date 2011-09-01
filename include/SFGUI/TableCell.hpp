@@ -19,12 +19,13 @@ class TableCell {
 		 * @param x_options_ X options.
 		 * @param y_options_ Y options.
 		 */
-		TableCell( sfg::Widget::Ptr child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_ );
+		TableCell( sfg::Widget::Ptr child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ );
 
 		sfg::Widget::Ptr child;
 		sf::Rect<sf::Uint32> rect;
 		int x_options;
 		int y_options;
+		sf::Vector2f padding;
 };
 
 }

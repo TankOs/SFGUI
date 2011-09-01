@@ -94,11 +94,13 @@ void SampleApp::Run() {
 	m_boxbuttonsv->SetSpacing( 5.f );
 
 	m_table = sfg::Table::Create();
-	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL );
-	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL );
-	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL );
-	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL );
-	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), 0 );
+	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), 0, 0 );
+	m_table->SetRowSpacings( 5.f );
+	m_table->SetColumnSpacings( 5.f );
 
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetSpacing( 5.f );

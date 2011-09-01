@@ -15,6 +15,7 @@ class TableOptions {
 		float position; ///< Position.
 		float requisition; ///< Requisition (width or height).
 		float allocation; ///< Allocation (width or height).
+		float spacing; ///< Spacing.
 };
 
 }

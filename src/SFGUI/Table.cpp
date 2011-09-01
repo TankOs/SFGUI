@@ -37,12 +37,13 @@ sf::Vector2f Table::GetRequisitionImpl() const {
 	return size;
 }
 
-void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options ) {
+void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
 	assert( rect.Width > 0 );
 	assert( rect.Height > 0 );
 
 	// Store widget in a table cell object.
-	m_cells.push_back( priv::TableCell( widget, rect, x_options, y_options ) );
+	priv::TableCell cell( widget, rect, x_options, y_options, padding );
+	m_cells.push_back( cell );
 
 	// Check if we need to enlarge rows/columns.
 	if( rect.Left + rect.Width >= m_columns.size() ) {
@@ -85,13 +86,19 @@ void Table::UpdateRequisitions() const {
 	TableCellList::const_iterator cell_iter_end( m_cells.end() );
 
 	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
-		m_columns[cell_iter->rect.Left].requisition = std::max( m_columns[cell_iter->rect.Left].requisition, cell_iter->child->GetRequisition().x );
+		m_columns[cell_iter->rect.Left].requisition = std::max(
+			m_columns[cell_iter->rect.Left].requisition,
+			cell_iter->child->GetRequisition().x + m_columns[cell_iter->rect.Left].spacing + 2.f * cell_iter->padding.x
+		);
 
 		if( !m_columns[cell_iter->rect.Left].expand ) {
 			m_columns[cell_iter->rect.Left].expand = (cell_iter->x_options & EXPAND);
 		}
 
-		m_rows[cell_iter->rect.Top].requisition = std::max( m_rows[cell_iter->rect.Top].requisition, cell_iter->child->GetRequisition().y );
+		m_rows[cell_iter->rect.Top].requisition = std::max(
+			m_rows[cell_iter->rect.Top].requisition,
+			cell_iter->child->GetRequisition().y + m_rows[cell_iter->rect.Top].spacing + 2.f * cell_iter->padding.y
+		);
 
 		if( !m_rows[cell_iter->rect.Top].expand ) {
 			m_rows[cell_iter->rect.Top].expand = (cell_iter->y_options & EXPAND);
@@ -191,16 +198,54 @@ void Table::AllocateChildrenSizes() {
 	TableCellList::iterator cell_iter_end( m_cells.end() );
 
 	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
+		// Shortcuts.
+		const priv::TableOptions& column( m_columns[cell_iter->rect.Left] );
+		const priv::TableOptions& row( m_rows[cell_iter->rect.Top] );
+
 		// Check for FILL flag.
 		cell_iter->child->AllocateSize(
 			sf::FloatRect(
-				m_columns[cell_iter->rect.Left].position,
-				m_rows[cell_iter->rect.Top].position,
-				(cell_iter->x_options & FILL) ? m_columns[cell_iter->rect.Left].allocation : cell_iter->child->GetRequisition().x,
-				(cell_iter->y_options & FILL) ? m_rows[cell_iter->rect.Top].allocation : cell_iter->child->GetRequisition().y
+				column.position + cell_iter->padding.x,
+				row.position + cell_iter->padding.y,
+				(cell_iter->x_options & FILL) ? column.allocation - column.spacing - 2.f * cell_iter->padding.x : cell_iter->child->GetRequisition().x,
+				(cell_iter->y_options & FILL) ? row.allocation - row.spacing - 2.f * cell_iter->padding.y : cell_iter->child->GetRequisition().y
 			)
 		);
 	}
+}
+
+void Table::SetColumnSpacings( float spacing ) {
+	for( std::size_t column_index = 0; column_index < m_columns.size(); ++column_index ) {
+		m_columns[column_index].spacing = spacing;
+	}
+
+	RequestSize();
+}
+
+void Table::SetRowSpacings( float spacing ) {
+	for( std::size_t row_index = 0; row_index < m_rows.size(); ++row_index ) {
+		m_rows[row_index].spacing = spacing;
+	}
+
+	RequestSize();
+}
+
+void Table::SetColumnSpacing( std::size_t index, float spacing ) {
+	if( index >= m_columns.size() ) {
+		return;
+	}
+
+	m_columns[index].spacing = spacing;
+	RequestSize();
+}
+
+void Table::SetRowSpacing( std::size_t index, float spacing ) {
+	if( index >= m_rows.size() ) {
+		return;
+	}
+
+	m_rows[index].spacing = spacing;
+	RequestSize();
 }
 
 }

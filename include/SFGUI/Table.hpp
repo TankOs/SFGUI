@@ -33,7 +33,29 @@ class SFGUI_API Table : public Container {
 		 * @param x_options Pack options for x axis.
 		 * @param y_options Pack options for y axis.
 		 */
-		void Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL );
+		void Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
+
+		/** Set column spacing.
+		 * @param index Column index.
+		 * @param spacing Spacing.
+		 */
+		void SetColumnSpacing( std::size_t index, float spacing );
+
+		/** Set column spacings (for all columns).
+		 * @param spacing Spacing.
+		 */
+		void SetColumnSpacings( float spacing );
+
+		/** Set row spacing.
+		 * @param index Row index.
+		 * @param spacing Spacing.
+		 */
+		void SetRowSpacing( std::size_t index, float spacing );
+
+		/** Set row spacings (for all rows).
+		 * @param spacing Spacing.
+		 */
+		void SetRowSpacings( float spacing );
 
 	private:
 		typedef std::list<priv::TableCell> TableCellList;
