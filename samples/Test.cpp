@@ -4,12 +4,15 @@
 #include <SFGUI/Entry.hpp>
 #include <SFGUI/Table.hpp>
 #include <SFGUI/Label.hpp>
+#include <SFGUI/Scale.hpp>
+#include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 //#include <SFGUI/Loaders/YAML.hpp>
 #include <SFGUI/ThemeLoader.hpp>
 #include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics.hpp>
+#include <sstream>
 
 class SampleApp {
 	public:
@@ -21,12 +24,15 @@ class SampleApp {
 		void OnNewButtonClick( sfg::Widget::Ptr widget );
 		void OnToggleTitlebarClick( sfg::Widget::Ptr widget );
 		void OnHideWindowClicked( sfg::Widget::Ptr widget );
+		void OnRangeValueChange( sfg::Adjustment::Ptr adjustment );
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
 		sfg::Box::Ptr m_boxbuttonsv;
 		sfg::Entry::Ptr m_entry;
 		sfg::Table::Ptr m_table;
+		sfg::Scale::Ptr m_scale;
+		sfg::Scrollbar::Ptr m_scrollbar;
 };
 
 void SampleApp::Run() {
@@ -47,7 +53,19 @@ void SampleApp::Run() {
 	sfg::Button::Ptr btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 	sfg::Button::Ptr btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
-	m_entry = sfg::Entry::Create();
+	m_scale = sfg::Scale::Create( 0.f, 100.f, 1.f, sfg::Scale::Horizontal );
+	m_scrollbar = sfg::Scrollbar::Create( m_scale->GetAdjustment(), sfg::Scrollbar::Horizontal );
+	m_scrollbar->GetAdjustment()->SetMajorStep( 10.f );
+	m_scrollbar->GetAdjustment()->SetPageSize( 20.f );
+	m_scrollbar->GetAdjustment()->OnChange.Connect( &SampleApp::OnRangeValueChange, this );
+
+	m_scale->SetLength( 80.f );
+	m_scale->SetWidth( 20.f );
+	m_scrollbar->SetLength( 80.f );
+	m_scrollbar->SetWidth( 20.f );
+
+	m_entry = sfg::Entry::Create( L"Type something!" );
+	m_entry->SetRequisition( sf::Vector2f( 100.f, 0.f ) );
 
 	btnaddbuttonh->SetProperty( "Button.Normal.BackgroundColor", sf::Color( 0xFF, 0x00, 0x00 ) );
 	btnaddbuttonh->SetProperty( "Button.Hover.BackgroundColor", sf::Color( 0xFF, 0x99, 0x99 ) );
@@ -66,6 +84,8 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( btntoggletitlebar, false );
 	boxtoolbar->Pack( btnhidewindow, false );
 	boxtoolbar->Pack( m_entry, true );
+	boxtoolbar->Pack( m_scale, true );
+	boxtoolbar->Pack( m_scrollbar, true );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -145,6 +165,12 @@ void SampleApp::OnToggleTitlebarClick( sfg::Widget::Ptr /*widget*/ ) {
 
 void SampleApp::OnHideWindowClicked( sfg::Widget::Ptr /*widget*/ ) {
 	m_wndmain->Show( !m_wndmain->IsVisible() );
+}
+
+void SampleApp::OnRangeValueChange( sfg::Adjustment::Ptr adjustment ) {
+	std::stringstream ss;
+	ss << "Range widget value: " << adjustment->GetValue();
+	m_wndmain->SetTitle( ss.str() );
 }
 
 int main() {

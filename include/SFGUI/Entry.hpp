@@ -91,7 +91,7 @@ class SFGUI_API Entry : public Widget {
 		void HandleStateChange( Widget::Ptr widget, State oldstate );
 		void HandleMouseEnter( Widget::Ptr widget, int x, int y );
 		void HandleMouseLeave( Widget::Ptr widget, int x, int y );
-		bool HandleMouseButtonClick( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
+		bool HandleMouseButtonPress( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		void HandleText( Widget::Ptr widget, sf::Uint32 unicode );
 		void HandleKeyPress( Widget::Ptr widget, sf::Event::KeyEvent );
 		void HandleFocusChange( Widget::Ptr widget );

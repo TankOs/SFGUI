@@ -18,7 +18,7 @@ Entry::Entry() :
 	OnStateChange.Connect( &Entry::HandleStateChange, this );
 	OnMouseEnter.Connect( &Entry::HandleMouseEnter, this );
 	OnMouseLeave.Connect( &Entry::HandleMouseLeave, this );
-	OnMouseButtonClick.Connect( &Entry::HandleMouseButtonClick, this );
+	OnMouseButtonPress.Connect( &Entry::HandleMouseButtonPress, this );
 	OnText.Connect( &Entry::HandleText, this );
 	OnKeyPress.Connect( &Entry::HandleKeyPress, this );
 	OnExpose.Connect( &Entry::HandleExpose, this );
@@ -110,7 +110,7 @@ void Entry::RecalculateVisibleString() {
   // While the string is too long for the given space keep chopping off characters
   // on the right end of the string until the cursor is reached, then start
   // chopping off characters on the left side of the string.
-  while( length > GetAllocation().Width - 2.f * text_padding ) {
+	while( (GetAllocation().Width > 0) && (length > GetAllocation().Width - (2.f * text_padding)) ) {
     if( ( m_cursor_position - m_visible_offset ) < string.size() ) {
       string = string.substr( 0, string.size() - 1 );
     }
@@ -203,9 +203,7 @@ void Entry::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
 	}
 }
 
-bool Entry::HandleMouseButtonClick( Widget::Ptr /*widget*/, int x, int /*y*/, sf::Mouse::Button /*button*/ ) {	
-	GrabFocus();
-	
+bool Entry::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int /*y*/, sf::Mouse::Button /*button*/ ) {
 	if( m_string.IsEmpty() ) {
 		return true;
 	}
@@ -244,7 +242,8 @@ sf::Vector2f Entry::GetRequisitionImpl() const {
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "Entry.Normal.BorderWidth", shared_from_this() ) );
   float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
 
-	sf::Vector2f m = Context::Get().GetEngine().GetTextMetrics( m_string, font, font_size );
+	sf::Vector2f m = Context::Get().GetEngine().GetTextMetrics( L"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", font, font_size );
+	m.x = 0.f;
 	m.x += 2 * border_width + 2 * text_padding;
 	m.y += 2 * border_width + 2 * text_padding;
 

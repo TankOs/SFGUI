@@ -6,6 +6,7 @@
 namespace sfg {
 
 Widget::Widget() :
+	Object(),
 	m_sensitive( true ),
 	m_visible( true ),
 	m_state( Normal ),
@@ -221,6 +222,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 
 				if( OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
 					result = EatEvent;
+					GrabFocus();
 				}
 			}
 			else {
@@ -324,12 +326,37 @@ bool Widget::HasProperty( const std::string& property ) const {
 }
 
 const sf::Vector2f& Widget::GetRequisition() const {
+	// Check if we need to recalculate the requisition.
 	if( m_recalc_requisition ) {
 		m_requisition = GetRequisitionImpl();
 		m_recalc_requisition = false;
+
+		// Check if custom requsition set for width or height.
+		if( m_custom_requisition ) {
+			if( m_custom_requisition->x > 0.f ) {
+				m_requisition.x = m_custom_requisition->x;
+			}
+
+			if( m_custom_requisition->y > 0.f ) {
+				m_requisition.y = m_custom_requisition->y;
+			}
+		}
 	}
 
 	return m_requisition;
+}
+
+void Widget::SetRequisition( const sf::Vector2f& requisition ) {
+	if( requisition.x > 0.f && requisition.y >= 0.f ) {
+		m_custom_requisition.reset( new sf::Vector2f( requisition ) );
+	}
+	else {
+		m_custom_requisition.reset();
+	}
+
+	// Set flag to recalculate requisition and request new size.
+	m_recalc_requisition = true;
+	RequestSize();
 }
 
 }
