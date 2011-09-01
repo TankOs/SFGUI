@@ -174,23 +174,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			}
 		}
 
-		// Assume widgets base their internal calculations and rendering on the
-		// requested size (if requested) and not the granted allocation. Therefore
-		// only send MouseEnters when the cursor is within the requested size.
-		sf::FloatRect rect = GetAllocation();
-
-		if( m_custom_requisition ) {
-			if( m_custom_requisition->x > 0.f ) {
-				rect.Width = m_custom_requisition->x;
-			}
-
-			if( m_custom_requisition->y > 0.f ) {
-				rect.Height = m_custom_requisition->y;
-			}
-		}
-
-		// Check if pointer inside of widget's allocation / requisition.
-		if( rect.Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
+		// Check if pointer inside of widget's allocation.
+		if( GetAllocation().Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
 			// Check for enter event.
 			if( m_mouse_in == false ) {
 				m_mouse_in = true;
@@ -372,20 +357,6 @@ void Widget::SetRequisition( const sf::Vector2f& requisition ) {
 	// Set flag to recalculate requisition and request new size.
 	m_recalc_requisition = true;
 	RequestSize();
-}
-
-const sf::Vector2f Widget::GetSize() const {
-	sf::Vector2f size = GetRequisition();
-
-	if( ( size.x == 0.f ) || ( size.x > GetAllocation().Width ) ) {
-		size.x = GetAllocation().Width;
-	}
-
-	if( ( size.y == 0.f ) || ( size.y > GetAllocation().Height ) ) {
-		size.y = GetAllocation().Height;
-	}
-
-	return size;
 }
 
 }

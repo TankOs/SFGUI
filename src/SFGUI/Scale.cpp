@@ -41,14 +41,14 @@ const sf::FloatRect Scale::GetSliderRect() const {
 	float value_range = adjustment->GetUpper() - adjustment->GetLower();
 
 	if( m_orientation == Horizontal ) {
-		float slider_x = ( GetSize().x - slider_length ) * current_value / value_range;
-		float slider_y = ( GetSize().y - slider_width ) / 2.f;
+		float slider_x = ( GetAllocation().Width - slider_length ) * current_value / value_range;
+		float slider_y = ( GetAllocation().Height - slider_width ) / 2.f;
 
 		return sf::FloatRect( slider_x, slider_y, slider_length, slider_width );
 	}
 	else {
-		float slider_x = ( GetSize().x - slider_width ) / 2.f;
-		float slider_y = ( GetSize().y - slider_length ) * ( 1 - ( current_value / value_range ) );
+		float slider_x = ( GetAllocation().Width - slider_width ) / 2.f;
+		float slider_y = ( GetAllocation().Height - slider_length ) * ( 1 - ( current_value / value_range ) );
 
 		return sf::FloatRect( slider_x, slider_y, slider_width, slider_length );
 	}
@@ -110,7 +110,7 @@ void Scale::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 
 	if( m_orientation == Horizontal ) {
 		float slider_center_x = GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f;
-		float step_distance = ( GetSize().x - slider_rect.Width ) / steps;
+		float step_distance = ( GetAllocation().Width - slider_rect.Width ) / steps;
 
 		float delta = x - slider_center_x;
 
@@ -126,7 +126,7 @@ void Scale::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 	}
 	else {
 		float slider_center_y = GetAllocation().Top + slider_rect.Top + slider_rect.Height / 2.0f;
-		float step_distance = ( GetSize().y - slider_rect.Height ) / steps;
+		float step_distance = ( GetAllocation().Height - slider_rect.Height ) / steps;
 
 		float delta = y - slider_center_y;
 
