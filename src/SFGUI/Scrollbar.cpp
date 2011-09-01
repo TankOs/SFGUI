@@ -117,7 +117,7 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 	slider_rect.Left += GetAllocation().Left;
 	slider_rect.Top += GetAllocation().Top;
 
-	if( slider_rect.Contains( (float)x, (float)y ) ) {
+	if( slider_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 		m_dragging = true;
 		return true;
 	}
@@ -126,7 +126,7 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, stepper_length, GetWidth() );
 		sf::FloatRect increase_stepper_rect( GetAllocation().Left + GetAllocation().Width - stepper_length, GetAllocation().Top, stepper_length, GetWidth() );
 
-		if( decrease_stepper_rect.Contains( (float)x, (float)y ) ) {
+		if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_decrease_pressed = true;
 			GetAdjustment()->Decrement();
 			m_change_timer.Reset();
@@ -134,7 +134,7 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 			return true;
 		}
 
-		if( increase_stepper_rect.Contains( (float)x, (float)y ) ) {
+		if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_increase_pressed = true;
 			GetAdjustment()->Increment();
 			m_change_timer.Reset();
@@ -146,7 +146,7 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, GetWidth(), stepper_length );
 		sf::FloatRect increase_stepper_rect( GetAllocation().Left, GetAllocation().Top + GetAllocation().Height - stepper_length, GetWidth(), stepper_length );
 
-		if( decrease_stepper_rect.Contains( (float)x, (float)y ) ) {
+		if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_decrease_pressed = true;
 			GetAdjustment()->Decrement();
 			m_change_timer.Reset();
@@ -154,7 +154,7 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 			return true;
 		}
 
-		if( increase_stepper_rect.Contains( (float)x, (float)y ) ) {
+		if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_increase_pressed = true;
 			GetAdjustment()->Increment();
 			m_change_timer.Reset();
@@ -171,8 +171,8 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 	if( m_orientation == Horizontal ) {
 		allocation.Height = GetWidth();
 
-		if( allocation.Contains( (float)x, (float)y ) ) {
-			if( (float)x < slider_center_x ) {
+		if( allocation.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( static_cast<float>( x ) < slider_center_x ) {
 				m_page_decreasing = true;
 				GetAdjustment()->DecrementPage();
 				m_change_timer.Reset();
@@ -191,8 +191,8 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 	else {
 		allocation.Width = GetWidth();
 
-		if( allocation.Contains( (float)x, (float)y ) ) {
-			if( (float)y < slider_center_y ) {
+		if( allocation.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( static_cast<float>( y ) < slider_center_y ) {
 				m_page_decreasing = true;
 				GetAdjustment()->DecrementPage();
 				m_change_timer.Reset();
@@ -273,28 +273,34 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 			delta -= step_distance;
 		}
 	}
+
+	Invalidate();
 }
 
 void Scrollbar::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ ) {
 	// Increment / Decrement value every 200ms while one of the steppers is pressed
 	if( m_decrease_pressed && m_change_timer.GetElapsedTime() > 200 ) {
 		GetAdjustment()->Decrement();
+		Invalidate();
 		m_change_timer.Reset();
 	}
 
 	if( m_increase_pressed && m_change_timer.GetElapsedTime() > 200 ) {
 		GetAdjustment()->Increment();
+		Invalidate();
 		m_change_timer.Reset();
 	}
 
 	// Increment / Decrement page every 200ms while mouse is pressed on the trough
 	if( m_page_decreasing && m_change_timer.GetElapsedTime() > 200 ) {
 		GetAdjustment()->DecrementPage();
+		Invalidate();
 		m_change_timer.Reset();
 	}
 
 	if( m_page_increasing && m_change_timer.GetElapsedTime() > 200 ) {
 		GetAdjustment()->IncrementPage();
+		Invalidate();
 		m_change_timer.Reset();
 	}
 }

@@ -5,9 +5,7 @@ namespace sfg {
 Range::Range() :
 	Widget()
 {
-	m_adjustment = Adjustment::Create();
-
-	m_adjustment->OnChange.Connect( &Range::HandleAdjustmentChange, this );
+	SetAdjustment( Adjustment::Create() );
 }
 
 Adjustment::Ptr Range::GetAdjustment() const {
@@ -16,6 +14,9 @@ Adjustment::Ptr Range::GetAdjustment() const {
 
 void Range::SetAdjustment( Adjustment::Ptr adjustment ) {
 	m_adjustment = adjustment;
+
+	// Connect change signal. This also disconnects the previous connection.
+	m_change_connection = m_adjustment->OnChange.Connect( &Range::HandleAdjustmentChange, this );
 }
 
 float Range::GetValue() const {

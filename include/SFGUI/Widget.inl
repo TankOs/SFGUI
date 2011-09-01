@@ -23,8 +23,6 @@ const T& Widget::GetProperty( const std::string& name ) const {
 template <typename T>
 void Widget::SetProperty( const std::string& name, const T& value ) {
 	m_properties[name] = value;
-	RequestSize();
-	Invalidate();
 }
 
 }

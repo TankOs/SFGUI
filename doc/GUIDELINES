@@ -47,3 +47,12 @@ about to contribute source code.
 
      YES:
      void SetPosition();
+
+  4. Always use new-style casts. Avoid reinterpret_cast and const_cast whenever
+     possible.
+
+     NO:
+     float foo = (float)4;
+
+     YES:
+     float foo = static_cast<float>( 4 );
