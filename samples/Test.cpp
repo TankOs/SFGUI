@@ -99,9 +99,9 @@ void SampleApp::Run() {
 	m_boxbuttonsv->SetSpacing( 5.f );
 
 	m_table = sfg::Table::Create();
-	m_table->Attach( sfg::Label::Create( L"FOOBAR" ), 0, 1, 0, 1 );
-	m_table->Attach( sfg::Label::Create( L"MIAU MIAU" ), 1, 2, 0, 1 );
-	m_table->Attach( sfg::Label::Create( L"UL" ), 0, 1, 1, 2 );
+	m_table->Attach( sfg::Label::Create( L"FOOBAR" ), 0, 1, 0, 1, false );
+	m_table->Attach( sfg::Button::Create( L"MIAU MIAU" ), 1, 2, 0, 1 );
+	m_table->Attach( sfg::Button::Create( L"UL" ), 0, 1, 1, 2, false );
 	m_table->Attach( sfg::Label::Create( L"UR" ), 1, 2, 1, 2 );
 
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
