@@ -41,6 +41,7 @@ set(
 	${INC_DIR}/SFGUI/RenderQueue.hpp
 	${INC_DIR}/SFGUI/Scale.hpp
 	${INC_DIR}/SFGUI/Scrollbar.hpp
+	${INC_DIR}/SFGUI/ScrolledWindow.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
 	${INC_DIR}/SFGUI/SlotResult.hpp
@@ -70,6 +71,7 @@ set(
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
 	${SRC_DIR}/SFGUI/Scale.cpp
 	${SRC_DIR}/SFGUI/Scrollbar.cpp
+	${SRC_DIR}/SFGUI/ScrolledWindow.cpp
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp
 	${SRC_DIR}/SFGUI/TableOptions.cpp
