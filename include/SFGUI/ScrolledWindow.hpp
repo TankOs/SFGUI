@@ -2,6 +2,8 @@
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Scrollbar.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/RenderImage.hpp>
 
 namespace sfg {
 
@@ -87,11 +89,18 @@ class SFGUI_API ScrolledWindow : public Bin {
 	private:
 		ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
 
+		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
+		void HandlePositionChange( Widget::Ptr widget, const sf::FloatRect& oldallocation );
+		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
+
 		Scrollbar::Ptr m_horizontal_scrollbar;
 		Scrollbar::Ptr m_vertical_scrollbar;
 
 		ScrollbarPolicyPair m_policies;
 		Placement m_placement;
+
+		sf::RenderImage m_render_image;
+		sf::Sprite m_sprite;
 };
 
 }

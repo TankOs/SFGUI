@@ -74,7 +74,7 @@ class SFGUI_API Container : public Widget {
 	protected:
 		/** Constructor.
 		 */
-		Container();
+		Container( bool no_connect_expose = false );
 
 		/** Get children.
 		 * @return std::set with children.
@@ -103,7 +103,6 @@ class SFGUI_API Container : public Widget {
 
 		WidgetsList  m_children;
 		HooksMap  m_hooks;
-
 };
 
 }

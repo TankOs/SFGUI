@@ -19,7 +19,7 @@ class SFGUI_API Bin : public Container {
 	protected:
 		/** Constructor.
 		 */
-		Bin();
+		Bin( bool no_connect_expose = false );
 
 	private:
 		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );

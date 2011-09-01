@@ -73,6 +73,8 @@ BREW::BREW() :
 	SetProperty<sf::Color>( "Scrollbar.Stepper.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty<sf::Color>( "Scrollbar.Stepper.ArrowColor", sf::Color( 0x55, 0x55, 0x55 ) );
 
+	SetProperty<float>( "ScrolledWindow.ScrollbarWidth", 16.f );
+
 	// Register property types.
 	RegisterProperty( "Button.Normal.BackgroundColor", Color );
 	RegisterProperty( "Window.Title.FontSize", UnsignedInteger );

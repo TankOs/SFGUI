@@ -3,8 +3,8 @@
 
 namespace sfg {
 
-Bin::Bin() :
-	Container()
+Bin::Bin( bool no_connect_expose ) :
+	Container( no_connect_expose )
 {
 	OnAdd.Connect( &Bin::HandleAdd, this );
 }
