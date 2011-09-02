@@ -9,7 +9,7 @@ Engine::~Engine() {
 }
 
 float Engine::GetLineHeight( const sf::Font& font, unsigned int font_size ) const {
-	return font.GetLineSpacing( font_size ) + std::floor( static_cast<float>( font_size ) / 20.f ); // Last part from experimentation
+	return static_cast<float>( font.GetLineSpacing( font_size ) ) + std::floor( static_cast<float>( font_size ) / 20.f ); // Last part from experimentation
 }
 
 sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {

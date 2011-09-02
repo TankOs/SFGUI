@@ -6,7 +6,7 @@ namespace sfg {
 
 /** Scrollbar/Slider Adjustment.
  */
-class SFGUI_API Adjustment : public priv::Object, public boost::enable_shared_from_this<Adjustment> {
+class SFGUI_API Adjustment : public Object, public boost::enable_shared_from_this<Adjustment> {
 	public:
 		typedef boost::shared_ptr<Adjustment>  Ptr; //!< Shared pointer.
 

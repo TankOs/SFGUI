@@ -213,7 +213,7 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 		float slider_center_x = GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f;
 		float step_distance = ( GetAllocation().Width - 2.f * stepper_length ) / steps;
 
-		float delta = x - slider_center_x;
+		float delta = static_cast<float>( x ) - slider_center_x;
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Decrement();
@@ -229,7 +229,7 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 		float slider_center_y = GetAllocation().Top + slider_rect.Top + slider_rect.Height / 2.0f;
 		float step_distance = ( GetAllocation().Height - 2.f * stepper_length ) / steps;
 
-		float delta = y - slider_center_y;
+		float delta = static_cast<float>( y ) - slider_center_y;
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Decrement();

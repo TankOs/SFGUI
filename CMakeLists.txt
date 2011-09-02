@@ -68,11 +68,11 @@ set(
 	${SRC_DIR}/SFGUI/Object.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
+	${SRC_DIR}/SFGUI/Scale.cpp
+	${SRC_DIR}/SFGUI/Scrollbar.cpp
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp
 	${SRC_DIR}/SFGUI/TableOptions.cpp
-	${SRC_DIR}/SFGUI/Scale.cpp
-	${SRC_DIR}/SFGUI/Scrollbar.cpp
 	${SRC_DIR}/SFGUI/ThemeLoader.cpp
 	${SRC_DIR}/SFGUI/Widget.cpp
 	${SRC_DIR}/SFGUI/Window.cpp
