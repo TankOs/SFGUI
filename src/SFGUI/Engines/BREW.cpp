@@ -5,6 +5,7 @@
 #include <SFGUI/Entry.hpp>
 #include <SFGUI/Scale.hpp>
 #include <SFGUI/Scrollbar.hpp>
+#include <SFGUI/ScrolledWindow.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -63,17 +64,23 @@ BREW::BREW() :
 
 	SetProperty<float>( "Scrollbar.BorderWidth", 1.f );
 	SetProperty<sf::Color>( "Scrollbar.Trough.Color", sf::Color( 0x77, 0x77, 0x77 ) );
-	SetProperty<float>( "Scrollbar.Slider.MinimumLength", 2.f );
+	SetProperty<float>( "Scrollbar.Slider.MinimumLength", 12.f );
 	SetProperty<sf::Color>( "Scrollbar.Slider.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
 	SetProperty<sf::Color>( "Scrollbar.Slider.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 	SetProperty<sf::Color>( "Scrollbar.Slider.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty<float>( "Scrollbar.Stepper.Length", 16.f );
+	SetProperty<float>( "Scrollbar.Stepper.Speed", 5.f );
 	SetProperty<sf::Color>( "Scrollbar.Stepper.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
 	SetProperty<sf::Color>( "Scrollbar.Stepper.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
 	SetProperty<sf::Color>( "Scrollbar.Stepper.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty<sf::Color>( "Scrollbar.Stepper.ArrowColor", sf::Color( 0x55, 0x55, 0x55 ) );
 
-	SetProperty<float>( "ScrolledWindow.ScrollbarWidth", 16.f );
+	SetProperty<float>( "ScrolledWindow.Scrollbar.Width", 16.f );
+	SetProperty<float>( "ScrolledWindow.Scrollbar.Stepper.Speed", 100.f );
+	SetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", 4.f );
+	SetProperty<sf::Color>( "ScrolledWindow.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	SetProperty<sf::Color>( "ScrolledWindow.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<float>( "ScrolledWindow.BorderWidth", 1.f );
 
 	// Register property types.
 	RegisterProperty( "Button.Normal.BackgroundColor", Color );
@@ -579,6 +586,25 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 
 	// Slider
 	queue->Add( CreateSlider( scrollbar->GetSliderRect(), slider_color, border_width, slider_border_color_light, slider_border_color_dark ) );
+
+	return queue;
+}
+
+sf::Drawable* BREW::CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window, const sf::RenderTarget& /*target*/ ) const {
+	float scrollbar_width( GetProperty<float>( "ScrolledWindow.Scrollbar.Width", scrolled_window ) );
+	float scrollbar_spacing( GetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", scrolled_window ) );
+	sf::Color border_color_light( GetProperty<sf::Color>( "ScrolledWindow.LightBorderColor", scrolled_window ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "ScrolledWindow.DarkBorderColor", scrolled_window ) );
+	float border_width( GetProperty<float>( "ScrolledWindow.BorderWidth", scrolled_window ) );
+
+	RenderQueue* queue( new RenderQueue );
+
+	sf::FloatRect rect = scrolled_window->GetAllocation();
+
+	rect.Width -= ( scrollbar_width + scrollbar_spacing );
+	rect.Height -= ( scrollbar_width + scrollbar_spacing );
+
+	queue->Add( CreateBorder( rect, border_width, border_color_dark, border_color_light ) );
 
 	return queue;
 }

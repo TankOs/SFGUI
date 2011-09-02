@@ -45,8 +45,8 @@ void Adjustment::SetValue( float new_value ) {
 	if( m_value < m_lower ) {
 		m_value = m_lower;
 	}
-	if( new_value > m_upper ) {
-		m_value = m_upper;
+	if( m_value + m_page_size > m_upper ) {
+		m_value = m_upper - m_page_size;
 	}
 
 	OnChange.Sig( shared_from_this() );

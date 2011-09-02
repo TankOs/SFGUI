@@ -9,7 +9,8 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 	m_horizontal_scrollbar(),
 	m_vertical_scrollbar(),
 	m_render_image(),
-	m_sprite()
+	m_sprite(),
+	m_recalc_adjustments( false )
 {
 	OnSizeAllocate.Connect( &ScrolledWindow::HandleSizeAllocate, this );
 	OnPositionChange.Connect( &ScrolledWindow::HandlePositionChange, this );
@@ -64,14 +65,112 @@ void ScrolledWindow::SetPlacement( Placement placement ) {
 	m_placement = placement;
 }
 
+ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& event ) {
+	float scrollbar_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Width", shared_from_this() ) );
+	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.BorderWidth", shared_from_this() ) );
+
+	// Pass event to scrollbars
+	if( m_horizontal_scrollbar->HandleEvent( event ) == EatEvent ) {
+		return EatEvent;
+	}
+
+	if( m_vertical_scrollbar->HandleEvent( event ) == EatEvent ) {
+		return EatEvent;
+	}
+
+	// Pass event to child
+	if( GetChild() ) {
+		sf::FloatRect child_rect = GetAllocation();
+
+		child_rect.Left += border_width;
+		child_rect.Top += border_width;
+		child_rect.Width -= ( scrollbar_width + scrollbar_spacing + 2.f * border_width );
+		child_rect.Height -= ( scrollbar_width + scrollbar_spacing + 2.f * border_width );
+
+		// Adjust a possible mouse event
+		sf::Event altered_event( event );
+
+		float offset_x = ( -GetAllocation().Left + m_horizontal_scrollbar->GetValue() );
+		float offset_y = ( -GetAllocation().Top + m_vertical_scrollbar->GetValue() );
+
+		switch( event.Type ) {
+		case sf::Event::MouseButtonPressed:
+		case sf::Event::MouseButtonReleased: {
+			if( !child_rect.Contains( static_cast<float>( altered_event.MouseButton.X ), static_cast<float>( altered_event.MouseButton.Y ) ) ) {
+				break;
+			}
+			altered_event.MouseButton.X += offset_x;
+			altered_event.MouseButton.Y += offset_y;
+			return GetChild()->HandleEvent( altered_event );
+		} break;
+		case sf::Event::MouseEntered:
+		case sf::Event::MouseLeft:
+		case sf::Event::MouseMoved: {
+			if( !child_rect.Contains( static_cast<float>( altered_event.MouseMove.X ), static_cast<float>( altered_event.MouseMove.Y ) ) ) {
+				break;
+			}
+			altered_event.MouseMove.X += offset_x;
+			altered_event.MouseMove.Y += offset_y;
+			return GetChild()->HandleEvent( altered_event );
+		} break;
+		case sf::Event::MouseWheelMoved: {
+			if( !child_rect.Contains( static_cast<float>( altered_event.MouseWheel.X ), static_cast<float>( altered_event.MouseWheel.Y ) ) ) {
+				break;
+			}
+			altered_event.MouseWheel.X += offset_x;
+			altered_event.MouseWheel.Y += offset_y;
+			return GetChild()->HandleEvent( altered_event );
+		} break;
+		default: break;
+		}
+	}
+
+	return PassEvent;
+}
+
+sf::Drawable* ScrolledWindow::InvalidateImpl( const sf::RenderTarget& target ) {
+	return Context::Get().GetEngine().CreateScrolledWindowDrawable( boost::shared_dynamic_cast<ScrolledWindow>( shared_from_this() ), target );
+}
+
 sf::Vector2f ScrolledWindow::GetRequisitionImpl() const {
+	m_recalc_adjustments = true;
+
 	sf::Vector2f requisition( 0.f, 0.f );
 
 	return requisition;
 }
 
+void ScrolledWindow::RecalculateAdjustments() const {
+	float scrollbar_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Width", shared_from_this() ) );
+	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.BorderWidth", shared_from_this() ) );
+
+	if( GetChild() ) {
+		float max_horiz_val = std::max( GetChild()->GetAllocation().Width + 2.f, GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+
+		m_horizontal_scrollbar->GetAdjustment()->SetLower( .0f );
+		m_horizontal_scrollbar->GetAdjustment()->SetUpper( max_horiz_val );
+		m_horizontal_scrollbar->GetAdjustment()->SetMinorStep( 1.f );
+		m_horizontal_scrollbar->GetAdjustment()->SetMajorStep( GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		m_horizontal_scrollbar->GetAdjustment()->SetPageSize( GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+
+		float max_vert_val = std::max( GetChild()->GetAllocation().Height + 2.f, GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+
+		m_vertical_scrollbar->GetAdjustment()->SetLower( .0f );
+		m_vertical_scrollbar->GetAdjustment()->SetUpper( max_vert_val );
+		m_vertical_scrollbar->GetAdjustment()->SetMinorStep( 1.f );
+		m_vertical_scrollbar->GetAdjustment()->SetMajorStep( GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		m_vertical_scrollbar->GetAdjustment()->SetPageSize( GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+	}
+
+	m_recalc_adjustments = false;
+}
+
 void ScrolledWindow::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
-	float scrollbar_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.ScrollbarWidth", shared_from_this() ) );
+	float scrollbar_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Width", shared_from_this() ) );
+	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.BorderWidth", shared_from_this() ) );
 
 	m_horizontal_scrollbar->AllocateSize(
 		sf::FloatRect(
@@ -82,11 +181,6 @@ void ScrolledWindow::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::Float
 		)
 	);
 
-	m_horizontal_scrollbar->Invalidate();
-
-	std::cout << GetAllocation().Left << " " << GetAllocation().Top << " " << GetAllocation().Width << " " << GetAllocation().Height << std::endl;
-	std::cout << m_horizontal_scrollbar->GetAllocation().Left << " " << m_horizontal_scrollbar->GetAllocation().Top << " " << m_horizontal_scrollbar->GetAllocation().Width << " " << m_horizontal_scrollbar->GetAllocation().Height << std::endl << std::endl;
-
 	m_vertical_scrollbar->AllocateSize(
 		sf::FloatRect(
 			GetAllocation().Left + GetAllocation().Width - scrollbar_width,
@@ -96,11 +190,9 @@ void ScrolledWindow::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::Float
 		)
 	);
 
-	m_vertical_scrollbar->Invalidate();
-
 	bool result = m_render_image.Create(
-		GetAllocation().Width - m_vertical_scrollbar->GetAllocation().Width,
-		GetAllocation().Height - m_horizontal_scrollbar->GetAllocation().Height
+		GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f,
+		GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f
 	);
 
 	if( !result ) {
@@ -109,6 +201,8 @@ void ScrolledWindow::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::Float
 }
 
 void ScrolledWindow::HandlePositionChange( Widget::Ptr /*widget*/, const sf::FloatRect& oldallocation ) {
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.BorderWidth", shared_from_this() ) );
+
 	sf::Vector2f delta( GetAllocation().Left - oldallocation.Left, GetAllocation().Top - oldallocation.Top );
 
 	m_horizontal_scrollbar->SetPosition(
@@ -126,13 +220,24 @@ void ScrolledWindow::HandlePositionChange( Widget::Ptr /*widget*/, const sf::Flo
 	);
 
 	if( GetChild() ) {
-		GetChild()->SetPosition( sf::Vector2f( .0f, .0f ) );
+		GetChild()->SetPosition( sf::Vector2f( border_width, border_width ) );
 	}
 }
 
 void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target ) {
+	float scroll_speed( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Stepper.Speed", shared_from_this() ) );
+	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.BorderWidth", shared_from_this() ) );
+
+	m_horizontal_scrollbar->SetProperty( "Scrollbar.Stepper.Speed", scroll_speed );
+	m_vertical_scrollbar->SetProperty( "Scrollbar.Stepper.Speed", scroll_speed );
+
+	if( m_recalc_adjustments ) {
+		RecalculateAdjustments();
+	}
+
 	m_horizontal_scrollbar->Expose( target );
-	//m_vertical_scrollbar->Expose( target );
+	m_vertical_scrollbar->Expose( target );
 
 	if( !GetChild() ) {
 		return;
@@ -145,7 +250,14 @@ void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& tar
 	m_render_image.Clear( sf::Color( 0, 0, 0, 0 ) );
 
 	// Set viewing region of the surface
-	sf::View view( sf::FloatRect( .0f, .0f, GetAllocation().Width - vscroll_rect.Width, GetAllocation().Height - hscroll_rect.Height ) );
+	sf::View view(
+		sf::FloatRect(
+			m_horizontal_scrollbar->GetValue(),
+			m_vertical_scrollbar->GetValue(),
+			GetAllocation().Width - vscroll_rect.Width - scrollbar_spacing - 2.f * border_width,
+			GetAllocation().Height - hscroll_rect.Height - scrollbar_spacing - 2.f * border_width
+		)
+	);
 	m_render_image.SetView( view );
 
 	// Render child to surface
@@ -155,7 +267,7 @@ void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& tar
 	m_render_image.Display();
 	m_sprite.SetImage( m_render_image.GetImage() );
 
-	m_sprite.SetPosition( GetAllocation().Left, GetAllocation().Top );
+	m_sprite.SetPosition( GetAllocation().Left + border_width, GetAllocation().Top + border_width );
 
 	// Draw Sprite to target
 	target.Draw( m_sprite );

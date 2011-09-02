@@ -38,7 +38,7 @@ const sf::FloatRect Scale::GetSliderRect() const {
 	Adjustment::Ptr adjustment( GetAdjustment() );
 
 	float current_value = adjustment->GetValue();
-	float value_range = adjustment->GetUpper() - adjustment->GetLower();
+	float value_range = adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize();
 
 	if( m_orientation == Horizontal ) {
 		float slider_x = ( GetAllocation().Width - slider_length ) * current_value / value_range;

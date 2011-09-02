@@ -17,6 +17,7 @@ class Label;
 class Entry;
 class Scale;
 class Scrollbar;
+class ScrolledWindow;
 
 /** Abstract base class for widget rendering.
  */
@@ -78,6 +79,13 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar ) const = 0;
+
+		/** Create drawable for scrolled window widgets.
+		 * @param scrolled_window Widget.
+		 * @param target Render target the drawable is created for.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual sf::Drawable* CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window, const sf::RenderTarget& target ) const = 0;
 
 		/** Get line height of a font.
 		 * @param font Font.

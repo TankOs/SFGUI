@@ -83,11 +83,23 @@ class SFGUI_API ScrolledWindow : public Bin {
 		 * @param adjustment new ScrollbarPolicyPair.
 		 */
 		void SetPlacement( Placement placement );
+
+		/** Handle SFML event.
+		 * Handle an SFML event and fire proper signals. Normally reimplemented by
+		 * containers only.
+		 * @return true when event has been processed (eaten).
+		 */
+		virtual HandleEventResult HandleEvent( const sf::Event& event );
 	protected:
+		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
 		ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
+
+		/** Recalculate Adjustments
+		 */
+		void RecalculateAdjustments() const;
 
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 		void HandlePositionChange( Widget::Ptr widget, const sf::FloatRect& oldallocation );
@@ -101,6 +113,8 @@ class SFGUI_API ScrolledWindow : public Bin {
 
 		sf::RenderImage m_render_image;
 		sf::Sprite m_sprite;
+
+		mutable bool m_recalc_adjustments;
 };
 
 }
