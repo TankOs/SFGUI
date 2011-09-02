@@ -8,8 +8,6 @@ namespace sfg {
 Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	Range(),
 	m_orientation( orientation ),
-	m_length( .0f ),
-	m_width( .0f ),
 	m_dragging( false ),
 	m_decrease_pressed( false ),
 	m_increase_pressed( false ),
@@ -21,7 +19,9 @@ Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	OnMouseMove.Connect( &Scrollbar::HandleMouseMove, this );
 	OnExpose.Connect( &Scrollbar::HandleExpose, this );
 
-	SetAdjustment( adjustment );
+	if( adjustment ) {
+		SetAdjustment( adjustment );
+	}
 }
 
 Scrollbar::Ptr Scrollbar::Create( Orientation orientation ) {
@@ -32,24 +32,6 @@ Scrollbar::Ptr Scrollbar::Create( Orientation orientation ) {
 Scrollbar::Ptr Scrollbar::Create( Adjustment::Ptr adjustment, Orientation orientation ) {
 	Scrollbar::Ptr  ptr( new Scrollbar( adjustment, orientation ) );
 	return ptr;
-}
-
-float Scrollbar::GetLength() const {
-	return m_length;
-}
-
-float Scrollbar::GetWidth() const {
-	return m_width;
-}
-
-void Scrollbar::SetLength( float new_length ) {
-	m_length = new_length;
-	Invalidate();
-}
-
-void Scrollbar::SetWidth( float new_width ) {
-	m_width = new_width;
-	Invalidate();
 }
 
 const Scrollbar::Orientation Scrollbar::GetOrientation() const {
@@ -73,7 +55,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 		float slider_x = stepper_length + ( trough_length - slider_length ) * current_value / value_range;
 		float slider_y = 0.f;
 
-		return sf::FloatRect( slider_x, slider_y, slider_length, GetWidth() );
+		return sf::FloatRect( slider_x, slider_y, slider_length, GetAllocation().Height );
 	}
 	else {
 		float trough_length = GetAllocation().Height - 2.f * stepper_length;
@@ -82,7 +64,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 		float slider_x = 0.f;
 		float slider_y = stepper_length + ( trough_length - slider_length ) * current_value / value_range;
 
-		return sf::FloatRect( slider_x, slider_y, GetWidth(), slider_length );
+		return sf::FloatRect( slider_x, slider_y, GetAllocation().Width, slider_length );
 	}
 }
 
@@ -99,11 +81,7 @@ sf::Drawable* Scrollbar::InvalidateImpl( const sf::RenderTarget& target ) {
 }
 
 sf::Vector2f Scrollbar::GetRequisitionImpl() const {
-	if( m_orientation == Horizontal ) {
-		return sf::Vector2f( m_length, m_width );
-	}
-
-	return sf::Vector2f( m_width, m_length );
+	return sf::Vector2f( 0.f, 0.f );
 }
 
 bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf::Mouse::Button button ) {
@@ -123,8 +101,8 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 	}
 
 	if( m_orientation == Horizontal ) {
-		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, stepper_length, GetWidth() );
-		sf::FloatRect increase_stepper_rect( GetAllocation().Left + GetAllocation().Width - stepper_length, GetAllocation().Top, stepper_length, GetWidth() );
+		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, stepper_length, GetAllocation().Height );
+		sf::FloatRect increase_stepper_rect( GetAllocation().Left + GetAllocation().Width - stepper_length, GetAllocation().Top, stepper_length, GetAllocation().Height );
 
 		if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_decrease_pressed = true;
@@ -143,8 +121,8 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 		}
 	}
 	else {
-		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, GetWidth(), stepper_length );
-		sf::FloatRect increase_stepper_rect( GetAllocation().Left, GetAllocation().Top + GetAllocation().Height - stepper_length, GetWidth(), stepper_length );
+		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, GetAllocation().Width, stepper_length );
+		sf::FloatRect increase_stepper_rect( GetAllocation().Left, GetAllocation().Top + GetAllocation().Height - stepper_length, GetAllocation().Width, stepper_length );
 
 		if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_decrease_pressed = true;
@@ -166,14 +144,8 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 	float slider_center_x = slider_rect.Left + slider_rect.Width / 2.f;
 	float slider_center_y = slider_rect.Top + slider_rect.Height / 2.f;
 
-	sf::FloatRect allocation = GetAllocation();
-
 	if( m_orientation == Horizontal ) {
-		allocation.Height = GetWidth();
-
-		if( allocation.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-			if( static_cast<float>( x ) < slider_center_x ) {
-				m_page_decreasing = true;
+		if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {			if( static_cast<float>( x ) < slider_center_x ) {				m_page_decreasing = true;
 				GetAdjustment()->DecrementPage();
 				m_change_timer.Reset();
 				Invalidate();
@@ -189,11 +161,7 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 		}
 	}
 	else {
-		allocation.Width = GetWidth();
-
-		if( allocation.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-			if( static_cast<float>( y ) < slider_center_y ) {
-				m_page_decreasing = true;
+		if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {			if( static_cast<float>( y ) < slider_center_y ) {				m_page_decreasing = true;
 				GetAdjustment()->DecrementPage();
 				m_change_timer.Reset();
 				Invalidate();

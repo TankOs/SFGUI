@@ -55,15 +55,14 @@ void SampleApp::Run() {
 	sfg::Button::Ptr btnhidewindow( sfg::Button::Create( L"Close window" ) );
 
 	m_scale = sfg::Scale::Create( 0.f, 100.f, 1.f, sfg::Scale::Horizontal );
-	m_scrollbar = sfg::Scrollbar::Create( m_scale->GetAdjustment(), sfg::Scrollbar::Horizontal );
+	m_scale->SetRequisition( sf::Vector2f( 80.f, 20.f ) );
+
+	m_scrollbar = sfg::Scrollbar::Create( m_scale->GetAdjustment(), sfg::Scrollbar::Vertical );
+	m_scrollbar->SetRequisition( sf::Vector2f( 20.f, 80.f ) );
+
 	m_scrollbar->GetAdjustment()->SetMajorStep( 10.f );
 	m_scrollbar->GetAdjustment()->SetPageSize( 20.f );
 	m_scrollbar->GetAdjustment()->OnChange.Connect( &SampleApp::OnRangeValueChange, this );
-
-	m_scale->SetLength( 80.f );
-	m_scale->SetWidth( 20.f );
-	m_scrollbar->SetLength( 80.f );
-	m_scrollbar->SetWidth( 20.f );
 
 	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, 0.f ) );

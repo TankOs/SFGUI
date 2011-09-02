@@ -26,29 +26,10 @@ class SFGUI_API Scrollbar : public Range {
 
 		/** Create scrollbar widget.
 		 * @param adjustment The adjustment to use.
+		 * @param orientation Orientation.
 		 * @return Scrollbar widget.
 		 */
 		static Ptr Create( Adjustment::Ptr adjustment, Orientation orientation = Horizontal );
-
-		/** Get length of this scrollbar widget
-		 * @return length of this scrollbar widget
-		 */
-		float GetLength() const;
-
-		/** Get width of this scrollbar widget
-		 * @return width of this scrollbar widget
-		 */
-		float GetWidth() const;
-
-		/** Set length of this scrollbar widget
-		 * @param new_length new length
-		 */
-			void SetLength( float new_length );
-
-		/** Set width of this scrollbar widget
-		 * @param new_width new width
-		 */
-			void SetWidth( float new_width );
 
 		/** Get the orientation of this scrollbar widget
 		 * @return orientation of this scrollbar widget
@@ -85,9 +66,6 @@ class SFGUI_API Scrollbar : public Range {
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
 
 		Orientation m_orientation;
-
-		float m_length;
-		float m_width;
 
 		bool m_dragging;
 

@@ -87,43 +87,43 @@ std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 
 
 void Entry::RecalculateVisibleString() {
-  float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
-  const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
-  const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
-  unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
+	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
+	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
 
-  if( m_string.IsEmpty() ) {
-    m_visible_string.Clear();
-    Invalidate();
-    return;
-  }
+	if( m_string.IsEmpty() ) {
+		m_visible_string.Clear();
+		Invalidate();
+		return;
+	}
 
 	std::basic_string<sf::Uint32> string( m_string.Begin(), m_string.End() );
-  string = string.substr( m_visible_offset );
+	string = string.substr( m_visible_offset );
 
 	if( m_text_placeholder != 0 ) {
 		string.replace( 0, string.size(), string.size(), m_text_placeholder );
 	}
 
-  float length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
+	float length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
 
-  // While the string is too long for the given space keep chopping off characters
-  // on the right end of the string until the cursor is reached, then start
-  // chopping off characters on the left side of the string.
+	// While the string is too long for the given space keep chopping off characters
+	// on the right end of the string until the cursor is reached, then start
+	// chopping off characters on the left side of the string.
 	while( (GetAllocation().Width > 0) && (length > GetAllocation().Width - (2.f * text_padding)) ) {
-    if( ( m_cursor_position - m_visible_offset ) < string.size() ) {
-      string = string.substr( 0, string.size() - 1 );
-    }
-    else {
-      string = string.substr( 1, string.size() - 1 );
-      m_visible_offset++;
-    }
+		if( ( m_cursor_position - m_visible_offset ) < string.size() ) {
+			string = string.substr( 0, string.size() - 1 );
+		}
+		else {
+			string = string.substr( 1, string.size() - 1 );
+			m_visible_offset++;
+		}
 
-    length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
-  }
+		length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
+	}
 
-  m_visible_string = string;
-  Invalidate();
+	m_visible_string = string;
+	Invalidate();
 }
 
 void Entry::MoveCursor( int delta ) {
@@ -131,7 +131,7 @@ void Entry::MoveCursor( int delta ) {
 		m_cursor_position += delta;
 
 		if( m_cursor_position < m_visible_offset ) {
-      m_visible_offset = m_cursor_position;
+			m_visible_offset = m_cursor_position;
 		}
 
 		RecalculateVisibleString();
@@ -141,8 +141,8 @@ void Entry::MoveCursor( int delta ) {
 void Entry::HandleText( Widget::Ptr /*widget*/, sf::Uint32 unicode ) {
 	if( unicode > 0x1f && unicode != 0x7f ) {
 		// not a control character
-    m_string.Insert( m_cursor_position, unicode );
-    m_cursor_position++;
+		m_string.Insert( m_cursor_position, unicode );
+		m_cursor_position++;
 
 		RecalculateVisibleString();
 		OnTextChanged.Sig( shared_from_this() );
@@ -168,13 +168,13 @@ void Entry::HandleKeyPress( Widget::Ptr /*widget*/, sf::Event::KeyEvent event ) 
 	case sf::Keyboard::Home: {
 		if( m_string.GetSize() > 0 ) {
 			m_visible_offset = 0;
-      SetCursorPosition( 0 );
+			SetCursorPosition( 0 );
 		}
 	} break;
 	case sf::Keyboard::End: {
 		if( m_string.GetSize() > 0 ) {
 			m_visible_offset = 0;
-      SetCursorPosition( m_string.GetSize() );
+			SetCursorPosition( m_string.GetSize() );
 		}
 	} break;
 	case sf::Keyboard::Left: {
@@ -240,14 +240,11 @@ sf::Vector2f Entry::GetRequisitionImpl() const {
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Entry.FontSize", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "Entry.Normal.BorderWidth", shared_from_this() ) );
-  float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
+	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
 
-	sf::Vector2f m = Context::Get().GetEngine().GetTextMetrics( L"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", font, font_size );
-	m.x = 0.f;
-	m.x += 2 * border_width + 2 * text_padding;
-	m.y += 2 * border_width + 2 * text_padding;
+	float line_height = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
-	return m;
+	return sf::Vector2f( 0.f, line_height + 2 * ( border_width + text_padding ) );
 }
 
 bool Entry::IsCursorVisible() const {

@@ -8,8 +8,6 @@ namespace sfg {
 Scale::Scale( Orientation orientation ) :
 	Range(),
 	m_orientation( orientation ),
-	m_length( .0f ),
-	m_width( .0f ),
 	m_dragging( false )
 {
   OnMouseButtonPress.Connect( &Scale::HandleMouseButtonPress, this );
@@ -27,22 +25,6 @@ Scale::Ptr Scale::Create( float min, float max, float step, Orientation orientat
 	ptr->SetRange( min, max );
 	ptr->SetIncrements( step, 0.f );
 	return ptr;
-}
-
-float Scale::GetLength() const {
-	return m_length;
-}
-
-float Scale::GetWidth() const {
-	return m_width;
-}
-
-void Scale::SetLength( float new_length ) {
-	m_length = new_length;
-}
-
-void Scale::SetWidth( float new_width ) {
-	m_width = new_width;
 }
 
 const Scale::Orientation Scale::GetOrientation() const {
@@ -77,11 +59,14 @@ sf::Drawable* Scale::InvalidateImpl( const sf::RenderTarget& target ) {
 }
 
 sf::Vector2f Scale::GetRequisitionImpl() const {
-	if( m_orientation == Horizontal ) {
-		return sf::Vector2f( m_length, m_width );
-	}
+	float slider_width( Context::Get().GetEngine().GetProperty<float>( "Scale.Slider.Width", shared_from_this() ) );
 
-	return sf::Vector2f( m_width, m_length );
+	if( m_orientation == Horizontal ) {
+		return sf::Vector2f( 0.f, slider_width );
+	}
+	else {
+		return sf::Vector2f( slider_width, 0.f );
+	}
 }
 
 bool Scale::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf::Mouse::Button button ) {

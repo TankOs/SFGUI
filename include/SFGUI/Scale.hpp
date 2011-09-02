@@ -32,26 +32,6 @@ class SFGUI_API Scale : public Range {
 		 */
 		static Ptr Create( float min, float max, float step, Orientation orientation = Horizontal );
 
-		/** Get length of this scale widget
-		 * @return length of this scale widget
-		 */
-		float GetLength() const;
-
-		/** Get width of this scale widget
-		 * @return width of this scale widget
-		 */
-		float GetWidth() const;
-
-		/** Set length of this scale widget
-		 * @param new_length new length
-		 */
-		void SetLength( float new_length );
-
-		/** Set width of this scale widget
-		 * @param new_width new width
-		 */
-		void SetWidth( float new_width );
-
 		/** Get the orientation of this scale widget
 		 * @return orientation of this scale widget
 		 */
@@ -76,9 +56,6 @@ class SFGUI_API Scale : public Range {
 		void HandleMouseMove( Widget::Ptr widget, int x, int y );
 
 		Orientation m_orientation;
-
-		float m_length;
-		float m_width;
 
 		bool m_dragging;
 };
