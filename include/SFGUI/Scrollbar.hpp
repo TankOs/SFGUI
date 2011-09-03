@@ -76,6 +76,8 @@ class SFGUI_API Scrollbar : public Range {
 		bool m_page_increasing;
 
 		sf::Clock m_change_timer;
+
+		float m_slider_click_offset;
 };
 
 }

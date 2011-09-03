@@ -2,13 +2,11 @@
 
 namespace sfg {
 
-Container::Container( bool no_connect_expose ) :
+Container::Container() :
 	Widget(),
 	m_border_width( 0.f )
 {
-	if( !no_connect_expose ) {
-		OnExpose.Connect( &Container::HandleExpose, this );
-	}
+	m_expose_connection = OnExpose.Connect( &Container::HandleExpose, this );
 	OnSizeAllocate.Connect( &Container::HandleSizeAllocate, this );
 	OnPositionChange.Connect( &Container::HandlePositionChange, this );
 }
@@ -105,7 +103,7 @@ Container::HandleEventResult Container::HandleEvent( const sf::Event& event ) {
 
 	for( ; iter != iterend; ++iter ) {
 		result = (*iter)->HandleEvent( event );
-
+		
 		if( result == EatEvent ) {
 			return EatEvent;
 		}

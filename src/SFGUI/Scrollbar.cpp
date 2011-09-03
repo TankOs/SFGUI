@@ -12,7 +12,8 @@ Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	m_decrease_pressed( false ),
 	m_increase_pressed( false ),
 	m_page_decreasing( false ),
-	m_page_increasing( false )
+	m_page_increasing( false ),
+	m_slider_click_offset( 0 )
 {
 	OnMouseButtonPress.Connect( &Scrollbar::HandleMouseButtonPress, this );
 	OnMouseButtonRelease.Connect( &Scrollbar::HandleMouseButtonRelease, this );
@@ -112,6 +113,16 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 
 	if( slider_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 		m_dragging = true;
+
+		if( m_orientation == Horizontal ) {
+			float slider_mid = slider_rect.Left + slider_rect.Width / 2.f;
+			m_slider_click_offset = static_cast<float>( x ) - slider_mid;
+		}
+		else {
+			float slider_mid = slider_rect.Top + slider_rect.Height / 2.f;
+			m_slider_click_offset = static_cast<float>( y ) - slider_mid;
+		}
+
 		return true;
 	}
 
@@ -208,6 +219,8 @@ bool Scrollbar::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int
 	m_page_decreasing = false;
 	m_page_increasing = false;
 
+	m_slider_click_offset = 0.f;
+
 	Invalidate();
 
 	return true;
@@ -223,14 +236,14 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 	Adjustment::Ptr adjustment( GetAdjustment() );
 	sf::FloatRect slider_rect = GetSliderRect();
 
-	float value_range = adjustment->GetUpper() - adjustment->GetLower();
+	float value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), adjustment->GetMinorStep() / 2.f );
 	float steps = value_range / adjustment->GetMinorStep();
 
 	if( m_orientation == Horizontal ) {
 		float slider_center_x = GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f;
 		float step_distance = ( GetAllocation().Width - 2.f * stepper_length ) / steps;
 
-		float delta = static_cast<float>( x ) - slider_center_x;
+		float delta = static_cast<float>( x ) - ( slider_center_x + m_slider_click_offset );
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Decrement();
@@ -246,7 +259,7 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 		float slider_center_y = GetAllocation().Top + slider_rect.Top + slider_rect.Height / 2.0f;
 		float step_distance = ( GetAllocation().Height - 2.f * stepper_length ) / steps;
 
-		float delta = static_cast<float>( y ) - slider_center_y;
+		float delta =  static_cast<float>( y ) - ( slider_center_y + m_slider_click_offset );
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Decrement();
@@ -258,14 +271,12 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 			delta -= step_distance;
 		}
 	}
-
-	Invalidate();
 }
 
 void Scrollbar::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ ) {
 	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Speed", shared_from_this() ) );
 
-	// Increment / Decrement value every 200ms while one of the steppers is pressed
+	// Increment / Decrement value while one of the steppers is pressed
 	if( m_decrease_pressed && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
 		GetAdjustment()->Decrement();
 		Invalidate();
@@ -278,7 +289,7 @@ void Scrollbar::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target
 		m_change_timer.Reset();
 	}
 
-	// Increment / Decrement page every 200ms while mouse is pressed on the trough
+	// Increment / Decrement page while mouse is pressed on the trough
 	if( m_page_decreasing && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
 		GetAdjustment()->DecrementPage();
 		Invalidate();

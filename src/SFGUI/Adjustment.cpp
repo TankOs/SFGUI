@@ -39,17 +39,20 @@ float Adjustment::GetValue() const {
 }
 
 void Adjustment::SetValue( float new_value ) {
+	float old_value = m_value;
 	m_value = new_value;
 
 	// Clamp value within limits
 	if( m_value < m_lower ) {
 		m_value = m_lower;
 	}
-	if( m_value + m_page_size > m_upper ) {
+	else if( m_value + m_page_size > m_upper ) {
 		m_value = m_upper - m_page_size;
 	}
 
-	OnChange.Sig( shared_from_this() );
+	if( m_value != old_value ) {
+		OnChange.Sig( shared_from_this() );
+	}
 }
 
 float Adjustment::GetLower() const {
@@ -73,8 +76,8 @@ float Adjustment::GetUpper() const {
 void Adjustment::SetUpper( float new_upper ) {
 	m_upper = new_upper;
 
-	if( m_value > m_upper ) {
-		SetValue( m_upper );
+	if( m_value + m_page_size > m_upper ) {
+		SetValue( m_upper - m_page_size );
 	}
 
 	OnChange.Sig( shared_from_this() );
@@ -106,6 +109,10 @@ float Adjustment::GetPageSize() const {
 
 void Adjustment::SetPageSize( float new_page_size ) {
 	m_page_size = new_page_size;
+
+	if( m_value + m_page_size > m_upper ) {
+		SetValue( m_upper - m_page_size );
+	}
 
 	OnChange.Sig( shared_from_this() );
 }

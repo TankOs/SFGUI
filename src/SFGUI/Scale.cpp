@@ -106,7 +106,7 @@ void Scale::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 	Adjustment::Ptr adjustment( GetAdjustment() );
 	sf::FloatRect slider_rect = GetSliderRect();
 
-	float value_range = adjustment->GetUpper() - adjustment->GetLower();
+	float value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), adjustment->GetMinorStep() / 2.f );
 	float steps = value_range / adjustment->GetMinorStep();
 
 	if( m_orientation == Horizontal ) {

@@ -22,6 +22,7 @@ Label::Ptr Label::Create( const sf::String& text ) {
 void Label::SetText( const sf::String& text ) {
 	m_text = text;
 	RequestSize();
+	Invalidate();
 }
 
 const sf::String& Label::GetText() const {
@@ -37,7 +38,10 @@ sf::Vector2f Label::GetRequisitionImpl() const {
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
 
-	return Context::Get().GetEngine().GetTextMetrics( m_text, font, font_size );
+	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( m_text, font, font_size );
+	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
+
+	return metrics;
 }
 
 void Label::SetAlignment( const sf::Vector2f& alignment ) {

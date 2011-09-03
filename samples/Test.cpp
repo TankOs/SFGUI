@@ -6,6 +6,7 @@
 #include <SFGUI/Label.hpp>
 #include <SFGUI/Scale.hpp>
 #include <SFGUI/Scrollbar.hpp>
+#include <SFGUI/ScrolledWindow.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 //#include <SFGUI/Loaders/YAML.hpp>
 #include <SFGUI/ThemeLoader.hpp>
@@ -26,6 +27,7 @@ class SampleApp {
 		void OnToggleTitlebarClick( sfg::Widget::Ptr widget );
 		void OnHideWindowClicked( sfg::Widget::Ptr widget );
 		void OnRangeValueChange( sfg::Adjustment::Ptr adjustment );
+		void OnToggleSpaceClick( sfg::Widget::Ptr widget );
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -35,6 +37,8 @@ class SampleApp {
 		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
 		sfg::Label::Ptr m_range_value;
+		sfg::ScrolledWindow::Ptr m_scrolled_window;
+		sfg::Box::Ptr m_scrolled_window_box;
 
 		unsigned int m_fps_counter;
 		sf::Clock m_fps_clock;
@@ -57,6 +61,7 @@ void SampleApp::Run() {
 	sfg::Button::Ptr btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
 	sfg::Button::Ptr btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
 	sfg::Button::Ptr btnhidewindow( sfg::Button::Create( L"Close window" ) );
+	sfg::Button::Ptr btntogglespace( sfg::Button::Create( L"Box Spacing") );
 
 	m_scale = sfg::Scale::Create( 0.f, 100.f, 1.f, sfg::Scale::Horizontal );
 	m_scale->SetRequisition( sf::Vector2f( 80.f, 20.f ) );
@@ -89,6 +94,7 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( m_scale, true );
 	boxtoolbar->Pack( m_scrollbar, true );
 	boxtoolbar->Pack( m_range_value, false );
+	boxtoolbar->Pack( btntogglespace, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -105,12 +111,35 @@ void SampleApp::Run() {
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
 
+	m_scrolled_window_box = sfg::Box::Create( sfg::Box::Vertical );
+
+	for( int i = 0; i < 7; i++ ) {
+		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::Horizontal );
+
+		for( int j = 0; j < 5; j++ ) {
+			box->Pack( sfg::Button::Create( L"One button among many" ), true );
+		}
+
+		m_scrolled_window_box->Pack( box, false );
+	}
+
+	m_scrolled_window = sfg::ScrolledWindow::Create();
+	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 200.f ) );
+
+	sfg::ScrolledWindow::ScrollbarPolicyPair policies;
+	policies.horizontal_policy = sfg::ScrolledWindow::Automatic;
+	policies.vertical_policy = sfg::ScrolledWindow::Automatic;
+	m_scrolled_window->SetScrollbarPolicies( policies );
+	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::BottomRight );
+	m_scrolled_window->Add( m_scrolled_window_box );
+
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( boxtoolbar, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
 	boxmain->Pack( m_table );
+	boxmain->Pack( m_scrolled_window );
 
 	m_wndmain->Add( boxmain );
 
@@ -119,6 +148,7 @@ void SampleApp::Run() {
 	btnaddbuttonv->OnClick.Connect( &SampleApp::OnAddButtonVClick, this );
 	btntoggletitlebar->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
 	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
+	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
 
 	// Load theme.
 	//sfg::ThemeLoader::LoadFromFile<sfg::loaders::YAML>( "data/default.yaml", sfg::Context::Get().GetEngine() );
@@ -188,6 +218,17 @@ void SampleApp::OnHideWindowClicked( sfg::Widget::Ptr /*widget*/ ) {
 
 void SampleApp::OnRangeValueChange( sfg::Adjustment::Ptr adjustment ) {
 	m_range_value->SetText( boost::lexical_cast<std::string>( adjustment->GetValue() ) );
+}
+
+void SampleApp::OnToggleSpaceClick( sfg::Widget::Ptr /*widget*/ ) {
+	if( m_scrolled_window_box->GetSpacing() > 0.f ) {
+		m_scrolled_window_box->SetSpacing( 0.f );
+		m_scrolled_window_box->SetBorderWidth( 0.f );
+	}
+	else {
+		m_scrolled_window_box->SetSpacing( 10.f );
+		m_scrolled_window_box->SetBorderWidth( 30.f );
+	}
 }
 
 int main() {

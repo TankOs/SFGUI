@@ -51,7 +51,11 @@ class SFGUI_API Container : public Widget {
 		 */
 		float GetBorderWidth() const;
 
-		HandleEventResult HandleEvent( const sf::Event& event );
+		/** Handle SFML event.
+		 * Handle an SFML event and fire proper signals.
+		 * @return true when event has been processed (eaten).
+		 */
+		virtual HandleEventResult HandleEvent( const sf::Event& event );
 
 		/** Register event hook.
 		 * Widgets that register an event hook get notifications of the proper
@@ -74,12 +78,14 @@ class SFGUI_API Container : public Widget {
 	protected:
 		/** Constructor.
 		 */
-		Container( bool no_connect_expose = false );
+		Container();
 
 		/** Get children.
 		 * @return std::set with children.
 		 */
 		WidgetsList& GetChildren();
+
+		boost::signals2::scoped_connection m_expose_connection;
 
 	private:
 		struct WidgetBoolPair {
@@ -103,6 +109,7 @@ class SFGUI_API Container : public Widget {
 
 		WidgetsList  m_children;
 		HooksMap  m_hooks;
+
 };
 
 }

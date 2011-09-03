@@ -84,9 +84,13 @@ class SFGUI_API ScrolledWindow : public Bin {
 		 */
 		void SetPlacement( Placement placement );
 
+		/** Get the allocation of the content area of this Scrolled Window
+		 * @return Allocation of the content area of this Scrolled Window
+		 */
+		const sf::FloatRect& GetContentAllocation() const;
+
 		/** Handle SFML event.
-		 * Handle an SFML event and fire proper signals. Normally reimplemented by
-		 * containers only.
+		 * Handle an SFML event and fire proper signals.
 		 * @return true when event has been processed (eaten).
 		 */
 		virtual HandleEventResult HandleEvent( const sf::Event& event );
@@ -100,6 +104,13 @@ class SFGUI_API ScrolledWindow : public Bin {
 		/** Recalculate Adjustments
 		 */
 		void RecalculateAdjustments() const;
+
+		bool IsHorizontalScrollbarVisible() const;
+		bool IsVerticalScrollbarVisible() const;
+
+		/** Recalculate Content Allocation
+		 */
+		void RecalculateContentAllocation();
 
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 		void HandlePositionChange( Widget::Ptr widget, const sf::FloatRect& oldallocation );
@@ -115,6 +126,9 @@ class SFGUI_API ScrolledWindow : public Bin {
 		sf::Sprite m_sprite;
 
 		mutable bool m_recalc_adjustments;
+
+		sf::FloatRect m_content_allocation;
+		mutable bool m_recalc_content_allocation;
 };
 
 }

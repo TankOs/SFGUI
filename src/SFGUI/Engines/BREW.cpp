@@ -179,7 +179,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 		queue->Add( new sf::Shape( sf::Shape::Line( .1f, delta + .1f, rect.Width - delta, delta, 1.f, light_color ) ) ); // Top.
 		queue->Add( new sf::Shape( sf::Shape::Line( delta + .1f, .1f, delta, rect.Height - delta, 1.f, light_color ) ) ); // Left.
 	}
-
+	
 	return queue;
 }
 
@@ -266,13 +266,13 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const 
 	);
 
 	queue->Add( CreateBorder( entry->GetAllocation(), border_width, border_color_dark, border_color_light) );
-
+	
 	sf::Text*  vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
 	vis_label->SetPosition( text_padding, text_padding );
 
 	queue->Add( vis_label );
-
+	
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->GetState() == Widget::Active && entry->IsCursorVisible() ) {
 		sf::String cursor_string( entry->GetVisibleText() );
@@ -290,7 +290,7 @@ sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const 
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );
 	}
-
+	
 	return queue;
 }
 
@@ -591,20 +591,20 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 }
 
 sf::Drawable* BREW::CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window, const sf::RenderTarget& /*target*/ ) const {
-	float scrollbar_width( GetProperty<float>( "ScrolledWindow.Scrollbar.Width", scrolled_window ) );
-	float scrollbar_spacing( GetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", scrolled_window ) );
 	sf::Color border_color_light( GetProperty<sf::Color>( "ScrolledWindow.LightBorderColor", scrolled_window ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "ScrolledWindow.DarkBorderColor", scrolled_window ) );
 	float border_width( GetProperty<float>( "ScrolledWindow.BorderWidth", scrolled_window ) );
 
 	RenderQueue* queue( new RenderQueue );
 
-	sf::FloatRect rect = scrolled_window->GetAllocation();
+	sf::FloatRect rect = scrolled_window->GetContentAllocation();
 
-	rect.Width -= ( scrollbar_width + scrollbar_spacing );
-	rect.Height -= ( scrollbar_width + scrollbar_spacing );
+	rect.Left -= ( border_width + scrolled_window->GetAllocation().Left );
+	rect.Top -= ( border_width + scrolled_window->GetAllocation().Top );
+	rect.Width += 2.f * border_width;
+	rect.Height += 2.f * border_width;
 
-	queue->Add( CreateBorder( rect, border_width, border_color_dark, border_color_light ) );
+	queue->Add( CreateAbsoluteBorder( rect, border_width, border_color_dark, border_color_light ) );
 
 	return queue;
 }
