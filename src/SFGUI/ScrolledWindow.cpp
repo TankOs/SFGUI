@@ -360,17 +360,23 @@ void ScrolledWindow::RecalculateContentAllocation() {
 		m_vertical_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.Height );
 	}
 
-	bool result = m_render_image.Create(
-		std::max( m_content_allocation.Width, static_cast<float>( m_render_image.GetWidth() ) ),
-		std::max( m_content_allocation.Height, static_cast<float>( m_render_image.GetHeight() ) )
-	);
+	// Only recreate the RenderImage if the content allocation size changed
+	if( ( m_content_allocation.Width != static_cast<float>( m_render_image.GetWidth() ) ) || ( m_content_allocation.Height != static_cast<float>( m_render_image.GetHeight() ) ) ) {
+		// Avoid creating images with non-positive size and assure compatibility
+		// on systems which only support multiple-of-2 texture sizes.
+		bool result = m_render_image.Create(
+			std::max( m_content_allocation.Width, 2.f ),
+			std::max( m_content_allocation.Height, 2.f )
+		);
 
-	if( !result ) {
-		std::cerr << "Failed to create RenderImage." << std::endl;
+		if( !result ) {
+			std::cerr << "Failed to create RenderImage." << std::endl;
+		}
+
+		m_sprite.SetImage( m_render_image.GetImage() );
+		m_sprite.SetSubRect( sf::IntRect( 0, 0, static_cast<int>( m_content_allocation.Width ), static_cast<int>( m_content_allocation.Height ) ) );
 	}
 
-	m_sprite.SetImage( m_render_image.GetImage() );
-	m_sprite.SetSubRect( sf::IntRect( 0, 0, static_cast<int>( m_content_allocation.Width ), static_cast<int>( m_content_allocation.Height ) ) );
 	m_sprite.SetPosition( GetContentAllocation().Left, GetContentAllocation().Top );
 
 	m_recalc_content_allocation = false;
