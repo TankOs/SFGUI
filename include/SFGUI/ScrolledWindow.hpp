@@ -16,25 +16,27 @@ class SFGUI_API ScrolledWindow : public Bin {
 		/** Content Placement
 		 */
 		enum Placement {
-			TopLeft = 0, //!< Top left corner.
-			TopRight, //!< Top right corner.
-			BottomLeft, //!< Bottom left corner.
-			BottomRight //!< Bottom right corner.
+			Top = 0,
+			Bottom = 1 << 0,
+			Left = 1 << 1,
+			Right = 1 << 2,
+			TopLeft = Top | Left, //!< Top left corner.
+			TopRight = Top | Right, //!< Top right corner.
+			BottomLeft = Bottom | Left, //!< Bottom left corner.
+			BottomRight = Bottom | Right, //!< Bottom right corner.
+			PlacementDefault = TopLeft
 		};
 
 		/** Scrollbar policy.
 		 */
 		enum ScrollbarPolicy {
-			Always = 0, //!< Always display scrollbar.
-			Automatic, //!< Display scrollbar only when needed.
-			Never //!< Never display scrollbar.
-		};
-
-		/** Scrollbar policy pair.
-		 */
-		struct ScrollbarPolicyPair {
-			ScrollbarPolicy horizontal_policy;
-			ScrollbarPolicy vertical_policy;
+			HorizontalAlways = 0, //!< Always display horizontal scrollbar.
+			HorizontalAutomatic = 1 << 0, //!< Display horizontal scrollbar only when needed.
+			HorizontalNever = 1 << 1, //!< Never display horizontal scrollbar.
+			VerticalAlways = 1 << 2, //!< Always display vertical scrollbar.
+			VerticalAutomatic = 1 << 3, //!< Display vertical scrollbar only when needed.
+			VerticalNever = 1 << 4, //!< Never display vertical scrollbar.
+			PolicyDefault = HorizontalAlways | VerticalAlways
 		};
 
 		/** Create scrolled window.
@@ -42,7 +44,7 @@ class SFGUI_API ScrolledWindow : public Bin {
 		 */
 		static Ptr Create();
 
-		/** Create scrolled window.
+		/** Create scrolled window with given Adjustments.
 		 * @param horizontal_adjustment Horizontal adjustment.
 		 * @param vertical_adjustment Vertical adjustment.
 		 * @return ScrolledWindow.
@@ -69,15 +71,15 @@ class SFGUI_API ScrolledWindow : public Bin {
 		 */
 		void SetVerticalAdjustment( Adjustment::Ptr adjustment );
 
-		/** Get the scrollbar policies for this Scrolled Window.
-		 * @return ScrollbarPolicyPair for this Scrolled Window.
+		/** Get the scrollbar policy for this Scrolled Window.
+		 * @return Scrollbar policy for this Scrolled Window.
 		 */
-		const ScrollbarPolicyPair& GetScrollbarPolicies() const;
+		int GetScrollbarPolicy() const;
 
-		/** Set the scrollbar policies for this Scrolled Window.
-		 * @param adjustment new ScrollbarPolicyPair.
+		/** Set the scrollbar policy for this Scrolled Window.
+		 * @param policy New policy.
 		 */
-		void SetScrollbarPolicies( const ScrollbarPolicyPair& policies );
+		void SetScrollbarPolicy( int policy );
 
 		/** Set where the content is placed and hence where the scrollbars will appear.
 		 * @param adjustment new ScrollbarPolicyPair.
@@ -119,8 +121,8 @@ class SFGUI_API ScrolledWindow : public Bin {
 		Scrollbar::Ptr m_horizontal_scrollbar;
 		Scrollbar::Ptr m_vertical_scrollbar;
 
-		ScrollbarPolicyPair m_policies;
-		Placement m_placement;
+		int m_policy;
+		int m_placement;
 
 		sf::RenderImage m_render_image;
 		sf::Sprite m_sprite;

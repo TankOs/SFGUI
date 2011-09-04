@@ -102,14 +102,18 @@ void SampleApp::Run() {
 	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Vertical );
 	m_boxbuttonsv->SetSpacing( 5.f );
 
+	sfg::Entry::Ptr password( sfg::Entry::Create() );
+
 	m_table = sfg::Table::Create();
 	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
 	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( sfg::Entry::Create(), sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( password, sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
 	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), 0, 0 );
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
+
+	password->HideText( '*' );
 
 	m_scrolled_window_box = sfg::Box::Create( sfg::Box::Vertical );
 
@@ -125,11 +129,7 @@ void SampleApp::Run() {
 
 	m_scrolled_window = sfg::ScrolledWindow::Create();
 	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 200.f ) );
-
-	sfg::ScrolledWindow::ScrollbarPolicyPair policies;
-	policies.horizontal_policy = sfg::ScrolledWindow::Automatic;
-	policies.vertical_policy = sfg::ScrolledWindow::Automatic;
-	m_scrolled_window->SetScrollbarPolicies( policies );
+	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HorizontalAutomatic | sfg::ScrolledWindow::VerticalAutomatic );
 	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::BottomRight );
 	m_scrolled_window->Add( m_scrolled_window_box );
 
