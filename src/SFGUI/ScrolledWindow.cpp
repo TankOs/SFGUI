@@ -10,7 +10,7 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 	m_vertical_scrollbar(),
 	m_policy( PolicyDefault ),
 	m_placement( PlacementDefault ),
-	m_render_image(),
+	m_render_texture(),
 	m_sprite(),
 	m_recalc_adjustments( false ),
 	m_content_allocation(),
@@ -329,10 +329,10 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	}
 
 	// Only recreate the RenderImage if the content allocation size changed.
-	if( ( m_content_allocation.Width != static_cast<float>( m_render_image.GetWidth() ) ) || ( m_content_allocation.Height != static_cast<float>( m_render_image.GetHeight() ) ) ) {
+	if( ( m_content_allocation.Width != static_cast<float>( m_render_texture.GetWidth() ) ) || ( m_content_allocation.Height != static_cast<float>( m_render_texture.GetHeight() ) ) ) {
 		// Avoid creating images with non-positive size and assure compatibility
 		// on systems which only support multiple-of-2 texture sizes.
-		bool result = m_render_image.Create(
+		bool result = m_render_texture.Create(
 			static_cast<unsigned int>( std::max( m_content_allocation.Width, 2.f ) ),
 			static_cast<unsigned int>( std::max( m_content_allocation.Height, 2.f ) )
 		);
@@ -341,7 +341,7 @@ void ScrolledWindow::RecalculateContentAllocation() {
 			std::cerr << "Failed to create RenderImage." << std::endl;
 		}
 
-		m_sprite.SetImage( m_render_image.GetImage() );
+		m_sprite.SetTexture( m_render_texture.GetTexture() );
 		m_sprite.SetSubRect( sf::IntRect( 0, 0, static_cast<int>( m_content_allocation.Width ), static_cast<int>( m_content_allocation.Height ) ) );
 	}
 
@@ -421,20 +421,20 @@ void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& tar
 		sf::FloatRect(
 			m_horizontal_scrollbar->GetValue(),
 			m_vertical_scrollbar->GetValue(),
-			m_render_image.GetWidth(),
-			m_render_image.GetHeight()
+			m_render_texture.GetWidth(),
+			m_render_texture.GetHeight()
 		)
 	);
-	m_render_image.SetView( view );
+	m_render_texture.SetView( view );
 
 	// Clear surface
-	m_render_image.Clear( sf::Color( 0, 0, 0, 0 ) );
+	m_render_texture.Clear( sf::Color( 0, 0, 0, 0 ) );
 
 	// Render child to surface
-	GetChild()->Expose( m_render_image );
+	GetChild()->Expose( m_render_texture );
 
 	// Display
-	m_render_image.Display();
+	m_render_texture.Display();
 
 	// Draw Sprite to target
 	target.Draw( m_sprite );

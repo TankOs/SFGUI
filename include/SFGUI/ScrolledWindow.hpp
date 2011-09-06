@@ -3,7 +3,7 @@
 #include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Scrollbar.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/RenderImage.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 
 namespace sfg {
 
@@ -124,7 +124,7 @@ class SFGUI_API ScrolledWindow : public Bin {
 		int m_policy;
 		int m_placement;
 
-		sf::RenderImage m_render_image;
+		sf::RenderTexture m_render_texture;
 		sf::Sprite m_sprite;
 
 		mutable bool m_recalc_adjustments;
