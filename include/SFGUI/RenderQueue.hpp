@@ -2,8 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFML/Graphics/Drawable.hpp>
-#include <boost/ptr_container/ptr_list.hpp>
-#include <list>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace sfg {
 
@@ -25,9 +24,9 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		void Render( sf::RenderTarget& target, sf::Renderer& renderer ) const;
 
 	private:
-		typedef boost::ptr_list<sf::Drawable>  DrawablesList;
+		typedef boost::ptr_vector<sf::Drawable>  DrawablesVector;
 
-		DrawablesList  m_children;
+		DrawablesVector  m_children;
 };
 
 }
