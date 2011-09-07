@@ -8,12 +8,24 @@ void RenderQueue::Add( sf::Drawable* drawable ) {
 }
 
 void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& /*renderer*/ ) const {
-	DrawablesList::const_iterator  citer( m_children.begin() );
-	DrawablesList::const_iterator  citerend( m_children.end() );
-
-	for( ; citer != citerend; ++citer ) {
-		target.Draw( *citer );
+	for( DrawablesVector::size_type index = 0; index < m_children.size(); ++index ) {
+		target.Draw( m_children[index] );
 	}
+}
+
+template< class U > U* RenderQueue::heap_clone_allocator::allocate_clone( const U& r ) {
+	// The one true way :P
+	// We don't need to do anything fancy here because the container
+	// isn't supposed to allocate anything by itself anyway. (We give
+	// it everything it should hold ourselves.) On destruction it will
+	// call delete 0 which is defined as a no-op and since we don't
+	// plan on dereferencing anything we didn't initially push into
+	// the container we won't get nullptr exceptions either.
+	return 0;
+}
+
+template< class U > void RenderQueue::heap_clone_allocator::deallocate_clone( const U* r ) {
+	boost::delete_clone( r );
 }
 
 }
