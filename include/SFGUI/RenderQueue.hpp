@@ -24,7 +24,15 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		void Render( sf::RenderTarget& target, sf::Renderer& renderer ) const;
 
 	private:
-		typedef boost::ptr_vector<sf::Drawable>  DrawablesVector;
+		/** Boost Custom Allocator
+		 */
+		struct heap_clone_allocator
+		{
+			template< class U > static U* allocate_clone( const U& r );
+			template< class U > static void deallocate_clone( const U* r );
+		};
+
+		typedef boost::ptr_vector<sf::Drawable, heap_clone_allocator>  DrawablesVector;
 
 		DrawablesVector  m_children;
 };

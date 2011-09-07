@@ -13,4 +13,12 @@ void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& /*renderer*/ )
 	}
 }
 
+template< class U > static U* RenderQueue::heap_clone_allocator::allocate_clone( const U& r ) {
+	return 0; // The one true way :P
+}
+
+template< class U > static void RenderQueue::heap_clone_allocator::deallocate_clone( const U* r ) {
+	boost::delete_clone( r );
+}
+
 }
