@@ -8,8 +8,8 @@ void RenderQueue::Add( sf::Drawable* drawable ) {
 }
 
 void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& /*renderer*/ ) const {
-	for( DrawablesVector::size_type i = 0; i < m_children.size(); i++ ) {
-		target.Draw( m_children[i] );
+	for( DrawablesVector::size_type index = 0; index < m_children.size(); ++index ) {
+		target.Draw( m_children[index] );
 	}
 }
 
