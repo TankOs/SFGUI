@@ -86,6 +86,11 @@ float Container::GetBorderWidth() const {
 }
 
 Container::HandleEventResult Container::HandleEvent( const sf::Event& event ) {
+	// Ignore event when widget is not visible.
+	if( !IsVisible() ) {
+		return IgnoreEvent;
+	}
+
 	// Process hooks, first.
 	if( ProcessHooks( event ) == EatEvent ) {
 		return EatEvent;
