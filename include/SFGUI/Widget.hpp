@@ -33,18 +33,11 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		};
 
 		/** Event handling result.
-		 * The result gives the caller information about what happened with the
-		 * event and how to go on. It can either be dropped (e.g. when a mouse move
-		 * occurs outside the widget) so that it won't get passed to children,
-		 * passed (e.g. a mouse move is inside the widget but no handler processed
-		 * it so that further processing should be continued for the children) or
-		 * eaten (e.g. button has been clicked, so no further event processing
-		 * should take place *at all*).
 		 */
 		enum HandleEventResult {
-			PassEvent = 0,
-			EatEvent,
-			DropEvent
+			PassEvent = 0, ///< Pass event to children.
+			EatEvent, ///< Stop processing the current event immediately.
+			IgnoreEvent ///< Ignore event, but don't stop processing it in parent widget.
 		};
 
 		/** Destructor.

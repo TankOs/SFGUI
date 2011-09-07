@@ -155,7 +155,7 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 
 Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 	if( !IsVisible() ) {
-		return DropEvent;
+		return IgnoreEvent;
 	}
 
 	Container::Ptr parent = m_parent.lock();
@@ -201,10 +201,10 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			// Mouse left the widget's region, so don't continue to pass the event to
 			// children. The event only reached the widget because the event got
 			// hooked.
-			result = DropEvent;
+			result = IgnoreEvent;
 		}
 		else {
-			result = DropEvent;
+			result = IgnoreEvent;
 		}
 
 	} break;
@@ -226,7 +226,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				}
 			}
 			else {
-				result = DropEvent;
+				result = IgnoreEvent;
 			}
 		}
 	} break;
@@ -259,7 +259,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			}
 		}
 		else if( !m_mouse_in ) {
-			result = DropEvent;
+			result = IgnoreEvent;
 		}
 	} break;
 	case sf::Event::KeyPressed: {
