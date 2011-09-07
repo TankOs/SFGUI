@@ -12,7 +12,8 @@
 #include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics.hpp>
-#include <sstream>
+#include <SFML/System/Clock.hpp>
+#include <boost/lexical_cast.hpp>
 
 class SampleApp {
 	public:
@@ -34,6 +35,9 @@ class SampleApp {
 		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
 		sfg::Label::Ptr m_range_value;
+
+		unsigned int m_fps_counter;
+		sf::Clock m_fps_clock;
 };
 
 void SampleApp::Run() {
@@ -120,6 +124,9 @@ void SampleApp::Run() {
 	//sfg::ThemeLoader::LoadFromFile<sfg::loaders::YAML>( "data/default.yaml", sfg::Context::Get().GetEngine() );
 	// TODO: Reinvalidate widgets when loading theme.
 
+	m_fps_counter = 0;
+	m_fps_clock.Reset();
+
 	while( window.IsOpened() ) {
 		while( window.PollEvent( event ) ) {
 			if( m_wndmain->HandleEvent( event ) == sfg::Widget::EatEvent ) {
@@ -130,6 +137,16 @@ void SampleApp::Run() {
 				window.Close();
 			}
 		}
+
+		if( m_fps_clock.GetElapsedTime() >= 1000 ) {
+			m_fps_clock.Reset();
+
+			window.SetTitle( std::string( "SFGUI test -- FPS: " ) + boost::lexical_cast<std::string>( m_fps_counter ) );
+
+			m_fps_counter = 0;
+		}
+
+		++m_fps_counter;
 
 		window.Clear( sf::Color( 80, 80, 80 ) );
 		m_wndmain->Expose( window );
@@ -170,9 +187,7 @@ void SampleApp::OnHideWindowClicked( sfg::Widget::Ptr /*widget*/ ) {
 }
 
 void SampleApp::OnRangeValueChange( sfg::Adjustment::Ptr adjustment ) {
-	std::stringstream ss;
-	ss << adjustment->GetValue();
-	m_range_value->SetText( ss.str() );
+	m_range_value->SetText( boost::lexical_cast<std::string>( adjustment->GetValue() ) );
 }
 
 int main() {
