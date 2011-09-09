@@ -26,9 +26,9 @@ Entry::Entry() :
 
 Entry::Ptr Entry::Create( const sf::String& text ) {
 	Entry::Ptr  ptr( new Entry );
-	
+
 	ptr->SetText( text );
-	
+
 	return ptr;
 }
 
@@ -42,6 +42,10 @@ void Entry::SetText( const sf::String& text ) {
 	m_cursor_position = 0;
 	RecalculateVisibleString();
 	OnTextChanged.Sig(shared_from_this());
+}
+
+const sf::String& Entry::GetText() const {
+	return m_string;
 }
 
 void Entry::SetCursorPosition( std::size_t new_position ) {
@@ -59,6 +63,10 @@ void Entry::HideText( sf::Uint32 c ) {
 		m_text_placeholder = c;
 		RecalculateVisibleString();
 	}
+}
+
+sf::Uint32 Entry::GetHideCharacter() const {
+	return m_text_placeholder;
 }
 
 std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
@@ -207,9 +215,9 @@ bool Entry::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int /*y*/, sf
 	if( m_string.IsEmpty() ) {
 		return true;
 	}
-	
+
 	SetCursorPosition( GetPositionFromMouseX( x ) );
-	
+
 	return true;
 }
 
@@ -226,7 +234,7 @@ void Entry::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ )
 	if( GetState() != Active ) {
 		return;
 	}
-	
+
 	// Toggle cursor state every 500ms
 	if( m_cursor_timer.GetElapsedTime() > 500 ) {
 		m_cursor_timer.Reset();
