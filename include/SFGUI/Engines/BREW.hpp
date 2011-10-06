@@ -21,7 +21,7 @@ class SFGUI_API BREW : public Engine {
 		sf::Drawable* CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const;
 		sf::Drawable* CreateScaleDrawable( boost::shared_ptr<Scale> scale ) const;
 		sf::Drawable* CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar ) const;
-		sf::Drawable* CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window, const sf::RenderTarget& target ) const;
+		sf::Drawable* CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.

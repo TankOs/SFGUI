@@ -200,7 +200,7 @@ sf::Drawable* ScrolledWindow::InvalidateImpl( const sf::RenderTarget& target ) {
 		RecalculateContentAllocation();
 	}
 
-	return Context::Get().GetEngine().CreateScrolledWindowDrawable( boost::shared_dynamic_cast<ScrolledWindow>( shared_from_this() ), target );
+	return Context::Get().GetEngine().CreateScrolledWindowDrawable( boost::shared_dynamic_cast<ScrolledWindow>( shared_from_this() ) );
 }
 
 sf::Vector2f ScrolledWindow::GetRequisitionImpl() const {

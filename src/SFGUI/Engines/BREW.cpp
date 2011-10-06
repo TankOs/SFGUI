@@ -590,7 +590,7 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 	return queue;
 }
 
-sf::Drawable* BREW::CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window, const sf::RenderTarget& /*target*/ ) const {
+sf::Drawable* BREW::CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "ScrolledWindow.LightBorderColor", scrolled_window ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "ScrolledWindow.DarkBorderColor", scrolled_window ) );
 	float border_width( GetProperty<float>( "ScrolledWindow.BorderWidth", scrolled_window ) );

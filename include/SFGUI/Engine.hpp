@@ -40,52 +40,45 @@ class SFGUI_API Engine {
 
 		/** Create drawable for window widgets.
 		 * @param window Widget.
-		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateWindowDrawable( boost::shared_ptr<Window> window ) const = 0;
 
 		/** Create drawable for button widgets.
 		 * @param button Widget.
-		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateButtonDrawable( boost::shared_ptr<Button> button ) const = 0;
 
 		/** Create drawable for label widgets.
 		 * @param label Widget.
-		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label ) const = 0;
 
 		/** Create drawable for entry widgets.
 		 * @param entry Widget.
-		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const = 0;
 
 		/** Create drawable for scale widgets.
 		 * @param scale Widget.
-		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateScaleDrawable( boost::shared_ptr<Scale> scale ) const = 0;
 
 		/** Create drawable for scrollbar widgets.
 		 * @param scrollbar Widget.
-		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar ) const = 0;
 
 		/** Create drawable for scrolled window widgets.
 		 * @param scrolled_window Widget.
-		 * @param target Render target the drawable is created for.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual sf::Drawable* CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window, const sf::RenderTarget& target ) const = 0;
+		virtual sf::Drawable* CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window ) const = 0;
 
 		/** Get line height of a font.
 		 * @param font Font.
