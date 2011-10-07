@@ -34,7 +34,7 @@ class SFGUI_API Scrollbar : public Range {
 		/** Get the orientation of this scrollbar widget
 		 * @return orientation of this scrollbar widget
 		 */
-		const Orientation GetOrientation() const;
+		Orientation GetOrientation() const;
 
 		/** Get slider rectangle ( position and dimensions )
 		 * @return slider rect

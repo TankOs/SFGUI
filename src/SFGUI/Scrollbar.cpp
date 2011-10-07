@@ -35,7 +35,7 @@ Scrollbar::Ptr Scrollbar::Create( Adjustment::Ptr adjustment, Orientation orient
 	return ptr;
 }
 
-const Scrollbar::Orientation Scrollbar::GetOrientation() const {
+Scrollbar::Orientation Scrollbar::GetOrientation() const {
 	return m_orientation;
 }
 
@@ -46,7 +46,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 	Adjustment::Ptr adjustment( GetAdjustment() );
 
 	float current_value = adjustment->GetValue();
-	float value_range = adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize();
+	float value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), .0f );
 	float pages = value_range / adjustment->GetPageSize() + 1.f;
 
 	if( m_orientation == Horizontal ) {

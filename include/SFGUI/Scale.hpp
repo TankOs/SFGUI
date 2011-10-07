@@ -35,7 +35,7 @@ class SFGUI_API Scale : public Range {
 		/** Get the orientation of this scale widget
 		 * @return orientation of this scale widget
 		 */
-		const Orientation GetOrientation() const;
+		Orientation GetOrientation() const;
 
 		/** Get slider rectangle ( position and dimensions )
 		 * @return slider rect

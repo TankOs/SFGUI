@@ -27,7 +27,7 @@ Scale::Ptr Scale::Create( float min, float max, float step, Orientation orientat
 	return ptr;
 }
 
-const Scale::Orientation Scale::GetOrientation() const {
+Scale::Orientation Scale::GetOrientation() const {
 	return m_orientation;
 }
 

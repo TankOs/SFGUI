@@ -152,8 +152,8 @@ ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& 
 			}
 
 			sf::Event altered_event( event );
-			altered_event.MouseButton.X += offset_x;
-			altered_event.MouseButton.Y += offset_y;
+			altered_event.MouseButton.X += static_cast<int>( offset_x );
+			altered_event.MouseButton.Y += static_cast<int>( offset_y );
 
 			return GetChild()->HandleEvent( altered_event );
 		} break;
@@ -165,8 +165,8 @@ ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& 
 			}
 
 			sf::Event altered_event( event );
-			altered_event.MouseMove.X += offset_x;
-			altered_event.MouseMove.Y += offset_y;
+			altered_event.MouseMove.X += static_cast<int>( offset_x );
+			altered_event.MouseMove.Y += static_cast<int>( offset_y );
 
 			return GetChild()->HandleEvent( altered_event );
 		} break;
@@ -176,8 +176,8 @@ ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& 
 			}
 
 			sf::Event altered_event( event );
-			altered_event.MouseWheel.X += offset_x;
-			altered_event.MouseWheel.Y += offset_y;
+			altered_event.MouseWheel.X += static_cast<int>( offset_x );
+			altered_event.MouseWheel.Y += static_cast<int>( offset_y );
 
 			return GetChild()->HandleEvent( altered_event );
 		} break;
@@ -191,7 +191,7 @@ ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& 
 	return PassEvent;
 }
 
-sf::Drawable* ScrolledWindow::InvalidateImpl( const sf::RenderTarget& target ) {
+sf::Drawable* ScrolledWindow::InvalidateImpl() {
 	if( m_recalc_adjustments ) {
 		RecalculateAdjustments();
 	}
@@ -421,8 +421,8 @@ void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& tar
 		sf::FloatRect(
 			m_horizontal_scrollbar->GetValue(),
 			m_vertical_scrollbar->GetValue(),
-			m_render_texture.GetWidth(),
-			m_render_texture.GetHeight()
+			static_cast<float>( m_render_texture.GetWidth() ),
+			static_cast<float>( m_render_texture.GetHeight() )
 		)
 	);
 	m_render_texture.SetView( view );

@@ -30,12 +30,12 @@ class SFGUI_API ScrolledWindow : public Bin {
 		/** Scrollbar policy.
 		 */
 		enum ScrollbarPolicy {
-			HorizontalAlways = 0, //!< Always display horizontal scrollbar.
-			HorizontalAutomatic = 1 << 0, //!< Display horizontal scrollbar only when needed.
-			HorizontalNever = 1 << 1, //!< Never display horizontal scrollbar.
-			VerticalAlways = 1 << 2, //!< Always display vertical scrollbar.
-			VerticalAutomatic = 1 << 3, //!< Display vertical scrollbar only when needed.
-			VerticalNever = 1 << 4, //!< Never display vertical scrollbar.
+			HorizontalAlways = 1 << 0, //!< Always display horizontal scrollbar.
+			HorizontalAutomatic = 1 << 1, //!< Display horizontal scrollbar only when needed.
+			HorizontalNever = 1 << 2, //!< Never display horizontal scrollbar.
+			VerticalAlways = 1 << 3, //!< Always display vertical scrollbar.
+			VerticalAutomatic = 1 << 4, //!< Display vertical scrollbar only when needed.
+			VerticalNever = 1 << 5, //!< Never display vertical scrollbar.
 			PolicyDefault = HorizontalAlways | VerticalAlways
 		};
 
@@ -97,7 +97,7 @@ class SFGUI_API ScrolledWindow : public Bin {
 		 */
 		virtual HandleEventResult HandleEvent( const sf::Event& event );
 	protected:
-		sf::Drawable* InvalidateImpl( const sf::RenderTarget& target );
+		sf::Drawable* InvalidateImpl();
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
