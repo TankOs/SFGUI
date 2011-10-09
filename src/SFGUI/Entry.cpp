@@ -136,7 +136,7 @@ void Entry::RecalculateVisibleString() {
 }
 
 void Entry::MoveCursor( int delta ) {
-	if( delta && ( m_cursor_position + delta >= 0 ) && ( m_cursor_position + delta <= m_string.GetSize() ) ) {
+	if( delta && ( static_cast<int>( m_cursor_position ) + delta >= 0 ) && ( static_cast<int>( m_cursor_position ) + delta <= static_cast<int>( m_string.GetSize() ) ) ) {
 		m_cursor_position += delta;
 
 		if( m_cursor_position < m_visible_offset ) {
