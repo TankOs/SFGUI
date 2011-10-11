@@ -55,10 +55,12 @@ void Button::HandleMouseEnter( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
 	}
 }
 
-void Button::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+bool Button::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
 	if( GetState() != Active ) {
 		SetState( Normal );
 	}
+
+	return false;
 }
 
 bool Button::HandleMouseButtonClick( Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {

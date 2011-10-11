@@ -179,7 +179,7 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		Signal<void( Ptr, const sf::Vector2f& )>   OnSizeRequest; //!< Fired when requested a new widget's size.
 
 		Signal<void( Ptr, int, int )>  OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
-		Signal<void( Ptr, int, int )>  OnMouseLeave; //!< Fired when mouse left widget. (x, y)
+		Signal<bool( Ptr, int, int ), SlotResult>  OnMouseLeave; //!< Fired when mouse left widget. (x, y) Return true to keep the mouse move hook alive.
 		Signal<void( Ptr, int, int )>  OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
 		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
 		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)

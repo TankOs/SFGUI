@@ -48,7 +48,7 @@ class SFGUI_API Button : public Bin {
 
 		void HandleStateChange( Widget::Ptr widget, State oldstate );
 		void HandleMouseEnter( Widget::Ptr widget, int x, int y );
-		void HandleMouseLeave( Widget::Ptr widget, int x, int y );
+		bool HandleMouseLeave( Widget::Ptr widget, int x, int y );
 		bool HandleMouseButtonClick( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		bool HandleMouseButtonPress( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
 		bool HandleMouseButtonRelease( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );

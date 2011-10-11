@@ -192,11 +192,12 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		else if( m_mouse_in == true ) { // Check for leave event.
 			m_mouse_in = false;
 
-			if( !m_drag_info && parent ) {
-				parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+			// Only remove the mouse move hook if the user doesn't want to keep it.
+			if( !OnMouseLeave.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y ) ) {
+				if( !m_drag_info && parent ) {
+					parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+				}
 			}
-
-			OnMouseLeave.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
 
 			// Mouse left the widget's region, so don't continue to pass the event to
 			// children. The event only reached the widget because the event got

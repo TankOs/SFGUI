@@ -206,10 +206,12 @@ void Entry::HandleMouseEnter( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
 	}
 }
 
-void Entry::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+bool Entry::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
 	if( GetState() != Active ) {
 		SetState( Normal );
 	}
+
+	return false;
 }
 
 bool Entry::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int /*y*/, sf::Mouse::Button /*button*/ ) {
