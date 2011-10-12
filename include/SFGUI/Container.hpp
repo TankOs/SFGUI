@@ -37,7 +37,7 @@ class SFGUI_API Container : public Widget {
 		bool IsChild( Widget::Ptr widget ) const;
 
 		/** Get children.
-		 * @return std::set with children.
+		 * @return std::list with children.
 		 */
 		const WidgetsList& GetChildren() const;
 
@@ -79,11 +79,6 @@ class SFGUI_API Container : public Widget {
 		/** Constructor.
 		 */
 		Container();
-
-		/** Get children.
-		 * @return std::set with children.
-		 */
-		WidgetsList& GetChildren();
 
 		boost::signals2::scoped_connection m_expose_connection;
 

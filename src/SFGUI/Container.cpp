@@ -44,10 +44,6 @@ const Container::WidgetsList& Container::GetChildren() const {
 	return m_children;
 }
 
-Container::WidgetsList& Container::GetChildren() {
-	return m_children;
-}
-
 void Container::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target ) {
 	WidgetsList::iterator  iter( m_children.begin() );
 	WidgetsList::iterator  iterend( m_children.end() );
