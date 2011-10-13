@@ -8,14 +8,68 @@ The main reason is to keep the code style and behaviour of the whole library as
 consistent as possible.
 
 
-2. CODE STYLE
+2. COMMITS/CONTRIBUTIONS TO THE REPOSITORY
+
+We're very thankful for every patch, commit or contribution for SFGUI. The
+upstream repository at GitHub got frequented in the past, because whole
+histories of contributor's commits were applied to master.
+
+So here are some rules to follow so that your commits are applied:
+
+- Before sending in a pull request, rebase your work to the current master's
+  HEAD. You can do this by invoking "git pull --rebase origin master" (make
+  sure you're locally in your master branch). Another possible way is "git
+  rebase origin/master".
+
+- Squash your commits before requesting a pull! That means combine all your
+  single commits of your contribution into one big commit. Really, the world
+  doesn't care what you've done in detail. ;-) See the example below to read
+  how it works.
+
+- Just to make it clear: Do NOT (NOT!) follow the merge workflow. Merging means
+  that changes made by others may be overwritten/skipped/changed, and you mostly
+  don't want to do it. Of course we're talking about merging upstream's master
+  branch. What you do locally is completely up to you.
+
+Here's an example of a typical session:
+
+- Checkout a separate branch: git checkout -b cool_feature
+
+- Program and do some commits.
+
+- Now someone has pushed some new commits to upstream's master. Because you
+  want those new changes to be in your cool_feature branch, too, REBASE your
+  commits on top of them: git pull --rebase origin master (this may require you
+  to solve some merge conflicts; be sure to read Git's output!!!).
+
+- Program and do some commits, again.
+
+- Done with the new feature, now it's time to prepare it for a pull request.
+
+- At first make sure all your commits are really applied ON TOP OF HEAD of
+  origin's master: git pull --rebase origin master
+
+- Checkout master and make sure it's also up-to-date:
+  git checkout master
+  git pull --rebase origin master (--rebase not needed here, because you
+  haven't changed master at all; however it's a good practise so you get
+  used to rebase ;-)
+
+- Merge the branch: git merge --squash cool_feature
+
+- Commit your squashed merge: git commit -m "A cool new feature"
+
+- Send the pull request.
+
+
+3. CODE STYLE
 
 Check the sources of SFGUI to see how code is formatted. Formatting code is
 like a religion for programmers, but please stick to SFGUI's style if you're
 about to contribute source code.
 
 
-3. GENERAL RULES
+4. GENERAL RULES
 
   1. No definitions in class declarations: Do not define something within a
      class declaration. That includes methods: Even if they're short, do not
