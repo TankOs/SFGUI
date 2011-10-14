@@ -111,7 +111,7 @@ class SFGUI_API Engine {
 		template <typename T>
 		const T& GetProperty( const std::string& property, boost::shared_ptr<const Widget> widget = Widget::Ptr() ) const;
 
-		/** Load a fron from file.
+		/** Load a font from file.
 		 * If the proper file was loaded before, it gets returned immediately.
 		 * @param filename Filename.
 		 * @return Font or sf::Font::GetDefaultFont() if failed to load.
