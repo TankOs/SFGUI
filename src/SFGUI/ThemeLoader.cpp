@@ -20,11 +20,19 @@ void ThemeLoader::Observer::operator()( const std::string& key, const std::strin
 
 		sstr >> integer;
 		if( !sstr ) {
+
+#ifdef SFGUI_DEBUG
 			std::cerr << "Invalid integer value for property " << key << "." << std::endl;
+#endif
+
 		}
 		else {
 			engine.SetProperty<unsigned int>( key, integer );
+
+#ifdef SFGUI_DEBUG
 			std::cout << "Set " << key << " to int " << integer << std::endl;
+#endif
+
 		}
 	}
 }

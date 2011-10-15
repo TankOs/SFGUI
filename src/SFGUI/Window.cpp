@@ -1,7 +1,6 @@
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Context.hpp>
-#include <iostream>
 
 namespace sfg {
 

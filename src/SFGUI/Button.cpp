@@ -1,7 +1,6 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
-#include <iostream> // XXX
 
 namespace sfg {
 

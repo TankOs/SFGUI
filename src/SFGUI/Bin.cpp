@@ -1,5 +1,4 @@
 #include <SFGUI/Bin.hpp>
-#include <iostream>
 
 namespace sfg {
 
@@ -19,7 +18,11 @@ Widget::Ptr Bin::GetChild() const {
 
 void Bin::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 	if( GetChildren().size() > 1 ) {
+
+#ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Only one widget can be added to a Bin." << std::endl;
+#endif
+
 		Remove( child );
 		return;
 	}

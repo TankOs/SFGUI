@@ -1,23 +1,51 @@
 cmake_minimum_required( VERSION 2.8 )
+
+if( NOT CMAKE_BUILD_TYPE )
+	set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE )
+endif()
+
 project( SFGUI )
 
 find_package( SFML 2.0 REQUIRED GRAPHICS WINDOW SYSTEM )
 find_package( Boost 1.46 REQUIRED )
+
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
+	set( WINDOWS 1 )
+endif()
+
+if( CMAKE_COMPILER_IS_GNUCXX )
+	set( COMPILER_GCC 1 )
+elseif( MSVC_VERSION )
+	set( COMPILER_MSVC 1 )
+endif()
 
 set( SFGUI_STATIC false CACHE BOOL "Build static library." )
 set( BUILD_SAMPLES true CACHE BOOL "Build SFGUI sample applications." )
 
 if( WINDOWS )
 	set( BIN_EXTENSION ".exe" )
+	set( SFML_STATIC false CACHE BOOL "Was SFML built as a static library?" )
 endif()
 
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
 set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
 
-add_definitions( -D SFGUI_EXPORTS )
+set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
 
 if( SFGUI_STATIC )
 	add_definitions( -D SFGUI_STATIC )
+endif()
+
+if( SFML_STATIC )
+	add_definitions( -D SFML_STATIC )
+endif()
+
+if( COMPILER_GCC )
+	set( CMAKE_C_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wconversion" )
+	set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wconversion" )
+
+	set( CMAKE_C_FLAGS_DEBUG "-g -O0" )
+	set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" )
 endif()
 
 set(
@@ -86,9 +114,21 @@ include_directories( ${Boost_INCLUDE_DIR} )
 
 if( NOT SFGUI_STATIC )
 	add_library( sfgui SHARED ${SOURCES} )
+	
+	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -d )
+	
+	if ( WINDOWS AND COMPILER_GCC )
+		set_target_properties( sfgui PROPERTIES PREFIX "" )
+		set_target_properties( sfgui PROPERTIES IMPORT_SUFFIX ".a" )
+	endif()
 else()
 	add_library( sfgui ${SOURCES} )
+	
+	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -s-d )
+	set_target_properties( sfgui PROPERTIES RELEASE_POSTFIX -s )
 endif()
+
+set_target_properties( sfgui PROPERTIES COMPILE_DEFINITIONS SFGUI_EXPORTS )
 
 target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} )
 

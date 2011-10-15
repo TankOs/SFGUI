@@ -1,6 +1,5 @@
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Context.hpp>
-#include <iostream>
 
 namespace sfg {
 
@@ -37,7 +36,11 @@ void Box::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 	// manually, which is not allowed for this class.
 	// TODO: Add ChildInfo with default settings.
 	if( iter == m_children.end() ) {
+
+#ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Child must be added via Pack() for sfg::Box widgets." << std::endl;
+#endif
+
 		Remove( child );
 		return;
 	}

@@ -337,9 +337,11 @@ void ScrolledWindow::RecalculateContentAllocation() {
 			static_cast<unsigned int>( std::max( m_content_allocation.Height, 2.f ) )
 		);
 
+#ifdef SFGUI_DEBUG
 		if( !result ) {
 			std::cerr << "Failed to create RenderImage." << std::endl;
 		}
+#endif
 
 		m_sprite.SetTexture( m_render_texture.GetTexture() );
 		m_sprite.SetSubRect( sf::IntRect( 0, 0, static_cast<int>( m_content_allocation.Width ), static_cast<int>( m_content_allocation.Height ) ) );

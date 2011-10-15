@@ -1,7 +1,6 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Container.hpp>
 #include <SFGUI/Context.hpp>
-#include <iostream>
 
 namespace sfg {
 
