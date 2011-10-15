@@ -21,6 +21,7 @@ class Container;
 class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Widget> {
 	public:
 		typedef boost::shared_ptr<Widget>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const Widget>  PtrConst; //!< Shared pointer.
 
 		/** Widget state.
 		 */

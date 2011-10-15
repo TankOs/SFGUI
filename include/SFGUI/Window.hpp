@@ -13,6 +13,7 @@ namespace sfg {
 class SFGUI_API Window : public Bin {
 	public:
 		typedef boost::shared_ptr<Window>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const Window>  PtrConst; //!< Shared pointer.
 
 		enum Style {
 			NoStyle = 0, //!< Transparent window.

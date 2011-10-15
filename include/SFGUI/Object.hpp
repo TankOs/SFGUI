@@ -12,6 +12,7 @@ namespace sfg {
 class SFGUI_API Object : public boost::noncopyable {
 	public:
 		typedef boost::shared_ptr<Object>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const Object>  PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */

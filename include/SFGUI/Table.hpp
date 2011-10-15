@@ -17,6 +17,7 @@ namespace sfg {
 class SFGUI_API Table : public Container {
 	public:
 		typedef boost::shared_ptr<Table> Ptr; ///< Shared pointer shortcut.
+		typedef boost::shared_ptr<const Table> PtrConst; ///< Shared pointer shortcut.
 
 		/** Ctor.
 		 */

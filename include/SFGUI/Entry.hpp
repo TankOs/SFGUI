@@ -10,6 +10,7 @@ namespace sfg {
 class SFGUI_API Entry : public Widget {
 	public:
 		typedef boost::shared_ptr<Entry>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const Entry>  PtrConst; //!< Shared pointer.
 
 		/** Create entry.
 		 * @param text Text.

@@ -10,6 +10,7 @@ namespace sfg {
 class SFGUI_API Scrollbar : public Range {
 	public:
 		typedef boost::shared_ptr<Scrollbar>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const Scrollbar>  PtrConst; //!< Shared pointer.
 
 		/** Scrollbar orientation.
 		 */

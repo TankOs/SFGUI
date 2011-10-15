@@ -10,6 +10,7 @@ namespace sfg {
 class SFGUI_API Bin : public Container {
 	public:
 		typedef boost::shared_ptr<Bin>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const Bin>  PtrConst; //!< Shared pointer.
 
 		/** Get child widget.
 		 * @return Child widget.

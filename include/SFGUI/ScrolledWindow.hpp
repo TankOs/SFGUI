@@ -12,6 +12,7 @@ namespace sfg {
 class SFGUI_API ScrolledWindow : public Bin {
 	public:
 		typedef boost::shared_ptr<ScrolledWindow>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const ScrolledWindow>  PtrConst; //!< Shared pointer.
 
 		/** Content Placement
 		 */

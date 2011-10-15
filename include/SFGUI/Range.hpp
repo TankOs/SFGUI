@@ -12,6 +12,7 @@ namespace sfg {
 class SFGUI_API Range : public Widget {
 	public:
 		typedef boost::shared_ptr<Range>  Ptr; //!< Shared pointer.
+		typedef boost::shared_ptr<const Range>  PtrConst; //!< Shared pointer.
 
 		/** Get the Adjustment for this Range widget.
 		 * @return Adjustment for this Range widget.
