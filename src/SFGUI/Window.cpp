@@ -39,7 +39,7 @@ const sf::String& Window::GetTitle() const {
 }
 
 sf::FloatRect Window::GetClientRect() const {
-	sf::FloatRect  clientrect( GetAllocation() );
+	sf::FloatRect  clientrect( 0, 0, GetAllocation().Width, GetAllocation().Height );
 	float  title_height( HasStyle( Titlebar ) ? Context::Get().GetEngine().GetProperty<float>( "Window.Title.Height" ) : 0.f );
 	float  border_width( Context::Get().GetEngine().GetProperty<float>( "Window.BorderWidth" ) );
 

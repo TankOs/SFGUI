@@ -98,7 +98,7 @@ void Box::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*old
 	ChildrenCont::iterator  iter( m_children.begin() );
 	ChildrenCont::iterator  iterend( m_children.end() );
 	sf::Vector2f  allocation( 0.f, 0.f );
-	sf::Vector2f  position( GetAllocation().Left + GetBorderWidth(), GetAllocation().Top + GetBorderWidth() );
+	sf::Vector2f  position( GetBorderWidth(), GetBorderWidth() );
 	unsigned int  num_expand( 0 );
 	unsigned int  num_visible( 0 );
 	float  extra( 0.f );

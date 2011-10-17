@@ -73,6 +73,8 @@ class SFGUI_API Container : public Widget {
 		 */
 		void UnregisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget );
 
+		void UpdateDrawablePosition() const;
+
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnAdd; //!< Fired when child added.
 		Signal<void( Widget::Ptr, Widget::Ptr )>  OnRemove; //!< Fired when child removed.
 

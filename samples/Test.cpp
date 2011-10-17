@@ -139,7 +139,7 @@ void SampleApp::Run() {
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
 	boxmain->Pack( m_table );
-	boxmain->Pack( m_scrolled_window );
+	//boxmain->Pack( m_scrolled_window );
 
 	m_wndmain->Add( boxmain );
 

@@ -86,8 +86,8 @@ bool Button::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int /*
 
 void Button::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*old_allocation*/ ) {
 	sf::FloatRect  label_allocation(
-		GetAllocation().Left + GetBorderWidth() + m_padding,
-		GetAllocation().Top + GetBorderWidth() + m_padding,
+		GetBorderWidth() + m_padding,
+		GetBorderWidth() + m_padding,
 		GetAllocation().Width - 2 * GetBorderWidth() - 2 * m_padding,
 		GetAllocation().Height - 2 * GetBorderWidth() - 2 * m_padding
 	);

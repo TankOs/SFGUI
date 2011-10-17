@@ -118,7 +118,7 @@ void Table::AllocateChildrenSizes() {
 
 		// Calc position.
 		if( column_index == 0 ) {
-			m_columns[column_index].position = GetAllocation().Left;
+			m_columns[column_index].position = 0.f;
 		}
 		else {
 			m_columns[column_index].position = m_columns[column_index - 1].position + m_columns[column_index - 1].allocation;
@@ -161,7 +161,7 @@ void Table::AllocateChildrenSizes() {
 
 		// Calc position.
 		if( row_index == 0 ) {
-			m_rows[row_index].position = GetAllocation().Top;
+			m_rows[row_index].position = 0.f;
 		}
 		else {
 			m_rows[row_index].position = m_rows[row_index - 1].position + m_rows[row_index - 1].allocation;

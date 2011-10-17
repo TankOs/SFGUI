@@ -101,7 +101,7 @@ void Widget::Expose( sf::RenderTarget& target ) {
 		m_drawable.reset( InvalidateImpl() );
 
 		if( m_drawable ) {
-			m_drawable->SetPosition( GetAllocation().Left, GetAllocation().Top );
+			m_drawable->SetPosition( GetAbsolutePosition() );
 		}
 	}
 
@@ -146,7 +146,7 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	m_allocation.Top = std::floor( position.y + .5f );
 
 	if( m_drawable ) {
-		m_drawable->SetPosition( sf::Vector2f( m_allocation.Left, m_allocation.Top ) );
+		m_drawable->SetPosition( GetAbsolutePosition() );
 	}
 
 	OnPositionChange.Sig( shared_from_this(), oldallocation );
@@ -357,6 +357,29 @@ void Widget::SetRequisition( const sf::Vector2f& requisition ) {
 	// Set flag to recalculate requisition and request new size.
 	m_recalc_requisition = true;
 	RequestSize();
+}
+
+sf::Vector2f Widget::GetAbsolutePosition() const {
+	// If no parent, allocation's position is absolute position.
+	PtrConst parent( m_parent.lock() );
+
+	if( !parent ) {
+		return sf::Vector2f( GetAllocation().Left, GetAllocation().Top );
+	}
+
+	// Get parent's absolute position and add own rel. position to it.
+	sf::Vector2f parent_position( parent->GetAbsolutePosition() );
+
+	return sf::Vector2f(
+		parent_position.x + GetAllocation().Left,
+		parent_position.y + GetAllocation().Top
+	);
+}
+
+void Widget::UpdateDrawablePosition() const {
+	if( m_drawable ) {
+		m_drawable->SetPosition( GetAbsolutePosition() );
+	}
 }
 
 }

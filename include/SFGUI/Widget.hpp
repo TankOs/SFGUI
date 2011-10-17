@@ -169,6 +169,15 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 */
 		bool HasProperty( const std::string& property ) const;
 
+		/** Get absolute position on screen.
+		 * @return Absolute position.
+		 */
+		sf::Vector2f GetAbsolutePosition() const;
+
+		/** Update position of drawable.
+		 */
+		virtual void UpdateDrawablePosition() const;
+
 		// Signals.
 		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (old state)
 		Signal<void( Ptr )>  OnFocusChange; //!< Fired when focus grabbed or lost.
