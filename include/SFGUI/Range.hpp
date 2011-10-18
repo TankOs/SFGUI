@@ -3,8 +3,6 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Adjustment.hpp>
 
-#include <boost/signals2/connection.hpp>
-
 namespace sfg {
 
 /** Range widget, base class for scrollbars and sliders.
@@ -56,7 +54,7 @@ class SFGUI_API Range : public Widget {
 
 		Adjustment::Ptr m_adjustment;
 
-		boost::signals2::scoped_connection m_change_connection;
+		sfg::Connection m_change_connection;
 };
 
 }

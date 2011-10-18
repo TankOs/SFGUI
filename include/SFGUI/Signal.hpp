@@ -1,6 +1,5 @@
 #pragma once
 #include <boost/signals2.hpp>
-#include <boost/bind.hpp>
 
 namespace sfg {
 
