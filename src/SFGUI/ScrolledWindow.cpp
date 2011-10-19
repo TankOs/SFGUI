@@ -5,7 +5,7 @@
 namespace sfg {
 
 ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) :
-	Bin(),
+	Container(),
 	m_horizontal_scrollbar(),
 	m_vertical_scrollbar(),
 	m_policy( PolicyDefault ),
@@ -17,7 +17,7 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 	m_recalc_content_allocation( false )
 {
 	OnSizeAllocate.Connect( &ScrolledWindow::HandleSizeAllocate, this );
-	OnPositionChange.Connect( &ScrolledWindow::HandlePositionChange, this );
+	OnAdd.Connect( &ScrolledWindow::HandleAdd, this );
 	m_expose_connection = OnExpose.Connect( &ScrolledWindow::HandleExpose, this );
 
 	m_horizontal_scrollbar = Scrollbar::Create( horizontal_adjustment, Scrollbar::Horizontal );
@@ -27,11 +27,17 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 ScrolledWindow::Ptr ScrolledWindow::Create() {
 	ScrolledWindow::Ptr  ptr( new ScrolledWindow( Adjustment::Create(), Adjustment::Create() ) );
 
+	ptr->Add( ptr->m_horizontal_scrollbar );
+	ptr->Add( ptr->m_vertical_scrollbar );
+
 	return ptr;
 }
 
 ScrolledWindow::Ptr ScrolledWindow::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
 	ScrolledWindow::Ptr  ptr( new ScrolledWindow( horizontal_adjustment, vertical_adjustment ) );
+
+	ptr->Add( ptr->m_horizontal_scrollbar );
+	ptr->Add( ptr->m_vertical_scrollbar );
 
 	return ptr;
 }
@@ -128,12 +134,7 @@ const sf::FloatRect& ScrolledWindow::GetContentAllocation() const {
 }
 
 ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& event ) {
-	// Pass event to scrollbars
-	if( IsHorizontalScrollbarVisible() && ( m_horizontal_scrollbar->HandleEvent( event ) == EatEvent ) ) {
-		return EatEvent;
-	}
-
-	if( IsVerticalScrollbarVisible() && ( m_vertical_scrollbar->HandleEvent( event ) == EatEvent ) ) {
+	if( Container::HandleEvent( event ) == EatEvent ) {
 		return EatEvent;
 	}
 
@@ -280,8 +281,8 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	if( m_placement & Top ) { // Content placed at Top
 		m_horizontal_scrollbar->AllocateSize(
 			sf::FloatRect(
-				m_content_allocation.Left - border_width,
-				GetAllocation().Top + m_content_allocation.Height + 2.f * border_width + scrollbar_spacing,
+				m_content_allocation.Left - GetAllocation().Left - border_width,
+				m_content_allocation.Height + 2.f * border_width + scrollbar_spacing,
 				m_content_allocation.Width + 2.f * border_width,
 				scrollbar_width
 			)
@@ -290,8 +291,8 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	else { // Content placed at Bottom
 		m_horizontal_scrollbar->AllocateSize(
 			sf::FloatRect(
-				m_content_allocation.Left - border_width,
-				GetAllocation().Top,
+				m_content_allocation.Left - GetAllocation().Left - border_width,
+				0.f,
 				m_content_allocation.Width + 2.f * border_width,
 				scrollbar_width
 			)
@@ -301,8 +302,8 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	if( m_placement & Left ) { // Content placed at Left
 		m_vertical_scrollbar->AllocateSize(
 			sf::FloatRect(
-				GetAllocation().Left + m_content_allocation.Width + 2.f * border_width + scrollbar_spacing,
-				m_content_allocation.Top - border_width,
+				m_content_allocation.Width + 2.f * border_width + scrollbar_spacing,
+				m_content_allocation.Top - GetAllocation().Top - border_width,
 				scrollbar_width,
 				m_content_allocation.Height + 2.f * border_width
 			)
@@ -311,8 +312,8 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	else { // Content placed at Right
 		m_vertical_scrollbar->AllocateSize(
 			sf::FloatRect(
-				GetAllocation().Left,
-				m_content_allocation.Top - border_width,
+				0.f,
+				m_content_allocation.Top - GetAllocation().Top - border_width,
 				scrollbar_width,
 				m_content_allocation.Height + 2.f * border_width
 			)
@@ -347,10 +348,6 @@ void ScrolledWindow::RecalculateContentAllocation() {
 		m_sprite.SetSubRect( sf::IntRect( 0, 0, static_cast<int>( m_content_allocation.Width ), static_cast<int>( m_content_allocation.Height ) ) );
 	}
 
-	// Set Sprite position even if the RenderImage didn't change.
-	// The position of the ScrolledWindow might have changed.
-	m_sprite.SetPosition( GetContentAllocation().Left, GetContentAllocation().Top );
-
 	m_recalc_content_allocation = false;
 }
 
@@ -363,33 +360,6 @@ void ScrolledWindow::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::Float
 			oldallocation.Width == GetAllocation().Width &&
 			oldallocation.Height == GetAllocation().Height ) {
 		return;
-	}
-
-	m_recalc_content_allocation = true;
-	Invalidate();
-}
-
-void ScrolledWindow::HandlePositionChange( Widget::Ptr /*widget*/, const sf::FloatRect& oldallocation ) {
-	float border_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.BorderWidth", shared_from_this() ) );
-
-	sf::Vector2f delta( GetAllocation().Left - oldallocation.Left, GetAllocation().Top - oldallocation.Top );
-
-	m_horizontal_scrollbar->SetPosition(
-		sf::Vector2f(
-			m_horizontal_scrollbar->GetAllocation().Left + delta.x,
-			m_horizontal_scrollbar->GetAllocation().Top + delta.y
-		)
-	);
-
-	m_vertical_scrollbar->SetPosition(
-		sf::Vector2f(
-			m_vertical_scrollbar->GetAllocation().Left + delta.x,
-			m_vertical_scrollbar->GetAllocation().Top + delta.y
-		)
-	);
-
-	if( GetChild() ) {
-		GetChild()->SetPosition( sf::Vector2f( border_width, border_width ) );
 	}
 
 	m_recalc_content_allocation = true;
@@ -432,14 +402,48 @@ void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& tar
 	// Clear surface
 	m_render_texture.Clear( sf::Color( 0, 0, 0, 0 ) );
 
+	// Convert child position to relative
+	GetChild()->SetPosition( sf::Vector2f( -GetAbsolutePosition().x, -GetAbsolutePosition().y ) );
+
 	// Render child to surface
 	GetChild()->Expose( m_render_texture );
+
+	// Convert child position back to absolute
+	GetChild()->SetPosition( sf::Vector2f( 0.f, 0.f ) );
 
 	// Display
 	m_render_texture.Display();
 
+	// Set Sprite position
+	sf::Vector2f relative_position( GetAbsolutePosition().x + GetContentAllocation().Left - GetAllocation().Left, GetAbsolutePosition().y + GetContentAllocation().Top - GetAllocation().Top );
+
+	m_sprite.SetPosition( relative_position );
+
 	// Draw Sprite to target
 	target.Draw( m_sprite );
+}
+
+void ScrolledWindow::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
+	if( GetChildren().size() > 3 ) {
+
+#ifdef SFGUI_DEBUG
+		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow." << std::endl;
+#endif
+
+		Remove( child );
+		return;
+	}
+
+	m_recalc_content_allocation = true;
+	Invalidate();
+}
+
+Widget::Ptr ScrolledWindow::GetChild() const {
+	if( GetChildren().size() < 3 ) {
+		return Widget::Ptr();
+	}
+
+	return *( --GetChildren().end() );
 }
 
 }

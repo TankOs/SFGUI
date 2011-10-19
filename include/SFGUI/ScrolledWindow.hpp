@@ -9,7 +9,7 @@ namespace sfg {
 
 /** Scrolled Window.
  */
-class SFGUI_API ScrolledWindow : public Bin {
+class SFGUI_API ScrolledWindow : public Container {
 	public:
 		typedef boost::shared_ptr<ScrolledWindow>  Ptr; //!< Shared pointer.
 		typedef boost::shared_ptr<const ScrolledWindow>  PtrConst; //!< Shared pointer.
@@ -17,10 +17,10 @@ class SFGUI_API ScrolledWindow : public Bin {
 		/** Content Placement
 		 */
 		enum Placement {
-			Top = 0,
-			Bottom = 1 << 0,
-			Left = 1 << 1,
-			Right = 1 << 2,
+			Top = 1 << 0,
+			Bottom = 1 << 1,
+			Left = 1 << 2,
+			Right = 1 << 3,
 			TopLeft = Top | Left, //!< Top left corner.
 			TopRight = Top | Right, //!< Top right corner.
 			BottomLeft = Bottom | Left, //!< Bottom left corner.
@@ -92,6 +92,11 @@ class SFGUI_API ScrolledWindow : public Bin {
 		 */
 		const sf::FloatRect& GetContentAllocation() const;
 
+		/** Get child widget.
+		 * @return Child widget.
+		 */
+		Widget::Ptr GetChild() const;
+
 		/** Handle SFML event.
 		 * Handle an SFML event and fire proper signals.
 		 * @return true when event has been processed (eaten).
@@ -116,8 +121,8 @@ class SFGUI_API ScrolledWindow : public Bin {
 		void RecalculateContentAllocation();
 
 		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
-		void HandlePositionChange( Widget::Ptr widget, const sf::FloatRect& oldallocation );
 		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
+		void HandleAdd( Widget::Ptr widget, Widget::Ptr child );
 
 		Scrollbar::Ptr m_horizontal_scrollbar;
 		Scrollbar::Ptr m_vertical_scrollbar;
