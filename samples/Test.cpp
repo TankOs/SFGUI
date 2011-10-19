@@ -130,7 +130,7 @@ void SampleApp::Run() {
 	m_scrolled_window = sfg::ScrolledWindow::Create();
 	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 200.f ) );
 	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HorizontalAutomatic | sfg::ScrolledWindow::VerticalAutomatic );
-	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::BottomRight );
+	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TopLeft );
 	m_scrolled_window->Add( m_scrolled_window_box );
 
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
