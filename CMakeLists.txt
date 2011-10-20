@@ -62,7 +62,6 @@ set(
 	${INC_DIR}/SFGUI/Engine.inl
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
 	${INC_DIR}/SFGUI/Entry.hpp
-	${INC_DIR}/SFGUI/KeyValueLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/Object.hpp
 	${INC_DIR}/SFGUI/Range.hpp
@@ -78,10 +77,7 @@ set(
 	${INC_DIR}/SFGUI/Table.hpp
 	${INC_DIR}/SFGUI/TableCell.hpp
 	${INC_DIR}/SFGUI/TableOptions.hpp
-	${INC_DIR}/SFGUI/ThemeLoader.hpp
-	${INC_DIR}/SFGUI/ThemeLoader.inl
 	${INC_DIR}/SFGUI/Widget.hpp
-	${INC_DIR}/SFGUI/Widget.inl
 	${INC_DIR}/SFGUI/Window.hpp
 	${SRC_DIR}/SFGUI/Adjustment.cpp
 	${SRC_DIR}/SFGUI/Bin.cpp
@@ -93,7 +89,6 @@ set(
 	${SRC_DIR}/SFGUI/Engine.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
 	${SRC_DIR}/SFGUI/Entry.cpp
-	${SRC_DIR}/SFGUI/KeyValueLoader.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/Object.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
@@ -105,7 +100,6 @@ set(
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp
 	${SRC_DIR}/SFGUI/TableOptions.cpp
-	${SRC_DIR}/SFGUI/ThemeLoader.cpp
 	${SRC_DIR}/SFGUI/Widget.cpp
 	${SRC_DIR}/SFGUI/Window.cpp
 )

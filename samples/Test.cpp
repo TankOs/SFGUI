@@ -6,7 +6,6 @@
 #include <SFGUI/Label.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/ThemeLoader.hpp>
 #include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics.hpp>

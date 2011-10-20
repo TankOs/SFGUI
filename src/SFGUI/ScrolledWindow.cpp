@@ -368,13 +368,6 @@ void ScrolledWindow::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::Float
 }
 
 void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target ) {
-	float scroll_speed( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Stepper.Speed", shared_from_this() ) );
-
-	// This is just a temporary solution for setting the scroll speed
-	// of the Scrollbars until a better property system comes around.
-	m_horizontal_scrollbar->SetProperty( "Scrollbar.Stepper.Speed", scroll_speed );
-	m_vertical_scrollbar->SetProperty( "Scrollbar.Stepper.Speed", scroll_speed );
-
 	// Draw the Scrollbars
 	if( IsHorizontalScrollbarVisible() ) {
 		m_horizontal_scrollbar->Expose( target );

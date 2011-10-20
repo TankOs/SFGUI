@@ -16,47 +16,32 @@ namespace eng {
 BREW::BREW() :
 	Engine()
 {
-	// Register properties.
-	// Generic.
-	RegisterProperty( "Color", Color );
-	RegisterProperty( "FontSize", UnsignedInteger );
-	RegisterProperty( "FontName", String );
-	RegisterProperty( "BackgroundColor", Color );
-	RegisterProperty( "BorderColor", Color );
-	RegisterProperty( "BorderWidth", Float );
-	RegisterProperty( "Padding", Float );
-	RegisterProperty( "Thickness", Float );
-
-	// Window properties.
-	RegisterProperty( "TitleHeight", Float );
-	RegisterProperty( "TitleBackgroundColor", Color );
-
 	// Set defaults.
-	SetProperty<sf::Color>( "", "Color", sf::Color( 0xc6, 0xcb, 0xc4 ) );
-	SetProperty<unsigned int>( "", "FontSize", 12 );
-	SetProperty<std::string>( "", "FontName", std::string( "" ) ); // Uses SFML's default font when empty.
-	SetProperty<sf::Color>( "", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
-	SetProperty<sf::Color>( "", "BorderColor", sf::Color( 0x66, 0x66, 0x66 ) );
-	SetProperty<float>( "", "BorderWidth", 1.f );
-	SetProperty<float>( "", "Padding", 5.f );
-	SetProperty<float>( "", "Thickness", 2.f );
+	SetProperty( "", "Color", sf::Color( 0xc6, 0xcb, 0xc4 ) );
+	SetProperty( "", "FontSize", 12 );
+	SetProperty( "", "FontName", "" ); // Uses SFML's default font when empty.
+	SetProperty( "", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
+	SetProperty( "", "BorderColor", sf::Color( 0x66, 0x66, 0x66 ) );
+	SetProperty( "", "BorderWidth", 1.f );
+	SetProperty( "", "Padding", 5.f );
+	SetProperty( "", "Thickness", 2.f );
 
 	// Window-specific.
-	SetProperty<float>( "Window", "TitleHeight", 25.f );
-	SetProperty<sf::Color>( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
+	SetProperty( "Window", "TitleHeight", 25.f );
+	SetProperty( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
 
 	// Button-specific.
-	SetProperty<sf::Color>( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
-	SetProperty<sf::Color>( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
-	SetProperty<sf::Color>( "Button:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
-	SetProperty<sf::Color>( "Button:Prelight > Label", "Color", sf::Color::White );
-	SetProperty<sf::Color>( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<sf::Color>( "Button:Active > Label", "Color", sf::Color::Black );
+	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "Button:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "Button:Prelight > Label", "Color", sf::Color::White );
+	SetProperty( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "Button:Active > Label", "Color", sf::Color::Black );
 
 	// Entry-specific.
-	SetProperty<sf::Color>( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
-	SetProperty<sf::Color>( "Entry", "BorderColor", sf::Color( 0x30, 0x32, 0x2f ) );
-	SetProperty<sf::Color>( "Entry", "Color", sf::Color::White );
+	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
+	SetProperty( "Entry", "BorderColor", sf::Color( 0x30, 0x32, 0x2f ) );
+	SetProperty( "Entry", "Color", sf::Color::White );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window ) const {

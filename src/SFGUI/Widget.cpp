@@ -320,10 +320,6 @@ bool Widget::HasFlag( Flags flag ) const {
 	return m_flags & flag;
 }
 
-bool Widget::HasProperty( const std::string& property ) const {
-	return m_properties.find( property ) != m_properties.end();
-}
-
 const sf::Vector2f& Widget::GetRequisition() const {
 	// Check if we need to recalculate the requisition.
 	if( m_recalc_requisition ) {

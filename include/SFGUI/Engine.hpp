@@ -7,9 +7,14 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/System/String.hpp>
-#include <boost/any.hpp>
 #include <string>
 #include <map>
+#include <stdexcept>
+
+namespace sf {
+std::ostream& operator<<( std::ostream& stream, const Color& color );
+std::istream& operator>>( std::istream& stream, Color& color );
+}
 
 namespace sfg {
 
@@ -25,16 +30,7 @@ class ScrolledWindow;
  */
 class SFGUI_API Engine {
 	public:
-		/** Property type.
-		 */
-		enum PropertyType {
-			Integer = 0,
-			UnsignedInteger,
-			Float,
-			String,
-			Color,
-			Undefined = -1
-		};
+		typedef std::runtime_error BadValue; //<! Thrown when value can't be converted to or from string.
 
 		/** Dtor.
 		 */
@@ -98,26 +94,14 @@ class SFGUI_API Engine {
 		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Set property.
-		 * Please set T explicitely to avoid conversion failures! Example:\n
-		 * \code
-		 * SetProperty<unsigned int>( ..., ..., 123 );
-		 * \endcode
-		 * Keep in mind that setting properties works only for registered properties by the engine.
-		 *
 		 * @param selector selector string (leave empty for all widgets).
 		 * @param property Property.
 		 * @param value Value.
-		 * @return true on success, false when: Invalid selector, invalid property or value type mismatch.
+		 * @return true on success, false when: Invalid selector or invalid property.
+		 * @throws BadValue when value couldn't be converted to string.
 		 */
 		template <typename T>
 		bool SetProperty( const std::string& selector, const std::string& property, const T& value );
-
-		/** Set property.
-		 * @param property Name of property.
-		 * @param value Value.
-		 */
-		template <typename T>
-		void SetProperty( const std::string& property, const T& value );
 
 		/** Get property.
 		 * When widget is specified, the property will be searched there, at first.
@@ -126,7 +110,7 @@ class SFGUI_API Engine {
 		 * @return Value or T() in case property doesn't exist.
 		 */
 		template <typename T>
-		const T& GetProperty( const std::string& property, boost::shared_ptr<const Widget> widget = Widget::Ptr() ) const;
+		T GetProperty( const std::string& property, boost::shared_ptr<const Widget> widget = Widget::Ptr() ) const;
 
 		/** Load a font from file.
 		 * If the proper file was loaded before, it gets returned immediately.
@@ -135,35 +119,15 @@ class SFGUI_API Engine {
 		 */
 		const sf::Font& LoadFontFromFile( const std::string& filename ) const;
 
-		/** Get type of registered property.
-		 * @param name Property name.
-		 * @return Type or Undefined if not set.
-		 */
-		PropertyType GetPropertyType( const std::string& name ) const;
-
-	protected:
-		/** Register property string and type.
-		 * This is mainly used by theme loaders to determine what properties exist
-		 * with what types.
-		 * @param name Property name.
-		 * @param type Type.
-		 */
-		void RegisterProperty( const std::string& name, PropertyType type );
-
 	private:
 		typedef std::map<const std::string, sf::Font> FontMap;
 
-		typedef std::pair<Selector::PtrConst, boost::any> SelectorValuePair;
+		typedef std::pair<Selector::PtrConst, std::string> SelectorValuePair;
 		typedef std::list<SelectorValuePair> SelectorValueList;
 		typedef std::map<const std::string, SelectorValueList> WidgetNameMap;
 		typedef std::map<const std::string, WidgetNameMap> PropertyMap;
 
-		typedef std::map<const std::string, PropertyType> PropertyTypeMap;
-
-		bool SetPropertyImpl( const std::string& selector, const std::string& property, const boost::any& value );
-
 		PropertyMap m_properties;
-		PropertyTypeMap m_types;
 
 		mutable FontMap m_fonts;
 };

@@ -9,7 +9,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/any.hpp>
 #include <map>
 
 namespace sfg {
@@ -148,26 +147,6 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 */
 		virtual HandleEventResult HandleEvent( const sf::Event& event );
 
-		/** Get property.
-		 * @param name Property name.
-		 * @return Property value or T() if not set.
-		 */
-		template <typename T>
-		const T& GetProperty( const std::string& name ) const;
-
-		/** Set property.
-		 * @param name Property name.
-		 * @param value Value.
-		 */
-		template <typename T>
-		void SetProperty( const std::string& name, const T& value );
-
-		/** Check if widget has a property.
-		 * @param property Name of property.
-		 * @return true if exists.
-		 */
-		bool HasProperty( const std::string& property ) const;
-
 		/** Get absolute position on screen.
 		 * @return Absolute position.
 		 */
@@ -262,8 +241,6 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		bool HasFlag( Flags flag ) const;
 
 	private:
-		typedef std::map<const std::string, boost::any> PropertiesMap;
-
 		void GrabFocus( Ptr widget );
 
 		boost::weak_ptr<Container>  m_parent;
@@ -289,11 +266,7 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		int  m_flags;
 		boost::scoped_ptr<DragInfo>  m_drag_info;
 
-		PropertiesMap  m_properties;
-
 		mutable boost::scoped_ptr<sf::Drawable>  m_drawable;
 };
 
 }
-
-#include "Widget.inl"
