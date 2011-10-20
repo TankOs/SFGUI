@@ -60,16 +60,10 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 */
 		void Show( bool show = true );
 
-		/** Set name of widget.
-		 * Used to identify the widget to find it in containers, for example.
-		 * @param name Name.
-		 */
-		void SetName( const std::string& name );
-
 		/** Get name of widget.
 		 * @return Name.
 		 */
-		const std::string& GetName() const;
+		virtual const std::string& GetName() const = 0;
 
 		/** Grab focus.
 		 */
@@ -130,7 +124,12 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		/** Get parent.
 		 * @return Parent.
 		 */
-		boost::shared_ptr<Container> GetParent() const;
+		boost::shared_ptr<Container> GetParent();
+
+		/** Get parent.
+		 * @return Parent.
+		 */
+		boost::shared_ptr<const Container> GetParent() const;
 
 		/** Set widget's state.
 		 * @param state State.
@@ -178,6 +177,26 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 */
 		virtual void UpdateDrawablePosition() const;
 
+		/** Set ID.
+		 * @param id ID.
+		 */
+		void SetId( const std::string& id );
+
+		/** Get ID.
+		 * @return ID or empty.
+		 */
+		const std::string& GetId() const;
+
+		/** Set class.
+		 * @param cls Class.
+		 */
+		void SetClass( const std::string& cls );
+
+		/** Get class.
+		 * @return Class or empty.
+		 */
+		const std::string& GetClass() const;
+
 		// Signals.
 		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (old state)
 		Signal<void( Ptr )>  OnFocusChange; //!< Fired when focus grabbed or lost.
@@ -186,7 +205,7 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 
 		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeAllocate; //!< Fired when widget's allocation changed.
 		Signal<void( Ptr, const sf::FloatRect& )>  OnPositionChange; //!< Fired when widget's position changed.
-		Signal<void( Ptr, const sf::Vector2f& )>   OnSizeRequest; //!< Fired when requested a new widget's size.
+		Signal<void( Ptr )> OnSizeRequest; //!< Fired when size was requested.
 
 		Signal<void( Ptr, int, int )>  OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
 		Signal<bool( Ptr, int, int ), SlotResult>  OnMouseLeave; //!< Fired when mouse left widget. (x, y) Return true to keep the mouse move hook alive.
@@ -249,6 +268,9 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 
 		boost::weak_ptr<Container>  m_parent;
 
+		std::string m_id;
+		std::string m_class;
+
 		bool  m_sensitive;
 		bool  m_visible;
 		Ptr   m_focus_widget;
@@ -257,7 +279,6 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		bool  m_mouse_in;
 		int  m_mouse_button_down;
 
-		std::string    m_name;
 		sf::FloatRect  m_allocation;
 		mutable sf::Vector2f   m_requisition;
 		boost::scoped_ptr<sf::Vector2f> m_custom_requisition;

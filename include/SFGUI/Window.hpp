@@ -27,6 +27,8 @@ class SFGUI_API Window : public Bin {
 		 */
 		static Ptr Create();
 
+		virtual const std::string& GetName() const;
+
 		/** Set window title.
 		 * @param title Title.
 		 */

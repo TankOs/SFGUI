@@ -28,7 +28,7 @@ Button::Ptr Button::Create( const sf::String& label ) {
 }
 
 sf::Drawable* Button::InvalidateImpl() {
-	m_label->SetProperty<sf::Color>( "Label.TextColor", Context::Get().GetEngine().GetProperty<sf::Color>( "Button.Normal.TextColor", shared_from_this() ) );
+	m_label->Invalidate();
 
 	return Context::Get().GetEngine().CreateButtonDrawable( boost::shared_dynamic_cast<Button>( shared_from_this() ) );
 
@@ -112,6 +112,11 @@ void Button::SetPadding( float padding ) {
 
 float Button::GetPadding() const {
 	return m_padding;
+}
+
+const std::string& Button::GetName() const {
+	static const std::string name( "Button" );
+	return name;
 }
 
 }

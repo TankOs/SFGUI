@@ -26,6 +26,8 @@ class SFGUI_API Box : public Container {
 		 */
 		static Ptr Create( Orientation orientation = Horizontal, float spacing = 0.f );
 
+		virtual const std::string& GetName() const;
+
 		/** Add a widget to the box.
 		 * @param widget Widget.
 		 * @param expand Expand widget to highest possible size.

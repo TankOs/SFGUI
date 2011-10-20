@@ -207,6 +207,8 @@ sf::Drawable* ScrolledWindow::InvalidateImpl() {
 sf::Vector2f ScrolledWindow::GetRequisitionImpl() const {
 	// A child or parent just got resized/moved,
 	// have to recalculate everything.
+	// TODO: This is wrong. Parent just asks for requisition here. Use
+	// OnSizeRequest to handle size requests.
 	m_recalc_adjustments = true;
 	m_recalc_content_allocation = true;
 
@@ -251,7 +253,6 @@ void ScrolledWindow::RecalculateAdjustments() const {
 }
 
 void ScrolledWindow::RecalculateContentAllocation() {
-	float scrollbar_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Width", shared_from_this() ) );
 	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "ScrolledWindow.BorderWidth", shared_from_this() ) );
 
@@ -263,18 +264,18 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	m_content_allocation.Height -= 2.f * border_width;
 
 	if( IsVerticalScrollbarVisible() ) {
-		m_content_allocation.Width -= ( scrollbar_width + scrollbar_spacing );
+		m_content_allocation.Width -= ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
 
 		if( m_placement & Right ) { // Content placed at Right
-			m_content_allocation.Left += ( scrollbar_width + scrollbar_spacing );
+			m_content_allocation.Left += ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
 		}
 	}
 
 	if( IsHorizontalScrollbarVisible() ) {
-		m_content_allocation.Height -= ( scrollbar_width + scrollbar_spacing );
+		m_content_allocation.Height -= ( m_horizontal_scrollbar->GetRequisition().x + scrollbar_spacing );
 
 		if( m_placement & Bottom ) { // Content placed at Bottom
-			m_content_allocation.Top += ( scrollbar_width + scrollbar_spacing );
+			m_content_allocation.Top += ( m_horizontal_scrollbar->GetRequisition().x + scrollbar_spacing );
 		}
 	}
 
@@ -284,7 +285,7 @@ void ScrolledWindow::RecalculateContentAllocation() {
 				m_content_allocation.Left - GetAllocation().Left - border_width,
 				m_content_allocation.Height + 2.f * border_width + scrollbar_spacing,
 				m_content_allocation.Width + 2.f * border_width,
-				scrollbar_width
+				m_horizontal_scrollbar->GetRequisition().y
 			)
 		);
 	}
@@ -294,7 +295,7 @@ void ScrolledWindow::RecalculateContentAllocation() {
 				m_content_allocation.Left - GetAllocation().Left - border_width,
 				0.f,
 				m_content_allocation.Width + 2.f * border_width,
-				scrollbar_width
+				m_horizontal_scrollbar->GetRequisition().y
 			)
 		);
 	}
@@ -304,7 +305,7 @@ void ScrolledWindow::RecalculateContentAllocation() {
 			sf::FloatRect(
 				m_content_allocation.Width + 2.f * border_width + scrollbar_spacing,
 				m_content_allocation.Top - GetAllocation().Top - border_width,
-				scrollbar_width,
+				m_vertical_scrollbar->GetRequisition().x,
 				m_content_allocation.Height + 2.f * border_width
 			)
 		);
@@ -314,7 +315,7 @@ void ScrolledWindow::RecalculateContentAllocation() {
 			sf::FloatRect(
 				0.f,
 				m_content_allocation.Top - GetAllocation().Top - border_width,
-				scrollbar_width,
+				m_vertical_scrollbar->GetRequisition().x,
 				m_content_allocation.Height + 2.f * border_width
 			)
 		);
@@ -444,6 +445,11 @@ Widget::Ptr ScrolledWindow::GetChild() const {
 	}
 
 	return *( --GetChildren().end() );
+}
+
+const std::string& ScrolledWindow::GetName() const {
+	static const std::string name( "ScrolledWindow" );
+	return name;
 }
 
 }

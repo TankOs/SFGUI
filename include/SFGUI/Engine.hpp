@@ -2,6 +2,8 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
+#include <SFGUI/Selector.hpp>
+
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/System/String.hpp>
@@ -96,6 +98,21 @@ class SFGUI_API Engine {
 		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Set property.
+		 * Please set T explicitely to avoid conversion failures! Example:\n
+		 * \code
+		 * SetProperty<unsigned int>( ..., ..., 123 );
+		 * \endcode
+		 * Keep in mind that setting properties works only for registered properties by the engine.
+		 *
+		 * @param selector selector string (leave empty for all widgets).
+		 * @param property Property.
+		 * @param value Value.
+		 * @return true on success, false when: Invalid selector, invalid property or value type mismatch.
+		 */
+		template <typename T>
+		bool SetProperty( const std::string& selector, const std::string& property, const T& value );
+
+		/** Set property.
 		 * @param property Name of property.
 		 * @param value Value.
 		 */
@@ -134,13 +151,21 @@ class SFGUI_API Engine {
 		void RegisterProperty( const std::string& name, PropertyType type );
 
 	private:
-		typedef std::map<const std::string, boost::any> PropertiesMap;
-		typedef std::map<const std::string, PropertyType> PropertyTypesMap;
-		typedef std::map<const std::string, sf::Font> FontsMap;
+		typedef std::map<const std::string, sf::Font> FontMap;
 
-		PropertiesMap m_props;
-		PropertyTypesMap m_prop_types;
-		mutable FontsMap m_fonts;
+		typedef std::pair<Selector::PtrConst, boost::any> SelectorValuePair;
+		typedef std::list<SelectorValuePair> SelectorValueList;
+		typedef std::map<const std::string, SelectorValueList> WidgetNameMap;
+		typedef std::map<const std::string, WidgetNameMap> PropertyMap;
+
+		typedef std::map<const std::string, PropertyType> PropertyTypeMap;
+
+		bool SetPropertyImpl( const std::string& selector, const std::string& property, const boost::any& value );
+
+		PropertyMap m_properties;
+		PropertyTypeMap m_types;
+
+		mutable FontMap m_fonts;
 };
 
 }

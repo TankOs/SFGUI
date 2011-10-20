@@ -18,6 +18,8 @@ class SFGUI_API Entry : public Widget {
 		 */
 		static Ptr Create( const sf::String& text = L"" );
 
+		virtual const std::string& GetName() const;
+
 		/** Set text.
 		 * @param text Text.
 		 */

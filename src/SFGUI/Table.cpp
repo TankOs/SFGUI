@@ -248,4 +248,9 @@ void Table::SetRowSpacing( std::size_t index, float spacing ) {
 	RequestSize();
 }
 
+const std::string& Table::GetName() const {
+	static const std::string name( "Table" );
+	return name;
+}
+
 }

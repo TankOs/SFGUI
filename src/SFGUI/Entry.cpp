@@ -71,9 +71,9 @@ sf::Uint32 Entry::GetHideCharacter() const {
 }
 
 std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
-	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
-	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 
   std::basic_string<sf::Uint32> string( m_visible_string.Begin(), m_visible_string.End() );
 	float text_start = GetAllocation().Left + 2.f;
@@ -96,10 +96,10 @@ std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 
 
 void Entry::RecalculateVisibleString() {
-	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
-	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
+	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
-	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 
 	if( m_string.IsEmpty() ) {
 		m_visible_string.Clear();
@@ -247,11 +247,11 @@ void Entry::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ )
 }
 
 sf::Vector2f Entry::GetRequisitionImpl() const {
-	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Entry.Font", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
-	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Entry.FontSize", shared_from_this() ) );
-	float border_width( Context::Get().GetEngine().GetProperty<float>( "Entry.Normal.BorderWidth", shared_from_this() ) );
-	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Entry.TextPadding", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 
 	float line_height = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
@@ -272,6 +272,11 @@ std::size_t Entry::GetCursorPosition() const {
 
 const sf::String& Entry::GetVisibleText() const {
 	return m_visible_string;
+}
+
+const std::string& Entry::GetName() const {
+	static const std::string name( "Entry" );
+	return name;
 }
 
 }

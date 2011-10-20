@@ -5,6 +5,8 @@
 
 namespace sfg {
 
+const float Scrollbar::MIN_SLIDER_LENGTH( 15.f );
+
 Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	Range(),
 	m_orientation( orientation ),
@@ -40,8 +42,8 @@ Scrollbar::Orientation Scrollbar::GetOrientation() const {
 }
 
 const sf::FloatRect Scrollbar::GetSliderRect() const {
-	float mimimum_slider_length( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Slider.MinimumLength", shared_from_this() ) );
-	float stepper_length( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Length", shared_from_this() ) );
+	float mimimum_slider_length( MIN_SLIDER_LENGTH );
+	float stepper_length( MIN_SLIDER_LENGTH );
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
 
@@ -97,11 +99,22 @@ sf::Drawable* Scrollbar::InvalidateImpl() {
 }
 
 sf::Vector2f Scrollbar::GetRequisitionImpl() const {
-	return sf::Vector2f( 0.f, 0.f );
+	// Requisition for active axis (= in orientation).
+	float requisition_active(
+		MIN_SLIDER_LENGTH * 2.f + MIN_SLIDER_LENGTH
+	);
+
+	// Requisition for passive axis.
+	float requisition_passive( MIN_SLIDER_LENGTH );
+
+	return sf::Vector2f(
+		m_orientation == Horizontal ? requisition_active : requisition_passive,
+		m_orientation == Vertical ? requisition_active : requisition_passive
+	);
 }
 
 bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf::Mouse::Button button ) {
-	float stepper_length( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Length", shared_from_this() ) );
+	float stepper_length( MIN_SLIDER_LENGTH );
 
 	if( button != sf::Mouse::Left ) {
 		return false;
@@ -227,7 +240,7 @@ bool Scrollbar::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int
 }
 
 void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
-	float stepper_length( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Length", shared_from_this() ) );
+	float stepper_length( 20.f );
 
 	if( !m_dragging ) {
 		return;
@@ -301,6 +314,11 @@ void Scrollbar::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target
 		Invalidate();
 		m_change_timer.Reset();
 	}
+}
+
+const std::string& Scrollbar::GetName() const {
+	static const std::string name( "Scrollbar" );
+	return name;
 }
 
 }

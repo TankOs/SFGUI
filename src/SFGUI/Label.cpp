@@ -34,9 +34,9 @@ sf::Drawable* Label::InvalidateImpl() {
 }
 
 sf::Vector2f Label::GetRequisitionImpl() const {
-	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "Label.Font", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
-	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "Label.FontSize", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 
 	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( m_text, font, font_size );
 	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
@@ -51,6 +51,11 @@ void Label::SetAlignment( const sf::Vector2f& alignment ) {
 
 const sf::Vector2f& Label::GetAlignment() const {
 	return m_alignment;
+}
+
+const std::string& Label::GetName() const {
+	static const std::string name( "Label" );
+	return name;
 }
 
 }

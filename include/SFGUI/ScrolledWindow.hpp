@@ -52,6 +52,8 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		static Ptr Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
 
+		virtual const std::string& GetName() const;
+
 		/** Get the horizontal Adjustment for this Scrolled Window.
 		 * @return Horizontal Adjustment for this Scrolled Window.
 		 */

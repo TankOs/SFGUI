@@ -12,6 +12,8 @@ class SFGUI_API Scrollbar : public Range {
 		typedef boost::shared_ptr<Scrollbar>  Ptr; //!< Shared pointer.
 		typedef boost::shared_ptr<const Scrollbar>  PtrConst; //!< Shared pointer.
 
+		static const float MIN_SLIDER_LENGTH; //!< Minimum trough length.
+
 		/** Scrollbar orientation.
 		 */
 		enum Orientation {
@@ -24,6 +26,8 @@ class SFGUI_API Scrollbar : public Range {
 		 * @return Scrollbar widget.
 		 */
 		static Ptr Create( Orientation orientation = Horizontal );
+
+		virtual const std::string& GetName() const;
 
 		/** Create scrollbar widget.
 		 * @param adjustment The adjustment to use.

@@ -24,7 +24,7 @@ class SFGUI_API Adjustment : public Object, public boost::enable_shared_from_thi
 		 * @param page_size Page size (how many entries are visible / slider size).
 		 * @return Adjustment.
 		 */
-		static Ptr Create( float value = .0f, float lower = .0f, float upper = .0f, float minor_step = .0f, float major_step = .0f, float page_size = .0f );
+		static Ptr Create( float value = .0f, float lower = .0f, float upper = .0f, float minor_step = 1.f, float major_step = 5.f, float page_size = .0f );
 
 		/** Assignment operator
 		 * @param adjustment Adjustment whose values are to be assigned to this one.

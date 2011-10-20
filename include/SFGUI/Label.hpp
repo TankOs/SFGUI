@@ -18,6 +18,8 @@ class SFGUI_API Label : public Widget {
 		 */
 		static Ptr Create( const sf::String& text = L"" );
 
+		virtual const std::string& GetName() const;
+
 		/** Ctor.
 		 * @param text Text.
 		 */

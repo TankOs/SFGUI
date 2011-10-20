@@ -32,8 +32,8 @@ Scale::Orientation Scale::GetOrientation() const {
 }
 
 const sf::FloatRect Scale::GetSliderRect() const {
-	float slider_length( Context::Get().GetEngine().GetProperty<float>( "Scale.Slider.Length", shared_from_this() ) );
-	float slider_width( Context::Get().GetEngine().GetProperty<float>( "Scale.Slider.Width", shared_from_this() ) );
+	float slider_length( 15.f );
+	float slider_width( m_orientation == Horizontal ? GetAllocation().Height : GetAllocation().Width );
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
 
@@ -60,7 +60,7 @@ sf::Drawable* Scale::InvalidateImpl() {
 }
 
 sf::Vector2f Scale::GetRequisitionImpl() const {
-	float slider_width( Context::Get().GetEngine().GetProperty<float>( "Scale.Slider.Width", shared_from_this() ) );
+	float slider_width( m_orientation == Horizontal ? GetAllocation().Height : GetAllocation().Width );
 
 	if( m_orientation == Horizontal ) {
 		return sf::Vector2f( 0.f, slider_width );
@@ -141,6 +141,11 @@ void Scale::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 			delta -= step_distance;
 		}
 	}
+}
+
+const std::string& Scale::GetName() const {
+	static const std::string name( "Scale" );
+	return name;
 }
 
 }

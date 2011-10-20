@@ -28,6 +28,8 @@ class SFGUI_API Table : public Container {
 		 */
 		static Ptr Create();
 
+		virtual const std::string& GetName() const;
+
 		/** Attach widget to table.
 		 * @param widget Widget to attach.
 		 * @param rect Rect to attach widget to (Left = column, Top = row, Width = column span, Height = row span).

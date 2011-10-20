@@ -18,6 +18,11 @@ Box::Ptr Box::Create( Orientation orientation, float spacing ) {
 	return ptr;
 }
 
+const std::string& Box::GetName() const {
+	static const std::string name( "Box" );
+	return name;
+}
+
 void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
 	if( IsChild( widget ) ) {
 		return;

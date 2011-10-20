@@ -16,88 +16,61 @@ namespace eng {
 BREW::BREW() :
 	Engine()
 {
+	// Register properties.
+	// Generic.
+	RegisterProperty( "Color", Color );
+	RegisterProperty( "FontSize", UnsignedInteger );
+	RegisterProperty( "FontName", String );
+	RegisterProperty( "BackgroundColor", Color );
+	RegisterProperty( "BorderColor", Color );
+	RegisterProperty( "BorderWidth", Float );
+	RegisterProperty( "Padding", Float );
+	RegisterProperty( "Thickness", Float );
+
+	// Window properties.
+	RegisterProperty( "TitleHeight", Float );
+	RegisterProperty( "TitleBackgroundColor", Color );
+
 	// Set defaults.
-	SetProperty<float>( "Window.Title.Height", 20.f );
-	SetProperty<unsigned int>( "Window.Title.FontSize", 14 );
-	SetProperty<sf::Color>( "Window.Title.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
-	SetProperty<sf::Color>( "Window.BackgroundColor", sf::Color( 0x88, 0x88, 0x88 ) );
-	SetProperty<float>( "Window.BorderWidth", 2.f );
-	SetProperty<sf::Color>( "Window.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "Window.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<float>( "Window.ShadowDistance", 2.f );
-	SetProperty<sf::Uint8>( "Window.ShadowAlpha", 100 );
+	SetProperty<sf::Color>( "", "Color", sf::Color( 0xc6, 0xcb, 0xc4 ) );
+	SetProperty<unsigned int>( "", "FontSize", 12 );
+	SetProperty<std::string>( "", "FontName", std::string( "" ) ); // Uses SFML's default font when empty.
+	SetProperty<sf::Color>( "", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
+	SetProperty<sf::Color>( "", "BorderColor", sf::Color( 0x66, 0x66, 0x66 ) );
+	SetProperty<float>( "", "BorderWidth", 1.f );
+	SetProperty<float>( "", "Padding", 5.f );
+	SetProperty<float>( "", "Thickness", 2.f );
 
-	SetProperty<sf::Color>( "Button.Normal.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "Button.Normal.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<sf::Color>( "Button.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
-	SetProperty<sf::Color>( "Button.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
-	SetProperty<float>( "Button.Normal.BorderWidth", 1.f );
-	SetProperty<sf::Color>( "Button.Prelight.BackgroundColor", sf::Color( 0xAA, 0xAA, 0xAA ) );
-	SetProperty<sf::Color>( "Button.Prelight.TextColor", sf::Color( 0x00, 0x00, 0x00 ) );
-	SetProperty<sf::Color>( "Button.Active.BackgroundColor", sf::Color( 0x77, 0x77, 0x77 ) );
-	SetProperty<sf::Color>( "Button.Active.TextColor", sf::Color( 0x00, 0x00, 0x00 ) );
-	SetProperty<sf::Color>( "Button.Active.LightBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<sf::Color>( "Button.Active.DarkBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
+	// Window-specific.
+	SetProperty<float>( "Window", "TitleHeight", 25.f );
+	SetProperty<sf::Color>( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
 
-	SetProperty<std::string>( "Label.Font", "" );
-	SetProperty<unsigned int>( "Label.FontSize", 12 );
+	// Button-specific.
+	SetProperty<sf::Color>( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty<sf::Color>( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty<sf::Color>( "Button:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty<sf::Color>( "Button:Prelight > Label", "Color", sf::Color::White );
+	SetProperty<sf::Color>( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty<sf::Color>( "Button:Active > Label", "Color", sf::Color::Black );
 
-	SetProperty<sf::Color>( "Entry.Normal.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "Entry.Normal.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<sf::Color>( "Entry.Normal.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
-	SetProperty<sf::Color>( "Entry.Normal.TextColor", sf::Color( 0xFF, 0xFF, 0xFF ) );
-	SetProperty<float>( "Entry.TextPadding", 4.f );
-	SetProperty<sf::Color>( "Entry.Normal.CursorColor", sf::Color::White );
-	SetProperty<float>( "Entry.Normal.CursorThickness", 2.f );
-	SetProperty<float>( "Entry.Normal.BorderWidth", 1.f );
-	SetProperty<std::string>( "Entry.Font", "" );
-	SetProperty<unsigned int>( "Entry.FontSize", 12 );
-
-	SetProperty<float>( "Scale.Trough.Thickness", 5.f );
-	SetProperty<sf::Color>( "Scale.Trough.Color", sf::Color( 0x77, 0x77, 0x77 ) );
-	SetProperty<float>( "Scale.Slider.Length", 12.f );
-	SetProperty<float>( "Scale.Slider.Width", 16.f );
-	SetProperty<sf::Color>( "Scale.Slider.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
-	SetProperty<sf::Color>( "Scale.Slider.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "Scale.Slider.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<float>( "Scale.Slider.BorderWidth", 1.f );
-
-	SetProperty<float>( "Scrollbar.BorderWidth", 1.f );
-	SetProperty<sf::Color>( "Scrollbar.Trough.Color", sf::Color( 0x77, 0x77, 0x77 ) );
-	SetProperty<float>( "Scrollbar.Slider.MinimumLength", 12.f );
-	SetProperty<sf::Color>( "Scrollbar.Slider.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
-	SetProperty<sf::Color>( "Scrollbar.Slider.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "Scrollbar.Slider.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<float>( "Scrollbar.Stepper.Length", 16.f );
-	SetProperty<float>( "Scrollbar.Stepper.Speed", 5.f );
-	SetProperty<sf::Color>( "Scrollbar.Stepper.BackgroundColor", sf::Color( 0x99, 0x99, 0x99 ) );
-	SetProperty<sf::Color>( "Scrollbar.Stepper.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "Scrollbar.Stepper.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<sf::Color>( "Scrollbar.Stepper.ArrowColor", sf::Color( 0x55, 0x55, 0x55 ) );
-
-	SetProperty<float>( "ScrolledWindow.Scrollbar.Width", 16.f );
-	SetProperty<float>( "ScrolledWindow.Scrollbar.Stepper.Speed", 100.f );
-	SetProperty<float>( "ScrolledWindow.Scrollbar.Spacing", 4.f );
-	SetProperty<sf::Color>( "ScrolledWindow.LightBorderColor", sf::Color( 0xCC, 0xCC, 0xCC ) );
-	SetProperty<sf::Color>( "ScrolledWindow.DarkBorderColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty<float>( "ScrolledWindow.BorderWidth", 1.f );
-
-	// Register property types.
-	RegisterProperty( "Button.Normal.BackgroundColor", Color );
-	RegisterProperty( "Window.Title.FontSize", UnsignedInteger );
+	// Entry-specific.
+	SetProperty<sf::Color>( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
+	SetProperty<sf::Color>( "Entry", "BorderColor", sf::Color( 0x30, 0x32, 0x2f ) );
+	SetProperty<sf::Color>( "Entry", "Color", sf::Color::White );
 }
 
 sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window ) const {
 	RenderQueue* queue( new RenderQueue );
-	sf::Color background_color( GetProperty<sf::Color>( "Window.BackgroundColor", window ) );
-	sf::Color border_color_light( GetProperty<sf::Color>( "Window.LightBorderColor", window ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "Window.DarkBorderColor", window ) );
-	sf::Color title_background_color( GetProperty<sf::Color>( "Window.Title.BackgroundColor", window ) );
-	float border_width( GetProperty<float>( "Window.BorderWidth", window ) );
-	float title_size( GetProperty<float>( "Window.Title.Height", window ) );
-	float shadow_distance( GetProperty<float>( "Window.ShadowDistance", window ) );
-	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "Window.ShadowAlpha", window ) );
-	unsigned int title_font_size( GetProperty<unsigned int>( "Window.Title.FontSize", window ) );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", window ) );
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", window ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", window ) );
+	sf::Color title_background_color( GetProperty<sf::Color>( "TitleBackgroundColor", window ) );
+	sf::Color title_text_color( GetProperty<sf::Color>( "Color", window ) );
+	float border_width( GetProperty<float>( "BorderWidth", window ) );
+	float title_size( GetProperty<float>( "TitleHeight", window ) );
+	float shadow_distance( GetProperty<float>( "ShadowDistance", window ) );
+	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
+	unsigned int title_font_size( GetProperty<unsigned int>( "FontSize", window ) );
 
 	if( window->HasStyle( Window::Background ) ) {
 		// Shadow.
@@ -159,7 +132,7 @@ sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window ) con
 		);
 
 		title_text->SetPosition( title_position );
-		title_text->SetColor( sf::Color( 0, 0, 0 ) );
+		title_text->SetColor( title_text_color );
 
 		queue->Add( title );
 		queue->Add( title_text );
@@ -184,22 +157,20 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 }
 
 sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "Button.Normal.LightBorderColor", button ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "Button.Normal.DarkBorderColor", button ) );
-	sf::Color background_color( GetProperty<sf::Color>( "Button.Normal.BackgroundColor", button ) );
-	sf::Color text_color( GetProperty<sf::Color>( "Button.Normal.TextColor", button ) );
-	float border_width( GetProperty<float>( "Button.Normal.BorderWidth", button ) );
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", button ) );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
+	sf::Color text_color( GetProperty<sf::Color>( "Color", button ) );
+	float border_width( GetProperty<float>( "BorderWidth", button ) );
 
-	if( button->GetState() == Widget::Prelight ) {
-		background_color = GetProperty<sf::Color>( "Button.Prelight.BackgroundColor", button );
-		text_color = GetProperty<sf::Color>( "Button.Prelight.TextColor", button );
-	}
-	else if( button->GetState() == Widget::Active ) {
-		background_color = GetProperty<sf::Color>( "Button.Active.BackgroundColor", button );
-		text_color = GetProperty<sf::Color>( "Button.Active.TextColor", button );
-		border_color_light = GetProperty<sf::Color>( "Button.Active.LightBorderColor", button );
-		border_color_dark = GetProperty<sf::Color>( "Button.Active.DarkBorderColor", button );
-	}
+	// TODO: Replace by += and -=. Currently not possible with SFML (see SFML issue #114).
+	border_color_light.r = static_cast<sf::Uint8>( std::min( 255, border_color_light.r + 0x20 ) );
+	border_color_light.g = static_cast<sf::Uint8>( std::min( 255, border_color_light.g + 0x20 ) );
+	border_color_light.b = static_cast<sf::Uint8>( std::min( 255, border_color_light.b + 0x20 ) );
+
+	border_color_dark.r = static_cast<sf::Uint8>( std::max( 0, border_color_dark.r - 0x20 ) );
+	border_color_dark.g = static_cast<sf::Uint8>( std::max( 0, border_color_dark.g - 0x20 ) );
+	border_color_dark.b = static_cast<sf::Uint8>( std::max( 0, border_color_dark.b - 0x20 ) );
 
 	RenderQueue*  queue( new RenderQueue );
 
@@ -221,9 +192,9 @@ sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button ) con
 }
 
 sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label ) const {
-	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "Label.Font", label ) ) );
-	const unsigned int font_size( GetProperty<unsigned int>( "Label.FontSize", label ) );
-	const sf::Color font_color( GetProperty<sf::Color>( "Label.TextColor", label ) );
+	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "FontName", label ) ) );
+	const unsigned int font_size( GetProperty<unsigned int>( "FontSize", label ) );
+	const sf::Color font_color( GetProperty<sf::Color>( "Color", label ) );
 
 	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );
 	vis_label->SetColor( font_color );
@@ -241,16 +212,16 @@ sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label ) const 
 }
 
 sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "Entry.Normal.LightBorderColor", entry ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "Entry.Normal.DarkBorderColor", entry ) );
-	sf::Color background_color( GetProperty<sf::Color>( "Entry.Normal.BackgroundColor", entry ) );
-	sf::Color text_color( GetProperty<sf::Color>( "Entry.Normal.TextColor", entry ) );
-	sf::Color cursor_color( GetProperty<sf::Color>( "Entry.Normal.CursorColor", entry ) );
-	float text_padding( GetProperty<float>( "Entry.TextPadding", entry ) );
-	float cursor_thickness( GetProperty<float>( "Entry.Normal.CursorThickness", entry ) );
-	float border_width( GetProperty<float>( "Entry.Normal.BorderWidth", entry ) );
-	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "Entry.Font", entry ) ) );
-	const unsigned int&  font_size( GetProperty<unsigned int>( "Entry.FontSize", entry ) );
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", entry ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", entry ) );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", entry ) );
+	sf::Color text_color( GetProperty<sf::Color>( "Color", entry ) );
+	sf::Color cursor_color( GetProperty<sf::Color>( "Color", entry ) );
+	float text_padding( GetProperty<float>( "Padding", entry ) );
+	float cursor_thickness( GetProperty<float>( "Thickness", entry ) );
+	float border_width( GetProperty<float>( "BorderWidth", entry ) );
+	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "FontName", entry ) ) );
+	const unsigned int&  font_size( GetProperty<unsigned int>( "FontSize", entry ) );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -325,12 +296,12 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 }
 
 sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale ) const {
-	sf::Color trough_color( GetProperty<sf::Color>( "Scale.Trough.Color", scale ) );
-	sf::Color slider_color( GetProperty<sf::Color>( "Scale.Slider.BackgroundColor", scale ) );
-	sf::Color border_color_light( GetProperty<sf::Color>( "Scale.Slider.LightBorderColor", scale ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "Scale.Slider.DarkBorderColor", scale ) );
-	float trough_thickness( GetProperty<float>( "Scale.Trough.Thickness", scale ) );
-	float border_width( GetProperty<float>( "Scale.Slider.BorderWidth", scale ) );
+	sf::Color trough_color( GetProperty<sf::Color>( "Color", scale ) );
+	sf::Color slider_color( GetProperty<sf::Color>( "BackgroundColor", scale ) );
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", scale ) );
+	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", scale ) );
+	float trough_thickness( GetProperty<float>( "Thickness", scale ) );
+	float border_width( GetProperty<float>( "BorderWidth", scale ) );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -396,16 +367,16 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 }
 
 sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar ) const {
-	sf::Color trough_color( GetProperty<sf::Color>( "Scrollbar.Trough.Color", scrollbar ) );
-	sf::Color slider_color( GetProperty<sf::Color>( "Scrollbar.Slider.BackgroundColor", scrollbar ) );
-	sf::Color slider_border_color_light( GetProperty<sf::Color>( "Scrollbar.Slider.LightBorderColor", scrollbar ) );
-	sf::Color slider_border_color_dark( GetProperty<sf::Color>( "Scrollbar.Slider.DarkBorderColor", scrollbar ) );
-	sf::Color stepper_color( GetProperty<sf::Color>( "Scrollbar.Stepper.BackgroundColor", scrollbar ) );
-	sf::Color stepper_border_color_light( GetProperty<sf::Color>( "Scrollbar.Stepper.LightBorderColor", scrollbar ) );
-	sf::Color stepper_border_color_dark( GetProperty<sf::Color>( "Scrollbar.Stepper.DarkBorderColor", scrollbar ) );
-	sf::Color stepper_arrow_color( GetProperty<sf::Color>( "Scrollbar.Stepper.ArrowColor", scrollbar ) );
-	float border_width( GetProperty<float>( "Scrollbar.BorderWidth", scrollbar ) );
-	float stepper_length( GetProperty<float>( "Scrollbar.Stepper.Length", scrollbar ) );
+	sf::Color trough_color( GetProperty<sf::Color>( "Color", scrollbar ) );
+	sf::Color slider_color( GetProperty<sf::Color>( "BackgroundColor", scrollbar ) );
+	sf::Color slider_border_color_light( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
+	sf::Color slider_border_color_dark( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
+	sf::Color stepper_color( GetProperty<sf::Color>( "BackgroundColor", scrollbar ) );
+	sf::Color stepper_border_color_light( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
+	sf::Color stepper_border_color_dark( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
+	sf::Color stepper_arrow_color( GetProperty<sf::Color>( "Color", scrollbar ) );
+	float border_width( GetProperty<float>( "BorderWidth", scrollbar ) );
+	float stepper_length( Scrollbar::MIN_SLIDER_LENGTH );
 
 	RenderQueue* queue( new RenderQueue );
 

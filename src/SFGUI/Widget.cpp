@@ -30,14 +30,6 @@ bool Widget::IsVisible() const {
 	return m_visible;
 }
 
-void Widget::SetName( const std::string& name ) {
-	m_name = name;
-}
-
-const std::string& Widget::GetName() const {
-	return m_name;
-}
-
 void Widget::GrabFocus( Ptr widget ) {
 	Container::Ptr parent = m_parent.lock();
 	if( !parent ) {
@@ -71,6 +63,9 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 void Widget::RequestSize() {
 	m_recalc_requisition = true;
 	Container::Ptr parent = m_parent.lock();
+
+	// Notify observers.
+	OnSizeRequest.Sig( shared_from_this() );
 
 	if( parent ) {
 		parent->RequestSize();
@@ -297,7 +292,11 @@ Widget::State Widget::GetState() const {
 	return m_state;
 }
 
-Container::Ptr Widget::GetParent() const {
+Container::Ptr Widget::GetParent() {
+	return m_parent.lock();
+}
+
+Container::PtrConst Widget::GetParent() const {
 	return m_parent.lock();
 }
 
@@ -380,6 +379,22 @@ void Widget::UpdateDrawablePosition() const {
 	if( m_drawable ) {
 		m_drawable->SetPosition( GetAbsolutePosition() );
 	}
+}
+
+void Widget::SetId( const std::string& id ) {
+	m_id = id;
+}
+
+const std::string& Widget::GetId() const {
+	return m_id;
+}
+
+void Widget::SetClass( const std::string& cls ) {
+	m_class = cls;
+}
+
+const std::string& Widget::GetClass() const {
+	return m_class;
 }
 
 }

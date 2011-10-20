@@ -24,6 +24,8 @@ class SFGUI_API Scale : public Range {
 		 */
 		static Ptr Create( Orientation orientation = Horizontal );
 
+		virtual const std::string& GetName() const;
+
 		/** Create scale widget.
 		 * @param min Minimum value.
 		 * @param max Maximum value.

@@ -40,8 +40,8 @@ const sf::String& Window::GetTitle() const {
 
 sf::FloatRect Window::GetClientRect() const {
 	sf::FloatRect  clientrect( 0, 0, GetAllocation().Width, GetAllocation().Height );
-	float  title_height( HasStyle( Titlebar ) ? Context::Get().GetEngine().GetProperty<float>( "Window.Title.Height" ) : 0.f );
-	float  border_width( Context::Get().GetEngine().GetProperty<float>( "Window.BorderWidth" ) );
+	float  title_height( HasStyle( Titlebar ) ? Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() ) : 0.f );
+	float  border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
 	clientrect.Left += border_width + GetBorderWidth();
 	clientrect.Top += title_height + border_width + GetBorderWidth();
@@ -90,8 +90,8 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 	requisition += GetChild()->GetRequisition();
 
 	if( HasStyle( Titlebar ) ) {
-		float  visual_border_width( Context::Get().GetEngine().GetProperty<float>( "Window.BorderWidth", shared_from_this() ) );
-		float  title_height( Context::Get().GetEngine().GetProperty<float>( "Window.Title.Height", shared_from_this() ) );
+		float  visual_border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+		float  title_height( Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() ) );
 
 		requisition.x += visual_border_width;
 		requisition.y += visual_border_width + title_height;
@@ -109,6 +109,11 @@ void Window::HandleDragMove( Widget::Ptr /*widget*/, const DragInfo& drag_info )
 			)
 		);
 	}
+}
+
+const std::string& Window::GetName() const {
+	static const std::string name( "Window" );
+	return name;
 }
 
 }

@@ -18,6 +18,8 @@ class SFGUI_API Button : public Bin {
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
+		virtual const std::string& GetName() const;
+
 		/** Set label.
 		 * @param label Label.
 		 */
