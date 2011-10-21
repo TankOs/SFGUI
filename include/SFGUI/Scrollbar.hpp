@@ -12,8 +12,6 @@ class SFGUI_API Scrollbar : public Range {
 		typedef boost::shared_ptr<Scrollbar>  Ptr; //!< Shared pointer.
 		typedef boost::shared_ptr<const Scrollbar>  PtrConst; //!< Shared pointer.
 
-		static const float MIN_SLIDER_LENGTH; //!< Minimum trough length.
-
 		/** Scrollbar orientation.
 		 */
 		enum Orientation {

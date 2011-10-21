@@ -86,4 +86,15 @@ const sf::Font& Engine::LoadFontFromFile( const std::string& filename ) const {
 	return m_fonts[filename];
 }
 
+void Engine::ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, int offset ) const {
+	// TODO: Replace by += and -=. Currently not possible with SFML (see SFML issue #114).
+	light_color.r = static_cast<sf::Uint8>( std::min( 255, static_cast<int>( light_color.r ) + offset ) );
+	light_color.g = static_cast<sf::Uint8>( std::min( 255, static_cast<int>( light_color.g ) + offset ) );
+	light_color.b = static_cast<sf::Uint8>( std::min( 255, static_cast<int>( light_color.b ) + offset ) );
+
+	dark_color.r = static_cast<sf::Uint8>( std::max( 0, static_cast<int>( dark_color.r ) - offset ) );
+	dark_color.g = static_cast<sf::Uint8>( std::max( 0, static_cast<int>( dark_color.g ) - offset ) );
+	dark_color.b = static_cast<sf::Uint8>( std::max( 0, static_cast<int>( dark_color.b ) - offset ) );
+}
+
 }

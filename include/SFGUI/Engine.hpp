@@ -119,6 +119,13 @@ class SFGUI_API Engine {
 		 */
 		const sf::Font& LoadFontFromFile( const std::string& filename ) const;
 
+		/** Shift the given border colors to make them lighter and darker.
+		 * @param light_color Color of the lighter border.
+		 * @param dark_color Color of the darker border.
+		 * @param offset Amount to shift by.
+		 */
+		void ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, int offset ) const;
+
 	private:
 		typedef std::map<const std::string, sf::Font> FontMap;
 

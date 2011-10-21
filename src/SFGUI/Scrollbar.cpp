@@ -5,8 +5,6 @@
 
 namespace sfg {
 
-const float Scrollbar::MIN_SLIDER_LENGTH( 15.f );
-
 Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	Range(),
 	m_orientation( orientation ),
@@ -42,8 +40,7 @@ Scrollbar::Orientation Scrollbar::GetOrientation() const {
 }
 
 const sf::FloatRect Scrollbar::GetSliderRect() const {
-	float mimimum_slider_length( MIN_SLIDER_LENGTH );
-	float stepper_length( MIN_SLIDER_LENGTH );
+	float mimimum_slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderMinimumLength", shared_from_this() ) );
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
 
@@ -52,6 +49,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 	float pages = value_range / adjustment->GetPageSize() + 1.f;
 
 	if( m_orientation == Horizontal ) {
+		float stepper_length = GetAllocation().Height;
 		float trough_length = GetAllocation().Width - 2.f * stepper_length;
 		float slider_length = std::max( mimimum_slider_length, trough_length / pages );
 		if( adjustment->GetPageSize() == .0f ) {
@@ -68,6 +66,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 		return sf::FloatRect( slider_x, slider_y, slider_length, GetAllocation().Height );
 	}
 	else {
+		float stepper_length = GetAllocation().Width;
 		float trough_length = GetAllocation().Height - 2.f * stepper_length;
 		float slider_length = std::max( mimimum_slider_length, trough_length / pages );
 		if( adjustment->GetPageSize() == .0f ) {
@@ -99,23 +98,15 @@ sf::Drawable* Scrollbar::InvalidateImpl() {
 }
 
 sf::Vector2f Scrollbar::GetRequisitionImpl() const {
-	// Requisition for active axis (= in orientation).
-	float requisition_active(
-		MIN_SLIDER_LENGTH * 2.f + MIN_SLIDER_LENGTH
-	);
+	float mimimum_slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderMinimumLength", shared_from_this() ) );
 
-	// Requisition for passive axis.
-	float requisition_passive( MIN_SLIDER_LENGTH );
-
-	return sf::Vector2f(
-		m_orientation == Horizontal ? requisition_active : requisition_passive,
-		m_orientation == Vertical ? requisition_active : requisition_passive
-	);
+	// Scrollbars should always have a custom requisition set for it's shorter side.
+	// If the dev forgets to set one show him where the scrollbar slider is so
+	// it is easier for him to fix.
+	return sf::Vector2f( mimimum_slider_length, mimimum_slider_length );
 }
 
 bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf::Mouse::Button button ) {
-	float stepper_length( MIN_SLIDER_LENGTH );
-
 	if( button != sf::Mouse::Left ) {
 		return false;
 	}
@@ -140,6 +131,8 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 	}
 
 	if( m_orientation == Horizontal ) {
+		float stepper_length = GetAllocation().Height;
+
 		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, stepper_length, GetAllocation().Height );
 		sf::FloatRect increase_stepper_rect( GetAllocation().Left + GetAllocation().Width - stepper_length, GetAllocation().Top, stepper_length, GetAllocation().Height );
 
@@ -160,6 +153,8 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 		}
 	}
 	else {
+		float stepper_length = GetAllocation().Width;
+
 		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, GetAllocation().Width, stepper_length );
 		sf::FloatRect increase_stepper_rect( GetAllocation().Left, GetAllocation().Top + GetAllocation().Height - stepper_length, GetAllocation().Width, stepper_length );
 
@@ -240,8 +235,6 @@ bool Scrollbar::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int
 }
 
 void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
-	float stepper_length( 20.f );
-
 	if( !m_dragging ) {
 		return;
 	}
@@ -253,6 +246,8 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 	float steps = value_range / adjustment->GetMinorStep();
 
 	if( m_orientation == Horizontal ) {
+		float stepper_length = GetAllocation().Height;
+
 		float slider_center_x = GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f;
 		float step_distance = ( GetAllocation().Width - 2.f * stepper_length ) / steps;
 
@@ -269,6 +264,8 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 		}
 	}
 	else {
+		float stepper_length = GetAllocation().Width;
+
 		float slider_center_y = GetAllocation().Top + slider_rect.Top + slider_rect.Height / 2.0f;
 		float step_distance = ( GetAllocation().Height - 2.f * stepper_length ) / steps;
 
@@ -287,7 +284,7 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 }
 
 void Scrollbar::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ ) {
-	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Speed", shared_from_this() ) );
+	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "StepperSpeed", shared_from_this() ) );
 
 	// Increment / Decrement value while one of the steppers is pressed
 	if( m_decrease_pressed && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
