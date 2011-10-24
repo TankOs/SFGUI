@@ -21,6 +21,7 @@ endif()
 
 set( SFGUI_STATIC false CACHE BOOL "Build static library." )
 set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI example applications." )
+set( BUILD_STYLE_PARSER true CACHE BOOL "Build SFGUI style file parser." )
 
 if( WINDOWS )
 	set( BIN_EXTENSION ".exe" )
@@ -117,22 +118,41 @@ set(
 	${SRC_DIR}/SFGUI/Window.cpp
 )
 
+if( BUILD_STYLE_PARSER )
+	set(
+		SOURCES
+		${SOURCES}
+		${INC_DIR}/SFGUI/Parsers/StyleParser/Grammar.hpp
+		${INC_DIR}/SFGUI/Parsers/StyleParser/Parse.hpp
+		${SRC_DIR}/SFGUI/Parsers/StyleParser/Grammar.cpp
+		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarPredicates.cpp
+		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarSelector.cpp
+		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarSimpleSelector.cpp
+		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarStatement.cpp
+		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarToken.cpp
+		${SRC_DIR}/SFGUI/Parsers/StyleParser/Parse.cpp
+	)
+
+	add_definitions( -D SFGUI_WITH_STYLE_PARSER )
+endif()
+
 include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
+include_directories( "${PROJECT_SOURCE_DIR}/extlibs/headers/ell/libELL/Include" )
 
 if( NOT SFGUI_STATIC )
 	add_library( sfgui SHARED ${SOURCES} )
-	
+
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -d )
-	
+
 	if ( WINDOWS AND COMPILER_GCC )
 		set_target_properties( sfgui PROPERTIES PREFIX "" )
 		set_target_properties( sfgui PROPERTIES IMPORT_SUFFIX ".a" )
 	endif()
 else()
 	add_library( sfgui ${SOURCES} )
-	
+
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -s-d )
 	set_target_properties( sfgui PROPERTIES RELEASE_POSTFIX -s )
 endif()

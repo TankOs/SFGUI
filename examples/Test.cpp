@@ -1,16 +1,5 @@
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Button.hpp>
-#include <SFGUI/Box.hpp>
-#include <SFGUI/Entry.hpp>
-#include <SFGUI/Table.hpp>
-#include <SFGUI/Label.hpp>
-#include <SFGUI/ScrolledWindow.hpp>
-#include <SFGUI/Viewport.hpp>
-#include <SFGUI/Desktop.hpp>
+#include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
-#include <SFGUI/ToggleButton.hpp>
-#include <SFGUI/CheckButton.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -29,6 +18,7 @@ class SampleApp {
 		void OnRangeValueChange();
 		void OnToggleSpaceClick();
 		void OnLimitCharsToggle();
+		void OnLoadStyleClick();
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -104,6 +94,7 @@ void SampleApp::Run() {
 	btnhidewindow->SetId( "close" );
 
 	sfg::Button::Ptr btntogglespace( sfg::Button::Create( L"Box Spacing") );
+	sfg::Button::Ptr btnloadstyle( sfg::Button::Create( L"Load Style File") );
 
 	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
@@ -125,7 +116,11 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( btnhidewindow, false );
 	boxtoolbar->Pack( m_entry, true );
 	boxtoolbar->Pack( m_limit_check, false );
-	boxtoolbar->Pack( btntogglespace, false );
+
+	sfg::Box::Ptr boxtoolbar2( sfg::Box::Create( sfg::Box::Horizontal ) );
+	boxtoolbar2->SetSpacing( 5.f );
+	boxtoolbar2->Pack( btntogglespace, false );
+	boxtoolbar2->Pack( btnloadstyle, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -167,10 +162,16 @@ void SampleApp::Run() {
 	sfg::Scrollbar::Ptr scrollbar( sfg::Scrollbar::Create() );
 	scrollbar->SetRange( .0f, 100.f );
 
+	sfg::Scale::Ptr scale( sfg::Scale::Create() );
+	scale->SetAdjustment( scrollbar->GetAdjustment() );
+	scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
+	boxtoolbar2->Pack( scale, false );
+
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( scrollbar, false );
 	boxmain->Pack( boxtoolbar, false );
+	boxmain->Pack( boxtoolbar2, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
 	boxmain->Pack( m_table, true );
@@ -185,6 +186,7 @@ void SampleApp::Run() {
 	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
 	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
 	m_limit_check->OnToggle.Connect( &SampleApp::OnLimitCharsToggle, this );
+	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadStyleClick, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -200,6 +202,7 @@ void SampleApp::Run() {
 	box->Pack( sfg::Label::Create( "Nunc placerat consequat vehicula." ), false );
 	second_window->Add( box );
 	second_window->SetPosition( sf::Vector2f( 10.f, 10.f ) );
+	second_window->SetId( "second_window" );
 	m_desktop.Add( second_window );
 
 	// Add window to desktop
@@ -283,6 +286,11 @@ void SampleApp::OnLimitCharsToggle() {
 	else {
 		m_entry->SetMaximumLength( 0 );
 	}
+}
+
+void SampleApp::OnLoadStyleClick() {
+	sfg::Context::Get().GetEngine().LoadStyleFromFile( "style.sgs" );
+	m_desktop.RefreshAll();
 }
 
 int main() {

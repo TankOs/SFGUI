@@ -133,6 +133,12 @@ class SFGUI_API Engine {
 		 */
 		const sf::Font& LoadFontFromFile( const std::string& filename ) const;
 
+		/** Load a style from file.
+		 * @param filename Filename.
+		 * @return true on success, false otherwise.
+		 */
+		bool LoadStyleFromFile( const std::string& filename );
+
 		/** Shift the given border colors to make them lighter and darker.
 		 * @param light_color Color of the lighter border.
 		 * @param dark_color Color of the darker border.
