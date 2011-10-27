@@ -143,6 +143,10 @@ void Entry::MoveCursor( int delta ) {
 			m_visible_offset = m_cursor_position;
 		}
 
+		// Make cursor visible.
+		m_cursor_timer.Reset();
+		m_cursor_status = true;
+
 		RecalculateVisibleString();
 	}
 }
@@ -151,9 +155,8 @@ void Entry::HandleText( Widget::Ptr /*widget*/, sf::Uint32 unicode ) {
 	if( unicode > 0x1f && unicode != 0x7f ) {
 		// not a control character
 		m_string.Insert( m_cursor_position, unicode );
-		m_cursor_position++;
+		MoveCursor( 1 );
 
-		RecalculateVisibleString();
 		OnTextChanged.Sig( shared_from_this() );
 	}
 }
@@ -170,7 +173,11 @@ void Entry::HandleKeyPress( Widget::Ptr /*widget*/, sf::Event::KeyEvent event ) 
 	case sf::Keyboard::Delete: {
 		if( ( m_string.GetSize() > 0 ) && ( m_cursor_position < m_string.GetSize() ) ) {
 			m_string.Erase( m_cursor_position );
+
 			RecalculateVisibleString();
+			m_cursor_timer.Reset();
+			m_cursor_status = true;
+
 			OnTextChanged.Sig( shared_from_this() );
 		}
 	} break;
