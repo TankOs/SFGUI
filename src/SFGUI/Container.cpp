@@ -22,7 +22,7 @@ void Container::Add( Widget::Ptr widget ) {
 	widget->SetParent( shared_from_this() );
 	RequestSize();
 
-	OnAdd.Sig( shared_from_this(), widget );
+	OnAdd();
 }
 
 void Container::Remove( Widget::Ptr widget ) {
@@ -32,7 +32,7 @@ void Container::Remove( Widget::Ptr widget ) {
 		m_children.erase( iter );
 		RequestSize();
 
-		OnRemove.Sig( shared_from_this(), widget );
+		OnRemove();
 	}
 }
 
@@ -46,16 +46,16 @@ const Container::WidgetsList& Container::GetChildren() const {
 	return m_children;
 }
 
-void Container::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target ) {
+void Container::HandleExpose() {
 	WidgetsList::iterator  iter( m_children.begin() );
 	WidgetsList::iterator  iterend( m_children.end() );
 
 	for( ; iter != iterend; ++iter ) {
-		(*iter)->Expose( target );
+		//(*iter)->Expose( target );
 	}
 }
 
-void Container::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
+void Container::HandleSizeAllocate() {
 	UpdateDrawablePosition();
 }
 
@@ -146,7 +146,7 @@ Container::HandleEventResult Container::ProcessHooks( const sf::Event& event ) {
 	return PassEvent;
 }
 
-void Container::HandlePositionChange( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
+void Container::HandlePositionChange() {
 	UpdateDrawablePosition();
 }
 

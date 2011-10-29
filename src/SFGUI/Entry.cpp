@@ -42,7 +42,7 @@ void Entry::SetText( const sf::String& text ) {
 	m_visible_offset = 0;
 	m_cursor_position = 0;
 	RecalculateVisibleString();
-	OnTextChanged.Sig(shared_from_this());
+	OnTextChanged();
 }
 
 const sf::String& Entry::GetText() const {
@@ -151,18 +151,18 @@ void Entry::MoveCursor( int delta ) {
 	}
 }
 
-void Entry::HandleText( Widget::Ptr /*widget*/, sf::Uint32 unicode ) {
-	if( unicode > 0x1f && unicode != 0x7f ) {
+void Entry::HandleText() {
+	/*if( unicode > 0x1f && unicode != 0x7f ) {
 		// not a control character
 		m_string.Insert( m_cursor_position, unicode );
 		MoveCursor( 1 );
 
 		OnTextChanged.Sig( shared_from_this() );
-	}
+	}*/
 }
 
-void Entry::HandleKeyPress( Widget::Ptr /*widget*/, sf::Event::KeyEvent event ) {
-	switch(event.Code) {
+void Entry::HandleKeyPress() {
+	/*switch(event.Code) {
 	case sf::Keyboard::Back: { // backspace
 		if( ( m_string.GetSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.Erase( m_cursor_position - 1 );
@@ -200,38 +200,34 @@ void Entry::HandleKeyPress( Widget::Ptr /*widget*/, sf::Event::KeyEvent event ) 
 		MoveCursor( 1 );
 	} break;
 	default: break;
-	}
+	}*/
 }
 
-void Entry::HandleStateChange( Widget::Ptr /*widget*/, State /*oldstate*/ ) {
+void Entry::HandleStateChange() {
 	Invalidate();
 }
 
-void Entry::HandleMouseEnter( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+void Entry::HandleMouseEnter() {
 	if( GetState() != Active ) {
 		SetState( Prelight );
 	}
 }
 
-bool Entry::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+void Entry::HandleMouseLeave() {
 	if( GetState() != Active ) {
 		SetState( Normal );
 	}
-
-	return false;
 }
 
-bool Entry::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int /*y*/, sf::Mouse::Button /*button*/ ) {
+void Entry::HandleMouseButtonPress() {
 	if( m_string.IsEmpty() ) {
-		return true;
+		return;
 	}
 
-	SetCursorPosition( GetPositionFromMouseX( x ) );
-
-	return true;
+	//SetCursorPosition( GetPositionFromMouseX( x ) );
 }
 
-void Entry::HandleFocusChange( Widget::Ptr /*widget*/ ) {
+void Entry::HandleFocusChange() {
 	if( GetState() == Active ) {
 		SetState( Normal );
 	}
@@ -240,7 +236,7 @@ void Entry::HandleFocusChange( Widget::Ptr /*widget*/ ) {
 	}
 }
 
-void Entry::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ ) {
+void Entry::HandleExpose() {
 	if( GetState() != Active ) {
 		return;
 	}

@@ -9,6 +9,7 @@
 #include <SFML/System/String.hpp>
 #include <string>
 #include <map>
+#include <list>
 #include <stdexcept>
 
 namespace sf {

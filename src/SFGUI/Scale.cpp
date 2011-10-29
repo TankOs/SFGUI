@@ -70,36 +70,33 @@ sf::Vector2f Scale::GetRequisitionImpl() const {
 	}
 }
 
-bool Scale::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf::Mouse::Button button ) {
-	if( button != sf::Mouse::Left ) {
+void Scale::HandleMouseButtonPress() {
+	/*if( button != sf::Mouse::Left ) {
 		return false;
-	}
+	}*/
 
 	sf::FloatRect slider_rect = GetSliderRect();
 	slider_rect.Left += GetAllocation().Left;
 	slider_rect.Top += GetAllocation().Top;
 
-	if( !slider_rect.Contains( (float)x, (float)y ) ) {
+	/*if( !slider_rect.Contains( (float)x, (float)y ) ) {
 		m_dragging = false;
 		return false;
-	}
+	}*/
 
 	m_dragging = true;
-	return true;
 }
 
-bool Scale::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
-	if( button != sf::Mouse::Left ) {
+void Scale::HandleMouseButtonRelease() {
+	/*if( button != sf::Mouse::Left ) {
 		return false;
-	}
+	}*/
 
 	m_dragging = false;
-
-	return true;
 }
 
-void Scale::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
-	if( !m_dragging ) {
+void Scale::HandleMouseMove() {
+	/*if( !m_dragging ) {
 		return;
 	}
 
@@ -140,7 +137,7 @@ void Scale::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 			adjustment->Decrement();
 			delta -= step_distance;
 		}
-	}
+	}*/
 }
 
 const std::string& Scale::GetName() const {

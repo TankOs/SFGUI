@@ -40,7 +40,7 @@ class SFGUI_API Button : public Bin {
 		 */
 		float GetPadding() const;
 
-		Signal<void( Widget::Ptr )>  OnClick; //!< Fired when button clicked.
+		Signal OnClick; //!< Fired when button clicked.
 
 	protected:
 		sf::Drawable* InvalidateImpl();
@@ -49,13 +49,13 @@ class SFGUI_API Button : public Bin {
 	private:
 		Button();
 
-		void HandleStateChange( Widget::Ptr widget, State oldstate );
-		void HandleMouseEnter( Widget::Ptr widget, int x, int y );
-		bool HandleMouseLeave( Widget::Ptr widget, int x, int y );
-		bool HandleMouseButtonClick( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
-		bool HandleMouseButtonPress( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
-		bool HandleMouseButtonRelease( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
-		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& old_allocation );
+		void HandleStateChange();
+		void HandleMouseEnter();
+		void HandleMouseLeave();
+		void HandleMouseButtonClick();
+		void HandleMouseButtonPress();
+		void HandleMouseButtonRelease();
+		void HandleSizeAllocate();
 
 		Label::Ptr  m_label;
 		float m_padding;

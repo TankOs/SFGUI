@@ -334,16 +334,16 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	if( ( m_content_allocation.Width != static_cast<float>( m_render_texture.GetWidth() ) ) || ( m_content_allocation.Height != static_cast<float>( m_render_texture.GetHeight() ) ) ) {
 		// Avoid creating images with non-positive size and assure compatibility
 		// on systems which only support multiple-of-2 texture sizes.
-		bool result = m_render_texture.Create(
-			static_cast<unsigned int>( std::max( m_content_allocation.Width, 2.f ) ),
-			static_cast<unsigned int>( std::max( m_content_allocation.Height, 2.f ) )
-		);
-
+		if(
+			!m_render_texture.Create(
+				static_cast<unsigned int>( std::max( m_content_allocation.Width, 2.f ) ),
+				static_cast<unsigned int>( std::max( m_content_allocation.Height, 2.f ) )
+			)
+		) {
 #ifdef SFGUI_DEBUG
-		if( !result ) {
 			std::cerr << "Failed to create RenderImage." << std::endl;
-		}
 #endif
+		}
 
 		m_sprite.SetTexture( m_render_texture.GetTexture() );
 		m_sprite.SetSubRect( sf::IntRect( 0, 0, static_cast<int>( m_content_allocation.Width ), static_cast<int>( m_content_allocation.Height ) ) );
@@ -352,29 +352,29 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	m_recalc_content_allocation = false;
 }
 
-void ScrolledWindow::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& oldallocation ) {
+void ScrolledWindow::HandleSizeAllocate() {
 	// Don't go through expensive content recalculation if the allocation
 	// of the ScrolledWindow didn't even change. HandleSizeAllocate is used
 	// by some Widgets to signal other kinds of changes.
-	if( oldallocation.Top == GetAllocation().Top &&
+	/*if( oldallocation.Top == GetAllocation().Top &&
 			oldallocation.Left == GetAllocation().Left &&
 			oldallocation.Width == GetAllocation().Width &&
 			oldallocation.Height == GetAllocation().Height ) {
 		return;
-	}
+	}*/
 
 	m_recalc_content_allocation = true;
 	Invalidate();
 }
 
-void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& target ) {
+void ScrolledWindow::HandleExpose() {
 	// Draw the Scrollbars
 	if( IsHorizontalScrollbarVisible() ) {
-		m_horizontal_scrollbar->Expose( target );
+		//m_horizontal_scrollbar->Expose( target );
 	}
 
 	if( IsVerticalScrollbarVisible() ) {
-		m_vertical_scrollbar->Expose( target );
+		//m_vertical_scrollbar->Expose( target );
 	}
 
 	// If there is no child no need to proceed beyond here.
@@ -414,17 +414,17 @@ void ScrolledWindow::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& tar
 	m_sprite.SetPosition( relative_position );
 
 	// Draw Sprite to target
-	target.Draw( m_sprite );
+	//target.Draw( m_sprite );
 }
 
-void ScrolledWindow::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
+void ScrolledWindow::HandleAdd() {
 	if( GetChildren().size() > 3 ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow." << std::endl;
 #endif
 
-		Remove( child );
+		//Remove( child );
 		return;
 	}
 

@@ -51,7 +51,7 @@ void Adjustment::SetValue( float new_value ) {
 	}
 
 	if( m_value != old_value ) {
-		OnChange.Sig( shared_from_this() );
+		OnChange();
 	}
 }
 
@@ -66,7 +66,7 @@ void Adjustment::SetLower( float new_lower ) {
 		SetValue( m_lower );
 	}
 
-	OnChange.Sig( shared_from_this() );
+	OnChange();
 }
 
 float Adjustment::GetUpper() const {
@@ -80,7 +80,7 @@ void Adjustment::SetUpper( float new_upper ) {
 		SetValue( m_upper - m_page_size );
 	}
 
-	OnChange.Sig( shared_from_this() );
+	OnChange();
 }
 
 float Adjustment::GetMinorStep() const {
@@ -90,7 +90,7 @@ float Adjustment::GetMinorStep() const {
 void Adjustment::SetMinorStep( float new_minor_step ) {
 	m_minor_step = new_minor_step;
 
-	OnChange.Sig( shared_from_this() );
+	OnChange();
 }
 
 float Adjustment::GetMajorStep() const {
@@ -100,7 +100,7 @@ float Adjustment::GetMajorStep() const {
 void Adjustment::SetMajorStep( float new_major_step ) {
 	m_major_step = new_major_step;
 
-	OnChange.Sig( shared_from_this() );
+	OnChange();
 }
 
 float Adjustment::GetPageSize() const {
@@ -114,7 +114,7 @@ void Adjustment::SetPageSize( float new_page_size ) {
 		SetValue( m_upper - m_page_size );
 	}
 
-	OnChange.Sig( shared_from_this() );
+	OnChange();
 }
 
 void Adjustment::Configure( float new_value, float new_lower, float new_upper, float new_minor_step, float new_major_step, float new_page_size ) {

@@ -17,13 +17,13 @@ class SampleApp {
 		void Run();
 
 	private:
-		void OnAddButtonHClick( sfg::Widget::Ptr widget );
-		void OnAddButtonVClick( sfg::Widget::Ptr widget );
-		void OnNewButtonClick( sfg::Widget::Ptr widget );
-		void OnToggleTitlebarClick( sfg::Widget::Ptr widget );
-		void OnHideWindowClicked( sfg::Widget::Ptr widget );
-		void OnRangeValueChange( sfg::Adjustment::Ptr adjustment );
-		void OnToggleSpaceClick( sfg::Widget::Ptr widget );
+		void OnAddButtonHClick();
+		void OnAddButtonVClick();
+		void OnNewButtonClick();
+		void OnToggleTitlebarClick();
+		void OnHideWindowClicked();
+		void OnRangeValueChange();
+		void OnToggleSpaceClick();
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -166,7 +166,7 @@ void SampleApp::Run() {
 	}
 }
 
-void SampleApp::OnAddButtonHClick( sfg::Widget::Ptr /*widget*/ ) {
+void SampleApp::OnAddButtonHClick() {
 	sfg::Button::Ptr  button( sfg::Button::Create( L"New ->" ) );
 
 	boost::shared_dynamic_cast<sfg::Label>( button->GetChild() )->SetAlignment( sf::Vector2f( 1.f, .5f ) );
@@ -175,7 +175,7 @@ void SampleApp::OnAddButtonHClick( sfg::Widget::Ptr /*widget*/ ) {
 	m_boxbuttonsh->Pack( button, true );
 }
 
-void SampleApp::OnAddButtonVClick( sfg::Widget::Ptr /*widget*/ ) {
+void SampleApp::OnAddButtonVClick() {
 	sfg::Button::Ptr  button( sfg::Button::Create( L"<- New" ) );
 
 	boost::shared_dynamic_cast<sfg::Label>( button->GetChild() )->SetAlignment( sf::Vector2f( 0.f, .5f ) );
@@ -184,21 +184,20 @@ void SampleApp::OnAddButtonVClick( sfg::Widget::Ptr /*widget*/ ) {
 	m_boxbuttonsv->Pack( button, false );
 }
 
-void SampleApp::OnNewButtonClick( sfg::Widget::Ptr widget ) {
-	sfg::Button::Ptr  button( boost::shared_dynamic_cast<sfg::Button>( widget ) );
-
-	button->SetLabel( "Ouch" );
+void SampleApp::OnNewButtonClick() {
+	//sfg::Button::Ptr  button( boost::shared_dynamic_cast<sfg::Button>( widget ) );
+	//button->SetLabel( "Ouch" );
 }
 
-void SampleApp::OnToggleTitlebarClick( sfg::Widget::Ptr /*widget*/ ) {
+void SampleApp::OnToggleTitlebarClick() {
 	m_wndmain->SetStyle( m_wndmain->GetStyle() ^ sfg::Window::Titlebar );
 }
 
-void SampleApp::OnHideWindowClicked( sfg::Widget::Ptr /*widget*/ ) {
+void SampleApp::OnHideWindowClicked() {
 	m_wndmain->Show( !m_wndmain->IsVisible() );
 }
 
-void SampleApp::OnToggleSpaceClick( sfg::Widget::Ptr /*widget*/ ) {
+void SampleApp::OnToggleSpaceClick() {
 	if( m_scrolled_window_box->GetSpacing() > 0.f ) {
 		m_scrolled_window_box->SetSpacing( 0.f );
 		m_scrolled_window_box->SetBorderWidth( 0.f );

@@ -1,69 +1,55 @@
 #pragma once
-#include <boost/signals2.hpp>
+
+#include <SFGUI/FastDelegate.hpp>
+
+#include <map>
+#include <stdint.h>
 
 namespace sfg {
 
-typedef boost::signals2::connection Connection; ///< Connection.
-
-/** Build signals for widgets.
- * This class is an utility class to make the signal connection process more
- * intuitive. A signal can be connected just by calling Connect() and giving
- * the callback function as a parameter. Any number of slots may be connected.
+/** Widget signal.
+ * Calls a function if something interesting is happening in a widget. Signals
+ * can be connected to multiple endpoints. An endpoint may be a free or member
+ * function.
  *
- * Don't get confused by all the Connect() methods of Signal. Thanks to C++
- * templates, the right one is automatically chosen if you're connecting a
- * signal to a member function.
+ * For free functions, just pass the function's pointer to Connect(). For
+ * member functions (methods) specify the class, method name and object.
+ * Examples:\n
+ * \code
+ * widget->OnClick.Connect( &my_callback ); // Free function binding.
+ * widget->OnClick.Connect( &MyClass::MyCallback, this ); // Method binding.
+ * \endcode
+ *
  */
-template <class SigType, class Combiner = boost::signals2::optional_last_value<typename boost::function_traits<SigType>::result_type> >
 class Signal {
 	public:
-		typedef boost::signals2::signal<SigType>  Type; ///< Signal type.
-
-		/** Connect signal to a slot.
-		 * Previously connected slots DO NOT get removed.
-		 * @param slot Slot (callback), e.g. &MyCallback.
+		/** Ctor.
 		 */
-		Connection Connect( const typename Type::slot_type& slot );
+		Signal();
 
-		/* Watch out! The following is ugly, but is the only way to make this work
-		 * ;-) */
-
-		/** Connect signal to member function, no arguments.
-		 * @param memfunc Member function pointer.
-		 * @param object Pointer to class instance.
+		/** Connect to free function.
+		 * @param function Free function.
+		 * @return Connection serial, use for disconnecting.
 		 */
-		template <class RetType, class ClassType, class ObjectType>
-		Connection Connect( RetType (ClassType::*memfunc)(), ObjectType* object );
+		uint32_t Connect( Delegate delegate );
 
-		/** Connect signal to member function, 1 argument.
-		 * @param memfunc Member function pointer.
-		 * @param object Pointer to class instance.
+		/** Connect to non-static member function.
+		 * @param function Function.
+		 * @param object Object pointer.
+		 * @return Connection serial, use for disconnecting.
 		 */
-		template <class RetType, class ClassType, class ObjectType, class A1>
-		Connection Connect( RetType (ClassType::*memfunc)( A1 ), ObjectType* object );
+		template <class Class>
+		uint32_t Connect( void(Class::*function)(), Class* object );
 
-		/** Connect signal to member function, 2 arguments.
-		 * @param memfunc Member function pointer.
-		 * @param object Pointer to class instance.
+		/** Emit.
 		 */
-		template <class RetType, class ClassType, class ObjectType, class A1, class A2>
-		Connection Connect( RetType (ClassType::*memfunc)( A1, A2 ), ObjectType* object );
+		void operator()() const;
 
-		/** Connect signal to member function, 3 arguments.
-		 * @param memfunc Member function pointer.
-		 * @param object Pointer to class instance.
-		 */
-		template <class RetType, class ClassType, class ObjectType, class A1, class A2, class A3>
-		Connection Connect( RetType (ClassType::*memfunc)( A1, A2, A3 ), ObjectType* object );
+	private:
+		typedef std::map<uint32_t, Delegate> DelegateMap;
 
-		/** Connect signal to member function, 4 arguments.
-		 * @param memfunc Member function pointer.
-		 * @param object Pointer to class instance.
-		 */
-		template <class RetType, class ClassType, class ObjectType, class A1, class A2, class A3, class A4>
-		Connection Connect( RetType (ClassType::*memfunc)( A1, A2, A3, A4 ), ObjectType* object );
-
-		Type  Sig;
+		uint32_t m_serial;
+		DelegateMap m_delegates;
 };
 
 }

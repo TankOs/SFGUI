@@ -63,10 +63,10 @@ class SFGUI_API Scrollbar : public Range {
 		 */
 		Scrollbar( Adjustment::Ptr adjustment, Orientation orientation = Horizontal );
 
-		bool HandleMouseButtonPress( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
-		bool HandleMouseButtonRelease( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
-		void HandleMouseMove( Widget::Ptr widget, int x, int y );
-		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
+		void HandleMouseButtonPress();
+		void HandleMouseButtonRelease();
+		void HandleMouseMove();
+		void HandleExpose();
 
 		Orientation m_orientation;
 

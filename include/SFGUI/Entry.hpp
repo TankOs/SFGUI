@@ -65,7 +65,7 @@ class SFGUI_API Entry : public Widget {
 		 */
 		sf::Uint32 GetHideCharacter() const;
 
-		Signal<void( Widget::Ptr )> OnTextChanged; //!< Fired when the text changes.
+		Signal OnTextChanged; //!< Fired when the text changes.
 
 	protected:
 		sf::Drawable* InvalidateImpl();
@@ -91,14 +91,14 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void MoveCursor( int delta );
 
-		void HandleStateChange( Widget::Ptr widget, State oldstate );
-		void HandleMouseEnter( Widget::Ptr widget, int x, int y );
-		bool HandleMouseLeave( Widget::Ptr widget, int x, int y );
-		bool HandleMouseButtonPress( Widget::Ptr widget, int x, int y, sf::Mouse::Button button );
-		void HandleText( Widget::Ptr widget, sf::Uint32 unicode );
-		void HandleKeyPress( Widget::Ptr widget, sf::Event::KeyEvent );
-		void HandleFocusChange( Widget::Ptr widget );
-		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
+		void HandleStateChange();
+		void HandleMouseEnter();
+		void HandleMouseLeave();
+		void HandleMouseButtonPress();
+		void HandleText();
+		void HandleKeyPress();
+		void HandleFocusChange();
+		void HandleExpose();
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;

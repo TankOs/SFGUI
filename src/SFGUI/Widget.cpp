@@ -35,11 +35,11 @@ void Widget::GrabFocus( Ptr widget ) {
 	if( !parent ) {
 		// Notify old focused widget.
 		if( m_focus_widget ) {
-			m_focus_widget->OnFocusChange.Sig( m_focus_widget );
+			m_focus_widget->OnFocusChange();
 		}
 
 		m_focus_widget = widget;
-		m_focus_widget->OnFocusChange.Sig( m_focus_widget );
+		m_focus_widget->OnFocusChange();
 	}
 	else {
 		parent->GrabFocus( widget );
@@ -55,7 +55,7 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 	m_allocation.Width = std::floor( rect.Width + .5f );
 	m_allocation.Height = std::floor( rect.Height + .5f );
 
-	OnSizeAllocate.Sig( shared_from_this(), oldallocation );
+	OnSizeAllocate();
 
 	Invalidate();
 }
@@ -65,7 +65,7 @@ void Widget::RequestSize() {
 	Container::Ptr parent = m_parent.lock();
 
 	// Notify observers.
-	OnSizeRequest.Sig( shared_from_this() );
+	OnSizeRequest();
 
 	if( parent ) {
 		parent->RequestSize();
@@ -105,7 +105,7 @@ void Widget::Expose( sf::RenderTarget& target ) {
 			target.Draw( *m_drawable );
 		}
 
-		OnExpose.Sig( shared_from_this(), target );
+		OnExpose();
 	}
 }
 
@@ -144,7 +144,7 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 		m_drawable->SetPosition( GetAbsolutePosition() );
 	}
 
-	OnPositionChange.Sig( shared_from_this(), oldallocation );
+	OnPositionChange();
 }
 
 Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
@@ -164,7 +164,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			}
 			else {
 				m_drag_info->Update( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) );
-				OnDragMove.Sig( shared_from_this(), *m_drag_info );
+				OnDragMove();
 			}
 		}
 
@@ -173,7 +173,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 			// Check for enter event.
 			if( m_mouse_in == false ) {
 				m_mouse_in = true;
-				OnMouseEnter.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
+				OnMouseEnter();
 
 				// Register hook to get notified when mouse leaves the widget.
 				if( parent ) {
@@ -181,16 +181,13 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				}
 			}
 
-			OnMouseMove.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y );
+			OnMouseMove();
 		}
 		else if( m_mouse_in == true ) { // Check for leave event.
 			m_mouse_in = false;
 
-			// Only remove the mouse move hook if the user doesn't want to keep it.
-			if( !OnMouseLeave.Sig( shared_from_this(), event.MouseMove.X, event.MouseMove.Y ) ) {
-				if( !m_drag_info && parent ) {
-					parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
-				}
+			if( !m_drag_info && parent ) {
+				parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
 			}
 
 			// Mouse left the widget's region, so don't continue to pass the event to
@@ -215,10 +212,11 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 					parent->RegisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
 				}
 
-				if( OnMouseButtonPress.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
+				OnMouseButtonPress();
+				/*if( OnMouseButtonPress() ) {
 					result = EatEvent;
 					GrabFocus();
-				}
+				}*/
 			}
 			else {
 				result = IgnoreEvent;
@@ -236,7 +234,7 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 
 			// Dragged?
 			if( m_drag_info ) {
-				OnDragEnd.Sig( shared_from_this(), *m_drag_info );
+				OnDragEnd();
 				m_drag_info.reset( 0 );
 
 				if( parent ) {
@@ -246,12 +244,13 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 
 			// When released inside the widget, the event can be considered a click.
 			if( m_mouse_in ) {
-				OnMouseButtonClick.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button );
+				OnMouseButtonClick();
 			}
 
-			if( OnMouseButtonRelease.Sig( shared_from_this(), event.MouseButton.X, event.MouseButton.Y, event.MouseButton.Button ) ) {
+			/*if( OnMouseButtonRelease() ) {
 				result = EatEvent;
-			}
+			}*/
+			OnMouseButtonRelease();
 		}
 		else if( !m_mouse_in ) {
 			result = IgnoreEvent;
@@ -259,19 +258,19 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 	} break;
 	case sf::Event::KeyPressed: {
 		if( GetState() == Active ) {
-			OnKeyPress.Sig( shared_from_this(), event.Key );
+			OnKeyPress();
 			result = EatEvent;
 		}
 	} break;
 	case sf::Event::KeyReleased: {
 		if( GetState() == Active ) {
-			OnKeyRelease.Sig( shared_from_this(), event.Key );
+			OnKeyRelease();
 			result = EatEvent;
 		}
 	} break;
 	case sf::Event::TextEntered: {
 		if( GetState() == Active ) {
-			OnText.Sig( shared_from_this(), event.Text.Unicode );
+			OnText();
 			result = EatEvent;
 		}
 	} break;
@@ -282,10 +281,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 }
 
 void Widget::SetState( State state ) {
-	State  oldstate( m_state );
 	m_state = state;
-
-	OnStateChange.Sig( shared_from_this(), oldstate );
+	OnStateChange();
 }
 
 Widget::State Widget::GetState() const {

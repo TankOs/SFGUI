@@ -119,7 +119,7 @@ class SFGUI_API Adjustment : public Object, public boost::enable_shared_from_thi
 		void DecrementPage();
 
 		// Signals.
-		Signal<void( Ptr )>  OnChange; //!< Fired when parameter changed.
+		Signal OnChange; //!< Fired when parameter changed.
 
 	private:
 		/** Ctor.

@@ -62,7 +62,7 @@ void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_
 }
 
 
-void Table::HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& /*old_allocation*/ ) {
+void Table::HandleSizeAllocate() {
 	AllocateChildrenSizes();
 }
 

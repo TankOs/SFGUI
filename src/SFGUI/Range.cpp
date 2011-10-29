@@ -3,7 +3,8 @@
 namespace sfg {
 
 Range::Range() :
-	Widget()
+	Widget(),
+	m_change_connection( 0 )
 {
 	SetAdjustment( Adjustment::Create() );
 }
@@ -37,7 +38,7 @@ void Range::SetRange( float min, float max ) {
 	m_adjustment->SetUpper( max );
 }
 
-void Range::HandleAdjustmentChange( Adjustment::Ptr /*adjustment*/ ) {
+void Range::HandleAdjustmentChange() {
 	Invalidate();
 }
 

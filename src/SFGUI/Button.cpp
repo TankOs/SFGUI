@@ -44,47 +44,39 @@ const sf::String& Button::GetLabel() const {
 	return m_label->GetText();
 }
 
-void Button::HandleStateChange( Widget::Ptr /*widget*/, State /*oldstate*/ ) {
+void Button::HandleStateChange() {
 	Invalidate();
 }
 
-void Button::HandleMouseEnter( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+void Button::HandleMouseEnter() {
 	if( GetState() != Active ) {
 		SetState( Prelight );
 	}
 }
 
-bool Button::HandleMouseLeave( Widget::Ptr /*widget*/, int /*x*/, int /*y*/ ) {
+void Button::HandleMouseLeave() {
 	if( GetState() != Active ) {
 		SetState( Normal );
 	}
-
-	return false;
 }
 
-bool Button::HandleMouseButtonClick( Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
-	if( button == sf::Mouse::Left ) {
-		OnClick.Sig( shared_from_this() );
-	}
-
-	return true;
+void Button::HandleMouseButtonClick() {
+	//if( button == sf::Mouse::Left ) {
+		//OnClick.Sig( shared_from_this() );
+	//}
 }
 
-bool Button::HandleMouseButtonPress( Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
-	if( button == sf::Mouse::Left ) {
+void Button::HandleMouseButtonPress() {
+	/*if( button == sf::Mouse::Left ) {
 		SetState( Active );
-		return true;
-	}
-
-	return false;
+	}*/
 }
 
-bool Button::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button /*button*/ ) {
+void Button::HandleMouseButtonRelease() {
 	SetState( IsMouseInWidget() ? Prelight : Normal );
-	return false;
 }
 
-void Button::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*old_allocation*/ ) {
+void Button::HandleSizeAllocate() {
 	sf::FloatRect  label_allocation(
 		GetBorderWidth() + m_padding,
 		GetBorderWidth() + m_padding,

@@ -4,12 +4,13 @@
 #include <SFGUI/Object.hpp>
 #include <SFGUI/Signal.hpp>
 #include <SFGUI/DragInfo.hpp>
-#include <SFGUI/SlotResult.hpp>
+
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <map>
+#include <string>
 
 namespace sfg {
 
@@ -177,29 +178,29 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		const std::string& GetClass() const;
 
 		// Signals.
-		Signal<void( Ptr, State )>  OnStateChange; //!< Fired when state changed. (old state)
-		Signal<void( Ptr )>  OnFocusChange; //!< Fired when focus grabbed or lost.
+		Signal OnStateChange; //!< Fired when state changed. (old state)
+		Signal OnFocusChange; //!< Fired when focus grabbed or lost.
 
-		Signal<void( Ptr, sf::RenderTarget& )>  OnExpose; //!< Fired when widget is being rendered.
+		Signal OnExpose; //!< Fired when widget is being rendered.
 
-		Signal<void( Ptr, const sf::FloatRect& )>  OnSizeAllocate; //!< Fired when widget's allocation changed.
-		Signal<void( Ptr, const sf::FloatRect& )>  OnPositionChange; //!< Fired when widget's position changed.
-		Signal<void( Ptr )> OnSizeRequest; //!< Fired when size was requested.
+		Signal OnSizeAllocate; //!< Fired when widget's allocation changed.
+		Signal OnPositionChange; //!< Fired when widget's position changed.
+		Signal OnSizeRequest; //!< Fired when size was requested.
 
-		Signal<void( Ptr, int, int )>  OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
-		Signal<bool( Ptr, int, int ), SlotResult>  OnMouseLeave; //!< Fired when mouse left widget. (x, y) Return true to keep the mouse move hook alive.
-		Signal<void( Ptr, int, int )>  OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
-		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
-		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
-		Signal<bool( Ptr, int, int, sf::Mouse::Button ), SlotResult>  OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
+		Signal OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
+		Signal OnMouseLeave; //!< Fired when mouse left widget. (x, y) Return true to keep the mouse move hook alive.
+		Signal OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
+		Signal OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
+		Signal OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
+		Signal OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
 
-		Signal<void( Ptr, const DragInfo& )>  OnDragStart; //!< Fired when dragging starts. (DragInfo)
-		Signal<void( Ptr, const DragInfo& )>  OnDragMove; //!< Fired when dragged. (DragInfo)
-		Signal<void( Ptr, const DragInfo& )>  OnDragEnd; //!< Fired when dragged. (DragInfo)
+		Signal OnDragStart; //!< Fired when dragging starts. (DragInfo)
+		Signal OnDragMove; //!< Fired when dragged. (DragInfo)
+		Signal OnDragEnd; //!< Fired when dragged. (DragInfo)
 
-		Signal<void( Ptr, sf::Event::KeyEvent )> OnKeyPress; //!< Fired when a key is pressed while State == Active.
-		Signal<void( Ptr, sf::Event::KeyEvent )> OnKeyRelease; //!< Fired when a key is released while State == Active.
-		Signal<void( Ptr, sf::Uint32 Unicode )> OnText; //!< Fired when text is entered while State == Active.
+		Signal OnKeyPress; //!< Fired when a key is pressed while State == Active.
+		Signal OnKeyRelease; //!< Fired when a key is released while State == Active.
+		Signal OnText; //!< Fired when text is entered while State == Active.
 
 	protected:
 		/** Several flags for widgets.

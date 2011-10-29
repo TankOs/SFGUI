@@ -16,8 +16,9 @@ Widget::Ptr Bin::GetChild() const {
 	return *GetChildren().begin();
 }
 
-void Bin::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
-	if( GetChildren().size() > 1 ) {
+void Bin::HandleAdd() {
+	// TODO: Virtual func.
+	/*if( GetChildren().size() > 1 ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Only one widget can be added to a Bin." << std::endl;
@@ -25,7 +26,7 @@ void Bin::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr child ) {
 
 		Remove( child );
 		return;
-	}
+	}*/
 
 	// Make sure the Bin is large enough.
 	RequestSize();

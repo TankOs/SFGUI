@@ -50,11 +50,11 @@ class SFGUI_API Range : public Widget {
 		Range();
 
 	private:
-		void HandleAdjustmentChange( Adjustment::Ptr adjustment );
+		void HandleAdjustmentChange();
 
 		Adjustment::Ptr m_adjustment;
 
-		sfg::Connection m_change_connection;
+		uint32_t m_change_connection;
 };
 
 }

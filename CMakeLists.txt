@@ -66,6 +66,7 @@ set(
 	${INC_DIR}/SFGUI/Engine.inl
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
 	${INC_DIR}/SFGUI/Entry.hpp
+	${INC_DIR}/SFGUI/FastDelegate.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/Object.hpp
 	${INC_DIR}/SFGUI/Range.hpp
@@ -101,6 +102,7 @@ set(
 	${SRC_DIR}/SFGUI/Scrollbar.cpp
 	${SRC_DIR}/SFGUI/ScrolledWindow.cpp
 	${SRC_DIR}/SFGUI/Selector.cpp
+	${SRC_DIR}/SFGUI/Signal.cpp
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp
 	${SRC_DIR}/SFGUI/TableOptions.cpp

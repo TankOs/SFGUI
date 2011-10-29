@@ -75,15 +75,15 @@ class SFGUI_API Container : public Widget {
 
 		void UpdateDrawablePosition() const;
 
-		Signal<void( Widget::Ptr, Widget::Ptr )>  OnAdd; //!< Fired when child added.
-		Signal<void( Widget::Ptr, Widget::Ptr )>  OnRemove; //!< Fired when child removed.
+		Signal OnAdd; //!< Fired when child added.
+		Signal OnRemove; //!< Fired when child removed.
 
 	protected:
 		/** Constructor.
 		 */
 		Container();
 
-		boost::signals2::scoped_connection m_expose_connection;
+		uint32_t m_expose_connection;
 
 	private:
 		struct WidgetBoolPair {
@@ -99,9 +99,9 @@ class SFGUI_API Container : public Widget {
 
 		HandleEventResult ProcessHooks( const sf::Event& event );
 
-		void HandleExpose( Widget::Ptr widget, sf::RenderTarget& target );
-		void HandleSizeAllocate( Widget::Ptr widget, const sf::FloatRect& oldallocation );
-		void HandlePositionChange( Widget::Ptr widget, const sf::FloatRect& oldallocation );
+		void HandleExpose();
+		void HandleSizeAllocate();
+		void HandlePositionChange();
 
 		float  m_border_width;
 

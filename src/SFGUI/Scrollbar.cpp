@@ -106,7 +106,9 @@ sf::Vector2f Scrollbar::GetRequisitionImpl() const {
 	return sf::Vector2f( mimimum_slider_length, mimimum_slider_length );
 }
 
-bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf::Mouse::Button button ) {
+void Scrollbar::HandleMouseButtonPress() {
+	/*float stepper_length( MIN_SLIDER_LENGTH );
+
 	if( button != sf::Mouse::Left ) {
 		return false;
 	}
@@ -213,13 +215,13 @@ bool Scrollbar::HandleMouseButtonPress( Widget::Ptr /*widget*/, int x, int y, sf
 		}
 	}
 
-	return false;
+	return false;*/
 }
 
-bool Scrollbar::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int /*y*/, sf::Mouse::Button button ) {
-	if( button != sf::Mouse::Left ) {
+void Scrollbar::HandleMouseButtonRelease() {
+	/*if( button != sf::Mouse::Left ) {
 		return false;
-	}
+	}*/
 
 	m_dragging = false;
 	m_decrease_pressed = false;
@@ -230,11 +232,11 @@ bool Scrollbar::HandleMouseButtonRelease( Widget::Ptr /*widget*/, int /*x*/, int
 	m_slider_click_offset = 0.f;
 
 	Invalidate();
-
-	return true;
 }
 
-void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
+void Scrollbar::HandleMouseMove() {
+	/*float stepper_length( 20.f );
+
 	if( !m_dragging ) {
 		return;
 	}
@@ -280,11 +282,11 @@ void Scrollbar::HandleMouseMove( Widget::Ptr /*widget*/, int x, int y ) {
 			adjustment->Increment();
 			delta -= step_distance;
 		}
-	}
+	}*/
 }
 
-void Scrollbar::HandleExpose( Widget::Ptr /*widget*/, sf::RenderTarget& /*target*/ ) {
-	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "StepperSpeed", shared_from_this() ) );
+void Scrollbar::HandleExpose() {
+	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Speed", shared_from_this() ) );
 
 	// Increment / Decrement value while one of the steppers is pressed
 	if( m_decrease_pressed && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {

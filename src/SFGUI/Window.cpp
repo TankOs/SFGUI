@@ -51,11 +51,11 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-void Window::HandleAdd( Widget::Ptr /*widget*/, Widget::Ptr /*child*/ ) {
+void Window::HandleAdd() {
 	RequestSize();
 }
 
-void Window::HandleSizeAllocate( Widget::Ptr /*widget*/, const sf::FloatRect& /*oldallocation*/ ) {
+void Window::HandleSizeAllocate() {
 	if( !GetChild() || m_skipreallocation ) {
 		m_skipreallocation = false;
 		return;
@@ -100,15 +100,15 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void Window::HandleDragMove( Widget::Ptr /*widget*/, const DragInfo& drag_info ) {
-	if( HasStyle( Titlebar ) ) {
+void Window::HandleDragMove() {
+	/*if( HasStyle( Titlebar ) ) {
 		SetPosition(
 			sf::Vector2f(
 				GetAllocation().Left + drag_info.GetDelta().x,
 				GetAllocation().Top + drag_info.GetDelta().y
 			)
 		);
-	}
+	}*/
 }
 
 const std::string& Window::GetName() const {
