@@ -12,8 +12,6 @@ Window::Window() :
 	SetFlags( Draggable );
 
 	OnAdd.Connect( &Window::HandleAdd, this );
-	OnSizeAllocate.Connect( &Window::HandleSizeAllocate, this );
-	OnDragMove.Connect( &Window::HandleDragMove, this );
 }
 
 Window::Ptr Window::Create() {
@@ -55,15 +53,17 @@ void Window::HandleAdd() {
 	RequestSize();
 }
 
-void Window::HandleSizeAllocate() {
+bool Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	if( !GetChild() || m_skipreallocation ) {
 		m_skipreallocation = false;
-		return;
+		return false;
 	}
 
 	// This is only called when the window's allocation has been changed from the
 	// outside, i.e. not requested by a child.
 	GetChild()->AllocateSize( GetClientRect() );
+
+	return true;
 }
 
 void Window::SetStyle( int style ) {
@@ -100,15 +100,17 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void Window::HandleDragMove() {
-	/*if( HasStyle( Titlebar ) ) {
+bool Window::HandleDragOperation( DragInfo::State state, const DragInfo& drag_info ) {
+	if( state == DragInfo::Move && HasStyle( Titlebar ) ) {
 		SetPosition(
 			sf::Vector2f(
 				GetAllocation().Left + drag_info.GetDelta().x,
 				GetAllocation().Top + drag_info.GetDelta().y
 			)
 		);
-	}*/
+	}
+
+	return true;
 }
 
 const std::string& Window::GetName() const {

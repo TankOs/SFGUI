@@ -18,7 +18,7 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 {
 	OnSizeAllocate.Connect( &ScrolledWindow::HandleSizeAllocate, this );
 	OnAdd.Connect( &ScrolledWindow::HandleAdd, this );
-	m_expose_connection = OnExpose.Connect( &ScrolledWindow::HandleExpose, this );
+	//m_expose_connection = OnExpose.Connect( &ScrolledWindow::HandleExpose, this );
 
 	m_horizontal_scrollbar = Scrollbar::Create( horizontal_adjustment, Scrollbar::Horizontal );
 	m_vertical_scrollbar = Scrollbar::Create( vertical_adjustment, Scrollbar::Vertical );

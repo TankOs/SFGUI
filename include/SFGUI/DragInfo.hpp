@@ -10,6 +10,14 @@ namespace sfg {
  */
 class SFGUI_API DragInfo {
 	public:
+		/** Drag states.
+		 */
+		enum State {
+			Start = 0,
+			Move,
+			End
+		};
+
 		/** Constructor.
 		 * @param start Start mouse position.
 		 */

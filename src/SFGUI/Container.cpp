@@ -8,9 +8,6 @@ Container::Container() :
 	Widget(),
 	m_border_width( 0.f )
 {
-	m_expose_connection = OnExpose.Connect( &Container::HandleExpose, this );
-	OnSizeAllocate.Connect( &Container::HandleSizeAllocate, this );
-	OnPositionChange.Connect( &Container::HandlePositionChange, this );
 }
 
 void Container::Add( Widget::Ptr widget ) {
@@ -46,17 +43,19 @@ const Container::WidgetsList& Container::GetChildren() const {
 	return m_children;
 }
 
-void Container::HandleExpose() {
-	WidgetsList::iterator  iter( m_children.begin() );
-	WidgetsList::iterator  iterend( m_children.end() );
+void Container::HandleExpose( sf::RenderTarget& target ) {
+	WidgetsList::iterator iter( m_children.begin() );
+	WidgetsList::iterator iterend( m_children.end() );
 
 	for( ; iter != iterend; ++iter ) {
-		//(*iter)->Expose( target );
+		(*iter)->Expose( target );
 	}
 }
 
-void Container::HandleSizeAllocate() {
+bool Container::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	UpdateDrawablePosition();
+
+	return true;
 }
 
 void Container::SetBorderWidth( float width ) {
@@ -144,10 +143,6 @@ Container::HandleEventResult Container::ProcessHooks( const sf::Event& event ) {
 	}
 
 	return PassEvent;
-}
-
-void Container::HandlePositionChange() {
-	UpdateDrawablePosition();
 }
 
 void Container::RegisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget ) {

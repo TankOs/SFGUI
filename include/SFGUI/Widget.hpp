@@ -184,7 +184,6 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		Signal OnExpose; //!< Fired when widget is being rendered.
 
 		Signal OnSizeAllocate; //!< Fired when widget's allocation changed.
-		Signal OnPositionChange; //!< Fired when widget's position changed.
 		Signal OnSizeRequest; //!< Fired when size was requested.
 
 		Signal OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
@@ -240,6 +239,51 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 * @return true when set.
 		 */
 		bool HasFlag( Flags flag ) const;
+
+		// Internal handling methods.
+
+		/** Handle mouse move event.
+		 * @param x Mouse X position.
+		 * @param y Mouse Y position.
+		 * @return Handler result.
+		 * @see HandleEventResult
+		 */
+		virtual HandleEventResult HandleMouseMoveEvent( int x, int y );
+
+		/** Handle mouse button event.
+		 * @param button Mouse button.
+		 * @param press true if button was pressed, false if released.
+		 * @param x Mouse X position.
+		 * @param y Mouse Y position.
+		 * @return Handler result.
+		 * @see HandleEventResult
+		 */
+		virtual HandleEventResult HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+
+		/** Handle key event.
+		 * @param key Key.
+		 * @param press true if button was pressed, false if released.
+		 */
+		virtual HandleEventResult HandleKeyEvent( sf::Keyboard::Key key, bool press );
+
+		/** Handle size allocations.
+		 * @param old_allocation Previous allocation.
+		 * @return false to interrupt allocation and restore old value; this won't call HandleSizeAllocate() again!
+		 */
+		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+
+		/** Handle expose.
+		 * Called every frame usually.
+		 * @param target Render target.
+		 */
+		virtual void HandleExpose( sf::RenderTarget& target );
+
+		/** Handle drag operations.
+		 * @param state Drag state.
+		 * @param drag_info DragInfo object.
+		 * @return true to continue operation, false to stop dragging immediately (or prevent from being started).
+		 */
+		virtual bool HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
 
 	private:
 		void GrabFocus( Ptr widget );

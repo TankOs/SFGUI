@@ -55,6 +55,11 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 	m_allocation.Width = std::floor( rect.Width + .5f );
 	m_allocation.Height = std::floor( rect.Height + .5f );
 
+	if( !HandleSizeAllocate( oldallocation ) ) {
+		m_allocation = oldallocation;
+		return;
+	}
+
 	OnSizeAllocate();
 
 	Invalidate();
@@ -105,6 +110,7 @@ void Widget::Expose( sf::RenderTarget& target ) {
 			target.Draw( *m_drawable );
 		}
 
+		HandleExpose( target );
 		OnExpose();
 	}
 }
@@ -140,11 +146,16 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	m_allocation.Left = std::floor( position.x + .5f );
 	m_allocation.Top = std::floor( position.y + .5f );
 
+	if( !HandleSizeAllocate( oldallocation ) ) {
+		m_allocation = oldallocation;
+		return;
+	}
+
 	if( m_drawable ) {
 		m_drawable->SetPosition( GetAbsolutePosition() );
 	}
 
-	OnPositionChange();
+	OnSizeAllocate();
 }
 
 Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
@@ -156,125 +167,166 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 	HandleEventResult  result( PassEvent );
 
 	switch(event.Type) {
-	case sf::Event::MouseMoved: {
-		// Drag operations.
-		if( m_mouse_button_down == sf::Mouse::Left && HasFlag( Draggable ) ) {
-			if( !m_drag_info ) {
-				m_drag_info.reset( new DragInfo( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) );
+		case sf::Event::MouseMoved:
+			// Process mouse move event in derived class first.
+			result = HandleMouseMoveEvent( event.MouseMove.X, event.MouseMove.Y );
+			if( result != PassEvent ) {
+				break;
 			}
-			else {
-				m_drag_info->Update( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) );
-				OnDragMove();
-			}
-		}
 
-		// Check if pointer inside of widget's allocation.
-		if( GetAllocation().Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
-			// Check for enter event.
-			if( m_mouse_in == false ) {
-				m_mouse_in = true;
-				OnMouseEnter();
+			// Drag operations.
+			if( m_mouse_button_down == sf::Mouse::Left && HasFlag( Draggable ) ) {
+				if( !m_drag_info ) {
+					// Ask to begin dragging.
+					m_drag_info.reset( new DragInfo( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) );
 
-				// Register hook to get notified when mouse leaves the widget.
-				if( parent ) {
-					parent->RegisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+					if( !HandleDragOperation( DragInfo::Start, *m_drag_info ) ) {
+						m_drag_info.reset();
+					}
+				}
+				else {
+					m_drag_info->Update( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) );
+
+					if( !HandleDragOperation( DragInfo::Move, *m_drag_info ) ) {
+						m_drag_info.reset();
+					}
+					else {
+						OnDragMove();
+					}
 				}
 			}
 
-			OnMouseMove();
-		}
-		else if( m_mouse_in == true ) { // Check for leave event.
-			m_mouse_in = false;
+			// Check if pointer inside of widget's allocation.
+			if( GetAllocation().Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
+				// Check for enter event.
+				if( m_mouse_in == false ) {
+					m_mouse_in = true;
+					OnMouseEnter();
 
-			if( !m_drag_info && parent ) {
-				parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
-			}
-
-			// Mouse left the widget's region, so don't continue to pass the event to
-			// children. The event only reached the widget because the event got
-			// hooked.
-			result = IgnoreEvent;
-		}
-		else {
-			result = IgnoreEvent;
-		}
-
-	} break;
-	case sf::Event::MouseButtonPressed: {
-		// If a mouse button has already been pressed for this widget, drop further
-		// presses. This maybe needs changing, but up to now, I can't think of any
-		// cases where it would be useful to have such a functionality.
-		if( m_mouse_button_down == -1 ) {
-			if( m_mouse_in ) {
-				m_mouse_button_down = event.MouseButton.Button;
-
-				if( parent ) {
-					parent->RegisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+					// Register hook to get notified when mouse leaves the widget.
+					if( parent ) {
+						parent->RegisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+					}
 				}
 
-				OnMouseButtonPress();
-				/*if( OnMouseButtonPress() ) {
-					result = EatEvent;
-					GrabFocus();
-				}*/
+				OnMouseMove();
+			}
+			else if( m_mouse_in == true ) { // Check for leave event.
+				m_mouse_in = false;
+
+				if( !m_drag_info && parent ) {
+					parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+				}
+
+				// Mouse left the widget's region, so don't continue to pass the event to
+				// children. The event only reached the widget because the event got
+				// hooked.
+				result = IgnoreEvent;
 			}
 			else {
 				result = IgnoreEvent;
 			}
-		}
-	} break;
-	case sf::Event::MouseButtonReleased: {
-		// Only process when mouse button has been clicked inside the widget before.
-		if( m_mouse_button_down == event.MouseButton.Button ) {
-			m_mouse_button_down = -1;
 
-			if( parent ) {
-				parent->UnregisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+			break;
+
+		case sf::Event::MouseButtonPressed:
+			result = HandleMouseButtonEvent( event.MouseButton.Button, true, event.MouseButton.X, event.MouseButton.Y );
+			if( result != PassEvent ) {
+				break;
 			}
 
-			// Dragged?
-			if( m_drag_info ) {
-				OnDragEnd();
-				m_drag_info.reset( 0 );
+			// If a mouse button has already been pressed for this widget, drop further
+			// presses. This maybe needs changing, but up to now, I can't think of any
+			// cases where it would be useful to have such a functionality.
+			if( m_mouse_button_down == -1 ) {
+				if( m_mouse_in ) {
+					m_mouse_button_down = event.MouseButton.Button;
 
-				if( parent ) {
-					parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+					if( parent ) {
+						parent->RegisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+					}
+
+					OnMouseButtonPress();
+					/*if( OnMouseButtonPress() ) {
+						result = EatEvent;
+						GrabFocus();
+					}*/
+				}
+				else {
+					result = IgnoreEvent;
 				}
 			}
 
-			// When released inside the widget, the event can be considered a click.
-			if( m_mouse_in ) {
-				OnMouseButtonClick();
+		break;
+
+		case sf::Event::MouseButtonReleased:
+			result = HandleMouseButtonEvent( event.MouseButton.Button, false, event.MouseButton.X, event.MouseButton.Y );
+			if( result != PassEvent ) {
+				break;
 			}
 
-			/*if( OnMouseButtonRelease() ) {
+			// Only process when mouse button has been clicked inside the widget before.
+			if( m_mouse_button_down == event.MouseButton.Button ) {
+				m_mouse_button_down = -1;
+
+				if( parent ) {
+					parent->UnregisterEventHook( sf::Event::MouseButtonReleased, shared_from_this() );
+				}
+
+				// Dragged?
+				if( m_drag_info ) {
+					if( HandleDragOperation( DragInfo::End, *m_drag_info ) ) {
+						OnDragEnd();
+						m_drag_info.reset( 0 );
+
+						if( parent ) {
+							parent->UnregisterEventHook( sf::Event::MouseMoved, shared_from_this() );
+						}
+					}
+				}
+
+				// When released inside the widget, the event can be considered a click.
+				if( m_mouse_in ) {
+					OnMouseButtonClick();
+				}
+
+				/*if( OnMouseButtonRelease() ) {
+					result = EatEvent;
+				}*/
+				OnMouseButtonRelease();
+			}
+			else if( !m_mouse_in ) {
+				result = IgnoreEvent;
+			}
+
+			break;
+
+		case sf::Event::KeyPressed:
+			if( GetState() == Active ) {
+				// TODO: Delegate event too when widget's not active?
+				result = HandleKeyEvent( event.Key.Code, true );
+				OnKeyPress();
+			}
+
+			break;
+
+		case sf::Event::KeyReleased:
+			if( GetState() == Active ) {
+				// TODO: Delegate event too when widget's not active?
+				result = HandleKeyEvent( event.Key.Code, true );
+				OnKeyPress();
+			}
+			break;
+
+		case sf::Event::TextEntered:
+			if( GetState() == Active ) {
+				OnText();
 				result = EatEvent;
-			}*/
-			OnMouseButtonRelease();
-		}
-		else if( !m_mouse_in ) {
-			result = IgnoreEvent;
-		}
-	} break;
-	case sf::Event::KeyPressed: {
-		if( GetState() == Active ) {
-			OnKeyPress();
-			result = EatEvent;
-		}
-	} break;
-	case sf::Event::KeyReleased: {
-		if( GetState() == Active ) {
-			OnKeyRelease();
-			result = EatEvent;
-		}
-	} break;
-	case sf::Event::TextEntered: {
-		if( GetState() == Active ) {
-			OnText();
-			result = EatEvent;
-		}
-	} break;
-	default: break;
+			}
+			break;
+
+		default:
+			break;
 	}
 
 	return result;
@@ -388,6 +440,29 @@ void Widget::SetClass( const std::string& cls ) {
 
 const std::string& Widget::GetClass() const {
 	return m_class;
+}
+
+Widget::HandleEventResult Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
+	return PassEvent;
+}
+
+Widget::HandleEventResult Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
+	return PassEvent;
+}
+
+Widget::HandleEventResult Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
+	return EatEvent;
+}
+
+bool Widget::HandleSizeAllocate( const sf::FloatRect& /*new_allocation*/ ) {
+	return true;
+}
+
+void Widget::HandleExpose( sf::RenderTarget& /*target*/ ) {
+}
+
+bool Widget::HandleDragOperation( DragInfo::State /*state*/, const DragInfo& /*drag_info*/ ) {
+	return true;
 }
 
 }

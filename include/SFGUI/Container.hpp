@@ -83,8 +83,6 @@ class SFGUI_API Container : public Widget {
 		 */
 		Container();
 
-		uint32_t m_expose_connection;
-
 	private:
 		struct WidgetBoolPair {
 			WidgetBoolPair( Widget::Ptr widget_, bool remove_ );
@@ -99,9 +97,9 @@ class SFGUI_API Container : public Widget {
 
 		HandleEventResult ProcessHooks( const sf::Event& event );
 
-		void HandleExpose();
-		void HandleSizeAllocate();
-		void HandlePositionChange();
+		virtual void HandleExpose( sf::RenderTarget& target );
+		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		//void HandlePositionChange();
 
 		float  m_border_width;
 
