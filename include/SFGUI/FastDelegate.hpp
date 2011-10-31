@@ -878,7 +878,7 @@ public:
 //N=0
 class Delegate {
 private:
-	typedef typename detail::DefaultVoidToVoid<detail::DefaultVoid>::type DesiredRetType;
+	typedef detail::DefaultVoidToVoid<detail::DefaultVoid>::type DesiredRetType;
 	typedef DesiredRetType (*StaticFunctionPtr)();
 	typedef detail::DefaultVoid (*UnvoidStaticFunctionPtr)();
 	typedef detail::DefaultVoid (detail::GenericClass::*GenericMemFn)();
