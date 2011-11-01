@@ -166,14 +166,8 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 	Container::Ptr parent = m_parent.lock();
 	HandleEventResult  result( PassEvent );
 
-	switch(event.Type) {
+	switch( event.Type ) {
 		case sf::Event::MouseMoved:
-			// Process mouse move event in derived class first.
-			result = HandleMouseMoveEvent( event.MouseMove.X, event.MouseMove.Y );
-			if( result != PassEvent ) {
-				break;
-			}
-
 			// Drag operations.
 			if( m_mouse_button_down == sf::Mouse::Left && HasFlag( Draggable ) ) {
 				if( !m_drag_info ) {
@@ -208,7 +202,6 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 						parent->RegisterEventHook( sf::Event::MouseMoved, shared_from_this() );
 					}
 				}
-
 				OnMouseMove();
 			}
 			else if( m_mouse_in == true ) { // Check for leave event.
@@ -227,14 +220,13 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				result = IgnoreEvent;
 			}
 
+			if( HandleMouseMoveEvent( event.MouseMove.X, event.MouseMove.Y ) ) {
+				result = EatEvent;
+			}
+
 			break;
 
 		case sf::Event::MouseButtonPressed:
-			result = HandleMouseButtonEvent( event.MouseButton.Button, true, event.MouseButton.X, event.MouseButton.Y );
-			if( result != PassEvent ) {
-				break;
-			}
-
 			// If a mouse button has already been pressed for this widget, drop further
 			// presses. This maybe needs changing, but up to now, I can't think of any
 			// cases where it would be useful to have such a functionality.
@@ -257,14 +249,13 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				}
 			}
 
-		break;
-
-		case sf::Event::MouseButtonReleased:
-			result = HandleMouseButtonEvent( event.MouseButton.Button, false, event.MouseButton.X, event.MouseButton.Y );
-			if( result != PassEvent ) {
-				break;
+			if( HandleMouseButtonEvent( event.MouseButton.Button, true, event.MouseButton.X, event.MouseButton.Y ) ) {
+				result = EatEvent;
 			}
 
+			break;
+
+		case sf::Event::MouseButtonReleased:
 			// Only process when mouse button has been clicked inside the widget before.
 			if( m_mouse_button_down == event.MouseButton.Button ) {
 				m_mouse_button_down = -1;
@@ -299,12 +290,19 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 				result = IgnoreEvent;
 			}
 
+			if( HandleMouseButtonEvent( event.MouseButton.Button, false, event.MouseButton.X, event.MouseButton.Y ) ) {
+				result = EatEvent;
+			}
+
 			break;
 
 		case sf::Event::KeyPressed:
 			if( GetState() == Active ) {
 				// TODO: Delegate event too when widget's not active?
-				result = HandleKeyEvent( event.Key.Code, true );
+				if( HandleKeyEvent( event.Key.Code, true ) ) {
+					result = EatEvent;
+				}
+
 				OnKeyPress();
 			}
 
@@ -313,7 +311,10 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 		case sf::Event::KeyReleased:
 			if( GetState() == Active ) {
 				// TODO: Delegate event too when widget's not active?
-				result = HandleKeyEvent( event.Key.Code, true );
+				if( HandleKeyEvent( event.Key.Code, true ) ) {
+					result = EatEvent;
+				}
+
 				OnKeyPress();
 			}
 			break;
@@ -333,7 +334,15 @@ Widget::HandleEventResult Widget::HandleEvent( const sf::Event& event ) {
 }
 
 void Widget::SetState( State state ) {
+	State old_state( m_state );
+
 	m_state = state;
+
+	if( !HandleStateChange( old_state ) ) {
+		m_state = old_state;
+		return;
+	}
+
 	OnStateChange();
 }
 
@@ -442,16 +451,16 @@ const std::string& Widget::GetClass() const {
 	return m_class;
 }
 
-Widget::HandleEventResult Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
-	return PassEvent;
+bool Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
+	return false;
 }
 
-Widget::HandleEventResult Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
-	return PassEvent;
+bool Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
+	return false;
 }
 
-Widget::HandleEventResult Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
-	return EatEvent;
+bool Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
+	return false;
 }
 
 bool Widget::HandleSizeAllocate( const sf::FloatRect& /*new_allocation*/ ) {
@@ -462,6 +471,11 @@ void Widget::HandleExpose( sf::RenderTarget& /*target*/ ) {
 }
 
 bool Widget::HandleDragOperation( DragInfo::State /*state*/, const DragInfo& /*drag_info*/ ) {
+	return true;
+}
+
+bool Widget::HandleStateChange( State /*old_state*/ ) {
+	Invalidate();
 	return true;
 }
 

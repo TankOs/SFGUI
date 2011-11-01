@@ -245,26 +245,25 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		/** Handle mouse move event.
 		 * @param x Mouse X position.
 		 * @param y Mouse Y position.
-		 * @return Handler result.
-		 * @see HandleEventResult
+		 * @return true to indicate event has been processed, false to continue processing.
 		 */
-		virtual HandleEventResult HandleMouseMoveEvent( int x, int y );
+		virtual bool HandleMouseMoveEvent( int x, int y );
 
 		/** Handle mouse button event.
 		 * @param button Mouse button.
 		 * @param press true if button was pressed, false if released.
 		 * @param x Mouse X position.
 		 * @param y Mouse Y position.
-		 * @return Handler result.
-		 * @see HandleEventResult
+		 * @return true to indicate event has been processed, false to continue processing.
 		 */
-		virtual HandleEventResult HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 
 		/** Handle key event.
 		 * @param key Key.
 		 * @param press true if button was pressed, false if released.
+		 * @return true to indicate event has been processed, false to continue processing.
 		 */
-		virtual HandleEventResult HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual bool HandleKeyEvent( sf::Keyboard::Key key, bool press );
 
 		/** Handle size allocations.
 		 * @param old_allocation Previous allocation.
@@ -284,6 +283,14 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 * @return true to continue operation, false to stop dragging immediately (or prevent from being started).
 		 */
 		virtual bool HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
+
+		/** Handle state changes.
+		 * The default behaviour is to accept any state change and invalidate the
+		 * widget.
+		 * @param state Old state.
+		 * @return true to accept state change, false to restore old one.
+		 */
+		virtual bool HandleStateChange( State old_state );
 
 	private:
 		void GrabFocus( Ptr widget );

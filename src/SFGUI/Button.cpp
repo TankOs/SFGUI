@@ -9,13 +9,12 @@ Button::Button() :
 	m_label( Label::Create( L"" ) ),
 	m_padding( 5.f )
 {
-	OnStateChange.Connect( &Button::HandleStateChange, this );
-	OnMouseEnter.Connect( &Button::HandleMouseEnter, this );
-	OnMouseLeave.Connect( &Button::HandleMouseLeave, this );
-	OnMouseButtonClick.Connect( &Button::HandleMouseButtonClick, this );
-	OnMouseButtonPress.Connect( &Button::HandleMouseButtonPress, this );
-	OnMouseButtonRelease.Connect( &Button::HandleMouseButtonRelease, this );
-	OnSizeAllocate.Connect( &Button::HandleSizeAllocate, this );
+	//OnMouseEnter.Connect( &Button::HandleMouseEnter, this );
+	//OnMouseLeave.Connect( &Button::HandleMouseLeave, this );
+	//OnMouseButtonClick.Connect( &Button::HandleMouseButtonClick, this );
+	//OnMouseButtonPress.Connect( &Button::HandleMouseButtonPress, this );
+	//OnMouseButtonRelease.Connect( &Button::HandleMouseButtonRelease, this );
+	//OnSizeAllocate.Connect( &Button::HandleSizeAllocate, this );
 }
 
 Button::Ptr Button::Create( const sf::String& label ) {
@@ -44,39 +43,42 @@ const sf::String& Button::GetLabel() const {
 	return m_label->GetText();
 }
 
-void Button::HandleStateChange() {
-	Invalidate();
-}
-
-void Button::HandleMouseEnter() {
-	if( GetState() != Active ) {
-		SetState( Prelight );
+bool Button::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
+	if( IsMouseInWidget() ) {
+		if( GetState() == Normal ) {
+			SetState( Prelight );
+		}
 	}
+	else {
+		if( GetState() == Prelight ) {
+			SetState( Normal );
+		}
+	}
+	
+	// The event is processed, but we don't want to stop processing it further,
+	// i.e. in other hooks registered.
+	return false;
 }
 
-void Button::HandleMouseLeave() {
-	if( GetState() != Active ) {
+bool Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
+	if( !IsMouseInWidget() ) {
 		SetState( Normal );
+		return false;
 	}
+
+	if( button == sf::Mouse::Left ) {
+		if( press ) {
+			SetState( Active );
+		}
+		else {
+			SetState( Prelight );
+		}
+	}
+
+	return true;
 }
 
-void Button::HandleMouseButtonClick() {
-	//if( button == sf::Mouse::Left ) {
-		//OnClick.Sig( shared_from_this() );
-	//}
-}
-
-void Button::HandleMouseButtonPress() {
-	/*if( button == sf::Mouse::Left ) {
-		SetState( Active );
-	}*/
-}
-
-void Button::HandleMouseButtonRelease() {
-	SetState( IsMouseInWidget() ? Prelight : Normal );
-}
-
-void Button::HandleSizeAllocate() {
+bool Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	sf::FloatRect  label_allocation(
 		GetBorderWidth() + m_padding,
 		GetBorderWidth() + m_padding,
@@ -85,6 +87,8 @@ void Button::HandleSizeAllocate() {
 	);
 
 	m_label->AllocateSize( label_allocation );
+
+	return true;
 }
 
 sf::Vector2f Button::GetRequisitionImpl() const {
