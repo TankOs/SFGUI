@@ -12,8 +12,8 @@
 #include <stdexcept>
 
 namespace sf {
-std::ostream& SFGUI_API operator<<( std::ostream& stream, const Color& color );
-std::istream& SFGUI_API operator>>( std::istream& stream, Color& color );
+SFGUI_API std::ostream& operator<<( std::ostream& stream, const Color& color );
+SFGUI_API std::istream& operator>>( std::istream& stream, Color& color );
 }
 
 namespace sfg {
