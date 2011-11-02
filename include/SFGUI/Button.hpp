@@ -49,10 +49,11 @@ class SFGUI_API Button : public Bin {
 	private:
 		Button();
 
-		virtual void HandleMouseEnter( int x, int y );
-		virtual void HandleMouseLeave( int x, int y );
-		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		void HandleMouseEnter( int x, int y );
+		void HandleMouseLeave( int x, int y );
+		bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		void HandleMouseClick( int x, int y );
 
 		Label::Ptr  m_label;
 		float m_padding;

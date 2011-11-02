@@ -191,7 +191,6 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		Signal OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
 		Signal OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
 		Signal OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
-		Signal OnMouseButtonClick; //!< Fired when mouse button clicked (pressed and released in same widget). (x, y, button)
 
 		Signal OnDragStart; //!< Fired when dragging starts. (DragInfo)
 		Signal OnDragMove; //!< Fired when dragged. (DragInfo)
@@ -309,6 +308,12 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 * @param y Mouse Y position.
 		 */
 		virtual void HandleMouseLeave( int x, int y );
+
+		/** Handle mouse click.
+		 * @param x Mouse X position.
+		 * @param y Mouse Y position.
+		 */
+		virtual void HandleMouseClick( int x, int y );
 
 		/** Handle focus change.
 		 * @param focused_widget Widget currently being focused.

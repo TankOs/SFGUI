@@ -104,4 +104,8 @@ const std::string& Button::GetName() const {
 	return name;
 }
 
+void Button::HandleMouseClick( int /*x*/, int /*y*/ ) {
+	OnClick();
+}
+
 }
