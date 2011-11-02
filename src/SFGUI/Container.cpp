@@ -19,7 +19,7 @@ void Container::Add( Widget::Ptr widget ) {
 	widget->SetParent( shared_from_this() );
 	RequestSize();
 
-	OnAdd();
+	HandleAdd( widget );
 }
 
 void Container::Remove( Widget::Ptr widget ) {
@@ -29,7 +29,7 @@ void Container::Remove( Widget::Ptr widget ) {
 		m_children.erase( iter );
 		RequestSize();
 
-		OnRemove();
+		HandleRemove( widget );
 	}
 }
 
@@ -204,6 +204,12 @@ void Container::UpdateDrawablePosition() const {
 
 	// Update own drawable position.
 	Widget::UpdateDrawablePosition();
+}
+
+void Container::HandleAdd( Widget::Ptr /*child*/ ) {
+}
+
+void Container::HandleRemove( Widget::Ptr /*child*/ ) {
 }
 
 }

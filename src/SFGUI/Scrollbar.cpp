@@ -15,11 +15,6 @@ Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	m_page_increasing( false ),
 	m_slider_click_offset( 0 )
 {
-	OnMouseButtonPress.Connect( &Scrollbar::HandleMouseButtonPress, this );
-	OnMouseButtonRelease.Connect( &Scrollbar::HandleMouseButtonRelease, this );
-	OnMouseMove.Connect( &Scrollbar::HandleMouseMove, this );
-	OnExpose.Connect( &Scrollbar::HandleExpose, this );
-
 	if( adjustment ) {
 		SetAdjustment( adjustment );
 	}
@@ -106,139 +101,137 @@ sf::Vector2f Scrollbar::GetRequisitionImpl() const {
 	return sf::Vector2f( mimimum_slider_length, mimimum_slider_length );
 }
 
-void Scrollbar::HandleMouseButtonPress() {
-	/*float stepper_length( MIN_SLIDER_LENGTH );
-
+bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
 	if( button != sf::Mouse::Left ) {
 		return false;
 	}
 
-	sf::FloatRect slider_rect = GetSliderRect();
-	slider_rect.Left += GetAllocation().Left;
-	slider_rect.Top += GetAllocation().Top;
+	if( press ) {
+		sf::FloatRect slider_rect = GetSliderRect();
+		slider_rect.Left += GetAllocation().Left;
+		slider_rect.Top += GetAllocation().Top;
 
-	if( slider_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-		m_dragging = true;
+		if( slider_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			m_dragging = true;
+
+			if( m_orientation == Horizontal ) {
+				float slider_mid = slider_rect.Left + slider_rect.Width / 2.f;
+				m_slider_click_offset = static_cast<float>( x ) - slider_mid;
+			}
+			else {
+				float slider_mid = slider_rect.Top + slider_rect.Height / 2.f;
+				m_slider_click_offset = static_cast<float>( y ) - slider_mid;
+			}
+
+			return true;
+		}
 
 		if( m_orientation == Horizontal ) {
-			float slider_mid = slider_rect.Left + slider_rect.Width / 2.f;
-			m_slider_click_offset = static_cast<float>( x ) - slider_mid;
+			float stepper_length = GetAllocation().Height;
+
+			sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, stepper_length, GetAllocation().Height );
+			sf::FloatRect increase_stepper_rect( GetAllocation().Left + GetAllocation().Width - stepper_length, GetAllocation().Top, stepper_length, GetAllocation().Height );
+
+			if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+				m_decrease_pressed = true;
+				GetAdjustment()->Decrement();
+				m_change_timer.Reset();
+				Invalidate();
+				return true;
+			}
+
+			if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+				m_increase_pressed = true;
+				GetAdjustment()->Increment();
+				m_change_timer.Reset();
+				Invalidate();
+				return true;
+			}
 		}
 		else {
-			float slider_mid = slider_rect.Top + slider_rect.Height / 2.f;
-			m_slider_click_offset = static_cast<float>( y ) - slider_mid;
-		}
+			float stepper_length = GetAllocation().Width;
 
-		return true;
-	}
+			sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, GetAllocation().Width, stepper_length );
+			sf::FloatRect increase_stepper_rect( GetAllocation().Left, GetAllocation().Top + GetAllocation().Height - stepper_length, GetAllocation().Width, stepper_length );
 
-	if( m_orientation == Horizontal ) {
-		float stepper_length = GetAllocation().Height;
-
-		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, stepper_length, GetAllocation().Height );
-		sf::FloatRect increase_stepper_rect( GetAllocation().Left + GetAllocation().Width - stepper_length, GetAllocation().Top, stepper_length, GetAllocation().Height );
-
-		if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-			m_decrease_pressed = true;
-			GetAdjustment()->Decrement();
-			m_change_timer.Reset();
-			Invalidate();
-			return true;
-		}
-
-		if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-			m_increase_pressed = true;
-			GetAdjustment()->Increment();
-			m_change_timer.Reset();
-			Invalidate();
-			return true;
-		}
-	}
-	else {
-		float stepper_length = GetAllocation().Width;
-
-		sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, GetAllocation().Width, stepper_length );
-		sf::FloatRect increase_stepper_rect( GetAllocation().Left, GetAllocation().Top + GetAllocation().Height - stepper_length, GetAllocation().Width, stepper_length );
-
-		if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-			m_decrease_pressed = true;
-			GetAdjustment()->Decrement();
-			m_change_timer.Reset();
-			Invalidate();
-			return true;
-		}
-
-		if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-			m_increase_pressed = true;
-			GetAdjustment()->Increment();
-			m_change_timer.Reset();
-			Invalidate();
-			return true;
-		}
-	}
-
-	float slider_center_x = slider_rect.Left + slider_rect.Width / 2.f;
-	float slider_center_y = slider_rect.Top + slider_rect.Height / 2.f;
-
-	if( m_orientation == Horizontal ) {
-		if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {			if( static_cast<float>( x ) < slider_center_x ) {				m_page_decreasing = true;
-				m_page_decreasing = true;
-				GetAdjustment()->DecrementPage();
+			if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+				m_decrease_pressed = true;
+				GetAdjustment()->Decrement();
 				m_change_timer.Reset();
 				Invalidate();
 				return true;
 			}
-			else {
-				m_page_increasing = true;
-				GetAdjustment()->IncrementPage();
+
+			if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+				m_increase_pressed = true;
+				GetAdjustment()->Increment();
 				m_change_timer.Reset();
 				Invalidate();
 				return true;
+			}
+		}
+
+		float slider_center_x = slider_rect.Left + GetAbsolutePosition().x + slider_rect.Width / 2.f;
+		float slider_center_y = slider_rect.Top + GetAbsolutePosition().y + slider_rect.Height / 2.f;
+
+		if( m_orientation == Horizontal ) {
+			if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+				if( static_cast<float>( x ) < slider_center_x ) {
+					m_page_decreasing = true;
+					m_page_decreasing = true;
+					GetAdjustment()->DecrementPage();
+					m_change_timer.Reset();
+					Invalidate();
+					return true;
+				}
+				else {
+					m_page_increasing = true;
+					GetAdjustment()->IncrementPage();
+					m_change_timer.Reset();
+					Invalidate();
+					return true;
+				}
+			}
+		}
+		else {
+			if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+				if( static_cast<float>( y ) < slider_center_y ) {
+					m_page_decreasing = true;
+					m_page_decreasing = true;
+					GetAdjustment()->DecrementPage();
+					m_change_timer.Reset();
+					Invalidate();
+					return true;
+				}
+				else {
+					m_page_increasing = true;
+					GetAdjustment()->IncrementPage();
+					m_change_timer.Reset();
+					Invalidate();
+					return true;
+				}
 			}
 		}
 	}
 	else {
-		if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {			if( static_cast<float>( y ) < slider_center_y ) {				m_page_decreasing = true;
-				m_page_decreasing = true;
-				GetAdjustment()->DecrementPage();
-				m_change_timer.Reset();
-				Invalidate();
-				return true;
-			}
-			else {
-				m_page_increasing = true;
-				GetAdjustment()->IncrementPage();
-				m_change_timer.Reset();
-				Invalidate();
-				return true;
-			}
-		}
-	}
+		m_dragging = false;
+		m_decrease_pressed = false;
+		m_increase_pressed = false;
+		m_page_decreasing = false;
+		m_page_increasing = false;
 
-	return false;*/
-}
+		m_slider_click_offset = 0.f;
 
-void Scrollbar::HandleMouseButtonRelease() {
-	/*if( button != sf::Mouse::Left ) {
+		Invalidate();
 		return false;
-	}*/
+	}
 
-	m_dragging = false;
-	m_decrease_pressed = false;
-	m_increase_pressed = false;
-	m_page_decreasing = false;
-	m_page_increasing = false;
-
-	m_slider_click_offset = 0.f;
-
-	Invalidate();
+	return false;
 }
 
-void Scrollbar::HandleMouseMove() {
-	/*float stepper_length( 20.f );
-
+bool Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	if( !m_dragging ) {
-		return;
+		return false;
 	}
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
@@ -250,7 +243,7 @@ void Scrollbar::HandleMouseMove() {
 	if( m_orientation == Horizontal ) {
 		float stepper_length = GetAllocation().Height;
 
-		float slider_center_x = GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f;
+		float slider_center_x = GetAbsolutePosition().x + slider_rect.Left + slider_rect.Width / 2.0f;
 		float step_distance = ( GetAllocation().Width - 2.f * stepper_length ) / steps;
 
 		float delta = static_cast<float>( x ) - ( slider_center_x + m_slider_click_offset );
@@ -268,7 +261,7 @@ void Scrollbar::HandleMouseMove() {
 	else {
 		float stepper_length = GetAllocation().Width;
 
-		float slider_center_y = GetAllocation().Top + slider_rect.Top + slider_rect.Height / 2.0f;
+		float slider_center_y = GetAbsolutePosition().y + slider_rect.Top + slider_rect.Height / 2.0f;
 		float step_distance = ( GetAllocation().Height - 2.f * stepper_length ) / steps;
 
 		float delta =  static_cast<float>( y ) - ( slider_center_y + m_slider_click_offset );
@@ -282,10 +275,12 @@ void Scrollbar::HandleMouseMove() {
 			adjustment->Increment();
 			delta -= step_distance;
 		}
-	}*/
+	}
+
+	return true;
 }
 
-void Scrollbar::HandleExpose() {
+void Scrollbar::HandleExpose( sf::RenderTarget& /*target*/ ) {
 	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Speed", shared_from_this() ) );
 
 	// Increment / Decrement value while one of the steppers is pressed

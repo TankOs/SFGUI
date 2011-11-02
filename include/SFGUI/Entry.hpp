@@ -91,14 +91,13 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void MoveCursor( int delta );
 
-		void HandleStateChange();
-		void HandleMouseEnter();
-		void HandleMouseLeave();
-		void HandleMouseButtonPress();
-		void HandleText();
-		void HandleKeyPress();
-		void HandleFocusChange();
-		void HandleExpose();
+		virtual void HandleMouseEnter( int x, int y );
+		virtual void HandleMouseLeave( int x, int y );
+		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual bool HandleTextEvent( sf::Uint32 character );
+		virtual bool HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual void HandleFocusChange( Widget::Ptr focused_widget );
+		virtual void HandleExpose( sf::RenderTarget& target );
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;

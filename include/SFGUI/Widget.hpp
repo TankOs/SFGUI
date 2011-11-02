@@ -292,6 +292,29 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		 */
 		virtual bool HandleStateChange( State old_state );
 
+		/** Handle text event.
+		 * @param character Character.
+		 * @return true to indicate event has been processed, false to continue processing.
+		 */
+		virtual bool HandleTextEvent( sf::Uint32 character );
+
+		/** Handle mouse enter.
+		 * @param x Mouse X position.
+		 * @param y Mouse Y position.
+		 */
+		virtual void HandleMouseEnter( int x, int y );
+
+		/** Handle mouse leave.
+		 * @param x Mouse X position.
+		 * @param y Mouse Y position.
+		 */
+		virtual void HandleMouseLeave( int x, int y );
+
+		/** Handle focus change.
+		 * @param focused_widget Widget currently being focused.
+		 */
+		virtual void HandleFocusChange( Widget::Ptr focused_widget );
+
 	private:
 		void GrabFocus( Ptr widget );
 

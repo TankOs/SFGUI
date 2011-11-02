@@ -49,7 +49,8 @@ class SFGUI_API Button : public Bin {
 	private:
 		Button();
 
-		virtual bool HandleMouseMoveEvent( int x, int y );
+		virtual void HandleMouseEnter( int x, int y );
+		virtual void HandleMouseLeave( int x, int y );
 		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
 

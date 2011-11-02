@@ -9,12 +9,6 @@ Button::Button() :
 	m_label( Label::Create( L"" ) ),
 	m_padding( 5.f )
 {
-	//OnMouseEnter.Connect( &Button::HandleMouseEnter, this );
-	//OnMouseLeave.Connect( &Button::HandleMouseLeave, this );
-	//OnMouseButtonClick.Connect( &Button::HandleMouseButtonClick, this );
-	//OnMouseButtonPress.Connect( &Button::HandleMouseButtonPress, this );
-	//OnMouseButtonRelease.Connect( &Button::HandleMouseButtonRelease, this );
-	//OnSizeAllocate.Connect( &Button::HandleSizeAllocate, this );
 }
 
 Button::Ptr Button::Create( const sf::String& label ) {
@@ -43,21 +37,16 @@ const sf::String& Button::GetLabel() const {
 	return m_label->GetText();
 }
 
-bool Button::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
-	if( IsMouseInWidget() ) {
-		if( GetState() == Normal ) {
-			SetState( Prelight );
-		}
+void Button::HandleMouseEnter( int /*x*/, int /*y*/ ) {
+	if( GetState() == Normal ) {
+		SetState( Prelight );
 	}
-	else {
-		if( GetState() == Prelight ) {
-			SetState( Normal );
-		}
+}
+
+void Button::HandleMouseLeave( int /*x*/, int /*y*/ ) {
+	if( GetState() == Prelight ) {
+		SetState( Normal );
 	}
-	
-	// The event is processed, but we don't want to stop processing it further,
-	// i.e. in other hooks registered.
-	return false;
 }
 
 bool Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {

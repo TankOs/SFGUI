@@ -16,10 +16,6 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 	m_content_allocation(),
 	m_recalc_content_allocation( false )
 {
-	OnSizeAllocate.Connect( &ScrolledWindow::HandleSizeAllocate, this );
-	OnAdd.Connect( &ScrolledWindow::HandleAdd, this );
-	//m_expose_connection = OnExpose.Connect( &ScrolledWindow::HandleExpose, this );
-
 	m_horizontal_scrollbar = Scrollbar::Create( horizontal_adjustment, Scrollbar::Horizontal );
 	m_vertical_scrollbar = Scrollbar::Create( vertical_adjustment, Scrollbar::Vertical );
 }
@@ -352,29 +348,33 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	m_recalc_content_allocation = false;
 }
 
-void ScrolledWindow::HandleSizeAllocate() {
+bool ScrolledWindow::HandleSizeAllocate( const sf::FloatRect& old_allocation ) {
+	Container::HandleSizeAllocate( old_allocation );
+
 	// Don't go through expensive content recalculation if the allocation
 	// of the ScrolledWindow didn't even change. HandleSizeAllocate is used
 	// by some Widgets to signal other kinds of changes.
-	/*if( oldallocation.Top == GetAllocation().Top &&
-			oldallocation.Left == GetAllocation().Left &&
-			oldallocation.Width == GetAllocation().Width &&
-			oldallocation.Height == GetAllocation().Height ) {
-		return;
-	}*/
+	if( old_allocation.Top == GetAllocation().Top &&
+			old_allocation.Left == GetAllocation().Left &&
+			old_allocation.Width == GetAllocation().Width &&
+			old_allocation.Height == GetAllocation().Height ) {
+		return true;
+	}
 
 	m_recalc_content_allocation = true;
 	Invalidate();
+
+	return true;
 }
 
-void ScrolledWindow::HandleExpose() {
+void ScrolledWindow::HandleExpose( sf::RenderTarget& target ) {
 	// Draw the Scrollbars
 	if( IsHorizontalScrollbarVisible() ) {
-		//m_horizontal_scrollbar->Expose( target );
+		m_horizontal_scrollbar->Expose( target );
 	}
 
 	if( IsVerticalScrollbarVisible() ) {
-		//m_vertical_scrollbar->Expose( target );
+		m_vertical_scrollbar->Expose( target );
 	}
 
 	// If there is no child no need to proceed beyond here.
@@ -414,17 +414,17 @@ void ScrolledWindow::HandleExpose() {
 	m_sprite.SetPosition( relative_position );
 
 	// Draw Sprite to target
-	//target.Draw( m_sprite );
+	target.Draw( m_sprite );
 }
 
-void ScrolledWindow::HandleAdd() {
+void ScrolledWindow::HandleAdd( Widget::Ptr child ) {
 	if( GetChildren().size() > 3 ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow." << std::endl;
 #endif
 
-		//Remove( child );
+		Remove( child );
 		return;
 	}
 

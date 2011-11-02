@@ -8,9 +8,6 @@ Box::Box( Orientation orientation, float spacing ) :
 	m_orientation( orientation ),
 	m_spacing( spacing )
 {
-	OnAdd.Connect( &Box::HandleAdd, this );
-	OnRemove.Connect( &Box::HandleRemove, this );
-	OnSizeAllocate.Connect( &Box::HandleSizeAllocate, this );
 }
 
 Box::Ptr Box::Create( Orientation orientation, float spacing ) {
@@ -34,9 +31,8 @@ void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
 	Add( widget );
 }
 
-void Box::HandleAdd() {
-	// TODO: Install handler from virtual method.
-	/*ChildrenCont::const_iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
+void Box::HandleAdd( Widget::Ptr child ) {
+	ChildrenCont::const_iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget
 	// manually, which is not allowed for this class.
@@ -49,18 +45,17 @@ void Box::HandleAdd() {
 
 		Remove( child );
 		return;
-	}*/
+	}
 
 	RequestSize();
 }
 
-void Box::HandleRemove() {
-	// TODO: Virtual func.
-	/*ChildrenCont::iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
+void Box::HandleRemove( Widget::Ptr child ) {
+	ChildrenCont::iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
-	}*/
+	}
 }
 
 sf::Vector2f Box::GetRequisitionImpl() const {
@@ -101,7 +96,7 @@ sf::Vector2f Box::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void Box::HandleSizeAllocate() {
+bool Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	ChildrenCont::iterator  iter( m_children.begin() );
 	ChildrenCont::iterator  iterend( m_children.end() );
 	sf::Vector2f  allocation( 0.f, 0.f );
@@ -176,6 +171,8 @@ void Box::HandleSizeAllocate() {
 
 		--num_visible;
 	}
+
+	return true;
 }
 
 Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :

@@ -67,7 +67,7 @@ class SFGUI_API Table : public Container {
 		sf::Vector2f GetRequisitionImpl() const;
 		void UpdateRequisitions() const;
 		void AllocateChildrenSizes();
-		void HandleSizeAllocate();
+		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
 
 		TableCellList m_cells;
 		mutable TableOptionsArray m_columns;

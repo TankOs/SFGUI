@@ -5,7 +5,6 @@
 namespace sfg {
 
 Table::Table() {
-	OnSizeAllocate.Connect( &Table::HandleSizeAllocate, this );
 }
 
 Table::Ptr Table::Create() {
@@ -62,8 +61,10 @@ void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_
 }
 
 
-void Table::HandleSizeAllocate() {
+bool Table::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	AllocateChildrenSizes();
+
+	return true;
 }
 
 void Table::UpdateRequisitions() const {

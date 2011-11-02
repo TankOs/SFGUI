@@ -14,14 +14,6 @@ Entry::Entry() :
 	m_cursor_status( false ),
 	m_text_placeholder( 0 )
 {
-	OnFocusChange.Connect( &Entry::HandleFocusChange, this );
-	OnStateChange.Connect( &Entry::HandleStateChange, this );
-	OnMouseEnter.Connect( &Entry::HandleMouseEnter, this );
-	OnMouseLeave.Connect( &Entry::HandleMouseLeave, this );
-	OnMouseButtonPress.Connect( &Entry::HandleMouseButtonPress, this );
-	OnText.Connect( &Entry::HandleText, this );
-	OnKeyPress.Connect( &Entry::HandleKeyPress, this );
-	OnExpose.Connect( &Entry::HandleExpose, this );
 }
 
 Entry::Ptr Entry::Create( const sf::String& text ) {
@@ -31,7 +23,6 @@ Entry::Ptr Entry::Create( const sf::String& text ) {
 
 	return ptr;
 }
-
 
 sf::Drawable* Entry::InvalidateImpl() {
 	return Context::Get().GetEngine().CreateEntryDrawable( boost::shared_dynamic_cast<Entry>( shared_from_this() ) );
@@ -151,23 +142,31 @@ void Entry::MoveCursor( int delta ) {
 	}
 }
 
-void Entry::HandleText() {
-	/*if( unicode > 0x1f && unicode != 0x7f ) {
+bool Entry::HandleTextEvent( sf::Uint32 character ) {
+	if( character > 0x1f && character != 0x7f ) {
 		// not a control character
-		m_string.Insert( m_cursor_position, unicode );
+		m_string.Insert( m_cursor_position, character );
 		MoveCursor( 1 );
 
-		OnTextChanged.Sig( shared_from_this() );
-	}*/
+		OnTextChanged();
+
+		return true;
+	}
+
+	return false;
 }
 
-void Entry::HandleKeyPress() {
-	/*switch(event.Code) {
+bool Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
+	if( !press ) {
+		return false;
+	}
+
+	switch( key ) {
 	case sf::Keyboard::Back: { // backspace
 		if( ( m_string.GetSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.Erase( m_cursor_position - 1 );
 			MoveCursor( -1 );
-			OnTextChanged.Sig( shared_from_this() );
+			OnTextChanged();
 		}
 	} break;
 	case sf::Keyboard::Delete: {
@@ -178,7 +177,7 @@ void Entry::HandleKeyPress() {
 			m_cursor_timer.Reset();
 			m_cursor_status = true;
 
-			OnTextChanged.Sig( shared_from_this() );
+			OnTextChanged();
 		}
 	} break;
 	case sf::Keyboard::Home: {
@@ -200,34 +199,43 @@ void Entry::HandleKeyPress() {
 		MoveCursor( 1 );
 	} break;
 	default: break;
-	}*/
+	}
+
+	return true;
 }
 
-void Entry::HandleStateChange() {
-	Invalidate();
-}
-
-void Entry::HandleMouseEnter() {
+void Entry::HandleMouseEnter( int /*x*/, int /*y*/ ) {
 	if( GetState() != Active ) {
 		SetState( Prelight );
 	}
 }
 
-void Entry::HandleMouseLeave() {
+void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	if( GetState() != Active ) {
 		SetState( Normal );
 	}
 }
 
-void Entry::HandleMouseButtonPress() {
-	if( m_string.IsEmpty() ) {
-		return;
+bool Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int /*y*/ ) {
+	if( !press ) {
+		return false;
 	}
 
-	//SetCursorPosition( GetPositionFromMouseX( x ) );
+	if( button != sf::Mouse::Left ) {
+		// TODO: Maybe some more support for right clicking in the future.
+		return true;
+	}
+
+	if( m_string.IsEmpty() ) {
+		return true;
+	}
+
+	SetCursorPosition( GetPositionFromMouseX( x ) );
+
+	return true;
 }
 
-void Entry::HandleFocusChange() {
+void Entry::HandleFocusChange( Widget::Ptr /*focused_widget*/ ) {
 	if( GetState() == Active ) {
 		SetState( Normal );
 	}
@@ -236,7 +244,7 @@ void Entry::HandleFocusChange() {
 	}
 }
 
-void Entry::HandleExpose() {
+void Entry::HandleExpose( sf::RenderTarget& /*target*/  ) {
 	if( GetState() != Active ) {
 		return;
 	}

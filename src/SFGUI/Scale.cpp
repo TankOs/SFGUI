@@ -10,9 +10,6 @@ Scale::Scale( Orientation orientation ) :
 	m_orientation( orientation ),
 	m_dragging( false )
 {
-  OnMouseButtonPress.Connect( &Scale::HandleMouseButtonPress, this );
-	OnMouseButtonRelease.Connect( &Scale::HandleMouseButtonRelease, this );
-	OnMouseMove.Connect( &Scale::HandleMouseMove, this );
 }
 
 Scale::Ptr Scale::Create( Orientation orientation ) {
@@ -70,34 +67,33 @@ sf::Vector2f Scale::GetRequisitionImpl() const {
 	}
 }
 
-void Scale::HandleMouseButtonPress() {
-	/*if( button != sf::Mouse::Left ) {
+bool Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+	if( button != sf::Mouse::Left ) {
 		return false;
-	}*/
+	}
 
-	sf::FloatRect slider_rect = GetSliderRect();
-	slider_rect.Left += GetAllocation().Left;
-	slider_rect.Top += GetAllocation().Top;
+	if( press ) {
+		sf::FloatRect slider_rect = GetSliderRect();
+		slider_rect.Left += GetAllocation().Left;
+		slider_rect.Top += GetAllocation().Top;
 
-	/*if( !slider_rect.Contains( (float)x, (float)y ) ) {
+		if( !slider_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			m_dragging = false;
+			return false;
+		}
+
+		m_dragging = true;
+	}
+	else {
 		m_dragging = false;
-		return false;
-	}*/
+	}
 
-	m_dragging = true;
+	return true;
 }
 
-void Scale::HandleMouseButtonRelease() {
-	/*if( button != sf::Mouse::Left ) {
+bool Scale::HandleMouseMoveEvent( int x, int y ) {
+	if( !m_dragging ) {
 		return false;
-	}*/
-
-	m_dragging = false;
-}
-
-void Scale::HandleMouseMove() {
-	/*if( !m_dragging ) {
-		return;
 	}
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
@@ -137,7 +133,9 @@ void Scale::HandleMouseMove() {
 			adjustment->Decrement();
 			delta -= step_distance;
 		}
-	}*/
+	}
+
+	return true;
 }
 
 const std::string& Scale::GetName() const {

@@ -10,8 +10,6 @@ Window::Window() :
 	m_style( Toplevel )
 {
 	SetFlags( Draggable );
-
-	OnAdd.Connect( &Window::HandleAdd, this );
 }
 
 Window::Ptr Window::Create() {
@@ -49,7 +47,7 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-void Window::HandleAdd() {
+void Window::HandleAdd( Widget::Ptr /*child*/ ) {
 	RequestSize();
 }
 

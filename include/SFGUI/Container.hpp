@@ -75,13 +75,12 @@ class SFGUI_API Container : public Widget {
 
 		void UpdateDrawablePosition() const;
 
-		Signal OnAdd; //!< Fired when child added.
-		Signal OnRemove; //!< Fired when child removed.
-
 	protected:
 		/** Constructor.
 		 */
 		Container();
+
+		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
 
 	private:
 		struct WidgetBoolPair {
@@ -98,7 +97,8 @@ class SFGUI_API Container : public Widget {
 		HandleEventResult ProcessHooks( const sf::Event& event );
 
 		virtual void HandleExpose( sf::RenderTarget& target );
-		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		virtual void HandleAdd( Widget::Ptr child );
+		virtual void HandleRemove( Widget::Ptr child );
 		//void HandlePositionChange();
 
 		float  m_border_width;
