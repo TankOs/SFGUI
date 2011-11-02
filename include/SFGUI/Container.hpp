@@ -80,7 +80,20 @@ class SFGUI_API Container : public Widget {
 		 */
 		Container();
 
+		/** Handle adding children.
+		 * Called before the child gets added.
+		 * @param child Child widget.
+		 * @return true to add child, false to cancel.
+		 */
+		virtual bool HandleAdd( Widget::Ptr child );
+
+		/** Handle removing children.
+		 * @param child Child widget.
+		 */
+		virtual void HandleRemove( Widget::Ptr child );
+
 		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		virtual void HandleExpose( sf::RenderTarget& target );
 
 	private:
 		struct WidgetBoolPair {
@@ -95,11 +108,6 @@ class SFGUI_API Container : public Widget {
 		typedef std::map<sf::Event::EventType, HookedWidgetsList>  HooksMap;
 
 		HandleEventResult ProcessHooks( const sf::Event& event );
-
-		virtual void HandleExpose( sf::RenderTarget& target );
-		virtual void HandleAdd( Widget::Ptr child );
-		virtual void HandleRemove( Widget::Ptr child );
-		//void HandlePositionChange();
 
 		float  m_border_width;
 

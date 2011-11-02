@@ -65,9 +65,9 @@ class SFGUI_API Box : public Container {
 
 		Box( Orientation orientation = Horizontal, float spacing = 0.f );
 
-		virtual void HandleAdd( Widget::Ptr child );
-		virtual void HandleRemove( Widget::Ptr child );
-		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		bool HandleAdd( Widget::Ptr child );
+		void HandleRemove( Widget::Ptr child );
+		bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
 
 		Orientation  m_orientation;
 		float  m_spacing;

@@ -123,9 +123,9 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		void RecalculateContentAllocation();
 
-		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
-		virtual void HandleExpose( sf::RenderTarget& target );
-		virtual void HandleAdd( Widget::Ptr child );
+		bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		void HandleExpose( sf::RenderTarget& target );
+		bool HandleAdd( Widget::Ptr child );
 
 		Scrollbar::Ptr m_horizontal_scrollbar;
 		Scrollbar::Ptr m_vertical_scrollbar;

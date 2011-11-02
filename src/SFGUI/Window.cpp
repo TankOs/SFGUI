@@ -47,10 +47,6 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-void Window::HandleAdd( Widget::Ptr /*child*/ ) {
-	RequestSize();
-}
-
 bool Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	if( !GetChild() || m_skipreallocation ) {
 		m_skipreallocation = false;

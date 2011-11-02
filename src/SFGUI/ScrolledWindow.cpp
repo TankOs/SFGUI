@@ -417,19 +417,19 @@ void ScrolledWindow::HandleExpose( sf::RenderTarget& target ) {
 	target.Draw( m_sprite );
 }
 
-void ScrolledWindow::HandleAdd( Widget::Ptr child ) {
-	if( GetChildren().size() > 3 ) {
+bool ScrolledWindow::HandleAdd( Widget::Ptr /*child*/ ) {
+	if( GetChildren().size() > 2 ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow." << std::endl;
 #endif
 
-		Remove( child );
-		return;
+		return false;
 	}
 
 	m_recalc_content_allocation = true;
 	Invalidate();
+	return true;
 }
 
 Widget::Ptr ScrolledWindow::GetChild() const {

@@ -31,7 +31,7 @@ void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
 	Add( widget );
 }
 
-void Box::HandleAdd( Widget::Ptr child ) {
+bool Box::HandleAdd( Widget::Ptr child ) {
 	ChildrenCont::const_iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget
@@ -43,11 +43,10 @@ void Box::HandleAdd( Widget::Ptr child ) {
 		std::cerr << "SFGUI warning: Child must be added via Pack() for sfg::Box widgets." << std::endl;
 #endif
 
-		Remove( child );
-		return;
+		return false;
 	}
 
-	RequestSize();
+	return true;
 }
 
 void Box::HandleRemove( Widget::Ptr child ) {

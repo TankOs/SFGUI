@@ -70,11 +70,10 @@ class SFGUI_API Window : public Bin {
 
 		sf::Vector2f GetRequisitionImpl() const;
 
-	private:
-		virtual void HandleAdd( Widget::Ptr child );
 		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
 		virtual bool HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
 
+	private:
 		sf::String  m_title;
 		bool  m_skipreallocation;
 		int  m_style;
