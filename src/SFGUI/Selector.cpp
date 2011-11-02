@@ -75,7 +75,7 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 			next->m_class = ParseClass( str_iter, str.end() );
 			next->m_state = ParseState( str_iter, str.end() );
 		}
-		catch( const ParserException& e ) {
+		catch( const ParserException& /*e*/ ) {
 			return Ptr();
 		}
 

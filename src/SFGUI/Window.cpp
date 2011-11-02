@@ -71,7 +71,7 @@ int Window::GetStyle() const {
 }
 
 bool Window::HasStyle( Style style ) const {
-	return m_style & style;
+	return (m_style & style) == style;
 }
 
 sf::Vector2f Window::GetRequisitionImpl() const {

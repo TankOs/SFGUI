@@ -381,7 +381,7 @@ void Widget::SetFlags( int flags ) {
 }
 
 bool Widget::HasFlag( Flags flag ) const {
-	return m_flags & flag;
+	return (m_flags & flag) == flag;
 }
 
 const sf::Vector2f& Widget::GetRequisition() const {

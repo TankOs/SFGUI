@@ -72,8 +72,10 @@ void ScrolledWindow::SetScrollbarPolicy( int policy ) {
 }
 
 void ScrolledWindow::SetPlacement( Placement placement ) {
-	if( ( static_cast<bool>( placement & Top ) ^ static_cast<bool>( placement & Bottom ) ) &&
-			( static_cast<bool>( placement & Left ) ^ static_cast<bool>( placement & Right ) ) ) {
+	if(
+		(((placement & Top) == Top) ^ ((placement & Bottom) == Bottom)) &&
+		(((placement & Left) == Left) ^ ((placement & Right) == Right))
+	) {
 		m_placement = placement;
 
 		m_recalc_content_allocation = true;
