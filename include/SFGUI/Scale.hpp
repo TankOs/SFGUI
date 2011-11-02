@@ -8,8 +8,8 @@ namespace sfg {
  */
 class SFGUI_API Scale : public Range {
 	public:
-		typedef boost::shared_ptr<Scale>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Scale>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Scale>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Scale>  PtrConst; //!< Shared pointer.
 
 		/** Scale orientation.
 		 */

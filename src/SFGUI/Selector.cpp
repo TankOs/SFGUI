@@ -1,9 +1,6 @@
 #include <SFGUI/Selector.hpp>
 #include <SFGUI/Container.hpp>
 
-#include <boost/functional/hash.hpp>
-#include <iostream> // XXX
-
 namespace sfg {
 
 Selector::Selector() :
@@ -79,7 +76,6 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 			next->m_state = ParseState( str_iter, str.end() );
 		}
 		catch( const ParserException& e ) {
-			std::cout << e.what() << std::endl;
 			return Ptr();
 		}
 
@@ -101,7 +97,7 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 	}
 
 	// Hash.
-	boost::hash<std::string> string_hasher;
+	std::hash<std::string> string_hasher;
 	selector->m_hash = string_hasher( selector->BuildString() );
 
 	return selector;

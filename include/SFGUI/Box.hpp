@@ -9,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Box : public Container {
 	public:
-		typedef boost::shared_ptr<Box>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Box>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Box>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Box>  PtrConst; //!< Shared pointer.
 
 		/** Box orientation.
 		 */

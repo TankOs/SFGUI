@@ -4,7 +4,6 @@
 #include <SFGUI/Bin.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/String.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace sfg {
 
@@ -12,8 +11,8 @@ namespace sfg {
  */
 class SFGUI_API Window : public Bin {
 	public:
-		typedef boost::shared_ptr<Window>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Window>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Window>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Window>  PtrConst; //!< Shared pointer.
 
 		enum Style {
 			NoStyle = 0, //!< Transparent window.

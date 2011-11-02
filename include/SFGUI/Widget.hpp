@@ -8,7 +8,6 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <map>
 #include <string>
 
@@ -18,10 +17,10 @@ class Container;
 
 /** Base class for widgets.
  */
-class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Widget> {
+class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widget> {
 	public:
-		typedef boost::shared_ptr<Widget>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Widget>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Widget>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Widget>  PtrConst; //!< Shared pointer.
 
 		/** Widget state.
 		 */
@@ -124,12 +123,12 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 		/** Get parent.
 		 * @return Parent.
 		 */
-		boost::shared_ptr<Container> GetParent();
+		std::shared_ptr<Container> GetParent();
 
 		/** Get parent.
 		 * @return Parent.
 		 */
-		boost::shared_ptr<const Container> GetParent() const;
+		std::shared_ptr<const Container> GetParent() const;
 
 		/** Set widget's state.
 		 * @param state State.
@@ -323,7 +322,7 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 	private:
 		void GrabFocus( Ptr widget );
 
-		boost::weak_ptr<Container>  m_parent;
+		std::weak_ptr<Container>  m_parent;
 
 		std::string m_id;
 		std::string m_class;
@@ -338,15 +337,15 @@ class SFGUI_API Widget : public Object, public boost::enable_shared_from_this<Wi
 
 		sf::FloatRect  m_allocation;
 		mutable sf::Vector2f   m_requisition;
-		boost::scoped_ptr<sf::Vector2f> m_custom_requisition;
+		std::unique_ptr<sf::Vector2f> m_custom_requisition;
 
 		bool  m_invalidated;
 		mutable bool  m_recalc_requisition;
 
 		int  m_flags;
-		boost::scoped_ptr<DragInfo>  m_drag_info;
+		std::unique_ptr<DragInfo>  m_drag_info;
 
-		mutable boost::scoped_ptr<sf::Drawable>  m_drawable;
+		mutable std::unique_ptr<sf::Drawable>  m_drawable;
 };
 
 }

@@ -1,7 +1,6 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Engines/BREW.hpp>
-#include <boost/scoped_ptr.hpp>
 
 namespace sfg {
 

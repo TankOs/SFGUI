@@ -15,13 +15,13 @@ class SFGUI_API BREW : public Engine {
 		 */
 		BREW();
 
-		sf::Drawable* CreateWindowDrawable( boost::shared_ptr<Window> window ) const;
-		sf::Drawable* CreateButtonDrawable( boost::shared_ptr<Button> button ) const;
-		sf::Drawable* CreateLabelDrawable( boost::shared_ptr<Label> label ) const;
-		sf::Drawable* CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const;
-		sf::Drawable* CreateScaleDrawable( boost::shared_ptr<Scale> scale ) const;
-		sf::Drawable* CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar ) const;
-		sf::Drawable* CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window ) const;
+		sf::Drawable* CreateWindowDrawable( std::shared_ptr<Window> window ) const;
+		sf::Drawable* CreateButtonDrawable( std::shared_ptr<Button> button ) const;
+		sf::Drawable* CreateLabelDrawable( std::shared_ptr<Label> label ) const;
+		sf::Drawable* CreateEntryDrawable( std::shared_ptr<Entry> entry ) const;
+		sf::Drawable* CreateScaleDrawable( std::shared_ptr<Scale> scale ) const;
+		sf::Drawable* CreateScrollbarDrawable( std::shared_ptr<Scrollbar> scrollbar ) const;
+		sf::Drawable* CreateScrolledWindowDrawable( std::shared_ptr<ScrolledWindow> scrolled_window ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.

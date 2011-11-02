@@ -30,7 +30,7 @@ const sf::String& Label::GetText() const {
 }
 
 sf::Drawable* Label::InvalidateImpl() {
-	return Context::Get().GetEngine().CreateLabelDrawable( boost::shared_dynamic_cast<Label>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateLabelDrawable( std::dynamic_pointer_cast<Label>( shared_from_this() ) );
 }
 
 sf::Vector2f Label::GetRequisitionImpl() const {

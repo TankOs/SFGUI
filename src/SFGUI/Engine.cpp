@@ -97,4 +97,44 @@ void Engine::ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, i
 	dark_color.b = static_cast<sf::Uint8>( std::max( 0, static_cast<int>( dark_color.b ) - offset ) );
 }
 
+const std::string* Engine::GetValue( const std::string& property, std::shared_ptr<const Widget> widget ) const {
+	// Look for property.
+	PropertyMap::const_iterator prop_iter( m_properties.find( property ) );
+
+	if( prop_iter != m_properties.end() ) {
+		// Find widget-specific properties, first.
+		WidgetNameMap::const_iterator name_iter( prop_iter->second.find( widget->GetName() ) );
+
+		if( name_iter != prop_iter->second.end() ) {
+			// Check against selectors.
+			SelectorValueList::const_iterator sv_iter( name_iter->second.begin() );
+			SelectorValueList::const_iterator sv_iter_end( name_iter->second.end() );
+
+			for( ; sv_iter != sv_iter_end; ++sv_iter ) {
+				if( sv_iter->first->Matches( widget ) ) {
+					// Found, return value.
+					return &sv_iter->second;
+				}
+			}
+		}
+
+		// Look for general properties now.
+		name_iter = prop_iter->second.find( "" );
+
+		if( name_iter != prop_iter->second.end() ) {
+			SelectorValueList::const_iterator sv_iter( name_iter->second.begin() );
+			SelectorValueList::const_iterator sv_iter_end( name_iter->second.end() );
+
+			for( ; sv_iter != sv_iter_end; ++sv_iter ) {
+				if( sv_iter->first->Matches( widget ) ) {
+					// Found, return value.
+					return &sv_iter->second;
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 }

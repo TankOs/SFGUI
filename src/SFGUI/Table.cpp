@@ -1,6 +1,7 @@
 #include <SFGUI/Table.hpp>
 
 #include <set>
+#include <cassert>
 
 namespace sfg {
 

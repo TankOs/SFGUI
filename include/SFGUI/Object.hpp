@@ -1,18 +1,17 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/Signal.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/enable_shared_from_this.hpp>
+#include <SFGUI/NonCopyable.hpp>
+#include <memory>
 
 namespace sfg {
 
 /** Base class for all Widget, Adjustment and Tooltip objects.
  */
-class SFGUI_API Object : public boost::noncopyable {
+class SFGUI_API Object : public NonCopyable {
 	public:
-		typedef boost::shared_ptr<Object>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Object>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Object> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Object> PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */

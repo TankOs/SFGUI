@@ -63,7 +63,7 @@ BREW::BREW() :
 	SetProperty( "ScrolledWindow", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 }
 
-sf::Drawable* BREW::CreateWindowDrawable( boost::shared_ptr<Window> window ) const {
+sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const {
 	RenderQueue* queue( new RenderQueue );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", window ) );
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", window ) );
@@ -160,7 +160,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	return queue;
 }
 
-sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button ) const {
+sf::Drawable* BREW::CreateButtonDrawable( std::shared_ptr<Button> button ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", button ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
@@ -189,7 +189,7 @@ sf::Drawable* BREW::CreateButtonDrawable( boost::shared_ptr<Button> button ) con
 	return queue;
 }
 
-sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label ) const {
+sf::Drawable* BREW::CreateLabelDrawable( std::shared_ptr<Label> label ) const {
 	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "FontName", label ) ) );
 	const unsigned int font_size( GetProperty<unsigned int>( "FontSize", label ) );
 	const sf::Color font_color( GetProperty<sf::Color>( "Color", label ) );
@@ -209,7 +209,7 @@ sf::Drawable* BREW::CreateLabelDrawable( boost::shared_ptr<Label> label ) const 
 	return queue;
 }
 
-sf::Drawable* BREW::CreateEntryDrawable( boost::shared_ptr<Entry> entry ) const {
+sf::Drawable* BREW::CreateEntryDrawable( std::shared_ptr<Entry> entry ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", entry ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", entry ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", entry ) );
@@ -293,7 +293,7 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	return queue;
 }
 
-sf::Drawable* BREW::CreateScaleDrawable( boost::shared_ptr<Scale> scale ) const {
+sf::Drawable* BREW::CreateScaleDrawable( std::shared_ptr<Scale> scale ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scale ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scale ) );
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", scale ) );
@@ -367,7 +367,7 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	return queue;
 }
 
-sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scrollbar ) const {
+sf::Drawable* BREW::CreateScrollbarDrawable( std::shared_ptr<Scrollbar> scrollbar ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scrollbar ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scrollbar ) );
 	sf::Color slider_border_color_light( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
@@ -569,7 +569,7 @@ sf::Drawable* BREW::CreateScrollbarDrawable( boost::shared_ptr<Scrollbar> scroll
 	return queue;
 }
 
-sf::Drawable* BREW::CreateScrolledWindowDrawable( boost::shared_ptr<ScrolledWindow> scrolled_window ) const {
+sf::Drawable* BREW::CreateScrolledWindowDrawable( std::shared_ptr<ScrolledWindow> scrolled_window ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", scrolled_window ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", scrolled_window ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", scrolled_window ) );

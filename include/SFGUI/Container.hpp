@@ -11,8 +11,8 @@ namespace sfg {
  */
 class SFGUI_API Container : public Widget {
 	public:
-		typedef boost::shared_ptr<Container>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Container>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Container>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Container>  PtrConst; //!< Shared pointer.
 		typedef std::list<Widget::Ptr>  WidgetsList;
 
 		/** Pack options.

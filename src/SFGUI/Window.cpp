@@ -22,7 +22,7 @@ Window::Ptr Window::Create() {
 }
 
 sf::Drawable* Window::InvalidateImpl() {
-	return Context::Get().GetEngine().CreateWindowDrawable( boost::shared_dynamic_cast<Window>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateWindowDrawable( std::dynamic_pointer_cast<Window>( shared_from_this() ) );
 }
 
 void Window::SetTitle( const sf::String& title ) {

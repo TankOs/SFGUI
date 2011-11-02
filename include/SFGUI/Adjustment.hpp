@@ -1,15 +1,16 @@
 #pragma once
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Object.hpp>
+#include <SFGUI/Signal.hpp>
 
 namespace sfg {
 
 /** Scrollbar/Slider Adjustment.
  */
-class SFGUI_API Adjustment : public Object, public boost::enable_shared_from_this<Adjustment> {
+class SFGUI_API Adjustment : public Object, public std::enable_shared_from_this<Adjustment> {
 	public:
-		typedef boost::shared_ptr<Adjustment>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Adjustment>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Adjustment>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Adjustment>  PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */

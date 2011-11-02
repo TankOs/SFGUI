@@ -3,7 +3,6 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
 
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <stdexcept>
 
@@ -15,8 +14,8 @@ namespace sfg {
  */
 class SFGUI_API Selector {
 	public:
-		typedef boost::shared_ptr<Selector> Ptr; ///< Shared pointer.
-		typedef boost::shared_ptr<Selector> PtrConst; ///< Shared pointer (const object).
+		typedef std::shared_ptr<Selector> Ptr; ///< Shared pointer.
+		typedef std::shared_ptr<Selector> PtrConst; ///< Shared pointer (const object).
 
 		/** Create selector.
 		 * @param str String to parse.

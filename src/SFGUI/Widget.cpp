@@ -31,7 +31,8 @@ bool Widget::IsVisible() const {
 }
 
 void Widget::GrabFocus( Ptr widget ) {
-	Container::Ptr parent = m_parent.lock();
+	Container::Ptr parent( m_parent.lock() );
+
 	if( !parent ) {
 		// Notify old focused widget.
 		if( m_focus_widget ) {
@@ -126,7 +127,7 @@ sf::Drawable* Widget::InvalidateImpl() {
 }
 
 void Widget::SetParent( Widget::Ptr parent ) {
-	Container::Ptr  cont( boost::shared_dynamic_cast<Container>( parent ) );
+	Container::Ptr  cont( std::dynamic_pointer_cast<Container>( parent ) );
 
 	if( !cont ) {
 		return;

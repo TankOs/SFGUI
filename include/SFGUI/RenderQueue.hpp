@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFML/Graphics/Drawable.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
+#include <vector>
 
 namespace sfg {
 
@@ -10,6 +10,10 @@ namespace sfg {
  */
 class SFGUI_API RenderQueue : public sf::Drawable {
 	public:
+		/** Dtor.
+		 */
+		~RenderQueue();
+
 		/** Add drawable to the queue.
 		 * Keep in mind that the queue takes ownership of the drawable.
 		 * @param drawable Drawable to add and manage.
@@ -24,17 +28,9 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		void Render( sf::RenderTarget& target, sf::Renderer& renderer ) const;
 
 	private:
-		/** Boost Custom Allocator
-		 */
-		struct heap_clone_allocator
-		{
-			template< class U > static U* allocate_clone( const U& r );
-			template< class U > static void deallocate_clone( const U* r );
-		};
+		typedef std::vector<sf::Drawable*>  DrawablesVector;
 
-		typedef boost::ptr_vector<sf::Drawable, heap_clone_allocator>  DrawablesVector;
-
-		DrawablesVector  m_children;
+		DrawablesVector m_children;
 };
 
 }

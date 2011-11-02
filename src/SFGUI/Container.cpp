@@ -1,7 +1,5 @@
 #include <SFGUI/Container.hpp>
 
-#include <boost/foreach.hpp>
-
 namespace sfg {
 
 Container::Container() :
@@ -199,9 +197,12 @@ bool Container::WidgetBoolPair::operator==( const Widget::Ptr& rhs ) {
 }
 
 void Container::UpdateDrawablePosition() const {
+	WidgetsList::const_iterator iter( m_children.begin() );
+	WidgetsList::const_iterator iter_end( m_children.end() );
+
 	// Update children's drawable positions.
-	BOOST_FOREACH( Widget::PtrConst child, m_children ) {
-		child->UpdateDrawablePosition();
+	for( ; iter != iter_end; ++iter ) {
+		(*iter)->UpdateDrawablePosition();
 	}
 
 	// Update own drawable position.

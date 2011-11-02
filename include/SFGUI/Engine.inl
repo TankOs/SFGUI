@@ -1,68 +1,41 @@
-#include <boost/foreach.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
 #include <iomanip>
 
 namespace sfg {
 
 template <typename T>
-T Engine::GetProperty( const std::string& property, boost::shared_ptr<const Widget> widget ) const {
+T Engine::GetProperty( const std::string& property, std::shared_ptr<const Widget> widget ) const {
 	static const T default_ = T();
 
-	// Look for property.
-	PropertyMap::const_iterator prop_iter( m_properties.find( property ) );
-
-	if( prop_iter != m_properties.end() ) {
-		// Find widget-specific properties, first.
-		WidgetNameMap::const_iterator name_iter( prop_iter->second.find( widget->GetName() ) );
-
-		if( name_iter != prop_iter->second.end() ) {
-			// Check against selectors.
-			BOOST_FOREACH( const SelectorValuePair& pair, name_iter->second ) {
-				if( pair.first->Matches( widget ) ) {
-					// Found, return value.
-					try {
-						return boost::lexical_cast<T>( pair.second );
-					}
-					catch( const boost::bad_lexical_cast& e ) {
-						std::string error_message( "GetProperty: Unable to convert string to requested type. " );
-						error_message += "Path: " + pair.first->BuildString();
-						error_message += " Property: " + property;
-						error_message += " Requested type: ";
-						error_message += typeid( T ).name();
-						error_message += " Value: " + pair.second;
-						throw BadValue( error_message );
-					}
-				}
-			}
-		}
-
-		// Look for general properties now.
-		name_iter = prop_iter->second.find( "" );
-
-		if( name_iter != prop_iter->second.end() ) {
-			// Check against selectors.
-			BOOST_FOREACH( const SelectorValuePair& pair, name_iter->second ) {
-				if( pair.first->Matches( widget ) ) {
-					// Found, return value.
-					try {
-						return boost::lexical_cast<T>( pair.second );
-					}
-					catch( const boost::bad_lexical_cast& e ) {
-						std::string error_message( "GetProperty: Unable to convert string to requested type. " );
-						error_message += "Path: " + pair.first->BuildString();
-						error_message += " Property: " + property;
-						error_message += " Requested type: ";
-						error_message += typeid( T ).name();
-						error_message += " Value: " + pair.second;
-						throw BadValue( error_message );
-					}
-				}
-			}
-		}
+	const std::string* value( GetValue( property, widget ) );
+	if( !value ) {
+		return default_;
 	}
 
-	// No match/errors, return default.
-	return default_;
+	// If string is requested, just return the value.
+	if( typeid( T ) == typeid( std::string ) ) {
+		// reinterpret_cast is needed here to fool the compiler. Else it will try
+		// to compile "return *value" for all Ts, which may fail for
+		// GetProperty<int> here, because it would be tried to return a std::string
+		// in this case which fails.
+		return *reinterpret_cast<const T*>( value );
+	}
+
+	// Convert value.
+	T out_value;
+	std::stringstream sstr( *value );
+	sstr >> out_value;
+
+	if( sstr.fail() ) {
+		std::string error_message( "GetProperty: Unable to convert string to requested type." );
+		error_message += " Property: " + property;
+		error_message += " Requested type: ";
+		error_message += typeid( T ).name();
+		error_message += " Value: " + *value;
+		throw BadValue( error_message );
+	}
+
+	return out_value;
 }
 
 template <typename T>
@@ -75,12 +48,11 @@ bool Engine::SetProperty( const std::string& selector, const std::string& proper
 	}
 
 	// Convert value into string.
-	std::string str_value;
+	std::stringstream sstr;
+	
+	sstr << value;
 
-	try {
-		str_value = boost::lexical_cast<std::string>( value );
-	}
-	catch( const boost::bad_lexical_cast& e ) {
+	if( !sstr ) {
 		return false;
 	}
 
@@ -100,7 +72,7 @@ bool Engine::SetProperty( const std::string& selector, const std::string& proper
 	}
 
 	// Insert at top to get highest priority.
-	list.push_front( SelectorValuePair( selector_object, str_value ) );
+	list.push_front( SelectorValuePair( selector_object, sstr.str() ) );
 
 	return true;
 }

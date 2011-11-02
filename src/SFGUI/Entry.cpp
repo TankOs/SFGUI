@@ -25,7 +25,7 @@ Entry::Ptr Entry::Create( const sf::String& text ) {
 }
 
 sf::Drawable* Entry::InvalidateImpl() {
-	return Context::Get().GetEngine().CreateEntryDrawable( boost::shared_dynamic_cast<Entry>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateEntryDrawable( std::dynamic_pointer_cast<Entry>( shared_from_this() ) );
 }
 
 void Entry::SetText( const sf::String& text ) {

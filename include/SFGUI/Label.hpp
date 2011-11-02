@@ -9,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Label : public Widget {
 	public:
-		typedef boost::shared_ptr<Label>  Ptr; //!< Shared pointer.
-		typedef boost::shared_ptr<const Label>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Label>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Label>  PtrConst; //!< Shared pointer.
 
 		/** Create label.
 		 * @param text Text.
