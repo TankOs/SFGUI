@@ -76,10 +76,10 @@ class SFGUI_API Selector {
 		Selector( const Selector& other );
 		Selector& operator=( const Selector& other );
 
-		static std::string ParseWidget( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException );
-		static std::string ParseId( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException );
-		static std::string ParseClass( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException );
-		static int ParseState( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException );
+		static std::string ParseWidget( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw();
+		static std::string ParseId( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw();
+		static std::string ParseClass( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw();
+		static int ParseState( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw();
 		static void EatWhitespace( std::string::const_iterator& begin, const std::string::const_iterator& end );
 
 		Ptr m_parent;
