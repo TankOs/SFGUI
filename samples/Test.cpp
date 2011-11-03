@@ -10,7 +10,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
 
 class SampleApp {
 	public:
@@ -153,7 +153,9 @@ void SampleApp::Run() {
 		if( m_fps_clock.GetElapsedTime() >= 1000 ) {
 			m_fps_clock.Reset();
 
-			window.SetTitle( std::string( "SFGUI test -- FPS: " ) + boost::lexical_cast<std::string>( m_fps_counter ) );
+			std::stringstream sstr;
+			sstr << m_fps_counter;
+			window.SetTitle( std::string( "SFGUI test -- FPS: " ) + sstr.str() );
 
 			m_fps_counter = 0;
 		}
