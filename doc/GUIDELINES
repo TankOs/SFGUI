@@ -19,47 +19,49 @@ So here are some rules to follow so that your commits are applied:
 - Before sending in a pull request, rebase your work to the current master's
   HEAD. You can do this by invoking "git pull --rebase origin master" (make
   sure you're locally in your master branch). Another possible way is "git
-  rebase origin/master".
+  fetch origin", then "git rebase origin/master".
 
 - Squash your commits before requesting a pull! That means combine all your
-  single commits of your contribution into one big commit. Really, the world
-  doesn't care what you've done in detail. ;-) See the example below to read
-  how it works.
+  single commits of your contribution into bigger commits (preferably one big
+  commit, but this depends on the changes).
 
-- Just to make it clear: Do NOT (NOT!) follow the merge workflow. Merging means
-  that changes made by others may be overwritten/skipped/changed, and you mostly
-  don't want to do it. Of course we're talking about merging upstream's master
-  branch. What you do locally is completely up to you.
+- Just to make it clear: Try to avoid the merge workflow.
 
 Here's an example of a typical session:
 
-- Checkout a separate branch: git checkout -b cool_feature
+- Checkout a separate branch:
+
+    git checkout -b cool_feature
 
 - Program and do some commits.
 
-- Now someone has pushed some new commits to upstream's master. Because you
-  want those new changes to be in your cool_feature branch, too, REBASE your
-  commits on top of them: git pull --rebase origin master (this may require you
-  to solve some merge conflicts; be sure to read Git's output!!!).
+- Now someone has pushed new commits to upstream's master. Because you want
+  those new changes to be in your cool_feature branch too, REBASE your commits on
+  top of them:
+  
+    git pull --rebase origin master
+  
+  (this may require you to solve some merge conflicts; be sure to read Git's
+  output!!!).
 
-- Program and do some commits, again.
-
-- Done with the new feature, now it's time to prepare it for a pull request.
+- Program and do some commits, again. Done with the new feature, now it's time
+  to prepare it for a pull request.
 
 - At first make sure all your commits are really applied ON TOP OF HEAD of
-  origin's master: git pull --rebase origin master
+  origin's master:
+  
+    git pull --rebase origin master
 
-- Checkout master and make sure it's also up-to-date:
-  git checkout master
-  git pull --rebase origin master (--rebase not needed here, because you
-  haven't changed master at all; however it's a good practise so you get
-  used to rebase ;-)
+- Checkout master and merge the branch:
 
-- Merge the branch: git merge --squash cool_feature
+    git checkout master
+    git merge cool_feature
 
-- Commit your squashed merge: git commit -m "A cool new feature"
+- Squash away unnecessary commits by combining them:
 
-- Send the pull request.
+    git rebase -i origin/master
+
+- Send pull request.
 
 
 3. CODE STYLE

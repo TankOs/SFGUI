@@ -15,9 +15,6 @@ Dependencies:
   - SFML 2 (http://sfml-dev.org/)
     There's currently no SFML 2 release, therefore you need to build from the
     sources (use the official Git repository, latest commit).
-  - Boost (http://boost.org/)
-    In detail: Smart pointers, non-copyable, any, pointer lists, signals2,
-    bind, function.
 
 The current build system in use is CMake (http://cmake.org/). It's available
 for all major platforms.
@@ -57,6 +54,8 @@ graphics).
 
 You can find the API documentation in the doc sub-directory. Create it with
 Doxygen (http://www.stack.nl/~dimitri/doxygen/).
+
+It's also available online at the website.
 
 
 4. CONTRIBUTING/CONTACT
