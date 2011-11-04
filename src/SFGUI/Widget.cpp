@@ -282,7 +282,12 @@ bool Widget::IsMouseInWidget() const {
 }
 
 void Widget::Show( bool show ) {
+	if( show == m_visible ) {
+		return;
+	}
+
 	m_visible = show;
+	RequestSize();
 }
 
 const sf::Vector2f& Widget::GetRequisition() const {

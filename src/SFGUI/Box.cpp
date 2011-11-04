@@ -106,15 +106,17 @@ void Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	);
 
 	for( ; iter != iterend; ++iter ) {
-		sf::Vector2f  child_requisition( iter->widget->GetRequisition() );
+		if( !iter->widget->IsVisible() ) {
+			continue;
+		}
+
+		++num_visible;
 
 		if( iter->expand ) {
 			++num_expand;
 		}
 
-		if( iter->widget->IsVisible() ) {
-			++num_visible;
-		}
+		sf::Vector2f  child_requisition( iter->widget->GetRequisition() );
 
 		if( m_orientation == Horizontal ) {
 			requisition.x += child_requisition.x;
