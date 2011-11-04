@@ -153,7 +153,7 @@ void Entry::HandleTextEvent( sf::Uint32 character ) {
 }
 
 void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
-	if( !press ) {
+	if( !press || GetState() != Active ) {
 		return;
 	}
 
@@ -220,10 +220,7 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		return;
 	}
 
-	if( m_string.IsEmpty() ) {
-		return;
-	}
-
+	GrabFocus();
 	SetCursorPosition( GetPositionFromMouseX( x ) );
 }
 
