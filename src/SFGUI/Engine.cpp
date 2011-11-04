@@ -134,7 +134,7 @@ const std::string* Engine::GetValue( const std::string& property, std::shared_pt
 		}
 	}
 
-	return nullptr;
+	return 0;
 }
 
 }
