@@ -7,7 +7,8 @@ namespace sfg {
 Window::Window() :
 	Bin(),
 	m_skipreallocation( false ),
-	m_style( Toplevel )
+	m_style( Toplevel ),
+	m_dragging( false )
 {
 	//SetFlags( Draggable ); // TODO: Do it via StartDrag() operation, not flags.
 }
@@ -90,20 +91,48 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void Window::HandleDragOperation( DragInfo::State state, const DragInfo& drag_info ) {
-	if( state == DragInfo::Move && HasStyle( Titlebar ) ) {
-		SetPosition(
-			sf::Vector2f(
-				GetAllocation().Left + drag_info.GetDelta().x,
-				GetAllocation().Top + drag_info.GetDelta().y
-			)
-		);
-	}
-}
-
 const std::string& Window::GetName() const {
 	static const std::string name( "Window" );
 	return name;
+}
+
+void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+	if( button != sf::Mouse::Button::Left ) {
+		return;
+	}
+
+	// Check for mouse being inside the title area.
+	sf::FloatRect title_area(
+		GetAllocation().Left,
+		GetAllocation().Top,
+		GetAllocation().Width,
+		Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() )
+	);
+
+	if( !title_area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		m_dragging = false;
+		return;
+	}
+
+	m_drag_offset = sf::Vector2f(
+		static_cast<float>( x ) - GetAllocation().Left,
+		static_cast<float>( y ) - GetAllocation().Top
+	);
+
+	m_dragging = press;
+}
+
+void Window::HandleMouseMoveEvent( int x, int y ) {
+	if( !m_dragging ) {
+		return;
+	}
+
+	SetPosition(
+		sf::Vector2f(
+			static_cast<float>( x ) - m_drag_offset.x,
+			static_cast<float>( y ) - m_drag_offset.y
+		)
+	);
 }
 
 }

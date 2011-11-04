@@ -3,7 +3,6 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Object.hpp>
 #include <SFGUI/Signal.hpp>
-#include <SFGUI/DragInfo.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -183,22 +182,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		Signal OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
 		Signal OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
 
-		Signal OnDragStart; //!< Fired when dragging starts. (DragInfo)
-		Signal OnDragMove; //!< Fired when dragged. (DragInfo)
-		Signal OnDragEnd; //!< Fired when dragged. (DragInfo)
-
 		Signal OnKeyPress; //!< Fired when a key is pressed while State == Active.
 		Signal OnKeyRelease; //!< Fired when a key is released while State == Active.
 		Signal OnText; //!< Fired when text is entered while State == Active.
 
 	protected:
-		/** Several flags for widgets.
-		 */
-		enum Flags {
-			NoFlags = 0,
-			Draggable = 1
-		};
-
 		/** Constructor.
 		 */
 		Widget();
@@ -219,16 +207,6 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @return true if mouse is inside.
 		 */
 		bool IsMouseInWidget() const;
-
-		/** Set widget flags.
-		 * @param flags Flags.
-		 */
-		void SetFlags( int flags );
-
-		/** Check if flag set.
-		 * @return true when set.
-		 */
-		bool HasFlag( Flags flag ) const;
 
 		// Internal handling methods.
 
@@ -262,12 +240,6 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param target Render target.
 		 */
 		virtual void HandleExpose( sf::RenderTarget& target );
-
-		/** Handle drag operations.
-		 * @param state Drag state.
-		 * @param drag_info DragInfo object.
-		 */
-		virtual void HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
 
 		/** Handle state changes.
 		 * The default behaviour is to accept any state change and invalidate the
@@ -326,9 +298,6 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 
 		bool  m_invalidated;
 		mutable bool  m_recalc_requisition;
-
-		int  m_flags;
-		std::unique_ptr<DragInfo>  m_drag_info;
 
 		mutable std::unique_ptr<sf::Drawable>  m_drawable;
 };

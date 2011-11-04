@@ -70,12 +70,16 @@ class SFGUI_API Window : public Bin {
 		sf::Vector2f GetRequisitionImpl() const;
 
 		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
-		virtual void HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleMouseMoveEvent( int x, int y );
 
 	private:
-		sf::String  m_title;
-		bool  m_skipreallocation;
-		int  m_style;
+		sf::String m_title;
+		bool m_skipreallocation;
+		int m_style;
+
+		bool m_dragging;
+		sf::Vector2f m_drag_offset;
 };
 
 }

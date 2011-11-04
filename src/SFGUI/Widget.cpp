@@ -14,8 +14,7 @@ Widget::Widget() :
 	m_allocation( 0, 0, 0, 0 ),
 	m_requisition( 0, 0 ),
 	m_invalidated( true ),
-	m_recalc_requisition( true ),
-	m_flags( NoFlags )
+	m_recalc_requisition( true )
 {
 }
 
@@ -163,21 +162,6 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 	switch( event.Type ) {
 		case sf::Event::MouseMoved:
-			// Drag operations.
-			if( m_mouse_button_down == sf::Mouse::Left && HasFlag( Draggable ) ) {
-				if( !m_drag_info ) {
-					// Ask to begin dragging.
-					m_drag_info.reset( new DragInfo( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) );
-					HandleDragOperation( DragInfo::Start, *m_drag_info );
-				}
-				else {
-					m_drag_info->Update( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) );
-
-					HandleDragOperation( DragInfo::Move, *m_drag_info );
-					OnDragMove();
-				}
-			}
-
 			// Check if pointer inside of widget's allocation.
 			if( GetAllocation().Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
 				// Check for enter event.
@@ -218,23 +202,12 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( m_mouse_button_down == event.MouseButton.Button ) {
 				m_mouse_button_down = -1;
 
-				// Dragged?
-				if( m_drag_info ) {
-					m_drag_info.reset( 0 );
-					HandleDragOperation( DragInfo::End, *m_drag_info );
-
-					if( !m_drag_info ) {
-						OnDragEnd();
-					}
-				}
-
 				// When released inside the widget, the event can be considered a click.
 				if( m_mouse_in ) {
 					HandleMouseClick( event.MouseButton.X, event.MouseButton.Y );
 				}
 
 				OnMouseButtonRelease();
-				HandleMouseButtonEvent( event.MouseButton.Button, false, event.MouseButton.X, event.MouseButton.Y );
 			}
 
 			HandleMouseButtonEvent( event.MouseButton.Button, false, event.MouseButton.X, event.MouseButton.Y );
@@ -310,14 +283,6 @@ bool Widget::IsMouseInWidget() const {
 
 void Widget::Show( bool show ) {
 	m_visible = show;
-}
-
-void Widget::SetFlags( int flags ) {
-	m_flags = flags;
-}
-
-bool Widget::HasFlag( Flags flag ) const {
-	return (m_flags & flag) == flag;
 }
 
 const sf::Vector2f& Widget::GetRequisition() const {
@@ -406,9 +371,6 @@ void Widget::HandleSizeAllocate( const sf::FloatRect& /*new_allocation*/ ) {
 }
 
 void Widget::HandleExpose( sf::RenderTarget& /*target*/ ) {
-}
-
-void Widget::HandleDragOperation( DragInfo::State /*state*/, const DragInfo& /*drag_info*/ ) {
 }
 
 void Widget::HandleStateChange( State /*old_state*/ ) {
