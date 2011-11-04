@@ -41,11 +41,15 @@ if( SFML_STATIC )
 endif()
 
 if( COMPILER_GCC )
-	set( CMAKE_C_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wconversion" )
-	set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wconversion" )
+	if( NOT CMAKE_CXX_FLAGS )
+		set( CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Wshadow -Wconversion -pedantic" CACHE STRING "C++ compiler flags" FORCE )
+		set( CMAKE_C_FLAGS "--std=c++0x -Wall -Wextra -Wshadow -Wconversion -pedantic" CACHE STRING "C compiler flags" FORCE )
+	endif()
 
-	set( CMAKE_C_FLAGS_DEBUG "-g -O0" )
-	set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" )
+	if( NOT CMAKE_CXX_FLAGS_DEBUG )
+		set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
+		set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
+	endif()
 endif()
 
 set(
