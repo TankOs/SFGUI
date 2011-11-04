@@ -19,7 +19,7 @@ elseif( MSVC_VERSION )
 endif()
 
 set( SFGUI_STATIC false CACHE BOOL "Build static library." )
-set( BUILD_SAMPLES true CACHE BOOL "Build SFGUI sample applications." )
+set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI example applications." )
 
 if( WINDOWS )
 	set( BIN_EXTENSION ".exe" )
@@ -149,6 +149,6 @@ install(
 	DESTINATION ${CMAKE_ROOT}/Modules/
 )
 
-if( BUILD_SAMPLES )
-	add_subdirectory( "samples" )
+if( BUILD_EXAMPLES )
+	add_subdirectory( "examples" )
 endif()
