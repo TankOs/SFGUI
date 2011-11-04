@@ -74,8 +74,8 @@ class SFGUI_API Scrollbar : public Range {
 		bool m_decrease_pressed;
 		bool m_increase_pressed;
 
-		bool m_page_decreasing;
-		bool m_page_increasing;
+		int m_page_decreasing;
+		int m_page_increasing;
 
 		sf::Clock m_change_timer;
 

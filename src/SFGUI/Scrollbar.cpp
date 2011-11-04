@@ -1,7 +1,6 @@
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
-#include <SFGUI/Engines/BREW.hpp>
 
 namespace sfg {
 
@@ -11,8 +10,8 @@ Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	m_dragging( false ),
 	m_decrease_pressed( false ),
 	m_increase_pressed( false ),
-	m_page_decreasing( false ),
-	m_page_increasing( false ),
+	m_page_decreasing( 0 ),
+	m_page_increasing( 0 ),
 	m_slider_click_offset( 0 )
 {
 	if( adjustment ) {
@@ -171,21 +170,20 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			}
 		}
 
-		float slider_center_x = slider_rect.Left + GetAbsolutePosition().x + slider_rect.Width / 2.f;
-		float slider_center_y = slider_rect.Top + GetAbsolutePosition().y + slider_rect.Height / 2.f;
+		float slider_center_x = slider_rect.Left + slider_rect.Width / 2.f;
+		float slider_center_y = slider_rect.Top + slider_rect.Height / 2.f;
 
 		if( m_orientation == Horizontal ) {
 			if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				if( static_cast<float>( x ) < slider_center_x ) {
-					m_page_decreasing = true;
-					m_page_decreasing = true;
+					m_page_decreasing = x;
 					GetAdjustment()->DecrementPage();
 					m_change_timer.Reset();
 					Invalidate();
 					return;
 				}
 				else {
-					m_page_increasing = true;
+					m_page_increasing = x;
 					GetAdjustment()->IncrementPage();
 					m_change_timer.Reset();
 					Invalidate();
@@ -196,15 +194,14 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 		else {
 			if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				if( static_cast<float>( y ) < slider_center_y ) {
-					m_page_decreasing = true;
-					m_page_decreasing = true;
+					m_page_decreasing = y;
 					GetAdjustment()->DecrementPage();
 					m_change_timer.Reset();
 					Invalidate();
 					return;
 				}
 				else {
-					m_page_increasing = true;
+					m_page_increasing = y;
 					GetAdjustment()->IncrementPage();
 					m_change_timer.Reset();
 					Invalidate();
@@ -217,8 +214,8 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 		m_dragging = false;
 		m_decrease_pressed = false;
 		m_increase_pressed = false;
-		m_page_decreasing = false;
-		m_page_increasing = false;
+		m_page_decreasing = 0;
+		m_page_increasing = 0;
 
 		m_slider_click_offset = 0.f;
 
@@ -241,7 +238,7 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	if( m_orientation == Horizontal ) {
 		float stepper_length = GetAllocation().Height;
 
-		float slider_center_x = GetAbsolutePosition().x + slider_rect.Left + slider_rect.Width / 2.0f;
+		float slider_center_x = slider_rect.Left + slider_rect.Width / 2.0f;
 		float step_distance = ( GetAllocation().Width - 2.f * stepper_length ) / steps;
 
 		float delta = static_cast<float>( x ) - ( slider_center_x + m_slider_click_offset );
@@ -259,7 +256,7 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	else {
 		float stepper_length = GetAllocation().Width;
 
-		float slider_center_y = GetAbsolutePosition().y + slider_rect.Top + slider_rect.Height / 2.0f;
+		float slider_center_y = slider_rect.Top + slider_rect.Height / 2.0f;
 		float step_distance = ( GetAllocation().Height - 2.f * stepper_length ) / steps;
 
 		float delta =  static_cast<float>( y ) - ( slider_center_y + m_slider_click_offset );
@@ -277,32 +274,61 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 }
 
 void Scrollbar::HandleExpose( sf::RenderTarget& /*target*/ ) {
-	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "Scrollbar.Stepper.Speed", shared_from_this() ) );
+	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "StepperSpeed", shared_from_this() ) );
+
+	if( m_change_timer.GetElapsedTime() < static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
+		return;
+	}
+
+	Invalidate();
+	m_change_timer.Reset();
 
 	// Increment / Decrement value while one of the steppers is pressed
-	if( m_decrease_pressed && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
+	if( m_decrease_pressed ) {
 		GetAdjustment()->Decrement();
-		Invalidate();
-		m_change_timer.Reset();
+		return;
+	}
+	else if( m_increase_pressed ) {
+		GetAdjustment()->Increment();
+		return;
 	}
 
-	if( m_increase_pressed && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
-		GetAdjustment()->Increment();
-		Invalidate();
-		m_change_timer.Reset();
-	}
+	sf::FloatRect slider_rect = GetSliderRect();
+	slider_rect.Left += GetAllocation().Left;
+	slider_rect.Top += GetAllocation().Top;
 
 	// Increment / Decrement page while mouse is pressed on the trough
-	if( m_page_decreasing && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
+	if( m_page_decreasing ) {
 		GetAdjustment()->DecrementPage();
-		Invalidate();
-		m_change_timer.Reset();
-	}
 
-	if( m_page_increasing && m_change_timer.GetElapsedTime() > static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
+		if( m_orientation == Horizontal ) {
+			if( slider_rect.Left + slider_rect.Width < static_cast<float>( m_page_decreasing ) ) {
+				m_page_decreasing = 0;
+			}
+		}
+		else {
+			if( slider_rect.Top + slider_rect.Height < static_cast<float>( m_page_decreasing ) ) {
+				m_page_decreasing = 0;
+			}
+		}
+
+		return;
+	}
+	else if( m_page_increasing ) {
 		GetAdjustment()->IncrementPage();
-		Invalidate();
-		m_change_timer.Reset();
+
+		if( m_orientation == Horizontal ) {
+			if( slider_rect.Left + slider_rect.Width > static_cast<float>( m_page_increasing ) ) {
+				m_page_increasing = 0;
+			}
+		}
+		else {
+			if( slider_rect.Top + slider_rect.Height > static_cast<float>( m_page_increasing ) ) {
+				m_page_increasing = 0;
+			}
+		}
+
+		return;
 	}
 }
 
