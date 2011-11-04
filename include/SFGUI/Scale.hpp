@@ -54,8 +54,8 @@ class SFGUI_API Scale : public Range {
 		 */
 		Scale( Orientation orientation = Horizontal );
 
-		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual bool HandleMouseMoveEvent( int x, int y );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleMouseMoveEvent( int x, int y );
 
 		Orientation m_orientation;
 

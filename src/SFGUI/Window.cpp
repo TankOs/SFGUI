@@ -9,7 +9,7 @@ Window::Window() :
 	m_skipreallocation( false ),
 	m_style( Toplevel )
 {
-	SetFlags( Draggable );
+	//SetFlags( Draggable ); // TODO: Do it via StartDrag() operation, not flags.
 }
 
 Window::Ptr Window::Create() {
@@ -47,17 +47,13 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-bool Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	if( !GetChild() || m_skipreallocation ) {
 		m_skipreallocation = false;
-		return false;
+		return;
 	}
 
-	// This is only called when the window's allocation has been changed from the
-	// outside, i.e. not requested by a child.
 	GetChild()->AllocateSize( GetClientRect() );
-
-	return true;
 }
 
 void Window::SetStyle( int style ) {
@@ -94,7 +90,7 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 	return requisition;
 }
 
-bool Window::HandleDragOperation( DragInfo::State state, const DragInfo& drag_info ) {
+void Window::HandleDragOperation( DragInfo::State state, const DragInfo& drag_info ) {
 	if( state == DragInfo::Move && HasStyle( Titlebar ) ) {
 		SetPosition(
 			sf::Vector2f(
@@ -103,8 +99,6 @@ bool Window::HandleDragOperation( DragInfo::State state, const DragInfo& drag_in
 			)
 		);
 	}
-
-	return true;
 }
 
 const std::string& Window::GetName() const {

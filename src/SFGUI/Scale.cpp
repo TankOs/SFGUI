@@ -67,9 +67,9 @@ sf::Vector2f Scale::GetRequisitionImpl() const {
 	}
 }
 
-bool Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
 	if( button != sf::Mouse::Left ) {
-		return false;
+		return;
 	}
 
 	if( press ) {
@@ -79,7 +79,7 @@ bool Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 
 		if( !slider_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_dragging = false;
-			return false;
+			return;
 		}
 
 		m_dragging = true;
@@ -87,13 +87,11 @@ bool Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 	else {
 		m_dragging = false;
 	}
-
-	return true;
 }
 
-bool Scale::HandleMouseMoveEvent( int x, int y ) {
+void Scale::HandleMouseMoveEvent( int x, int y ) {
 	if( !m_dragging ) {
-		return false;
+		return;
 	}
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
@@ -134,8 +132,6 @@ bool Scale::HandleMouseMoveEvent( int x, int y ) {
 			delta -= step_distance;
 		}
 	}
-
-	return true;
 }
 
 const std::string& Scale::GetName() const {

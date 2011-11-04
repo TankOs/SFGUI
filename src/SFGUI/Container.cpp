@@ -13,13 +13,14 @@ void Container::Add( Widget::Ptr widget ) {
 		return;
 	}
 
-	if( !HandleAdd( widget ) ) {
-		return;
-	}
-
 	m_children.push_back( widget );
-	widget->SetParent( shared_from_this() );
-	RequestSize();
+	HandleAdd( widget );
+
+	// Check if HandleAdd still wants the little boy.
+	if( IsChild( widget ) ) {
+		widget->SetParent( shared_from_this() );
+		RequestSize();
+	}
 }
 
 void Container::Remove( Widget::Ptr widget ) {
@@ -52,10 +53,8 @@ void Container::HandleExpose( sf::RenderTarget& target ) {
 	}
 }
 
-bool Container::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Container::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	UpdateDrawablePosition();
-
-	return true;
 }
 
 void Container::SetBorderWidth( float width ) {
@@ -68,21 +67,15 @@ float Container::GetBorderWidth() const {
 	return m_border_width;
 }
 
-Container::HandleEventResult Container::HandleEvent( const sf::Event& event ) {
+void Container::HandleEvent( const sf::Event& event ) {
 	// Ignore event when widget is not visible.
 	if( !IsVisible() ) {
-		return IgnoreEvent;
-	}
-
-	// Process hooks, first.
-	if( ProcessHooks( event ) == EatEvent ) {
-		return EatEvent;
+		return;
 	}
 
 	// Pass event to children.
 	WidgetsList::iterator  iter( m_children.begin() );
 	WidgetsList::iterator  iterend( m_children.end() );
-	HandleEventResult  result;
 
 	// Create a copy of the event and transform mouse coordinates to local
 	// coordinates if event is a mouse event.
@@ -102,98 +95,11 @@ Container::HandleEventResult Container::HandleEvent( const sf::Event& event ) {
 	}
 
 	for( ; iter != iterend; ++iter ) {
-		result = (*iter)->HandleEvent( local_event );
-		
-		if( result == EatEvent ) {
-			return EatEvent;
-		}
+		(*iter)->HandleEvent( local_event );
 	}
 
 	// Process event for own widget.
-	result = Widget::HandleEvent( event );
-	if( result != PassEvent ) {
-		return result;
-	}
-
-	return PassEvent;
-}
-
-Container::HandleEventResult Container::ProcessHooks( const sf::Event& event ) {
-	HooksMap::iterator  iter( m_hooks.find( event.Type ) );
-
-	if( iter != m_hooks.end() ) {
-		HookedWidgetsList::iterator  w_iter( iter->second.begin() );
-
-		while( w_iter != iter->second.end() ) {
-			// Remove hook if asked for it.
-			if( w_iter->remove == true ) {
-				w_iter = iter->second.erase( w_iter );
-				continue;
-			}
-
-			HandleEventResult  result( (*w_iter).widget->HandleEvent( event ) );
-
-			// Stop processing when event has been eaten.
-			if( result == EatEvent ) {
-				return EatEvent;
-			}
-
-			++w_iter;
-		}
-	}
-
-	return PassEvent;
-}
-
-void Container::RegisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget ) {
-	if( GetParent() ) {
-		GetParent()->RegisterEventHook( event_type, widget );
-		return;
-	}
-
-	// No need to register hook for self.
-	if( widget == shared_from_this() ) {
-		return;
-	}
-
-	// Check if hook for widget already registered. Clear delete flag if needed.
-	HookedWidgetsList&  list( m_hooks[event_type] );
-	HookedWidgetsList::iterator  iter( std::find( list.begin(), list.end(), widget ) );
-
-	if( iter != list.end() ) {
-		iter->remove = false;
-	}
-	else {
-		m_hooks[event_type].push_back( WidgetBoolPair( widget, false ) );
-	}
-}
-
-void Container::UnregisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget ) {
-	if( GetParent() ) {
-		GetParent()->UnregisterEventHook( event_type, widget );
-		return;
-	}
-
-	HookedWidgetsList&  list( m_hooks[event_type] );
-	HookedWidgetsList::iterator  iter( std::find( list.begin(), list.end(), widget ) );
-
-	if( iter != list.end() ) {
-		iter->remove = true;
-	}
-}
-
-Container::WidgetBoolPair::WidgetBoolPair( Widget::Ptr widget_, bool remove_ ) :
-	widget( widget_ ),
-	remove( remove_ )
-{
-}
-
-bool Container::WidgetBoolPair::operator==( const WidgetBoolPair& rhs ) {
-	return widget == rhs.widget;
-}
-
-bool Container::WidgetBoolPair::operator==( const Widget::Ptr& rhs ) {
-	return widget == rhs;
+	Widget::HandleEvent( event );
 }
 
 void Container::UpdateDrawablePosition() const {
@@ -209,8 +115,7 @@ void Container::UpdateDrawablePosition() const {
 	Widget::UpdateDrawablePosition();
 }
 
-bool Container::HandleAdd( Widget::Ptr /*child*/ ) {
-	return true;
+void Container::HandleAdd( Widget::Ptr /*child*/ ) {
 }
 
 void Container::HandleRemove( Widget::Ptr /*child*/ ) {

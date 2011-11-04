@@ -32,14 +32,6 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 			Insensitive /*!< Insensitive, disabled widget. */
 		};
 
-		/** Event handling result.
-		 */
-		enum HandleEventResult {
-			PassEvent = 0, ///< Pass event to children.
-			EatEvent, ///< Stop processing the current event immediately.
-			IgnoreEvent ///< Ignore event, but don't stop processing it in parent widget.
-		};
-
 		/** Destructor.
 		 */
 		virtual ~Widget();
@@ -143,9 +135,9 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle SFML event.
 		 * Handle an SFML event and fire proper signals. Normally reimplemented by
 		 * containers only.
-		 * @return true when event has been processed (eaten).
+		 * @param event SFML event.
 		 */
-		virtual HandleEventResult HandleEvent( const sf::Event& event );
+		virtual void HandleEvent( const sf::Event& event );
 
 		/** Get absolute position on screen.
 		 * @return Absolute position.
@@ -243,31 +235,27 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle mouse move event.
 		 * @param x Mouse X position.
 		 * @param y Mouse Y position.
-		 * @return true to indicate event has been processed, false to continue processing.
 		 */
-		virtual bool HandleMouseMoveEvent( int x, int y );
+		virtual void HandleMouseMoveEvent( int x, int y );
 
 		/** Handle mouse button event.
 		 * @param button Mouse button.
 		 * @param press true if button was pressed, false if released.
 		 * @param x Mouse X position.
 		 * @param y Mouse Y position.
-		 * @return true to indicate event has been processed, false to continue processing.
 		 */
-		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 
 		/** Handle key event.
 		 * @param key Key.
 		 * @param press true if button was pressed, false if released.
-		 * @return true to indicate event has been processed, false to continue processing.
 		 */
-		virtual bool HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
 
 		/** Handle size allocations.
 		 * @param old_allocation Previous allocation.
-		 * @return false to interrupt allocation and restore old value; this won't call HandleSizeAllocate() again!
 		 */
-		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
 
 		/** Handle expose.
 		 * Called every frame usually.
@@ -278,23 +266,20 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle drag operations.
 		 * @param state Drag state.
 		 * @param drag_info DragInfo object.
-		 * @return true to continue operation, false to stop dragging immediately (or prevent from being started).
 		 */
-		virtual bool HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
+		virtual void HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
 
 		/** Handle state changes.
 		 * The default behaviour is to accept any state change and invalidate the
 		 * widget.
 		 * @param state Old state.
-		 * @return true to accept state change, false to restore old one.
 		 */
-		virtual bool HandleStateChange( State old_state );
+		virtual void HandleStateChange( State old_state );
 
 		/** Handle text event.
 		 * @param character Character.
-		 * @return true to indicate event has been processed, false to continue processing.
 		 */
-		virtual bool HandleTextEvent( sf::Uint32 character );
+		virtual void HandleTextEvent( sf::Uint32 character );
 
 		/** Handle mouse enter.
 		 * @param x Mouse X position.

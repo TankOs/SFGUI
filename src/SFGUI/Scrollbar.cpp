@@ -101,9 +101,9 @@ sf::Vector2f Scrollbar::GetRequisitionImpl() const {
 	return sf::Vector2f( mimimum_slider_length, mimimum_slider_length );
 }
 
-bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
 	if( button != sf::Mouse::Left ) {
-		return false;
+		return;
 	}
 
 	if( press ) {
@@ -123,7 +123,7 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				m_slider_click_offset = static_cast<float>( y ) - slider_mid;
 			}
 
-			return true;
+			return;
 		}
 
 		if( m_orientation == Horizontal ) {
@@ -137,7 +137,7 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				GetAdjustment()->Decrement();
 				m_change_timer.Reset();
 				Invalidate();
-				return true;
+				return;
 			}
 
 			if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
@@ -145,7 +145,7 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				GetAdjustment()->Increment();
 				m_change_timer.Reset();
 				Invalidate();
-				return true;
+				return;
 			}
 		}
 		else {
@@ -159,7 +159,7 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				GetAdjustment()->Decrement();
 				m_change_timer.Reset();
 				Invalidate();
-				return true;
+				return;
 			}
 
 			if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
@@ -167,7 +167,7 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				GetAdjustment()->Increment();
 				m_change_timer.Reset();
 				Invalidate();
-				return true;
+				return;
 			}
 		}
 
@@ -182,14 +182,14 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 					GetAdjustment()->DecrementPage();
 					m_change_timer.Reset();
 					Invalidate();
-					return true;
+					return;
 				}
 				else {
 					m_page_increasing = true;
 					GetAdjustment()->IncrementPage();
 					m_change_timer.Reset();
 					Invalidate();
-					return true;
+					return;
 				}
 			}
 		}
@@ -201,14 +201,14 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 					GetAdjustment()->DecrementPage();
 					m_change_timer.Reset();
 					Invalidate();
-					return true;
+					return;
 				}
 				else {
 					m_page_increasing = true;
 					GetAdjustment()->IncrementPage();
 					m_change_timer.Reset();
 					Invalidate();
-					return true;
+					return;
 				}
 			}
 		}
@@ -223,15 +223,13 @@ bool Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 		m_slider_click_offset = 0.f;
 
 		Invalidate();
-		return false;
+		return;
 	}
-
-	return false;
 }
 
-bool Scrollbar::HandleMouseMoveEvent( int x, int y ) {
+void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	if( !m_dragging ) {
-		return false;
+		return;
 	}
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
@@ -276,8 +274,6 @@ bool Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 			delta -= step_distance;
 		}
 	}
-
-	return true;
 }
 
 void Scrollbar::HandleExpose( sf::RenderTarget& /*target*/ ) {

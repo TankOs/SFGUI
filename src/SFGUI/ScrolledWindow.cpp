@@ -131,10 +131,8 @@ const sf::FloatRect& ScrolledWindow::GetContentAllocation() const {
 	return m_content_allocation;
 }
 
-ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& event ) {
-	if( Container::HandleEvent( event ) == EatEvent ) {
-		return EatEvent;
-	}
+void ScrolledWindow::HandleEvent( const sf::Event& event ) {
+	Container::HandleEvent( event );
 
 	// Pass event to child
 	if( GetChild() ) {
@@ -154,7 +152,7 @@ ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& 
 			altered_event.MouseButton.X += static_cast<int>( offset_x );
 			altered_event.MouseButton.Y += static_cast<int>( offset_y );
 
-			return GetChild()->HandleEvent( altered_event );
+			GetChild()->HandleEvent( altered_event );
 		} break;
 		case sf::Event::MouseEntered:
 		case sf::Event::MouseLeft:
@@ -167,7 +165,7 @@ ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& 
 			altered_event.MouseMove.X += static_cast<int>( offset_x );
 			altered_event.MouseMove.Y += static_cast<int>( offset_y );
 
-			return GetChild()->HandleEvent( altered_event );
+			GetChild()->HandleEvent( altered_event );
 		} break;
 		case sf::Event::MouseWheelMoved: { // All MouseWheel events
 			if( !child_rect.Contains( static_cast<float>( event.MouseWheel.X ), static_cast<float>( event.MouseWheel.Y ) ) ) {
@@ -178,16 +176,13 @@ ScrolledWindow::HandleEventResult ScrolledWindow::HandleEvent( const sf::Event& 
 			altered_event.MouseWheel.X += static_cast<int>( offset_x );
 			altered_event.MouseWheel.Y += static_cast<int>( offset_y );
 
-			return GetChild()->HandleEvent( altered_event );
+			GetChild()->HandleEvent( altered_event );
 		} break;
 		default: { // Pass event unaltered if it is a non-mouse event
-			return GetChild()->HandleEvent( event );
+			GetChild()->HandleEvent( event );
 		} break;
 		}
 	}
-
-	// Nothing wanted the Event
-	return PassEvent;
 }
 
 sf::Drawable* ScrolledWindow::InvalidateImpl() {
@@ -350,7 +345,7 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	m_recalc_content_allocation = false;
 }
 
-bool ScrolledWindow::HandleSizeAllocate( const sf::FloatRect& old_allocation ) {
+void ScrolledWindow::HandleSizeAllocate( const sf::FloatRect& old_allocation ) {
 	Container::HandleSizeAllocate( old_allocation );
 
 	// Don't go through expensive content recalculation if the allocation
@@ -360,13 +355,11 @@ bool ScrolledWindow::HandleSizeAllocate( const sf::FloatRect& old_allocation ) {
 			old_allocation.Left == GetAllocation().Left &&
 			old_allocation.Width == GetAllocation().Width &&
 			old_allocation.Height == GetAllocation().Height ) {
-		return true;
 	}
-
-	m_recalc_content_allocation = true;
-	Invalidate();
-
-	return true;
+	else {
+		m_recalc_content_allocation = true;
+		Invalidate();
+	}
 }
 
 void ScrolledWindow::HandleExpose( sf::RenderTarget& target ) {
@@ -419,19 +412,19 @@ void ScrolledWindow::HandleExpose( sf::RenderTarget& target ) {
 	target.Draw( m_sprite );
 }
 
-bool ScrolledWindow::HandleAdd( Widget::Ptr /*child*/ ) {
-	if( GetChildren().size() > 2 ) {
+void ScrolledWindow::HandleAdd( Widget::Ptr child ) {
+	if( GetChildren().size() > 3 ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow." << std::endl;
 #endif
 
-		return false;
+		Remove( child );
+		return;
 	}
 
 	m_recalc_content_allocation = true;
 	Invalidate();
-	return true;
 }
 
 Widget::Ptr ScrolledWindow::GetChild() const {

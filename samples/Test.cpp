@@ -141,9 +141,7 @@ void SampleApp::Run() {
 
 	while( window.IsOpened() ) {
 		while( window.PollEvent( event ) ) {
-			if( m_wndmain->HandleEvent( event ) == sfg::Widget::EatEvent ) {
-				continue;
-			}
+			m_wndmain->HandleEvent( event );
 
 			if( event.Type == sf::Event::Closed ) {
 				window.Close();

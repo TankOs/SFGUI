@@ -103,7 +103,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		 * Handle an SFML event and fire proper signals.
 		 * @return true when event has been processed (eaten).
 		 */
-		virtual HandleEventResult HandleEvent( const sf::Event& event );
+		virtual void HandleEvent( const sf::Event& event );
 
 	protected:
 		sf::Drawable* InvalidateImpl();
@@ -123,9 +123,9 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		void RecalculateContentAllocation();
 
-		bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		void HandleSizeAllocate( const sf::FloatRect& old_allocation );
 		void HandleExpose( sf::RenderTarget& target );
-		bool HandleAdd( Widget::Ptr child );
+		void HandleAdd( Widget::Ptr child );
 
 		Scrollbar::Ptr m_horizontal_scrollbar;
 		Scrollbar::Ptr m_vertical_scrollbar;

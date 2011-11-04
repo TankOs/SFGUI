@@ -142,23 +142,19 @@ void Entry::MoveCursor( int delta ) {
 	}
 }
 
-bool Entry::HandleTextEvent( sf::Uint32 character ) {
+void Entry::HandleTextEvent( sf::Uint32 character ) {
 	if( character > 0x1f && character != 0x7f ) {
 		// not a control character
 		m_string.Insert( m_cursor_position, character );
 		MoveCursor( 1 );
 
 		OnTextChanged();
-
-		return true;
 	}
-
-	return false;
 }
 
-bool Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
+void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	if( !press ) {
-		return false;
+		return;
 	}
 
 	switch( key ) {
@@ -200,8 +196,6 @@ bool Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	} break;
 	default: break;
 	}
-
-	return true;
 }
 
 void Entry::HandleMouseEnter( int /*x*/, int /*y*/ ) {
@@ -216,23 +210,21 @@ void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	}
 }
 
-bool Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int /*y*/ ) {
+void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int /*y*/ ) {
 	if( !press ) {
-		return false;
+		return;
 	}
 
 	if( button != sf::Mouse::Left ) {
 		// TODO: Maybe some more support for right clicking in the future.
-		return true;
+		return;
 	}
 
 	if( m_string.IsEmpty() ) {
-		return true;
+		return;
 	}
 
 	SetCursorPosition( GetPositionFromMouseX( x ) );
-
-	return true;
 }
 
 void Entry::HandleFocusChange( Widget::Ptr /*focused_widget*/ ) {

@@ -31,22 +31,19 @@ void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
 	Add( widget );
 }
 
-bool Box::HandleAdd( Widget::Ptr child ) {
+void Box::HandleAdd( Widget::Ptr child ) {
 	ChildrenCont::const_iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget
 	// manually, which is not allowed for this class.
-	// TODO: Add ChildInfo with default settings.
 	if( iter == m_children.end() ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Child must be added via Pack() for sfg::Box widgets." << std::endl;
 #endif
 
-		return false;
+		Remove( child );
 	}
-
-	return true;
 }
 
 void Box::HandleRemove( Widget::Ptr child ) {
@@ -95,7 +92,7 @@ sf::Vector2f Box::GetRequisitionImpl() const {
 	return requisition;
 }
 
-bool Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	ChildrenCont::iterator  iter( m_children.begin() );
 	ChildrenCont::iterator  iterend( m_children.end() );
 	sf::Vector2f  allocation( 0.f, 0.f );
@@ -170,8 +167,6 @@ bool Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 
 		--num_visible;
 	}
-
-	return true;
 }
 
 Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :

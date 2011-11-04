@@ -49,10 +49,10 @@ void Button::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	}
 }
 
-bool Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
+void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
 	if( !IsMouseInWidget() ) {
 		SetState( Normal );
-		return false;
+		return;
 	}
 
 	if( button == sf::Mouse::Left ) {
@@ -63,11 +63,9 @@ bool Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 			SetState( Prelight );
 		}
 	}
-
-	return true;
 }
 
-bool Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	sf::FloatRect  label_allocation(
 		GetBorderWidth() + m_padding,
 		GetBorderWidth() + m_padding,
@@ -76,8 +74,6 @@ bool Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 	);
 
 	m_label->AllocateSize( label_allocation );
-
-	return true;
 }
 
 sf::Vector2f Button::GetRequisitionImpl() const {

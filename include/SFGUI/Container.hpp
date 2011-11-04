@@ -52,11 +52,7 @@ class SFGUI_API Container : public Widget {
 		 */
 		float GetBorderWidth() const;
 
-		/** Handle SFML event.
-		 * Handle an SFML event and fire proper signals.
-		 * @return true when event has been processed (eaten).
-		 */
-		virtual HandleEventResult HandleEvent( const sf::Event& event );
+		virtual void HandleEvent( const sf::Event& event );
 
 		/** Register event hook.
 		 * Widgets that register an event hook get notifications of the proper
@@ -81,38 +77,22 @@ class SFGUI_API Container : public Widget {
 		Container();
 
 		/** Handle adding children.
-		 * Called before the child gets added.
 		 * @param child Child widget.
-		 * @return true to add child, false to cancel.
 		 */
-		virtual bool HandleAdd( Widget::Ptr child );
+		virtual void HandleAdd( Widget::Ptr child );
 
 		/** Handle removing children.
 		 * @param child Child widget.
 		 */
 		virtual void HandleRemove( Widget::Ptr child );
 
-		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
 		virtual void HandleExpose( sf::RenderTarget& target );
 
 	private:
-		struct WidgetBoolPair {
-			WidgetBoolPair( Widget::Ptr widget_, bool remove_ );
-			bool operator==( const WidgetBoolPair& rhs );
-			bool operator==( const Widget::Ptr& rhs );
-			Widget::Ptr  widget;
-			bool  remove;
-		};
+		float m_border_width;
 
-		typedef std::list<WidgetBoolPair>  HookedWidgetsList;
-		typedef std::map<sf::Event::EventType, HookedWidgetsList>  HooksMap;
-
-		HandleEventResult ProcessHooks( const sf::Event& event );
-
-		float  m_border_width;
-
-		WidgetsList  m_children;
-		HooksMap  m_hooks;
+		WidgetsList m_children;
 
 };
 

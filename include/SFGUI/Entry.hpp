@@ -93,9 +93,9 @@ class SFGUI_API Entry : public Widget {
 
 		virtual void HandleMouseEnter( int x, int y );
 		virtual void HandleMouseLeave( int x, int y );
-		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual bool HandleTextEvent( sf::Uint32 character );
-		virtual bool HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleTextEvent( sf::Uint32 character );
+		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
 		virtual void HandleFocusChange( Widget::Ptr focused_widget );
 		virtual void HandleExpose( sf::RenderTarget& target );
 

@@ -15,16 +15,14 @@ Widget::Ptr Bin::GetChild() const {
 	return *GetChildren().begin();
 }
 
-bool Bin::HandleAdd( Widget::Ptr /*child*/ ) {
-	if( GetChildren().size() > 0 ) {
+void Bin::HandleAdd( Widget::Ptr child ) {
+	if( GetChildren().size() > 1 ) {
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Only one widget can be added to a Bin." << std::endl;
 #endif
 
-		return false;
+		Remove( child );
 	}
-
-	return true;
 }
 
 }

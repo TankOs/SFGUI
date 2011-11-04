@@ -69,8 +69,8 @@ class SFGUI_API Window : public Bin {
 
 		sf::Vector2f GetRequisitionImpl() const;
 
-		virtual bool HandleSizeAllocate( const sf::FloatRect& old_allocation );
-		virtual bool HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
+		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		virtual void HandleDragOperation( DragInfo::State state, const DragInfo& drag_info );
 
 	private:
 		sf::String  m_title;
