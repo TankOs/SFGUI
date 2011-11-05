@@ -24,12 +24,12 @@ Adjustment::Ptr Adjustment::Create( float value, float lower, float upper, float
 }
 
 Adjustment& Adjustment::operator=( const Adjustment& adjustment ) {
-	SetValue( adjustment.m_value );
 	SetLower( adjustment.m_lower );
 	SetUpper( adjustment.m_upper );
 	SetMinorStep( adjustment.m_minor_step );
 	SetMajorStep( adjustment.m_major_step );
 	SetPageSize( adjustment.m_page_size );
+	SetValue( adjustment.m_value );
 
 	return *this;
 }
@@ -62,11 +62,11 @@ float Adjustment::GetLower() const {
 void Adjustment::SetLower( float new_lower ) {
 	m_lower = new_lower;
 
-	if( m_value < m_lower ) {
-		SetValue( m_lower );
+	if( m_lower > m_upper ) {
+		m_upper = m_lower;
 	}
 
-	OnChange();
+	SetValue( GetValue() );
 }
 
 float Adjustment::GetUpper() const {
@@ -76,11 +76,11 @@ float Adjustment::GetUpper() const {
 void Adjustment::SetUpper( float new_upper ) {
 	m_upper = new_upper;
 
-	if( m_value + m_page_size > m_upper ) {
-		SetValue( m_upper - m_page_size );
+	if( m_upper < m_lower ) {
+		m_lower = m_upper;
 	}
 
-	OnChange();
+	SetValue( GetValue() );
 }
 
 float Adjustment::GetMinorStep() const {
@@ -89,8 +89,6 @@ float Adjustment::GetMinorStep() const {
 
 void Adjustment::SetMinorStep( float new_minor_step ) {
 	m_minor_step = new_minor_step;
-
-	OnChange();
 }
 
 float Adjustment::GetMajorStep() const {
@@ -99,8 +97,6 @@ float Adjustment::GetMajorStep() const {
 
 void Adjustment::SetMajorStep( float new_major_step ) {
 	m_major_step = new_major_step;
-
-	OnChange();
 }
 
 float Adjustment::GetPageSize() const {
@@ -110,11 +106,7 @@ float Adjustment::GetPageSize() const {
 void Adjustment::SetPageSize( float new_page_size ) {
 	m_page_size = new_page_size;
 
-	if( m_value + m_page_size > m_upper ) {
-		SetValue( m_upper - m_page_size );
-	}
-
-	OnChange();
+	SetValue( GetValue() );
 }
 
 void Adjustment::Configure( float new_value, float new_lower, float new_upper, float new_minor_step, float new_major_step, float new_page_size ) {

@@ -32,7 +32,7 @@ int main() {
 
 	// Create a label.
 	label = sfg::Label::Create();
-	label->SetText( "00" );
+	label->SetText( "20" );
 
 	// Scale and Scrollbar widgets are subclasses of the Range class.
 	// They have a common data representation object known as an
@@ -62,8 +62,8 @@ int main() {
 	scale->SetAdjustment( adjustment );
 
 	// Tune the adjustment parameters.
-	adjustment->SetLower( 0.f );
-	adjustment->SetUpper( 80.f );
+	adjustment->SetLower( 20.f );
+	adjustment->SetUpper( 100.f );
 
 	// How much it should change when clicked on the stepper.
 	adjustment->SetMinorStep( 3.f );
@@ -136,8 +136,6 @@ int main() {
 
 void AdjustmentChange() {
 	std::stringstream sstr;
-	sstr.fill( '0' );
-  sstr.width( 2 );
 	sstr << adjustment->GetValue();
 	label->SetText( sstr.str() );
 }

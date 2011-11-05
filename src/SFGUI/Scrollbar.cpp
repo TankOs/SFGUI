@@ -50,7 +50,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 			slider_length = mimimum_slider_length;
 		}
 
-		float slider_x = stepper_length + ( trough_length - slider_length ) * current_value / value_range;
+		float slider_x = stepper_length + ( trough_length - slider_length ) * ( current_value - adjustment->GetLower() ) / value_range;
 		float slider_y = 0.f;
 
 		if( value_range == .0f ) {
@@ -68,7 +68,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 		}
 
 		float slider_x = 0.f;
-		float slider_y = stepper_length + ( trough_length - slider_length ) * current_value / value_range;
+		float slider_y = stepper_length + ( trough_length - slider_length ) * ( current_value - adjustment->GetLower() ) / value_range;
 
 		if( value_range == .0f ) {
 			slider_y = stepper_length;

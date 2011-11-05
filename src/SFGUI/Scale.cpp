@@ -38,14 +38,14 @@ const sf::FloatRect Scale::GetSliderRect() const {
 	float value_range = adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize();
 
 	if( m_orientation == Horizontal ) {
-		float slider_x = ( GetAllocation().Width - slider_length ) * current_value / value_range;
+		float slider_x = ( GetAllocation().Width - slider_length ) * ( current_value - adjustment->GetLower() ) / value_range;
 		float slider_y = ( GetAllocation().Height - slider_width ) / 2.f;
 
 		return sf::FloatRect( slider_x, slider_y, slider_length, slider_width );
 	}
 	else {
 		float slider_x = ( GetAllocation().Width - slider_width ) / 2.f;
-		float slider_y = ( GetAllocation().Height - slider_length ) * ( 1 - ( current_value / value_range ) );
+		float slider_y = ( GetAllocation().Height - slider_length ) * ( 1 - ( ( current_value - adjustment->GetLower() ) / value_range ) );
 
 		return sf::FloatRect( slider_x, slider_y, slider_width, slider_length );
 	}
