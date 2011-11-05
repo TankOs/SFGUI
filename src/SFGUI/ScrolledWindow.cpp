@@ -421,14 +421,18 @@ void ScrolledWindow::HandleExpose( sf::RenderTarget& target ) {
 	// Clear surface
 	m_render_texture.Clear( sf::Color( 0, 0, 0, 0 ) );
 
-	// Convert child position to relative
-	GetChild()->SetPosition( sf::Vector2f( -GetAbsolutePosition().x, -GetAbsolutePosition().y ) );
+	// Fool the child into thinking the scrolledwindow is sitting at (0,0)
+	// We have to do this because it uses the scrolledwindow's absolute
+	// coordinates when it draws itself.
+	float original_x = GetAllocation().Left;
+	float original_y = GetAllocation().Top;
+	SetPosition( sf::Vector2f( -GetAbsolutePosition().x + GetAllocation().Left, -GetAbsolutePosition().y + GetAllocation().Top ) );
 
 	// Render child to surface
 	GetChild()->Expose( m_render_texture );
 
-	// Convert child position back to absolute
-	GetChild()->SetPosition( sf::Vector2f( 0.f, 0.f ) );
+	// Restore the actual position
+	SetPosition( sf::Vector2f( original_x, original_y ) );
 
 	// Display
 	m_render_texture.Display();

@@ -106,6 +106,10 @@ float Adjustment::GetPageSize() const {
 void Adjustment::SetPageSize( float new_page_size ) {
 	m_page_size = new_page_size;
 
+	if( m_upper < m_lower + m_page_size ) {
+		m_upper = m_lower + m_page_size;
+	}
+
 	SetValue( GetValue() );
 }
 
