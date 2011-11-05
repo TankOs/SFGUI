@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFGUI/Config.hpp>
 #include <SFGUI/FastDelegate.hpp>
 
 #include <map>
@@ -21,7 +22,7 @@ namespace sfg {
  * \endcode
  *
  */
-class Signal {
+class SFGUI_API Signal {
 	public:
 		/** Ctor.
 		 */
