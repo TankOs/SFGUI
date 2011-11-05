@@ -132,7 +132,30 @@ const sf::FloatRect& ScrolledWindow::GetContentAllocation() const {
 }
 
 void ScrolledWindow::HandleEvent( const sf::Event& event ) {
-	Container::HandleEvent( event );
+	// Ignore event when widget is not visible.
+	if( !IsVisible() ) {
+		return;
+	}
+
+	// Create a copy of the event and transform mouse coordinates to local
+	// coordinates if event is a mouse event.
+	sf::Event local_event( event );
+
+	if( local_event.Type == sf::Event::MouseMoved ) {
+		local_event.MouseMove.X -= static_cast<int>( GetAllocation().Left );
+		local_event.MouseMove.Y -= static_cast<int>( GetAllocation().Top );
+	}
+
+	if(
+		local_event.Type == sf::Event::MouseButtonPressed ||
+		local_event.Type == sf::Event::MouseButtonReleased
+	) {
+		local_event.MouseButton.X -= static_cast<int>( GetAllocation().Left );
+		local_event.MouseButton.Y -= static_cast<int>( GetAllocation().Top );
+	}
+
+	m_horizontal_scrollbar->HandleEvent( local_event );
+	m_vertical_scrollbar->HandleEvent( local_event );
 
 	// Pass event to child
 	if( GetChild() ) {
@@ -158,6 +181,13 @@ void ScrolledWindow::HandleEvent( const sf::Event& event ) {
 		case sf::Event::MouseLeft:
 		case sf::Event::MouseMoved: { // All MouseMove events
 			if( !child_rect.Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
+				// Nice hack to cause scrolledwindow children to get out of
+				// prelight state when the mouse leaves the child allocation.
+				sf::Event altered_event( event );
+				altered_event.MouseMove.X = -1;
+				altered_event.MouseMove.Y = -1;
+
+				GetChild()->HandleEvent( altered_event );
 				break;
 			}
 
