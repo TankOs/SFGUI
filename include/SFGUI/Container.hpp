@@ -63,6 +63,11 @@ class SFGUI_API Container : public Widget {
 
 		void UpdateDrawablePosition() const;
 
+		/** Used to inform parent that a child has been invalidated
+		 * @param child Widget that was invalidated.
+		 */
+		virtual void HandleChildInvalidate( Widget::Ptr child );
+
 	protected:
 		/** Constructor.
 		 */

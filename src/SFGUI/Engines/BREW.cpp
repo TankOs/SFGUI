@@ -167,7 +167,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 		queue->Add( new sf::Shape( sf::Shape::Line( .1f, delta + .1f, rect.Width - delta, delta, 1.f, light_color ) ) ); // Top.
 		queue->Add( new sf::Shape( sf::Shape::Line( delta + .1f, .1f, delta, rect.Height - delta, 1.f, light_color ) ) ); // Left.
 	}
-	
+
 	return queue;
 }
 
@@ -246,13 +246,13 @@ sf::Drawable* BREW::CreateEntryDrawable( std::shared_ptr<Entry> entry ) const {
 	);
 
 	queue->Add( CreateBorder( entry->GetAllocation(), border_width, border_color_dark, border_color_light) );
-	
+
 	sf::Text*  vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
 	vis_label->SetPosition( text_padding, text_padding );
 
 	queue->Add( vis_label );
-	
+
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->GetState() == Widget::Active && entry->IsCursorVisible() ) {
 		sf::String cursor_string( entry->GetVisibleText() );
@@ -270,7 +270,7 @@ sf::Drawable* BREW::CreateEntryDrawable( std::shared_ptr<Entry> entry ) const {
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );
 	}
-	
+
 	return queue;
 }
 
@@ -597,7 +597,7 @@ sf::Drawable* BREW::CreateScrolledWindowDrawable( std::shared_ptr<ScrolledWindow
 	rect.Width += 2.f * border_width;
 	rect.Height += 2.f * border_width;
 
-	queue->Add( CreateAbsoluteBorder( rect, border_width, border_color_dark, border_color_light ) );
+	queue->Add( CreateBorder( rect, border_width, border_color_dark, border_color_light ) );
 
 	return queue;
 }

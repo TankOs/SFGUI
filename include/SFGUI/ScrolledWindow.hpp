@@ -2,8 +2,7 @@
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Scrollbar.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/RenderTexture.hpp>
+#include <SFGUI/Viewport.hpp>
 
 namespace sfg {
 
@@ -94,16 +93,15 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		const sf::FloatRect& GetContentAllocation() const;
 
-		/** Get child widget.
-		 * @return Child widget.
+		/** Get child viewport.
+		 * @return Child viewport.
 		 */
-		Widget::Ptr GetChild() const;
+		Viewport::Ptr GetChild() const;
 
-		/** Handle SFML event.
-		 * Handle an SFML event and fire proper signals.
-		 * @return true when event has been processed (eaten).
+		/** Add viewport.
+		 * @param viewport Viewport to add.
 		 */
-		virtual void HandleEvent( const sf::Event& event );
+		void Add( Viewport::Ptr viewport );
 
 	protected:
 		sf::Drawable* InvalidateImpl();
@@ -132,9 +130,6 @@ class SFGUI_API ScrolledWindow : public Container {
 
 		int m_policy;
 		int m_placement;
-
-		sf::RenderTexture m_render_texture;
-		sf::Sprite m_sprite;
 
 		mutable bool m_recalc_adjustments;
 

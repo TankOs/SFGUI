@@ -143,4 +143,12 @@ void Container::HandleAdd( Widget::Ptr /*child*/ ) {
 void Container::HandleRemove( Widget::Ptr /*child*/ ) {
 }
 
+void Container::HandleChildInvalidate( Widget::Ptr child  ) {
+	Container::Ptr parent = GetParent();
+
+	if( parent ) {
+		parent->HandleChildInvalidate( child );
+	}
+}
+
 }

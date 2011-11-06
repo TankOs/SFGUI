@@ -5,6 +5,7 @@
 #include <SFGUI/Table.hpp>
 #include <SFGUI/Label.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
+#include <SFGUI/Viewport.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
 
@@ -106,11 +107,14 @@ void SampleApp::Run() {
 		m_scrolled_window_box->Pack( box, false );
 	}
 
+	sfg::Viewport::Ptr viewport = sfg::Viewport::Create();
+
 	m_scrolled_window = sfg::ScrolledWindow::Create();
 	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 200.f ) );
 	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HorizontalAutomatic | sfg::ScrolledWindow::VerticalAutomatic );
 	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TopLeft );
-	m_scrolled_window->Add( m_scrolled_window_box );
+	viewport->Add( m_scrolled_window_box );
+	m_scrolled_window->Add( viewport );
 
 	sfg::Scrollbar::Ptr scrollbar( sfg::Scrollbar::Create() );
 	scrollbar->SetRange( 0.f, 100.f );

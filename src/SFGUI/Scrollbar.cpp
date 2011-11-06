@@ -280,16 +280,17 @@ void Scrollbar::HandleExpose( sf::RenderTarget& /*target*/ ) {
 		return;
 	}
 
-	Invalidate();
 	m_change_timer.Reset();
 
 	// Increment / Decrement value while one of the steppers is pressed
 	if( m_decrease_pressed ) {
 		GetAdjustment()->Decrement();
+		Invalidate();
 		return;
 	}
 	else if( m_increase_pressed ) {
 		GetAdjustment()->Increment();
+		Invalidate();
 		return;
 	}
 
@@ -312,6 +313,7 @@ void Scrollbar::HandleExpose( sf::RenderTarget& /*target*/ ) {
 			}
 		}
 
+		Invalidate();
 		return;
 	}
 	else if( m_page_increasing ) {
@@ -328,6 +330,7 @@ void Scrollbar::HandleExpose( sf::RenderTarget& /*target*/ ) {
 			}
 		}
 
+		Invalidate();
 		return;
 	}
 }

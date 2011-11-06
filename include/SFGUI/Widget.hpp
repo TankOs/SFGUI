@@ -146,7 +146,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Get absolute position on screen.
 		 * @return Absolute position.
 		 */
-		sf::Vector2f GetAbsolutePosition() const;
+		virtual sf::Vector2f GetAbsolutePosition() const;
 
 		/** Update position of drawable.
 		 */

@@ -129,6 +129,12 @@ void Widget::Expose( sf::RenderTarget& target ) {
 
 void Widget::Invalidate() {
 	m_invalidated = true;
+
+	Container::Ptr parent = m_parent.lock();
+
+	if( parent ) {
+		parent->HandleChildInvalidate( shared_from_this() );
+	}
 }
 
 sf::Drawable* Widget::InvalidateImpl() {
