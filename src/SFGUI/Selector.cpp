@@ -103,7 +103,7 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 	return selector;
 }
 
-std::string Selector::ParseWidget( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException ) {
+std::string Selector::ParseWidget( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
 	std::string token;
 
 	for( ; begin != end; ++begin ) {
@@ -132,7 +132,7 @@ std::string Selector::ParseWidget( std::string::const_iterator& begin, const std
 	return token;
 }
 
-std::string Selector::ParseId( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException ) {
+std::string Selector::ParseId( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
 	std::string token;
 
 	// Check bounds.
@@ -177,7 +177,7 @@ std::string Selector::ParseId( std::string::const_iterator& begin, const std::st
 	return token;
 }
 
-std::string Selector::ParseClass( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException ) {
+std::string Selector::ParseClass( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
 	std::string token;
 
 	// Check bounds.
@@ -222,7 +222,7 @@ std::string Selector::ParseClass( std::string::const_iterator& begin, const std:
 	return token;
 }
 
-int Selector::ParseState( std::string::const_iterator& begin, const std::string::const_iterator& end ) throw( ParserException ) {
+int Selector::ParseState( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
 	std::string token;
 
 	// Check bounds.
