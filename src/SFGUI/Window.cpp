@@ -109,7 +109,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 		Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() )
 	);
 
-	if( !title_area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+	if( !HasStyle( Titlebar) || !title_area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 		m_dragging = false;
 		return;
 	}
