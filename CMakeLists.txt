@@ -76,8 +76,6 @@ set(
 	${INC_DIR}/SFGUI/Selector.hpp
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
-	${INC_DIR}/SFGUI/SlotResult.hpp
-	${INC_DIR}/SFGUI/SlotResult.inl
 	${INC_DIR}/SFGUI/Table.hpp
 	${INC_DIR}/SFGUI/TableCell.hpp
 	${INC_DIR}/SFGUI/TableOptions.hpp
