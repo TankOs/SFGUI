@@ -107,13 +107,6 @@ void GuessMyNumber::Run() {
 	sf::RenderWindow render_window( sf::VideoMode( 1024, 768, 32 ), TITLE );
 	sf::Event event;
 
-	// Custom properties.
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess", "BackgroundColor", sf::Color( 0, 100, 0 ) );
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess", "BorderColor", sf::Color( 0, 100, 0 ) );
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess:Prelight", "BackgroundColor", sf::Color( 0, 130, 0 ) );
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess:Prelight", "BorderColor", sf::Color( 0, 130, 0 ) );
-	//sfg::Context::Get().GetEngine().SetProperty( "Button#guess > Label", "Color", sf::Color::Black );
-
 	// Create widgets.
 	sfg::Window::Ptr window( sfg::Window::Create() );
 	window->SetTitle( TITLE );
@@ -156,6 +149,16 @@ void GuessMyNumber::Run() {
 			static_cast<float>( render_window.GetHeight() / 2 ) - window->GetAllocation().Height / 2.f
 		)
 	);
+
+	// Custom properties.
+	sfg::Context::Get().GetEngine().SetProperty( "Button#guess", "BackgroundColor", sf::Color( 0, 100, 0 ) );
+	sfg::Context::Get().GetEngine().SetProperty( "Button#guess", "BorderColor", sf::Color( 0, 100, 0 ) );
+	sfg::Context::Get().GetEngine().SetProperty( "Button#guess:Prelight", "BackgroundColor", sf::Color( 0, 130, 0 ) );
+	sfg::Context::Get().GetEngine().SetProperty( "Button#guess:Prelight", "BorderColor", sf::Color( 0, 130, 0 ) );
+	sfg::Context::Get().GetEngine().SetProperty( "Button#guess > Label", "FontSize", 20.f );
+
+	// Make sure all properties are applied.
+	window->RefreshAll();
 
 	while( render_window.IsOpened() ) {
 		while( render_window.PollEvent( event ) ) {

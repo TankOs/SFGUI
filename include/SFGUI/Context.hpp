@@ -8,7 +8,7 @@ class Engine;
 
 /** GUI context.
  * A context saves several semi-global information for widgets, such as the
- * used rendering engine, theme, properties etc. 
+ * used rendering engine.
  */
 class SFGUI_API Context {
 	public:
@@ -40,10 +40,9 @@ class SFGUI_API Context {
 		Engine& GetEngine() const;
 
 	private:
-		static Context*  active_context;
+		static Context* active_context;
 
-
-		Engine&  m_renderengine;
+		Engine& m_renderengine;
 };
 
 }

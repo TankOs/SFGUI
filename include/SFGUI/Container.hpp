@@ -52,22 +52,14 @@ class SFGUI_API Container : public Widget {
 		 */
 		float GetBorderWidth() const;
 
+		/** Refresh all children and this container.
+		 * Refreshing means to invalidate and re-request size. This can be useful
+		 * after changing properties during runtime (i.e. AFTER widget
+		 * initialization).
+		 */
+		void RefreshAll();
+
 		virtual void HandleEvent( const sf::Event& event );
-
-		/** Register event hook.
-		 * Widgets that register an event hook get notifications of the proper
-		 * event type no matter if it fits or not. Mainly used to track the mouse
-		 * pointer when it leaves a widget.
-		 * @param event_type Type of event.
-		 * @param widget Widget that shall receive the events.
-		 */
-		void RegisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget );
-
-		/** Unregister event hook.
-		 * @param event_type Type of event.
-		 * @param widget Widget that has previously registered the hook.
-		 */
-		void UnregisterEventHook( sf::Event::EventType event_type, Widget::Ptr widget );
 
 		void UpdateDrawablePosition() const;
 
