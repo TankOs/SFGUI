@@ -85,7 +85,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		void SetScrollbarPolicy( int policy );
 
 		/** Set where the content is placed and hence where the scrollbars will appear.
-		 * @param adjustment new ScrollbarPolicyPair.
+		 * @param placement new ScrollbarPolicyPair.
 		 */
 		void SetPlacement( Placement placement );
 

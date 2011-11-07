@@ -244,7 +244,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle state changes.
 		 * The default behaviour is to accept any state change and invalidate the
 		 * widget.
-		 * @param state Old state.
+		 * @param old_state Old state.
 		 */
 		virtual void HandleStateChange( State old_state );
 

@@ -29,7 +29,7 @@ class SFGUI_API Signal {
 		Signal();
 
 		/** Connect to free function.
-		 * @param function Free function.
+		 * @param delegate Free function.
 		 * @return Connection serial, use for disconnecting.
 		 */
 		uint32_t Connect( Delegate delegate );

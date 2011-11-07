@@ -35,6 +35,7 @@ class SFGUI_API Table : public Container {
 		 * @param rect Rect to attach widget to (Left = column, Top = row, Width = column span, Height = row span).
 		 * @param x_options Pack options for x axis.
 		 * @param y_options Pack options for y axis.
+		 * @param padding Padding.
 		 */
 		void Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
 
