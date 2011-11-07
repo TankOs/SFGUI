@@ -2,9 +2,12 @@
 
 #include <SFGUI/Config.hpp>
 
+#include <memory>
+
 namespace sfg {
 
 class Engine;
+class Widget;
 
 /** GUI context.
  * A context saves several semi-global information for widgets, such as the
@@ -12,10 +15,9 @@ class Engine;
  */
 class SFGUI_API Context {
 	public:
-		/** Constructor.
-		 * @param engine Rendering engine.
+		/** Ctor.
 		 */
-		Context( Engine& engine );
+		Context();
 
 		/** Get the active context.
 		 * If no custom context has been activated, the default context is returned.
@@ -34,15 +36,40 @@ class SFGUI_API Context {
 		 */
 		static bool Deactivate();
 
+		/** Get default rendering engine (BREW).
+		 * @return BREW.
+		 */
+		static Engine& GetDefaultEngine();
+
 		/** Get render engine.
 		 * @return Engine.
 		 */
 		Engine& GetEngine() const;
 
-	private:
-		static Context* active_context;
+		/** Set rendering engine.
+		 * @param engine Engine.
+		 */
+		void SetEngine( Engine& engine );
 
-		Engine& m_renderengine;
+		/** Set active widget.
+		 * Called internally only.
+		 * @param widget Widget.
+		 */
+		void SetActiveWidget( std::shared_ptr<Widget> widget );
+
+		/** Get active widget.
+		 * The active widget is the widget that's currently handling an event. You
+		 * can use this method to obtain the processing widget when inside a signal
+		 * handler. See examples/Desktop.cpp for an example.
+		 * @return Active widget or NULL.
+		 */
+		std::shared_ptr<Widget> GetActiveWidget() const;
+
+	private:
+		static Context* m_active_context;
+
+		Engine* m_engine;
+		std::weak_ptr<Widget> m_active_widget;
 };
 
 }

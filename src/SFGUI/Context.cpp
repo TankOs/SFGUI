@@ -4,44 +4,60 @@
 
 namespace sfg {
 
-Context*  Context::active_context( 0 );
+Context* Context::m_active_context( 0 );
 
 Context& Context::Get() {
-	if( active_context ) {
-		return *active_context;
+	if( m_active_context ) {
+		return *m_active_context;
 	}
 
-	static eng::BREW  brew;
-	static Context  context( brew );
+	static Context context;
 
 	return context;
 }
 
 bool Context::Activate( Context& context ) {
-	if( active_context ) {
+	if( m_active_context ) {
 		return false;
 	}
 
-	active_context = &context;
+	m_active_context = &context;
 	return true;
 }
 
 bool Context::Deactivate() {
-	if( !active_context ) {
+	if( !m_active_context ) {
 		return false;
 	}
 
-	active_context = 0;
+	m_active_context = 0;
 	return true;
 }
 
-Context::Context( Engine& engine ) :
-	m_renderengine( engine )
+Context::Context() :
+	m_engine( NULL )
 {
 }
 
+Engine& Context::GetDefaultEngine() {
+	static eng::BREW brew;
+	return brew;
+}
+
 Engine& Context::GetEngine() const {
-	return m_renderengine;
+	return (m_engine ? *m_engine : GetDefaultEngine());
+}
+
+void Context::SetEngine( Engine& engine ) {
+	m_engine = &engine;
+}
+
+void Context::SetActiveWidget( std::shared_ptr<Widget> widget ) {
+	m_active_widget = widget;
+}
+
+std::shared_ptr<Widget> Context::GetActiveWidget() const {
+	return m_active_widget.lock();
 }
 
 }

@@ -60,6 +60,8 @@ set(
 	${INC_DIR}/SFGUI/Config.hpp
 	${INC_DIR}/SFGUI/Container.hpp
 	${INC_DIR}/SFGUI/Context.hpp
+	${INC_DIR}/SFGUI/Desktop.hpp
+	${INC_DIR}/SFGUI/Desktop.inl
 	${INC_DIR}/SFGUI/Engine.hpp
 	${INC_DIR}/SFGUI/Engine.inl
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
@@ -87,6 +89,7 @@ set(
 	${SRC_DIR}/SFGUI/Button.cpp
 	${SRC_DIR}/SFGUI/Container.cpp
 	${SRC_DIR}/SFGUI/Context.cpp
+	${SRC_DIR}/SFGUI/Desktop.cpp
 	${SRC_DIR}/SFGUI/Engine.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
 	${SRC_DIR}/SFGUI/Entry.cpp

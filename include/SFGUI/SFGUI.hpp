@@ -7,6 +7,7 @@
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Desktop.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Entry.hpp>
 #include <SFGUI/Label.hpp>

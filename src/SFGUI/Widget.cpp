@@ -158,6 +158,9 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		return;
 	}
 
+	// Set widget active in context.
+	Context::Get().SetActiveWidget( shared_from_this() );
+
 	Container::Ptr parent( m_parent.lock() );
 
 	switch( event.Type ) {
