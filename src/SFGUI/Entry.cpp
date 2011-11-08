@@ -237,6 +237,23 @@ void Entry::HandleExpose( sf::RenderTarget& /*target*/  ) {
 	}
 }
 
+void Entry::HandleFocusChange( Widget::Ptr focused_widget ) {
+	if( focused_widget == shared_from_this() ) {
+		SetState( Active );
+	}
+
+	Widget::HandleFocusChange( focused_widget );
+}
+
+void Entry::HandleStateChange( State old_state ) {
+	if( GetState() == Active ) {
+		m_cursor_timer.Reset();
+		m_cursor_status = true;
+	}
+
+	Widget::HandleStateChange( old_state );
+}
+
 sf::Vector2f Entry::GetRequisitionImpl() const {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );

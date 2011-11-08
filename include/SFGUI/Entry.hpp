@@ -97,6 +97,8 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleTextEvent( sf::Uint32 character );
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
 		virtual void HandleExpose( sf::RenderTarget& target );
+		virtual void HandleFocusChange( Widget::Ptr focused_widget );
+		virtual void HandleStateChange( State old_state );
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;
