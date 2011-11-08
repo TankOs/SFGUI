@@ -30,6 +30,7 @@ BREW::BREW() :
 	// Window-specific.
 	SetProperty( "Window", "TitleHeight", 25.f );
 	SetProperty( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
+	SetProperty( "Window", "HandleSize", 10.f );
 
 	// Button-specific.
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
@@ -73,6 +74,7 @@ sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const
 	float border_width( GetProperty<float>( "BorderWidth", window ) );
 	float title_size( GetProperty<float>( "TitleHeight", window ) );
 	float shadow_distance( GetProperty<float>( "ShadowDistance", window ) );
+	float handle_size( GetProperty<float>( "HandleSize", window ) );
 	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
 	unsigned int title_font_size( GetProperty<unsigned int>( "FontSize", window ) );
 
@@ -103,6 +105,16 @@ sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const
 
 		queue->Add( background );
 	}
+
+	if( window->HasStyle( Window::Resize ) ) {
+		sf::Shape* handle_shape( new sf::Shape );
+		handle_shape->AddPoint( window->GetAllocation().Width - 1.f, window->GetAllocation().Height - 1.f - handle_size, title_background_color );
+		handle_shape->AddPoint( window->GetAllocation().Width - 1.f - handle_size, window->GetAllocation().Height - 1.f, title_background_color );
+		handle_shape->AddPoint( window->GetAllocation().Width - 1.f, window->GetAllocation().Height - 1.f, title_background_color );
+		handle_shape->EnableFill( true );
+		queue->Add( handle_shape );
+	}
+
 
 	if( !window->HasStyle( Window::Titlebar ) ) {
 		title_size = 0;
@@ -141,7 +153,6 @@ sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const
 		queue->Add( title );
 		queue->Add( title_text );
 	}
-
 
 	return queue;
 }

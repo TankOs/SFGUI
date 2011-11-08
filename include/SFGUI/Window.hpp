@@ -17,7 +17,7 @@ class SFGUI_API Window : public Bin {
 		enum Style {
 			NoStyle = 0, //!< Transparent window.
 			Titlebar = 1 << 0, //!< Titlebar.
-			Background = 1 << 1, //!< Titlebar.
+			Background = 1 << 1, //!< Background.
 			Resize = 1 << 2, //!< Resizable.
 			Toplevel = Titlebar | Background | Resize //!< Toplevel window.
 		};
@@ -79,6 +79,7 @@ class SFGUI_API Window : public Bin {
 		int m_style;
 
 		bool m_dragging;
+		bool m_resizing;
 		sf::Vector2f m_drag_offset;
 };
 

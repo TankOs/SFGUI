@@ -8,7 +8,8 @@ Window::Window() :
 	Bin(),
 	m_skipreallocation( false ),
 	m_style( Toplevel ),
-	m_dragging( false )
+	m_dragging( false ),
+	m_resizing( false )
 {
 	//SetFlags( Draggable ); // TODO: Do it via StartDrag() operation, not flags.
 }
@@ -59,6 +60,11 @@ void Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 
 void Window::SetStyle( int style ) {
 	m_style = style;
+
+	// Make sure dragging and resizing operations are cancelled.
+	m_dragging = false;
+	m_resizing = false;
+
 	RequestSize();
 	Invalidate();
 }
@@ -101,38 +107,71 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 		return;
 	}
 
+	if( !press ) {
+		m_dragging = false;
+		m_resizing = false;
+		return;
+	}
+
 	// Check for mouse being inside the title area.
-	sf::FloatRect title_area(
+	sf::FloatRect area(
 		GetAllocation().Left,
 		GetAllocation().Top,
 		GetAllocation().Width,
 		Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() )
 	);
 
-	if( !HasStyle( Titlebar) || !title_area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-		m_dragging = false;
-		return;
+	if( area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		if( HasStyle( Titlebar ) && !m_dragging ) {
+			m_dragging = true;
+			m_resizing = false;
+
+			m_drag_offset = sf::Vector2f(
+				static_cast<float>( x ) - GetAllocation().Left,
+				static_cast<float>( y ) - GetAllocation().Top
+			);
+		}
+	}
+	else {
+		float handle_size( Context::Get().GetEngine().GetProperty<float>( "HandleSize", shared_from_this() ) );
+
+		area.Left = GetAllocation().Left + GetAllocation().Width - handle_size;
+		area.Top = GetAllocation().Top + GetAllocation().Height - handle_size;
+		area.Width = handle_size;
+		area.Height = handle_size;
+
+		if( area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			m_dragging = false;
+			m_resizing = true;
+
+			m_drag_offset = sf::Vector2f(
+				handle_size - static_cast<float>( x ) + GetAllocation().Left + GetAllocation().Width - handle_size,
+				handle_size - static_cast<float>( y ) + GetAllocation().Top + GetAllocation().Height - handle_size
+			);
+		}
 	}
 
-	m_drag_offset = sf::Vector2f(
-		static_cast<float>( x ) - GetAllocation().Left,
-		static_cast<float>( y ) - GetAllocation().Top
-	);
-
-	m_dragging = press;
 }
 
 void Window::HandleMouseMoveEvent( int x, int y ) {
-	if( !m_dragging ) {
-		return;
+	if( m_dragging ) {
+		SetPosition(
+			sf::Vector2f(
+				static_cast<float>( x ) - m_drag_offset.x,
+				static_cast<float>( y ) - m_drag_offset.y
+			)
+		);
 	}
-
-	SetPosition(
-		sf::Vector2f(
-			static_cast<float>( x ) - m_drag_offset.x,
-			static_cast<float>( y ) - m_drag_offset.y
-		)
-	);
+	else if( m_resizing ) {
+		AllocateSize(
+			sf::FloatRect(
+				GetAllocation().Left,
+				GetAllocation().Top,
+				std::max( GetRequisition().x, static_cast<float>( x ) + m_drag_offset.x - GetAllocation().Left ),
+				std::max( GetRequisition().y, static_cast<float>( y ) + m_drag_offset.y - GetAllocation().Top )
+			)
+		);
+	}
 }
 
 }
