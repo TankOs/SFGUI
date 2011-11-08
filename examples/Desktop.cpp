@@ -6,10 +6,7 @@
 #include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics.hpp>
-#include <boost/bind.hpp>
 #include <sstream>
-
-#include <iostream> // XXX 
 
 class DesktopExample {
 	public:
