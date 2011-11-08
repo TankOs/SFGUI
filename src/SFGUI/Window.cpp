@@ -6,7 +6,6 @@ namespace sfg {
 
 Window::Window() :
 	Bin(),
-	m_skipreallocation( false ),
 	m_style( Toplevel ),
 	m_dragging( false ),
 	m_resizing( false )
@@ -50,8 +49,7 @@ sf::FloatRect Window::GetClientRect() const {
 }
 
 void Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
-	if( !GetChild() || m_skipreallocation ) {
-		m_skipreallocation = false;
+	if( !GetChild() ) {
 		return;
 	}
 

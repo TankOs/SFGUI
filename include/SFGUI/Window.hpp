@@ -75,7 +75,6 @@ class SFGUI_API Window : public Bin {
 
 	private:
 		sf::String m_title;
-		bool m_skipreallocation;
 		int m_style;
 
 		bool m_dragging;
