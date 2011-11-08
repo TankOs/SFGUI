@@ -220,17 +220,8 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		return;
 	}
 
-	GrabFocus();
+	SetState( Active );
 	SetCursorPosition( GetPositionFromMouseX( x ) );
-}
-
-void Entry::HandleFocusChange( Widget::Ptr /*focused_widget*/ ) {
-	if( GetState() == Active ) {
-		SetState( Normal );
-	}
-	else {
-		SetState( Active );
-	}
 }
 
 void Entry::HandleExpose( sf::RenderTarget& /*target*/  ) {

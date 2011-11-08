@@ -59,6 +59,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 */
 		void GrabFocus();
 
+		/** Check if widget has focus.
+		 * @return true if widget has focus.
+		 */
+		bool HasFocus();
+
 		/** Allocate size.
 		 * @param rect Rect.
 		 */
@@ -169,7 +174,8 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 
 		// Signals.
 		Signal OnStateChange; //!< Fired when state changed. (old state)
-		Signal OnFocusChange; //!< Fired when focus grabbed or lost.
+		Signal OnGainFocus; //!< Fired when focus gained.
+		Signal OnLostFocus; //!< Fired when focus lost.
 
 		Signal OnExpose; //!< Fired when widget is being rendered.
 
@@ -278,6 +284,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 
 	private:
 		void GrabFocus( Ptr widget );
+		bool HasFocus( Ptr widget );
 
 		std::weak_ptr<Container>  m_parent;
 

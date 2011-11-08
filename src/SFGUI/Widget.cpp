@@ -35,17 +35,31 @@ void Widget::GrabFocus( Ptr widget ) {
 	if( !parent ) {
 		// Notify old focused widget.
 		if( m_focus_widget ) {
-			m_focus_widget->OnFocusChange();
+			m_focus_widget->OnLostFocus();
 			m_focus_widget->HandleFocusChange( widget );
 		}
 
 		m_focus_widget = widget;
-		m_focus_widget->OnFocusChange();
+		m_focus_widget->OnGainFocus();
 		m_focus_widget->HandleFocusChange( widget );
 	}
 	else {
 		parent->GrabFocus( widget );
 	}
+}
+
+bool Widget::HasFocus( Ptr widget ) {
+	Container::Ptr parent( m_parent.lock() );
+
+	if( !parent ) {
+		if( m_focus_widget == widget ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	return parent->HasFocus( widget );
 }
 
 void Widget::AllocateSize( const sf::FloatRect& rect ) {
@@ -262,6 +276,10 @@ void Widget::SetState( State state ) {
 	if( m_state != state ) {
 		OnStateChange();
 	}
+
+	if( state == Active ) {
+		GrabFocus( shared_from_this() );
+	}
 }
 
 Widget::State Widget::GetState() const {
@@ -278,6 +296,10 @@ Container::PtrConst Widget::GetParent() const {
 
 void Widget::GrabFocus() {
 	GrabFocus( shared_from_this() );
+}
+
+bool Widget::HasFocus() {
+	return HasFocus( shared_from_this() );
 }
 
 bool Widget::IsMouseInWidget() const {
@@ -397,7 +419,10 @@ void Widget::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 void Widget::HandleMouseClick( int /*x*/, int /*y*/ ) {
 }
 
-void Widget::HandleFocusChange( Widget::Ptr /*focused_widget*/ ) {
+void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {
+	if( focused_widget != shared_from_this() ) {
+		SetState( Normal );
+	}
 }
 
 }
