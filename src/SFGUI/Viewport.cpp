@@ -2,18 +2,21 @@
 
 namespace sfg {
 
-Viewport::Viewport() :
-	Bin(),
-	m_render_texture(),
-	m_sprite(),
-	m_rebuild_child( true )
+Viewport::Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) :
+	Bin()
 {
-	SetHorizontalAdjustment( Adjustment::Create() );
-	SetVerticalAdjustment( Adjustment::Create() );
+	OnSizeRequest.Connect( &Viewport::HandleSizeRequest, this );
+
+	SetHorizontalAdjustment( horizontal_adjustment );
+	SetVerticalAdjustment( vertical_adjustment );
 }
 
 Viewport::Ptr Viewport::Create() {
-	Viewport::Ptr  ptr( new Viewport );
+	return Viewport::Create( Adjustment::Create(), Adjustment::Create() );
+}
+
+Viewport::Ptr Viewport::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
+	Viewport::Ptr  ptr( new Viewport( horizontal_adjustment, vertical_adjustment ) );
 
 	return ptr;
 }
@@ -23,54 +26,11 @@ sf::Vector2f Viewport::GetRequisitionImpl() const {
 }
 
 void Viewport::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
-	RecreateRenderTexture();
 }
 
 void Viewport::Expose( sf::RenderTarget& target ) {
 	if( IsVisible() ) {
-		//
-		// Cached Variant
-		//
-		/**/
-		if( m_rebuild_child && GetChild() && GetParent() ) {
-			// Set viewing region of the surface
-			sf::View view(
-				sf::FloatRect(
-					m_horizontal_adjustment->GetValue(),
-					m_vertical_adjustment->GetValue(),
-					static_cast<float>( m_render_texture.GetWidth() ),
-					static_cast<float>( m_render_texture.GetHeight() )
-				)
-			);
-
-			m_render_texture.SetView( view );
-
-			// Clear surface
-			m_render_texture.Clear( sf::Color( 0, 0, 0, 0 ) );
-
-			// Render child to surface
-			GetChild()->Expose( m_render_texture );
-
-			// Display
-			m_render_texture.Display();
-
-			m_rebuild_child = false;
-		}
-
-		// Set Sprite position
-		sf::Vector2f relative_position = GetParent()->GetAbsolutePosition() + sf::Vector2f( GetAllocation().Left, GetAllocation().Top );
-		m_sprite.SetPosition( relative_position );
-
-		// Draw Sprite to target
-		target.Draw( m_sprite );
-		/**/
-
-		//
-		// Uncached Variant
-		//
-
-		/*
-		if( GetChild() && GetParent() ) {
+		if( GetChild() ) {
 			unsigned int target_width = target.GetWidth();
 			unsigned int target_height = target.GetHeight();
 
@@ -83,14 +43,26 @@ void Viewport::Expose( sf::RenderTarget& target ) {
 				)
 			);
 
-			sf::Vector2f relative_position = GetParent()->GetAbsolutePosition() + sf::Vector2f( GetAllocation().Left, GetAllocation().Top );
+			float viewport_left = std::floor( Widget::GetAbsolutePosition().x + .5f ) / static_cast<float>( target_width );
+			float viewport_top = std::floor( Widget::GetAbsolutePosition().y + .5f ) / static_cast<float>( target_height );
+			float viewport_width = GetAllocation().Width / static_cast<float>( target_width );
+			float viewport_height = GetAllocation().Height / static_cast<float>( target_height );
+
+			// Make sure float to int rounding errors can't lead to streching effects.
+			if( static_cast<int>( viewport_width * static_cast<float>( target_width ) ) < static_cast<int>( GetAllocation().Width ) ) {
+				viewport_width += 1.f / static_cast<float>( target_width );
+			}
+
+			if( static_cast<int>( viewport_height * static_cast<float>( target_height ) ) < static_cast<int>( GetAllocation().Height ) ) {
+				viewport_height += 1.f / static_cast<float>( target_height );
+			}
 
 			view.SetViewport(
 				sf::FloatRect(
-					std::floor( relative_position.x + .5f ) / static_cast<float>( target_width ),
-					std::floor( relative_position.y + .5f ) / static_cast<float>( target_height ),
-					GetAllocation().Width / static_cast<float>( target_width ),
-					GetAllocation().Height / static_cast<float>( target_height )
+					viewport_left,
+					viewport_top,
+					viewport_width,
+					viewport_height
 				)
 			);
 
@@ -102,7 +74,6 @@ void Viewport::Expose( sf::RenderTarget& target ) {
 
 			target.SetView( original_view );
 		}
-		*/
 
 		OnExpose();
 	}
@@ -115,7 +86,7 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 	}
 
 	// Pass event to child
-	if( GetParent() && GetChild() ) {
+	if( GetChild() ) {
 		float offset_x = ( -GetAllocation().Left + m_horizontal_adjustment->GetValue() );
 		float offset_y = ( -GetAllocation().Top + m_vertical_adjustment->GetValue() );
 
@@ -174,45 +145,31 @@ sf::Vector2f Viewport::GetAbsolutePosition() const {
 	return sf::Vector2f( .0f, .0f );
 }
 
-void Viewport::RecreateRenderTexture() {
-	// Only recreate the RenderTexture if the content allocation size changed.
-	if( ( GetAllocation().Width != static_cast<float>( m_render_texture.GetWidth() ) ) || ( GetAllocation().Height != static_cast<float>( m_render_texture.GetHeight() ) ) ) {
-		// Avoid creating images with non-positive size and assure compatibility
-		// on systems which only support multiple-of-2 texture sizes.
-		if(
-			!m_render_texture.Create(
-				static_cast<unsigned int>( std::max( GetAllocation().Width, 2.f ) ),
-				static_cast<unsigned int>( std::max( GetAllocation().Height, 2.f ) )
-			)
-		) {
-#ifdef SFGUI_DEBUG
-			std::cerr << "Failed to create RenderImage." << std::endl;
-#endif
-		}
-
-		m_sprite.SetTexture( m_render_texture.GetTexture() );
-		m_sprite.SetSubRect( sf::IntRect( 0, 0, static_cast<int>( GetAllocation().Width ), static_cast<int>( GetAllocation().Height ) ) );
-	}
+Adjustment::Ptr Viewport::GetHorizontalAdjustment() const {
+	return m_horizontal_adjustment;
 }
 
 void Viewport::SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment ) {
 	m_horizontal_adjustment = horizontal_adjustment;
-	m_horizontal_adjustment->OnChange.Connect( &Viewport::HandleAdjustmentChange, this );
+}
+
+Adjustment::Ptr Viewport::GetVerticalAdjustment() const {
+	return m_vertical_adjustment;
 }
 
 void Viewport::SetVerticalAdjustment( Adjustment::Ptr vertical_adjustment ) {
 	m_vertical_adjustment = vertical_adjustment;
-	m_vertical_adjustment->OnChange.Connect( &Viewport::HandleAdjustmentChange, this );
 }
 
-void Viewport::HandleChildInvalidate( Widget::Ptr child  ) {
-	m_rebuild_child = true;
-
-	Container::HandleChildInvalidate( child );
-}
-
-void Viewport::HandleAdjustmentChange() {
-	m_rebuild_child = true;
+void Viewport::HandleSizeRequest() {
+	// A child just requested it's size. Because we are a viewport
+	// and have a virtual screen we give it everything it wants.
+	if( GetChild() ) {
+		sf::FloatRect new_allocation = GetChild()->GetAllocation();
+		new_allocation.Width = GetChild()->GetRequisition().x;
+		new_allocation.Height = GetChild()->GetRequisition().y;
+		GetChild()->AllocateSize( new_allocation );
+	}
 }
 
 const std::string& Viewport::GetName() const {

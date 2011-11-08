@@ -102,7 +102,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * Render widget to given target.
 		 * @param target SFML render target.
 		 */
-		void Expose( sf::RenderTarget& target );
+		virtual void Expose( sf::RenderTarget& target );
 
 		/** Invalidate widget (prepare internal sf::Drawable).
 		 * Implement InvalidateImpl() for your own code.
@@ -147,6 +147,10 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @return Absolute position.
 		 */
 		virtual sf::Vector2f GetAbsolutePosition() const;
+
+		/** Handle changing of absolute position
+		 */
+		virtual void HandleAbsolutePositionChange();
 
 		/** Update position of drawable.
 		 */

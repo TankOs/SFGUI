@@ -1,8 +1,7 @@
 #pragma once
+#include <SFGUI/Config.hpp>
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Adjustment.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/RenderTexture.hpp>
 
 namespace sfg {
 
@@ -14,26 +13,42 @@ class SFGUI_API Viewport : public Bin {
 		typedef std::shared_ptr<const Viewport>  PtrConst; //!< Shared pointer.
 
 		/** Create viewport.
-		 * @param viewport Viewport.
 		 * @return Viewport.
 		 */
 		static Ptr Create();
+
+		/** Create viewport with the provided adjustments.
+		 * @param horizontal_adjustment Horizontal adjustment.
+		 * @param vertical_adjustment Vertical adjustment.
+		 * @return Viewport.
+		 */
+		static Ptr Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
 
 		/** Expose.
 		 * Render widget to given target.
 		 * @param target SFML render target.
 		 */
-		void Expose( sf::RenderTarget& target );
+		virtual void Expose( sf::RenderTarget& target );
 
-		/** Get absolute position on screen.
-		 * @return Absolute position.
+		/** Get absolute position on virtual screen: always (0,0)
+		 * @return Absolute position on virtual screen: always (0,0).
 		 */
 		virtual sf::Vector2f GetAbsolutePosition() const;
+
+		/** Get the horizontal Adjustment for this Viewport.
+		 * @return Horizontal Adjustment for this Viewport.
+		 */
+		Adjustment::Ptr GetHorizontalAdjustment() const;
 
 		/** Set the horizontal adjustment of this Viewport
 		 * @param horizontal_adjustment Horizontal Adjustment
 		 */
 		void SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment );
+
+		/** Get the vertical Adjustment for this Viewport.
+		 * @return Vertical Adjustment for this Viewport.
+		 */
+		Adjustment::Ptr GetVerticalAdjustment() const;
 
 		/** Set the vertical adjustment of this Viewport
 		 * @param vertical_adjustment Vertical Adjustment
@@ -46,11 +61,6 @@ class SFGUI_API Viewport : public Bin {
 		 */
 		virtual void HandleEvent( const sf::Event& event );
 
-		/** Used to inform parent that a child has been invalidated
-		 * @param child Widget that was invalidated.
-		 */
-		virtual void HandleChildInvalidate( Widget::Ptr child );
-
 		virtual const std::string& GetName() const;
 
 	protected:
@@ -58,19 +68,13 @@ class SFGUI_API Viewport : public Bin {
 
 		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
 
-		void HandleAdjustmentChange();
-
 	private:
-		Viewport();
-		void RecreateRenderTexture();
+		Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
+
+		void HandleSizeRequest();
 
 		Adjustment::Ptr m_horizontal_adjustment;
 		Adjustment::Ptr m_vertical_adjustment;
-
-		sf::RenderTexture m_render_texture;
-		sf::Sprite m_sprite;
-
-		bool m_rebuild_child;
 };
 
 }

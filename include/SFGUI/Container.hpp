@@ -61,12 +61,14 @@ class SFGUI_API Container : public Widget {
 
 		virtual void HandleEvent( const sf::Event& event );
 
-		void UpdateDrawablePosition() const;
-
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
 		virtual void HandleChildInvalidate( Widget::Ptr child );
+
+		/** Handle changing of absolute position
+		 */
+		virtual void HandleAbsolutePositionChange();
 
 	protected:
 		/** Constructor.
@@ -83,7 +85,6 @@ class SFGUI_API Container : public Widget {
 		 */
 		virtual void HandleRemove( Widget::Ptr child );
 
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
 		virtual void HandleExpose( sf::RenderTarget& target );
 
 	private:

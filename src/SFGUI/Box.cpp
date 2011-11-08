@@ -44,6 +44,8 @@ void Box::HandleAdd( Widget::Ptr child ) {
 
 		Remove( child );
 	}
+
+	AllocateChildren();
 }
 
 void Box::HandleRemove( Widget::Ptr child ) {
@@ -52,6 +54,8 @@ void Box::HandleRemove( Widget::Ptr child ) {
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
 	}
+
+	AllocateChildren();
 }
 
 sf::Vector2f Box::GetRequisitionImpl() const {
@@ -93,6 +97,31 @@ sf::Vector2f Box::GetRequisitionImpl() const {
 }
 
 void Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+	AllocateChildren();
+}
+
+Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
+	widget( widget_ ),
+	expand( expand_ ),
+	fill( fill_ )
+{
+}
+
+bool Box::ChildInfo::operator==( const ChildInfo& rhs ) const {
+	return widget == rhs.widget;
+}
+
+void Box::SetSpacing( float spacing ) {
+	m_spacing = spacing;
+	RequestSize();
+	Invalidate();
+}
+
+float Box::GetSpacing() const {
+	return m_spacing;
+}
+
+void Box::AllocateChildren() {
 	ChildrenCont::iterator  iter( m_children.begin() );
 	ChildrenCont::iterator  iterend( m_children.end() );
 	sf::Vector2f  allocation( 0.f, 0.f );
@@ -169,27 +198,6 @@ void Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
 
 		--num_visible;
 	}
-}
-
-Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
-	widget( widget_ ),
-	expand( expand_ ),
-	fill( fill_ )
-{
-}
-
-bool Box::ChildInfo::operator==( const ChildInfo& rhs ) const {
-	return widget == rhs.widget;
-}
-
-void Box::SetSpacing( float spacing ) {
-	m_spacing = spacing;
-	RequestSize();
-	Invalidate();
-}
-
-float Box::GetSpacing() const {
-	return m_spacing;
 }
 
 }

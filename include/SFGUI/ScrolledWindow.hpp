@@ -96,12 +96,27 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Get child viewport.
 		 * @return Child viewport.
 		 */
-		Viewport::Ptr GetChild() const;
+		Viewport::Ptr GetViewport() const;
 
-		/** Add viewport.
-		 * @param viewport Viewport to add.
+		/** Add child with viewport.
+		 * @param widget Widget to add with viewport.
 		 */
-		void Add( Viewport::Ptr viewport );
+		void AddWithViewport( Widget::Ptr widget );
+
+		/** Add child.
+		 * @param widget Widget to add.
+		 */
+		void Add( Widget::Ptr widget );
+
+		/** Remove child (from scrolledwindow).
+		 * @param widget Widget to remove.
+		 */
+		void Remove( Widget::Ptr widget );
+
+		/** Used to inform parent that a child has been invalidated
+		 * @param child Widget that was invalidated.
+		 */
+		virtual void HandleChildInvalidate( Widget::Ptr child );
 
 	protected:
 		sf::Drawable* InvalidateImpl();
@@ -122,7 +137,6 @@ class SFGUI_API ScrolledWindow : public Container {
 		void RecalculateContentAllocation();
 
 		void HandleSizeAllocate( const sf::FloatRect& old_allocation );
-		void HandleExpose( sf::RenderTarget& target );
 		void HandleAdd( Widget::Ptr child );
 
 		Scrollbar::Ptr m_horizontal_scrollbar;

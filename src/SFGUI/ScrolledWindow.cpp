@@ -19,12 +19,7 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 }
 
 ScrolledWindow::Ptr ScrolledWindow::Create() {
-	ScrolledWindow::Ptr  ptr( new ScrolledWindow( Adjustment::Create(), Adjustment::Create() ) );
-
-	std::static_pointer_cast<Container>( ptr )->Add( ptr->m_horizontal_scrollbar );
-	std::static_pointer_cast<Container>( ptr )->Add( ptr->m_vertical_scrollbar );
-
-	return ptr;
+	return ScrolledWindow::Create( Adjustment::Create(), Adjustment::Create() );
 }
 
 ScrolledWindow::Ptr ScrolledWindow::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
@@ -142,22 +137,11 @@ sf::Drawable* ScrolledWindow::InvalidateImpl() {
 }
 
 sf::Vector2f ScrolledWindow::GetRequisitionImpl() const {
-	// A child or parent just got resized/moved,
-	// have to recalculate everything.
-	// TODO: This is wrong. Parent just asks for requisition here. Use
-	// OnSizeRequest to handle size requests.
-	m_recalc_adjustments = true;
-	m_recalc_content_allocation = true;
+	float scrollbar_width( Context::Get().GetEngine().GetProperty<float>( "ScrollbarWidth", shared_from_this() ) );
+	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrollbarSpacing", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
-	// The only child, always gets what it wants ;)
-	if( GetChild() && GetChild()->GetChild() ) {
-		sf::FloatRect new_allocation = GetChild()->GetChild()->GetAllocation();
-		new_allocation.Width = GetChild()->GetChild()->GetRequisition().x;
-		new_allocation.Height = GetChild()->GetChild()->GetRequisition().y;
-		GetChild()->GetChild()->AllocateSize( new_allocation );
-	}
-
-	return sf::Vector2f( 0.f, 0.f );
+	return sf::Vector2f( scrollbar_width + scrollbar_spacing + border_width, scrollbar_width + scrollbar_spacing + border_width );
 }
 
 void ScrolledWindow::RecalculateAdjustments() const {
@@ -165,8 +149,8 @@ void ScrolledWindow::RecalculateAdjustments() const {
 	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrollbarSpacing", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
-	if( GetChild() && GetChild()->GetChild() ) {
-		float max_horiz_val = std::max( GetChild()->GetChild()->GetAllocation().Width + 2.f, GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+	if( GetViewport() && GetViewport()->GetChild() ) {
+		float max_horiz_val = std::max( GetViewport()->GetChild()->GetAllocation().Width + 2.f, GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
 		Adjustment::Ptr h_adjustment = m_horizontal_scrollbar->GetAdjustment();
 		h_adjustment->SetLower( .0f );
@@ -175,7 +159,7 @@ void ScrolledWindow::RecalculateAdjustments() const {
 		h_adjustment->SetMajorStep( GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 		h_adjustment->SetPageSize( GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
-		float max_vert_val = std::max( GetChild()->GetChild()->GetAllocation().Height + 2.f, GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		float max_vert_val = std::max( GetViewport()->GetChild()->GetAllocation().Height + 2.f, GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
 		Adjustment::Ptr v_adjustment = m_vertical_scrollbar->GetAdjustment();
 		v_adjustment->SetLower( .0f );
@@ -187,6 +171,9 @@ void ScrolledWindow::RecalculateAdjustments() const {
 
 	m_recalc_adjustments = false;
 	m_recalc_content_allocation = true;
+
+	m_horizontal_scrollbar->Show( IsHorizontalScrollbarVisible() );
+	m_vertical_scrollbar->Show( IsVerticalScrollbarVisible() );
 }
 
 void ScrolledWindow::RecalculateContentAllocation() {
@@ -259,14 +246,14 @@ void ScrolledWindow::RecalculateContentAllocation() {
 	}
 
 	// Update Scrollbars and viewport allocation if the content allocation changed.
-	if( GetChild() ) {
+	if( GetViewport() ) {
 		m_horizontal_scrollbar->GetAdjustment()->SetMajorStep( m_content_allocation.Width );
 		m_horizontal_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.Width );
 
 		m_vertical_scrollbar->GetAdjustment()->SetMajorStep( m_content_allocation.Height );
 		m_vertical_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.Height );
 
-		GetChild()->AllocateSize( m_content_allocation );
+		GetViewport()->AllocateSize( m_content_allocation );
 	}
 
 	m_recalc_content_allocation = false;
@@ -275,39 +262,10 @@ void ScrolledWindow::RecalculateContentAllocation() {
 void ScrolledWindow::HandleSizeAllocate( const sf::FloatRect& old_allocation ) {
 	Container::HandleSizeAllocate( old_allocation );
 
-	// Don't go through expensive content recalculation if the allocation
-	// of the ScrolledWindow didn't even change. HandleSizeAllocate is used
-	// by some Widgets to signal other kinds of changes.
-	if( old_allocation.Top == GetAllocation().Top &&
-			old_allocation.Left == GetAllocation().Left &&
-			old_allocation.Width == GetAllocation().Width &&
-			old_allocation.Height == GetAllocation().Height ) {
-	}
-	else {
-		m_recalc_adjustments = true;
-		m_recalc_content_allocation = true;
-		Invalidate();
-	}
-}
-
-void ScrolledWindow::HandleExpose( sf::RenderTarget& target ) {
-	// Draw the Scrollbars
-	if( IsHorizontalScrollbarVisible() ) {
-		m_horizontal_scrollbar->Expose( target );
-	}
-
-	if( IsVerticalScrollbarVisible() ) {
-		m_vertical_scrollbar->Expose( target );
-	}
-
-	Viewport::Ptr viewport = std::static_pointer_cast<Viewport>( GetChild() );
-
-	// If there is no child no need to proceed beyond here.
-	if( !viewport ) {
-		return;
-	}
-
-	viewport->Expose( target );
+	// A parent caused us to move/resize, have to recalculate everything.
+	m_recalc_adjustments = true;
+	m_recalc_content_allocation = true;
+	Invalidate();
 }
 
 void ScrolledWindow::HandleAdd( Widget::Ptr child ) {
@@ -325,19 +283,47 @@ void ScrolledWindow::HandleAdd( Widget::Ptr child ) {
 	Invalidate();
 }
 
-void ScrolledWindow::Add( Viewport::Ptr widget ) {
-	widget->SetHorizontalAdjustment( m_horizontal_scrollbar->GetAdjustment() );
-	widget->SetVerticalAdjustment( m_vertical_scrollbar->GetAdjustment() );
+void ScrolledWindow::AddWithViewport( Widget::Ptr widget ) {
+	Viewport::Ptr viewport = Viewport::Create();
 
-	Container::Add( widget );
+	viewport->SetHorizontalAdjustment( m_horizontal_scrollbar->GetAdjustment() );
+	viewport->SetVerticalAdjustment( m_vertical_scrollbar->GetAdjustment() );
+
+	viewport->Add( widget );
+
+	Container::Add( viewport );
 }
 
-Viewport::Ptr ScrolledWindow::GetChild() const {
+void ScrolledWindow::Add( Widget::Ptr /*widget*/ ) {
+#ifdef SFGUI_DEBUG
+	std::cerr << "SFGUI warning: Widgets can only be added to a ScrolledWindow with a Viewport." << std::endl;
+#endif
+}
+
+void ScrolledWindow::Remove( Widget::Ptr widget ) {
+	Viewport::Ptr viewport = GetViewport();
+
+	if( viewport->GetChild() == widget ) {
+		viewport->Remove( widget );
+		Container::Remove( viewport );
+	}
+}
+
+Viewport::Ptr ScrolledWindow::GetViewport() const {
 	if( GetChildren().size() < 3 ) {
 		return Viewport::Ptr();
 	}
 
 	return std::static_pointer_cast<Viewport>( *( --GetChildren().end() ) );
+}
+
+void ScrolledWindow::HandleChildInvalidate( Widget::Ptr child  ) {
+	// A child just got invalidated, have to recalculate everything.
+	m_recalc_adjustments = true;
+	m_recalc_content_allocation = true;
+	Invalidate();
+
+	Container::HandleChildInvalidate( child );
 }
 
 const std::string& ScrolledWindow::GetName() const {

@@ -65,6 +65,10 @@ void Window::SetStyle( int style ) {
 
 	RequestSize();
 	Invalidate();
+
+	if( GetChild() ) {
+		GetChild()->AllocateSize( GetClientRect() );
+	}
 }
 
 int Window::GetStyle() const {

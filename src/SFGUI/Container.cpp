@@ -53,10 +53,6 @@ void Container::HandleExpose( sf::RenderTarget& target ) {
 	}
 }
 
-void Container::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
-	UpdateDrawablePosition();
-}
-
 void Container::SetBorderWidth( float width ) {
 	m_border_width = width;
 	RequestSize();
@@ -124,19 +120,6 @@ void Container::HandleEvent( const sf::Event& event ) {
 	Widget::HandleEvent( event );
 }
 
-void Container::UpdateDrawablePosition() const {
-	WidgetsList::const_iterator iter( m_children.begin() );
-	WidgetsList::const_iterator iter_end( m_children.end() );
-
-	// Update children's drawable positions.
-	for( ; iter != iter_end; ++iter ) {
-		(*iter)->UpdateDrawablePosition();
-	}
-
-	// Update own drawable position.
-	Widget::UpdateDrawablePosition();
-}
-
 void Container::HandleAdd( Widget::Ptr /*child*/ ) {
 }
 
@@ -149,6 +132,19 @@ void Container::HandleChildInvalidate( Widget::Ptr child  ) {
 	if( parent ) {
 		parent->HandleChildInvalidate( child );
 	}
+}
+
+void Container::HandleAbsolutePositionChange() {
+	WidgetsList::const_iterator iter( m_children.begin() );
+	WidgetsList::const_iterator iter_end( m_children.end() );
+
+	// Update children's drawable positions.
+	for( ; iter != iter_end; ++iter ) {
+		(*iter)->HandleAbsolutePositionChange();
+	}
+
+	// Update own drawable position.
+	UpdateDrawablePosition();
 }
 
 }
