@@ -91,18 +91,14 @@ void Table::UpdateRequisitions() const {
 			cell_iter->child->GetRequisition().x + m_columns[cell_iter->rect.Left].spacing + 2.f * cell_iter->padding.x
 		);
 
-		if( !m_columns[cell_iter->rect.Left].expand ) {
-			m_columns[cell_iter->rect.Left].expand = (cell_iter->x_options & EXPAND);
-		}
+		m_columns[cell_iter->rect.Left].expand = ((m_columns[cell_iter->rect.Left].expand) || ((cell_iter->x_options & EXPAND) == EXPAND));
 
 		m_rows[cell_iter->rect.Top].requisition = std::max(
 			m_rows[cell_iter->rect.Top].requisition,
 			cell_iter->child->GetRequisition().y + m_rows[cell_iter->rect.Top].spacing + 2.f * cell_iter->padding.y
 		);
 
-		if( !m_rows[cell_iter->rect.Top].expand ) {
-			m_rows[cell_iter->rect.Top].expand = (cell_iter->y_options & EXPAND);
-		}
+		m_rows[cell_iter->rect.Top].expand = ((m_rows[cell_iter->rect.Top].expand) || ((cell_iter->y_options & EXPAND) == EXPAND));
 	}
 }
 
@@ -154,7 +150,7 @@ void Table::AllocateChildrenSizes() {
 	float height( 0.f );
 	num_expand = 0;
 
-	// Calculate "normal" height of columns and count expanded rows.
+	// Calculate "normal" height of rows and count expanded rows.
 	for( std::size_t row_index = 0; row_index < m_rows.size(); ++row_index ) {
 		// Every allocaction will be at least as wide as the requisition.
 		m_rows[row_index].allocation = m_rows[row_index].requisition;
@@ -207,8 +203,8 @@ void Table::AllocateChildrenSizes() {
 			sf::FloatRect(
 				column.position + cell_iter->padding.x,
 				row.position + cell_iter->padding.y,
-				(cell_iter->x_options & FILL) ? column.allocation - column.spacing - 2.f * cell_iter->padding.x : cell_iter->child->GetRequisition().x,
-				(cell_iter->y_options & FILL) ? row.allocation - row.spacing - 2.f * cell_iter->padding.y : cell_iter->child->GetRequisition().y
+				(cell_iter->x_options & FILL) == FILL ? column.allocation - column.spacing - 2.f * cell_iter->padding.x : cell_iter->child->GetRequisition().x,
+				(cell_iter->y_options & FILL) == FILL ? row.allocation - row.spacing - 2.f * cell_iter->padding.y : cell_iter->child->GetRequisition().y
 			)
 		);
 	}

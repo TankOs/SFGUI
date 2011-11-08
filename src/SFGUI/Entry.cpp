@@ -255,7 +255,7 @@ sf::Vector2f Entry::GetRequisitionImpl() const {
 
 	float line_height = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
-	return sf::Vector2f( 0.f, line_height + 2 * ( border_width + text_padding ) );
+	return sf::Vector2f( 2 * (border_width + text_padding), line_height + 2 * ( border_width + text_padding ) );
 }
 
 bool Entry::IsCursorVisible() const {
