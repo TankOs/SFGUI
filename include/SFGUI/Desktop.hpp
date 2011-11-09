@@ -12,6 +12,7 @@
 
 namespace sf {
 class Event;
+class Window;
 }
 
 namespace sfg {
@@ -28,6 +29,11 @@ class SFGUI_API Desktop {
 		 * @param viewport Viewport.
 		 */
 		Desktop( const sf::FloatRect& viewport );
+
+		/** Ctor.
+		 * @param window Window which size is used for the desktop's viewport.
+		 */
+		Desktop( const sf::Window& window );
 
 		/** Use a custom engine.
 		 */

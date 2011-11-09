@@ -1,10 +1,17 @@
 #include <SFGUI/Desktop.hpp>
 #include <SFGUI/Container.hpp>
 
+#include <SFML/Window.hpp>
+
 namespace sfg {
 
 Desktop::Desktop( const sf::FloatRect& viewport ) :
 	m_view( viewport )
+{
+}
+
+Desktop::Desktop( const sf::Window& window ) :
+	m_view( sf::FloatRect( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) ) )
 {
 }
 
