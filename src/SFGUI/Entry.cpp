@@ -300,7 +300,7 @@ void Entry::SetMaximumLength( std::size_t max_length ) {
 	m_max_length = max_length;
 
 	// Truncate text if longer than maximum.
-	if( m_max_length < m_string.GetSize() ) {
+	if( m_max_length < m_string.GetSize() && m_max_length != 0 ) {
 		m_string.Erase( m_max_length, m_max_length - m_string.GetSize() );
 		RecalculateVisibleString();
 		OnTextChanged();
