@@ -12,7 +12,8 @@ Entry::Entry() :
 	m_visible_offset( 0 ),
 	m_cursor_position( 0 ),
 	m_cursor_status( false ),
-	m_text_placeholder( 0 )
+	m_text_placeholder( 0 ),
+	m_maximum_text_length( 0 )
 {
 }
 
@@ -143,12 +144,15 @@ void Entry::MoveCursor( int delta ) {
 }
 
 void Entry::HandleTextEvent( sf::Uint32 character ) {
-	if( character > 0x1f && character != 0x7f ) {
-		// not a control character
-		m_string.Insert( m_cursor_position, character );
-		MoveCursor( 1 );
+	if(m_maximum_text_length == 0 || (m_string.GetSize() < m_maximum_text_length))
+	{
+		if( character > 0x1f && character != 0x7f) {
+			// not a control character
+			m_string.Insert( m_cursor_position, character );
+			MoveCursor( 1 );
 
-		OnTextChanged();
+			OnTextChanged();
+		}
 	}
 }
 
@@ -285,6 +289,14 @@ const sf::String& Entry::GetVisibleText() const {
 const std::string& Entry::GetName() const {
 	static const std::string name( "Entry" );
 	return name;
+}
+
+std::size_t Entry::GetMaximumTextLength() const {
+	return m_maximum_text_length;
+}
+
+void Entry::SetMaximumTextLength( std::size_t s ) {
+	m_maximum_text_length = s;
 }
 
 }
