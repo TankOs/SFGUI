@@ -65,15 +65,15 @@ class SFGUI_API Entry : public Widget {
 		 */
 		sf::Uint32 GetHideCharacter() const;
 		
-		/** Get the maximum text length that the Entry allows
-		 * @return the maximum text length or 0 if disabled
+		/** Get maximum length.
+		 * @return Maximum length (0 if disabled).
 		 */
-		std::size_t GetMaximumTextLength() const;
+		std::size_t GetMaximumLength() const;
 		
-		/** Set the maximum text length that the Entry allows. THe user can't type a new character if this limit is reached.
-		 * @param teh maximum text length (0 to not limit text length).
+		/** Set maximum length.
+		 * @param max_length Maximum length (0 to disable).
 		 */
-		void SetMaximumTextLength( std::size_t s );
+		void SetMaximumLength( std::size_t max_length );
 
 		Signal OnTextChanged; //!< Fired when the text changes.
 
@@ -125,7 +125,7 @@ class SFGUI_API Entry : public Widget {
 		sf::Uint32 m_text_placeholder;
 		
 		// The maximum text lenght. If it equals to 0, it disables this limit
-		std::size_t m_maximum_text_length;
+		std::size_t m_max_length;
 };
 
 }
