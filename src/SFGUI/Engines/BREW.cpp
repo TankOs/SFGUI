@@ -76,6 +76,7 @@ sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const
 	float shadow_distance( GetProperty<float>( "ShadowDistance", window ) );
 	float handle_size( GetProperty<float>( "HandleSize", window ) );
 	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
+	const sf::Font& title_font( LoadFontFromFile( GetProperty<std::string>( "FontName", window ) ) );
 	unsigned int title_font_size( GetProperty<unsigned int>( "FontSize", window ) );
 
 	if( window->HasStyle( Window::Background ) ) {
@@ -136,7 +137,7 @@ sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const
 		sf::Text*  title_text(
 			new sf::Text(
 				window->GetTitle(),
-				sf::Font::GetDefaultFont(),
+				title_font,
 				title_font_size
 			)
 		);

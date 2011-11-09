@@ -14,6 +14,7 @@ build_example( "Box" "Box.cpp" )
 build_example( "Entry" "Entry.cpp" )
 build_example( "Range" "Range.cpp" )
 build_example( "Desktop" "Desktop.cpp" )
+build_example( "Signals" "Signals.cpp" )
 
 build_example( "GuessMyNumber" "GuessMyNumber.cpp" )
 
