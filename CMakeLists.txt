@@ -7,6 +7,7 @@ endif()
 project( SFGUI )
 
 find_package( SFML 2.0 REQUIRED GRAPHICS WINDOW SYSTEM )
+find_package( OpenGL REQUIRED )
 
 if( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
 	set( WINDOWS 1 )
@@ -118,6 +119,7 @@ set(
 
 include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
+include_directories( ${OPENGL_INCLUDE_DIR} )
 
 if( NOT SFGUI_STATIC )
 	add_library( sfgui SHARED ${SOURCES} )
