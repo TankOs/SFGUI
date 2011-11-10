@@ -27,6 +27,7 @@ class Scale;
 class Scrollbar;
 class ScrolledWindow;
 class ToggleButton;
+class CheckButton;
 
 /** Abstract base class for widget rendering.
  */
@@ -55,6 +56,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual sf::Drawable* CreateToggleButtonDrawable( std::shared_ptr<ToggleButton> button ) const = 0;
+
+		/** Create drawable for check button widgets.
+		 * @param check Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual sf::Drawable* CreateCheckButtonDrawable( std::shared_ptr<CheckButton> check ) const = 0;
 
 		/** Create drawable for label widgets.
 		 * @param label Widget.

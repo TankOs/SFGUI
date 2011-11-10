@@ -16,6 +16,7 @@ class SFGUI_API ToggleButton : public Button {
 		typedef std::shared_ptr<const ToggleButton> PtrConst; //!< Shared pointer to const.
 
 		/** Create toggle button.
+		 * @param label Label.
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 

@@ -18,6 +18,7 @@ class SFGUI_API BREW : public Engine {
 		sf::Drawable* CreateWindowDrawable( std::shared_ptr<Window> window ) const;
 		sf::Drawable* CreateButtonDrawable( std::shared_ptr<Button> button ) const;
 		sf::Drawable* CreateToggleButtonDrawable( std::shared_ptr<ToggleButton> button ) const;
+		sf::Drawable* CreateCheckButtonDrawable( std::shared_ptr<CheckButton> check ) const;
 		sf::Drawable* CreateLabelDrawable( std::shared_ptr<Label> label ) const;
 		sf::Drawable* CreateEntryDrawable( std::shared_ptr<Entry> entry ) const;
 		sf::Drawable* CreateScaleDrawable( std::shared_ptr<Scale> scale ) const;

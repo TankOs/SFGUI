@@ -10,6 +10,7 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/ToggleButton.hpp>
+#include <SFGUI/CheckButton.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -27,6 +28,7 @@ class SampleApp {
 		void OnHideWindowClicked();
 		void OnRangeValueChange();
 		void OnToggleSpaceClick();
+		void OnLimitCharsToggle();
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -36,6 +38,7 @@ class SampleApp {
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
 		sfg::Box::Ptr m_scrolled_window_box;
 		sfg::ToggleButton::Ptr m_titlebar_toggle;
+		sfg::CheckButton::Ptr m_limit_check;
 
 		sfg::Desktop m_desktop;
 
@@ -105,6 +108,8 @@ void SampleApp::Run() {
 	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 
+	m_limit_check = sfg::CheckButton::Create( L"Limit to 4 chars" );
+
 	sfg::Label::Ptr test_label( sfg::Label::Create( L"Foobar?" ) );
 	sfg::Label::Ptr another_label( sfg::Label::Create( L"Meow?" ) );
 
@@ -119,6 +124,7 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( m_titlebar_toggle, false );
 	boxtoolbar->Pack( btnhidewindow, false );
 	boxtoolbar->Pack( m_entry, true );
+	boxtoolbar->Pack( m_limit_check, false );
 	boxtoolbar->Pack( btntogglespace, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
@@ -178,6 +184,7 @@ void SampleApp::Run() {
 	m_titlebar_toggle->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
 	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
 	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
+	m_limit_check->OnToggle.Connect( &SampleApp::OnLimitCharsToggle, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -266,6 +273,15 @@ void SampleApp::OnToggleSpaceClick() {
 	else {
 		m_scrolled_window_box->SetSpacing( 10.f );
 		m_scrolled_window_box->SetBorderWidth( 30.f );
+	}
+}
+
+void SampleApp::OnLimitCharsToggle() {
+	if( m_limit_check->IsActive() ) {
+		m_entry->SetMaximumLength( 4 );
+	}
+	else {
+		m_entry->SetMaximumLength( 0 );
 	}
 }
 
