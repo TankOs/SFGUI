@@ -5,7 +5,9 @@
 
 namespace sfg {
 
-Table::Table() {
+Table::Table() :
+	m_general_spacings( 0.f, 0.f )
+{
 }
 
 Table::Ptr Table::Create() {
@@ -47,11 +49,23 @@ void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_
 
 	// Check if we need to enlarge rows/columns.
 	if( rect.Left + rect.Width >= m_columns.size() ) {
+		std::size_t old_size( m_columns.size() );
 		m_columns.resize( rect.Left + rect.Width );
+
+		// Set default spacings.
+		for( std::size_t col_index = old_size; col_index < m_columns.size(); ++col_index ) {
+			m_columns[col_index].spacing = m_general_spacings.x;
+		}
 	}
 
 	if( rect.Top + rect.Height >= m_rows.size() ) {
+		std::size_t old_size( m_rows.size() );
 		m_rows.resize( rect.Top + rect.Height );
+
+		// Set default spacings.
+		for( std::size_t row_index = old_size; row_index < m_rows.size(); ++row_index ) {
+			m_rows[row_index].spacing = m_general_spacings.y;
+		}
 	}
 
 	// Add widget to container.
@@ -365,6 +379,8 @@ void Table::SetColumnSpacings( float spacing ) {
 		m_columns[column_index].spacing = spacing;
 	}
 
+	m_general_spacings.x = spacing;
+
 	RequestSize();
 }
 
@@ -372,6 +388,8 @@ void Table::SetRowSpacings( float spacing ) {
 	for( std::size_t row_index = 0; row_index < m_rows.size(); ++row_index ) {
 		m_rows[row_index].spacing = spacing;
 	}
+
+	m_general_spacings.y = spacing;
 
 	RequestSize();
 }

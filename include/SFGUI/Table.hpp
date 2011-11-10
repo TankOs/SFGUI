@@ -74,6 +74,8 @@ class SFGUI_API Table : public Container {
 		TableCellList m_cells;
 		mutable TableOptionsArray m_columns;
 		mutable TableOptionsArray m_rows;
+
+		sf::Vector2f m_general_spacings;
 };
 
 }

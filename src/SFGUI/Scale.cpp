@@ -29,7 +29,7 @@ Scale::Orientation Scale::GetOrientation() const {
 }
 
 const sf::FloatRect Scale::GetSliderRect() const {
-	float slider_length( 15.f );
+	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
 	float slider_width( m_orientation == Horizontal ? GetAllocation().Height : GetAllocation().Width );
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
@@ -57,13 +57,14 @@ sf::Drawable* Scale::InvalidateImpl() {
 }
 
 sf::Vector2f Scale::GetRequisitionImpl() const {
+	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
 	float slider_width( m_orientation == Horizontal ? GetAllocation().Height : GetAllocation().Width );
 
 	if( m_orientation == Horizontal ) {
-		return sf::Vector2f( 0.f, slider_width );
+		return sf::Vector2f( slider_length * 2.f, slider_width );
 	}
 	else {
-		return sf::Vector2f( slider_width, 0.f );
+		return sf::Vector2f( slider_width, slider_length * 2.f );
 	}
 }
 

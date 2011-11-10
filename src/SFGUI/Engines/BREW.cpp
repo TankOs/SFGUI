@@ -69,6 +69,7 @@ BREW::BREW() :
 
 	// Scale-specific.
 	SetProperty( "Scale", "SliderColor", sf::Color( 0x68, 0x6a, 0x65 ) );
+	SetProperty( "Scale", "SliderLength", 15.f );
 	SetProperty( "Scale", "TroughColor", sf::Color( 0x70, 0x70, 0x70 ) );
 	SetProperty( "Scale", "TroughWidth", 5.f );
 
