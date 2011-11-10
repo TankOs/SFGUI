@@ -1,4 +1,5 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Label.hpp>
@@ -109,8 +110,8 @@ RenderQueue* BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) 
 	float shadow_distance( GetProperty<float>( "ShadowDistance", window ) );
 	float handle_size( GetProperty<float>( "HandleSize", window ) );
 	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
-	const sf::Font& title_font( LoadFontFromFile( GetProperty<std::string>( "FontName", window ) ) );
 	unsigned int title_font_size( GetProperty<unsigned int>( "FontSize", window ) );
+	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
 
 	if( window->HasStyle( Window::Background ) ) {
 		// Shadow.
@@ -332,7 +333,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton>
 }
 
 RenderQueue* BREW::CreateLabelDrawable( std::shared_ptr<const Label> label ) const {
-	const sf::Font& font( LoadFontFromFile( GetProperty<std::string>( "FontName", label ) ) );
+	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", label ) ) );
 	const unsigned int font_size( GetProperty<unsigned int>( "FontSize", label ) );
 	const sf::Color font_color( GetProperty<sf::Color>( "Color", label ) );
 
@@ -360,7 +361,7 @@ RenderQueue* BREW::CreateEntryDrawable( std::shared_ptr<const Entry> entry ) con
 	float text_padding( GetProperty<float>( "Padding", entry ) );
 	float cursor_thickness( GetProperty<float>( "Thickness", entry ) );
 	float border_width( GetProperty<float>( "BorderWidth", entry ) );
-	const sf::Font&  font( LoadFontFromFile( GetProperty<std::string>( "FontName", entry ) ) );
+	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", entry ) ) );
 	const unsigned int&  font_size( GetProperty<unsigned int>( "FontSize", entry ) );
 
 	RenderQueue* queue( new RenderQueue );

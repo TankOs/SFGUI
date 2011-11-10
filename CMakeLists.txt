@@ -71,12 +71,16 @@ set(
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
 	${INC_DIR}/SFGUI/Entry.hpp
 	${INC_DIR}/SFGUI/FastDelegate.hpp
+	${INC_DIR}/SFGUI/FileResourceLoader.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/NonCopyable.hpp
 	${INC_DIR}/SFGUI/Object.hpp
 	${INC_DIR}/SFGUI/ProgressBar.hpp
 	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
+	${INC_DIR}/SFGUI/ResourceLoader.hpp
+	${INC_DIR}/SFGUI/ResourceManager.hpp
+	${INC_DIR}/SFGUI/ResourceManager.inl
 	${INC_DIR}/SFGUI/Scale.hpp
 	${INC_DIR}/SFGUI/Scrollbar.hpp
 	${INC_DIR}/SFGUI/ScrolledWindow.hpp
@@ -102,12 +106,15 @@ set(
 	${SRC_DIR}/SFGUI/Engine.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
 	${SRC_DIR}/SFGUI/Entry.cpp
+	${SRC_DIR}/SFGUI/FileResourceLoader.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/NonCopyable.cpp
 	${SRC_DIR}/SFGUI/Object.cpp
 	${SRC_DIR}/SFGUI/ProgressBar.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
+	${SRC_DIR}/SFGUI/ResourceLoader.cpp
+	${SRC_DIR}/SFGUI/ResourceManager.cpp
 	${SRC_DIR}/SFGUI/Scale.cpp
 	${SRC_DIR}/SFGUI/Scrollbar.cpp
 	${SRC_DIR}/SFGUI/ScrolledWindow.cpp

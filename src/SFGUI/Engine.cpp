@@ -70,26 +70,6 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );
 }
 
-const sf::Font& Engine::LoadFontFromFile( const std::string& filename ) const {
-	if( filename.empty() ) {
-		return sf::Font::GetDefaultFont();
-	}
-
-	FontMap::const_iterator  iter( m_fonts.find( filename ) );
-
-	if( iter != m_fonts.end() ) {
-		return iter->second;
-	}
-
-	sf::Font  font;
-	if( !font.LoadFromFile( filename ) ) {
-		return sf::Font::GetDefaultFont();
-	}
-
-	m_fonts[filename] = font;
-	return m_fonts[filename];
-}
-
 bool Engine::LoadThemeFromFile( const std::string& filename ) {
 #ifndef SFGUI_WITH_STYLE_PARSER
 	#ifdef SFGUI_DEBUG
@@ -205,6 +185,10 @@ const std::string* Engine::GetValue( const std::string& property, std::shared_pt
 	}
 
 	return 0;
+}
+
+ResourceManager& Engine::GetResourceManager() const {
+	return m_resource_manager;
 }
 
 }

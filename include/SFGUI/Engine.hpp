@@ -3,10 +3,9 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Selector.hpp>
+#include <SFGUI/ResourceManager.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Font.hpp>
-#include <SFML/System/String.hpp>
 #include <string>
 #include <map>
 #include <list>
@@ -15,6 +14,9 @@
 namespace sf {
 SFGUI_API std::ostream& operator<<( std::ostream& stream, const Color& color );
 SFGUI_API std::istream& operator>>( std::istream& stream, Color& color );
+
+class String;
+class Font;
 }
 
 namespace sfg {
@@ -133,13 +135,6 @@ class SFGUI_API Engine {
 		template <typename T>
 		T GetProperty( const std::string& property, std::shared_ptr<const Widget> widget = Widget::Ptr() ) const;
 
-		/** Load a font from file.
-		 * If the proper file was loaded before, it gets returned immediately.
-		 * @param filename Filename.
-		 * @return Font or sf::Font::GetDefaultFont() if failed to load.
-		 */
-		const sf::Font& LoadFontFromFile( const std::string& filename ) const;
-
 		/** Load a theme from file.
 		 * @param filename Filename.
 		 * @return true on success, false otherwise.
@@ -153,9 +148,12 @@ class SFGUI_API Engine {
 		 */
 		void ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, int offset ) const;
 
-	private:
-		typedef std::map<const std::string, sf::Font> FontMap;
+		/** Get resource manager.
+		 * @return Resource manager.
+		 */
+		ResourceManager& GetResourceManager() const;
 
+	private:
 		typedef std::pair<Selector::PtrConst, std::string> SelectorValuePair;
 		typedef std::list<SelectorValuePair> SelectorValueList;
 		typedef std::map<const std::string, SelectorValueList> WidgetNameMap;
@@ -165,7 +163,7 @@ class SFGUI_API Engine {
 
 		PropertyMap m_properties;
 
-		mutable FontMap m_fonts;
+		mutable ResourceManager m_resource_manager;
 };
 
 }

@@ -2,6 +2,8 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Engines/BREW.hpp>
+
+#include <SFML/Graphics/Font.hpp>
 #include <cmath>
 
 namespace sfg {
@@ -64,13 +66,12 @@ sf::Uint32 Entry::GetHideCharacter() const {
 
 std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
-	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
-
   std::basic_string<sf::Uint32> string( m_visible_string.Begin(), m_visible_string.End() );
 	float text_start = GetAllocation().Left + 2.f;
 	float last_delta = std::fabs( text_start - (float)mouse_pos_x );
 	std::size_t cursor_position = 0;
+	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 	for( cursor_position = 0; cursor_position < string.size(); cursor_position++ ) {
 		float text_length = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, cursor_position + 1 ), font, font_size ).x;
@@ -90,8 +91,8 @@ std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 void Entry::RecalculateVisibleString() const {
 	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
-	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
+	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 	if( m_string.IsEmpty() ) {
 		m_visible_string.Clear();
@@ -265,11 +266,10 @@ void Entry::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const 
 
 sf::Vector2f Entry::GetRequisitionImpl() const {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
-	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
-
+	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 	float line_height = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
 	return sf::Vector2f( 2 * (border_width + text_padding), line_height + 2 * ( border_width + text_padding ) );

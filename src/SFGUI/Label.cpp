@@ -2,6 +2,8 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <SFML/Graphics/Font.hpp>
+
 namespace sfg {
 
 Label::Label( const sf::String& text ) :
@@ -35,8 +37,8 @@ RenderQueue* Label::InvalidateImpl() const {
 
 sf::Vector2f Label::GetRequisitionImpl() const {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
-	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
+	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( m_text, font, font_size );
 	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );

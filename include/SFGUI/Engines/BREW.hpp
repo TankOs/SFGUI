@@ -2,9 +2,10 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Engine.hpp>
-#include <SFGUI/RenderQueue.hpp>
 
 namespace sfg {
+class RenderQueue;
+
 namespace eng {
 
 /** BREW -- Basic Rendering Engine for Widget (reference implementation).
