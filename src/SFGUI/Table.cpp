@@ -2,7 +2,6 @@
 
 #include <set>
 #include <cassert>
-#include <iostream> // XXX 
 
 namespace sfg {
 
