@@ -18,6 +18,10 @@ class SFGUI_API Button : public Bin {
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
+		/** Dtor.
+		 */
+		virtual ~Button();
+
 		virtual const std::string& GetName() const;
 
 		/** Set label.
@@ -30,33 +34,24 @@ class SFGUI_API Button : public Bin {
 		 */
 		const sf::String& GetLabel() const;
 
-		/** Set padding.
-		 * @param padding Padding.
-		 */
-		void SetPadding( float padding );
-
-		/** Get padding.
-		 * @return Padding.
-		 */
-		float GetPadding() const;
-
 		Signal OnClick; //!< Fired when button clicked.
 
 	protected:
-		sf::Drawable* InvalidateImpl();
-		sf::Vector2f GetRequisitionImpl() const;
-
-	private:
+		/** Ctor.
+		 */
 		Button();
 
+		virtual sf::Drawable* InvalidateImpl();
+		virtual sf::Vector2f GetRequisitionImpl() const;
+
+	private:
 		void HandleMouseEnter( int x, int y );
 		void HandleMouseLeave( int x, int y );
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		void HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
 		void HandleMouseClick( int x, int y );
 
 		Label::Ptr  m_label;
-		float m_padding;
 };
 
 }

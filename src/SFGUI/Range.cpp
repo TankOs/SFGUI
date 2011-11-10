@@ -9,6 +9,9 @@ Range::Range() :
 	SetAdjustment( Adjustment::Create() );
 }
 
+Range::~Range() {
+}
+
 Adjustment::Ptr Range::GetAdjustment() const {
 	return m_adjustment;
 }

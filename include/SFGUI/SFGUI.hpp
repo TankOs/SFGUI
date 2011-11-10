@@ -17,3 +17,5 @@
 #include <SFGUI/ScrolledWindow.hpp>
 #include <SFGUI/Table.hpp>
 #include <SFGUI/Window.hpp>
+#include <SFGUI/ToggleButton.hpp>
+#include <SFGUI/CheckButton.hpp>

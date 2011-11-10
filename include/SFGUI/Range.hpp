@@ -12,6 +12,10 @@ class SFGUI_API Range : public Widget {
 		typedef std::shared_ptr<Range>  Ptr; //!< Shared pointer.
 		typedef std::shared_ptr<const Range>  PtrConst; //!< Shared pointer.
 
+		/** Dtor.
+		 */
+		virtual ~Range();
+
 		/** Get the Adjustment for this Range widget.
 		 * @return Adjustment for this Range widget.
 		 */

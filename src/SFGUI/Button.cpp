@@ -6,16 +6,17 @@ namespace sfg {
 
 Button::Button() :
 	Bin(),
-	m_label( Label::Create( L"" ) ),
-	m_padding( 5.f )
+	m_label( Label::Create( L"" ) )
 {
+}
+
+Button::~Button() {
 }
 
 Button::Ptr Button::Create( const sf::String& label ) {
 	Button::Ptr  ptr( new Button );
 
 	ptr->SetLabel( label );
-	ptr->Add( ptr->m_label );
 
 	return ptr;
 }
@@ -28,6 +29,10 @@ sf::Drawable* Button::InvalidateImpl() {
 }
 
 void Button::SetLabel( const sf::String& label ) {
+	if( !GetChild() ) {
+		Add( m_label );
+	}
+
 	m_label->SetText( label );
 	RequestSize();
 	Invalidate();
@@ -66,33 +71,26 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 }
 
 void Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+
 	sf::FloatRect  label_allocation(
-		GetBorderWidth() + m_padding,
-		GetBorderWidth() + m_padding,
-		GetAllocation().Width - 2 * GetBorderWidth() - 2 * m_padding,
-		GetAllocation().Height - 2 * GetBorderWidth() - 2 * m_padding
+		GetBorderWidth() + padding,
+		GetBorderWidth() + padding,
+		GetAllocation().Width - 2 * GetBorderWidth() - 2 * padding,
+		GetAllocation().Height - 2 * GetBorderWidth() - 2 * padding
 	);
 
 	m_label->AllocateSize( label_allocation );
 }
 
 sf::Vector2f Button::GetRequisitionImpl() const {
-	sf::Vector2f  requisition( m_label->GetRequisition() );
+	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+	sf::Vector2f requisition( m_label->GetRequisition() );
 
-	requisition.x += 2 * GetBorderWidth() + 2 * m_padding;
-	requisition.y += 2 * GetBorderWidth() + 2 * m_padding;
+	requisition.x += 2 * GetBorderWidth() + 2 * padding;
+	requisition.y += 2 * GetBorderWidth() + 2 * padding;
 
 	return requisition;
-}
-
-void Button::SetPadding( float padding ) {
-	m_padding = padding;
-	RequestSize();
-	Invalidate();
-}
-
-float Button::GetPadding() const {
-	return m_padding;
 }
 
 const std::string& Button::GetName() const {

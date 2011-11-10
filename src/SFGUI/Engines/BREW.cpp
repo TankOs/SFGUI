@@ -6,6 +6,8 @@
 #include <SFGUI/Scale.hpp>
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
+#include <SFGUI/ToggleButton.hpp>
+#include <SFGUI/CheckButton.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -35,10 +37,30 @@ BREW::BREW() :
 	// Button-specific.
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "Button", "Padding", 5.f );
 	SetProperty( "Button:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
 	SetProperty( "Button:Prelight > Label", "Color", sf::Color::White );
 	SetProperty( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty( "Button:Active > Label", "Color", sf::Color::Black );
+
+	// ToggleButton-specific.
+	SetProperty( "ToggleButton", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "ToggleButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "ToggleButton", "Padding", 5.f );
+	SetProperty( "ToggleButton:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "ToggleButton:Prelight > Label", "Color", sf::Color::White );
+	SetProperty( "ToggleButton:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "ToggleButton:Active > Label", "Color", sf::Color::Black );
+
+	// CheckButton-specific.
+	SetProperty( "CheckButton", "Spacing", 5.f );
+	SetProperty( "CheckButton", "BoxSize", 14.f );
+	SetProperty( "CheckButton", "CheckSize", 6.f );
+	SetProperty( "CheckButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "CheckButton", "BackgroundColor", sf::Color( 0x36, 0x36, 0x36 ) );
+	SetProperty( "CheckButton", "CheckColor", sf::Color( 0x9e, 0x9e, 0x9e ) );
+	SetProperty( "CheckButton:Prelight", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
+	SetProperty( "CheckButton:Active", "BackgroundColor", sf::Color( 0x56, 0x56, 0x56 ) );
 
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
@@ -89,7 +111,7 @@ sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const
 		}
 
 		if( border_width > 0 ) {
-			queue->Add( CreateBorder( window->GetAllocation(), border_width, border_color_light, border_color_dark ) );
+			queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, window->GetAllocation().Width, window->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
 		}
 
 		sf::Shape*  background(
@@ -161,12 +183,12 @@ sf::Drawable* BREW::CreateWindowDrawable( std::shared_ptr<Window> window ) const
 RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
 	RenderQueue* queue( new RenderQueue );
 
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Width - border_width + .1f, .1f, border_width, rect.Height, dark_color ) ) ); // Right.
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( .1f, rect.Height - border_width + .1f, rect.Width, border_width, dark_color ) ) ); // Bottom.
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + rect.Width - border_width + .1f, rect.Top + .1f, border_width, rect.Height, dark_color ) ) ); // Right.
+	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + .1f, rect.Top + rect.Height - border_width + .1f, rect.Width, border_width, dark_color ) ) ); // Bottom.
 
 	for( float delta = 0.f; delta < border_width; delta += 1.f ) {
-		queue->Add( new sf::Shape( sf::Shape::Line( .1f, delta + .1f, rect.Width - delta, delta, 1.f, light_color ) ) ); // Top.
-		queue->Add( new sf::Shape( sf::Shape::Line( delta + .1f, .1f, delta, rect.Height - delta, 1.f, light_color ) ) ); // Left.
+		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + .1f, rect.Top + delta + .1f, rect.Left + rect.Width - delta, rect.Top + delta, 1.f, light_color ) ) ); // Top.
+		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + delta + .1f, rect.Top + .1f, rect.Left + delta, rect.Top + rect.Height - delta, 1.f, light_color ) ) ); // Left.
 	}
 
 	return queue;
@@ -174,10 +196,9 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 
 sf::Drawable* BREW::CreateButtonDrawable( std::shared_ptr<Button> button ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", button ) );
+	sf::Color border_color_dark( border_color_light );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
-	sf::Color text_color( GetProperty<sf::Color>( "Color", button ) );
 	float border_width( GetProperty<float>( "BorderWidth", button ) );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
@@ -196,7 +217,105 @@ sf::Drawable* BREW::CreateButtonDrawable( std::shared_ptr<Button> button ) const
 		)
 	);
 
-	queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_light, border_color_dark ) );
+	if( button->GetState() != Button::Active ) {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
+	}
+	else {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
+	}
+
+	return queue;
+}
+
+sf::Drawable* BREW::CreateToggleButtonDrawable( std::shared_ptr<ToggleButton> button ) const {
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
+	sf::Color border_color_dark( border_color_light );
+	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
+	float border_width( GetProperty<float>( "BorderWidth", button ) );
+
+	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
+
+	RenderQueue*  queue( new RenderQueue );
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Rectangle(
+				0.f,
+				0.f,
+				button->GetAllocation().Width,
+				button->GetAllocation().Height,
+				background_color
+			)
+		)
+	);
+
+	if( button->GetState() != Button::Active && !button->IsActive() ) {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
+	}
+	else {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
+	}
+
+
+	return queue;
+}
+
+sf::Drawable* BREW::CreateCheckButtonDrawable( std::shared_ptr<CheckButton> check ) const {
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", check ) );
+	sf::Color border_color_dark( border_color_light );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", check ) );
+	sf::Color check_color( GetProperty<sf::Color>( "CheckColor", check ) );
+	int border_color_shift( GetProperty<int>( "BorderColorShift", check ) );
+	float border_width( GetProperty<float>( "BorderWidth", check ) );
+	float box_size( GetProperty<float>( "BoxSize", check ) );
+	float check_size( std::min( box_size, GetProperty<float>( "CheckSize", check ) ) );
+	RenderQueue* queue( new RenderQueue );
+
+	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Rectangle(
+				0.f,
+				check->GetAllocation().Height / 2.f - box_size / 2.f,
+				box_size,
+				box_size,
+				background_color
+			)
+		)
+	);
+
+	if( check->IsActive() ) {
+		float diff( box_size - check_size );
+
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					diff / 2.f,
+					check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f,
+					box_size - diff,
+					box_size - diff,
+					check_color
+				)
+			)
+		);
+	}
+
+	queue->Add(
+		CreateBorder(
+			sf::FloatRect(
+				0.f,
+				check->GetAllocation().Height / 2.f - box_size / 2.f,
+				box_size,
+				box_size
+			),
+			border_width,
+			border_color_dark,
+			border_color_light
+		)
+	);
+
 
 	return queue;
 }
@@ -246,7 +365,7 @@ sf::Drawable* BREW::CreateEntryDrawable( std::shared_ptr<Entry> entry ) const {
 		)
 	);
 
-	queue->Add( CreateBorder( entry->GetAllocation(), border_width, border_color_dark, border_color_light) );
+	queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().Width, entry->GetAllocation().Height ), border_width, border_color_dark, border_color_light) );
 
 	sf::Text*  vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
@@ -598,7 +717,7 @@ sf::Drawable* BREW::CreateScrolledWindowDrawable( std::shared_ptr<ScrolledWindow
 	rect.Width += 2.f * border_width;
 	rect.Height += 2.f * border_width;
 
-	queue->Add( CreateBorder( rect, border_width, border_color_dark, border_color_light ) );
+	queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, rect.Width, rect.Height ), border_width, border_color_dark, border_color_light ) );
 
 	return queue;
 }

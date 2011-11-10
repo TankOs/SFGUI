@@ -57,6 +57,7 @@ set(
 	${INC_DIR}/SFGUI/Bin.hpp
 	${INC_DIR}/SFGUI/Box.hpp
 	${INC_DIR}/SFGUI/Button.hpp
+	${INC_DIR}/SFGUI/CheckButton.hpp
 	${INC_DIR}/SFGUI/Config.hpp
 	${INC_DIR}/SFGUI/Container.hpp
 	${INC_DIR}/SFGUI/Context.hpp
@@ -81,6 +82,7 @@ set(
 	${INC_DIR}/SFGUI/Table.hpp
 	${INC_DIR}/SFGUI/TableCell.hpp
 	${INC_DIR}/SFGUI/TableOptions.hpp
+	${INC_DIR}/SFGUI/ToggleButton.hpp
 	${INC_DIR}/SFGUI/Viewport.hpp
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Window.hpp
@@ -88,6 +90,7 @@ set(
 	${SRC_DIR}/SFGUI/Bin.cpp
 	${SRC_DIR}/SFGUI/Box.cpp
 	${SRC_DIR}/SFGUI/Button.cpp
+	${SRC_DIR}/SFGUI/CheckButton.cpp
 	${SRC_DIR}/SFGUI/Container.cpp
 	${SRC_DIR}/SFGUI/Context.cpp
 	${SRC_DIR}/SFGUI/Desktop.cpp
@@ -107,6 +110,7 @@ set(
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp
 	${SRC_DIR}/SFGUI/TableOptions.cpp
+	${SRC_DIR}/SFGUI/ToggleButton.cpp
 	${SRC_DIR}/SFGUI/Viewport.cpp
 	${SRC_DIR}/SFGUI/Widget.cpp
 	${SRC_DIR}/SFGUI/Window.cpp
