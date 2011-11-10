@@ -9,6 +9,7 @@
 #include <SFGUI/Desktop.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/ToggleButton.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -34,6 +35,7 @@ class SampleApp {
 		sfg::Table::Ptr m_table;
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
 		sfg::Box::Ptr m_scrolled_window_box;
+		sfg::ToggleButton::Ptr m_titlebar_toggle;
 
 		sfg::Desktop m_desktop;
 
@@ -94,7 +96,7 @@ void SampleApp::Run() {
 
 	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
 	sfg::Button::Ptr btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
-	sfg::Button::Ptr btntoggletitlebar( sfg::Button::Create( L"Toggle titlebar" ) );
+	m_titlebar_toggle = sfg::ToggleButton::Create( "Toggle titlebar" );
 	sfg::Button::Ptr btnhidewindow( sfg::Button::Create( L"Close window" ) );
 	btnhidewindow->SetId( "close" );
 
@@ -114,7 +116,7 @@ void SampleApp::Run() {
 	boxtoolbar->SetSpacing( 5.f );
 	boxtoolbar->Pack( btnaddbuttonh, false );
 	boxtoolbar->Pack( btnaddbuttonv, false );
-	boxtoolbar->Pack( btntoggletitlebar, false );
+	boxtoolbar->Pack( m_titlebar_toggle, false );
 	boxtoolbar->Pack( btnhidewindow, false );
 	boxtoolbar->Pack( m_entry, true );
 	boxtoolbar->Pack( btntogglespace, false );
@@ -173,7 +175,7 @@ void SampleApp::Run() {
 	// Signals.
 	btnaddbuttonh->OnClick.Connect( &SampleApp::OnAddButtonHClick, this );
 	btnaddbuttonv->OnClick.Connect( &SampleApp::OnAddButtonVClick, this );
-	btntoggletitlebar->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
+	m_titlebar_toggle->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
 	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
 	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
 

@@ -18,6 +18,10 @@ class SFGUI_API Button : public Bin {
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
+		/** Dtor.
+		 */
+		virtual ~Button();
+
 		virtual const std::string& GetName() const;
 
 		/** Set label.
@@ -43,15 +47,17 @@ class SFGUI_API Button : public Bin {
 		Signal OnClick; //!< Fired when button clicked.
 
 	protected:
-		sf::Drawable* InvalidateImpl();
+		/** Ctor.
+		 */
+		Button();
+
+		virtual sf::Drawable* InvalidateImpl();
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
-		Button();
-
 		void HandleMouseEnter( int x, int y );
 		void HandleMouseLeave( int x, int y );
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		void HandleSizeAllocate( const sf::FloatRect& old_allocation );
 		void HandleMouseClick( int x, int y );
 

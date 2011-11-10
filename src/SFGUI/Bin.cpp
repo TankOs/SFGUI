@@ -7,6 +7,9 @@ Bin::Bin() :
 {
 }
 
+Bin::~Bin() {
+}
+
 Widget::Ptr Bin::GetChild() const {
 	if( GetChildren().size() < 1 ) {
 		return Widget::Ptr();

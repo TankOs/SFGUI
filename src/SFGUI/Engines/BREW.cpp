@@ -6,6 +6,7 @@
 #include <SFGUI/Scale.hpp>
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
+#include <SFGUI/ToggleButton.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -39,6 +40,14 @@ BREW::BREW() :
 	SetProperty( "Button:Prelight > Label", "Color", sf::Color::White );
 	SetProperty( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty( "Button:Active > Label", "Color", sf::Color::Black );
+
+	// ToggleButton-specific.
+	SetProperty( "ToggleButton", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "ToggleButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "ToggleButton:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "ToggleButton:Prelight > Label", "Color", sf::Color::White );
+	SetProperty( "ToggleButton:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "ToggleButton:Active > Label", "Color", sf::Color::Black );
 
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
@@ -174,10 +183,9 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 
 sf::Drawable* BREW::CreateButtonDrawable( std::shared_ptr<Button> button ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", button ) );
+	sf::Color border_color_dark( border_color_light );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
-	sf::Color text_color( GetProperty<sf::Color>( "Color", button ) );
 	float border_width( GetProperty<float>( "BorderWidth", button ) );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
@@ -196,7 +204,46 @@ sf::Drawable* BREW::CreateButtonDrawable( std::shared_ptr<Button> button ) const
 		)
 	);
 
-	queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_light, border_color_dark ) );
+	if( button->GetState() != Button::Active ) {
+		queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_light, border_color_dark ) );
+	}
+	else {
+		queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_dark, border_color_light ) );
+	}
+
+	return queue;
+}
+
+sf::Drawable* BREW::CreateToggleButtonDrawable( std::shared_ptr<ToggleButton> button ) const {
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
+	sf::Color border_color_dark( border_color_light );
+	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
+	float border_width( GetProperty<float>( "BorderWidth", button ) );
+
+	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
+
+	RenderQueue*  queue( new RenderQueue );
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Rectangle(
+				0.f,
+				0.f,
+				button->GetAllocation().Width,
+				button->GetAllocation().Height,
+				background_color
+			)
+		)
+	);
+
+	if( button->GetState() != Button::Active && !button->IsActive() ) {
+		queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_light, border_color_dark ) );
+	}
+	else {
+		queue->Add( CreateBorder( button->GetAllocation(), border_width, border_color_dark, border_color_light ) );
+	}
+
 
 	return queue;
 }

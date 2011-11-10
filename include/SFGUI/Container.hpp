@@ -22,6 +22,10 @@ class SFGUI_API Container : public Widget {
 			FILL = 1 << 1 ///< Fill widget to allocated size.
 		};
 
+		/** Dtor.
+		 */
+		virtual ~Container();
+
 		/** Add child.
 		 * @param widget Widget to add.
 		 */

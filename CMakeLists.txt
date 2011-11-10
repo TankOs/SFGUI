@@ -81,6 +81,7 @@ set(
 	${INC_DIR}/SFGUI/Table.hpp
 	${INC_DIR}/SFGUI/TableCell.hpp
 	${INC_DIR}/SFGUI/TableOptions.hpp
+	${INC_DIR}/SFGUI/ToggleButton.hpp
 	${INC_DIR}/SFGUI/Viewport.hpp
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Window.hpp
@@ -107,6 +108,7 @@ set(
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp
 	${SRC_DIR}/SFGUI/TableOptions.cpp
+	${SRC_DIR}/SFGUI/ToggleButton.cpp
 	${SRC_DIR}/SFGUI/Viewport.cpp
 	${SRC_DIR}/SFGUI/Widget.cpp
 	${SRC_DIR}/SFGUI/Window.cpp

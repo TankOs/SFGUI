@@ -8,6 +8,9 @@ Container::Container() :
 {
 }
 
+Container::~Container() {
+}
+
 void Container::Add( Widget::Ptr widget ) {
 	if( IsChild( widget ) ) {
 		return;

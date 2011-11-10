@@ -11,11 +11,13 @@ Button::Button() :
 {
 }
 
+Button::~Button() {
+}
+
 Button::Ptr Button::Create( const sf::String& label ) {
 	Button::Ptr  ptr( new Button );
 
 	ptr->SetLabel( label );
-	ptr->Add( ptr->m_label );
 
 	return ptr;
 }
@@ -28,6 +30,10 @@ sf::Drawable* Button::InvalidateImpl() {
 }
 
 void Button::SetLabel( const sf::String& label ) {
+	if( !GetChild() ) {
+		Add( m_label );
+	}
+
 	m_label->SetText( label );
 	RequestSize();
 	Invalidate();

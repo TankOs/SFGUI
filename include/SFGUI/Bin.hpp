@@ -12,6 +12,10 @@ class SFGUI_API Bin : public Container {
 		typedef std::shared_ptr<Bin>  Ptr; //!< Shared pointer.
 		typedef std::shared_ptr<const Bin>  PtrConst; //!< Shared pointer.
 
+		/** Dtor.
+		 */
+		virtual ~Bin();
+
 		/** Get child widget.
 		 * @return Child widget.
 		 */
