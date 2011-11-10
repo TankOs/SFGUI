@@ -177,4 +177,14 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 	}
 }
 
+void Window::HandleAdd( Widget::Ptr child ) {
+	Bin::HandleAdd( child );
+
+	if( GetChild() ) {
+		// Reset allocation so the window will be as large as required.
+		AllocateSize( sf::FloatRect( GetAllocation().Left, GetAllocation().Top, 1.f, 1.f ) );
+		RequestSize();
+	}
+}
+
 }

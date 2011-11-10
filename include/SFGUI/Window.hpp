@@ -69,11 +69,12 @@ class SFGUI_API Window : public Bin {
 
 		sf::Vector2f GetRequisitionImpl() const;
 
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual void HandleMouseMoveEvent( int x, int y );
-
 	private:
+		void HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		void HandleMouseMoveEvent( int x, int y );
+		void HandleAdd( Widget::Ptr child );
+
 		sf::String m_title;
 		int m_style;
 
