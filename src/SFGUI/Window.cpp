@@ -16,8 +16,7 @@ Window::Window() :
 Window::Ptr Window::Create() {
 	Window::Ptr  window( new Window );
 
-	// Allocate minimum size.
-	window->AllocateSize( sf::FloatRect( 0, 0, 1, 1 ) );
+	window->RequestSize();
 
 	return window;
 }
@@ -80,13 +79,7 @@ bool Window::HasStyle( Style style ) const {
 }
 
 sf::Vector2f Window::GetRequisitionImpl() const {
-	if( !GetChild() ) {
-		return sf::Vector2f( 0, 0 );
-	}
-
-	sf::Vector2f  requisition( 2 * GetBorderWidth(), 2 * GetBorderWidth() );
-
-	requisition += GetChild()->GetRequisition();
+	sf::Vector2f requisition( 2 * GetBorderWidth(), 2 * GetBorderWidth() );
 
 	if( HasStyle( Titlebar ) ) {
 		float  visual_border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
@@ -94,6 +87,14 @@ sf::Vector2f Window::GetRequisitionImpl() const {
 
 		requisition.x += visual_border_width;
 		requisition.y += visual_border_width + title_height;
+	}
+
+	if( GetChild() ) {
+		requisition += GetChild()->GetRequisition();
+	}
+	else {
+		requisition.x = std::max( 50.f, requisition.x );
+		requisition.y = std::max( 50.f, requisition.y * 2.f );
 	}
 
 	return requisition;
