@@ -203,4 +203,8 @@ bool Desktop::LoadThemeFromFile( const std::string& filename ) {
 	return true;
 }
 
+Engine& Desktop::GetEngine() {
+	return m_context.GetEngine();
+}
+
 }

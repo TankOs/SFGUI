@@ -1,4 +1,5 @@
 #include <SFGUI/SFGUI.hpp>
+
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 

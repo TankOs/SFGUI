@@ -29,9 +29,20 @@ class SFGUI_API ResourceManager {
 		 */
 		ResourceManager( bool use_default_font = true );
 
+		/** Copy ctor.
+		 * @param other Other manager.
+		 */
+		ResourceManager( const ResourceManager& other );
+
 		/** Dtor.
 		 */
 		~ResourceManager();
+
+		/** Assignment.
+		 * @param other Other manager.
+		 * @return this.
+		 */
+		ResourceManager& operator=( const ResourceManager& other );
 
 		/** Clear manager, i.e. destroy all resources and loaders.
 		 */
@@ -63,11 +74,32 @@ class SFGUI_API ResourceManager {
 		 */
 		const sf::Texture* GetTexture( const std::string& path );
 
+		/** Add font.
+		 * A resource with the same path will be replaced.
+		 * @param path Path (or ID or whatever).
+		 * @param font Font to add.
+		 * @param managed true to manage destruction of resource.
+		 */
+		void AddFont( const std::string& path, const sf::Font& font, bool managed );
+
+		/** Add texture.
+		 * A resource with the same path will be replaced.
+		 * @param path Path (or ID or whatever).
+		 * @param texture Texture to add.
+		 * @param managed true to manage destruction of resource.
+		 */
+		void AddTexture( const std::string& path, const sf::Texture& texture, bool managed );
+
 	private:
 		typedef std::map<const std::string, ResourceLoader*> LoaderMap;
-		typedef std::map<const std::string, const sf::Font*> FontMap;
-		typedef std::map<const std::string, const sf::Texture*> TextureMap;
 
+		typedef std::pair<const sf::Font*, bool> FontPair;
+		typedef std::pair<const sf::Texture*, bool> TexturePair;
+
+		typedef std::map<const std::string, FontPair> FontMap;
+		typedef std::map<const std::string, TexturePair> TextureMap;
+
+		void CopyFrom( const ResourceManager& other );
 		ResourceLoader* GetMatchingLoader( const std::string& path );
 		std::string GetFilename( const std::string& path, const ResourceLoader& loader );
 

@@ -96,6 +96,11 @@ class SFGUI_API Desktop {
 		 */
 		bool LoadThemeFromFile( const std::string& filename );
 
+		/** Get engine.
+		 * @return Engine.
+		 */
+		Engine& GetEngine();
+
 	private:
 		typedef std::list<std::shared_ptr<Widget> > WidgetsList;
 
