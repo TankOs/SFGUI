@@ -86,8 +86,6 @@ void SampleApp::Run() {
 	//window.SetFramerateLimit( 60 );
 	//window.UseVerticalSync( true );
 
-	sfg::Context::Get().GetEngine().SetProperty<sf::Color>( "Button#close:Normal > Label", "Color", sf::Color::Red );
-
 	// Create widgets.
 	m_wndmain = sfg::Window::Create();
 	m_wndmain->SetTitle( L"Example application" );
@@ -107,6 +105,7 @@ void SampleApp::Run() {
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 
 	m_limit_check = sfg::CheckButton::Create( L"Limit to 4 chars" );
+	m_limit_check->SetId( "limit_check" );
 
 	sfg::Label::Ptr test_label( sfg::Label::Create( L"Foobar?" ) );
 	sfg::Label::Ptr another_label( sfg::Label::Create( L"Meow?" ) );
@@ -210,6 +209,7 @@ void SampleApp::Run() {
 
 	// Another window
 	sfg::Window::Ptr second_window( sfg::Window::Create() );
+	second_window->SetId( "second_window" );
 	second_window->SetBorderWidth( 10.f );
 	second_window->SetTitle( "Another window" );
 	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::Vertical, 5.f ) );
@@ -225,6 +225,18 @@ void SampleApp::Run() {
 
 	// Add window to desktop
 	m_desktop.Add( m_wndmain );
+
+	// Play around with resource manager.
+	sf::Font my_font;
+	my_font.LoadFromFile( "linden_hill.otf" );
+	m_desktop.GetEngine().GetResourceManager().AddFont( "custom_font", my_font, false ); // false -> do not manage!
+
+	// Set properties.
+	m_desktop.SetProperty( "Button#close:Normal > Label", "Color", sf::Color::Yellow );
+	m_desktop.SetProperty( "Button#close > Label", "FontName", "linden_hill.otf" );
+	m_desktop.SetProperty( "Button#close > Label", "FontSize", 15.f );
+	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontName", "custom_font" );
+	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontSize", 18.f );
 
 	m_fps_counter = 0;
 	m_fps_clock.Reset();
