@@ -34,16 +34,6 @@ class SFGUI_API Button : public Bin {
 		 */
 		const sf::String& GetLabel() const;
 
-		/** Set padding.
-		 * @param padding Padding.
-		 */
-		void SetPadding( float padding );
-
-		/** Get padding.
-		 * @return Padding.
-		 */
-		float GetPadding() const;
-
 		Signal OnClick; //!< Fired when button clicked.
 
 	protected:
@@ -62,7 +52,6 @@ class SFGUI_API Button : public Bin {
 		void HandleMouseClick( int x, int y );
 
 		Label::Ptr  m_label;
-		float m_padding;
 };
 
 }

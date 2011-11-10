@@ -36,6 +36,7 @@ BREW::BREW() :
 	// Button-specific.
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "Button", "Padding", 5.f );
 	SetProperty( "Button:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
 	SetProperty( "Button:Prelight > Label", "Color", sf::Color::White );
 	SetProperty( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
@@ -44,6 +45,7 @@ BREW::BREW() :
 	// ToggleButton-specific.
 	SetProperty( "ToggleButton", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "ToggleButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "ToggleButton", "Padding", 5.f );
 	SetProperty( "ToggleButton:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
 	SetProperty( "ToggleButton:Prelight > Label", "Color", sf::Color::White );
 	SetProperty( "ToggleButton:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
