@@ -229,7 +229,7 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 	SetCursorPosition( GetPositionFromMouseX( x ) );
 }
 
-void Entry::HandleExpose( sf::RenderTarget& /*target*/  ) {
+void Entry::HandleExpose( sf::RenderTarget& /*target*/  ) const {
 	if( GetState() != Active ) {
 		return;
 	}

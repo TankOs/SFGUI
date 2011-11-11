@@ -131,6 +131,8 @@ void Desktop::Add( std::shared_ptr<Widget> widget ) {
 void Desktop::Remove( std::shared_ptr<Widget> widget ) {
 	// We do this in an isolated method to keep iterators valid.
 	m_obsolete_children.push_back( widget );
+
+	widget->Show( false );
 }
 
 void Desktop::RemoveObsoleteChildren() {

@@ -49,7 +49,7 @@ sf::Vector2f CheckButton::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void CheckButton::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void CheckButton::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
 	float spacing( Context::Get().GetEngine().GetProperty<float>( "Spacing", shared_from_this() ) );
 	float box_size( Context::Get().GetEngine().GetProperty<float>( "BoxSize", shared_from_this() ) );
 
