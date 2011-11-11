@@ -47,9 +47,9 @@ const Container::WidgetsList& Container::GetChildren() const {
 	return m_children;
 }
 
-void Container::HandleExpose( sf::RenderTarget& target ) {
-	WidgetsList::iterator iter( m_children.begin() );
-	WidgetsList::iterator iterend( m_children.end() );
+void Container::HandleExpose( sf::RenderTarget& target ) const {
+	WidgetsList::const_iterator iter( m_children.begin() );
+	WidgetsList::const_iterator iterend( m_children.end() );
 
 	for( ; iter != iterend; ++iter ) {
 		(*iter)->Expose( target );
@@ -66,9 +66,9 @@ float Container::GetBorderWidth() const {
 	return m_border_width;
 }
 
-void Container::Refresh() {
-	WidgetsList::iterator w_iter( m_children.begin() );
-	WidgetsList::iterator w_iter_end( m_children.end() );
+void Container::Refresh() const {
+	WidgetsList::const_iterator w_iter( m_children.begin() );
+	WidgetsList::const_iterator w_iter_end( m_children.end() );
 
 	for( ; w_iter != w_iter_end; ++w_iter ) {
 		(*w_iter)->Refresh();
@@ -118,15 +118,15 @@ void Container::HandleAdd( Widget::Ptr /*child*/ ) {
 void Container::HandleRemove( Widget::Ptr /*child*/ ) {
 }
 
-void Container::HandleChildInvalidate( Widget::Ptr child  ) {
-	Container::Ptr parent = GetParent();
+void Container::HandleChildInvalidate( Widget::PtrConst child  ) const {
+	Container::PtrConst parent = GetParent();
 
 	if( parent ) {
 		parent->HandleChildInvalidate( child );
 	}
 }
 
-void Container::HandleAbsolutePositionChange() {
+void Container::HandleAbsolutePositionChange() const {
 	WidgetsList::const_iterator iter( m_children.begin() );
 	WidgetsList::const_iterator iter_end( m_children.end() );
 

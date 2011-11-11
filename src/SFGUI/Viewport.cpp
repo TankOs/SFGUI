@@ -17,7 +17,6 @@ Viewport::Ptr Viewport::Create() {
 
 Viewport::Ptr Viewport::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
 	Viewport::Ptr  ptr( new Viewport( horizontal_adjustment, vertical_adjustment ) );
-
 	return ptr;
 }
 
@@ -25,10 +24,10 @@ sf::Vector2f Viewport::GetRequisitionImpl() const {
 	return sf::Vector2f( 0.f, 0.f );
 }
 
-void Viewport::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Viewport::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
 }
 
-void Viewport::Expose( sf::RenderTarget& target ) {
+void Viewport::Expose( sf::RenderTarget& target ) const {
 	if( IsVisible() ) {
 		if( GetChild() ) {
 			unsigned int target_width = target.GetWidth();

@@ -28,7 +28,7 @@ class SFGUI_API Viewport : public Bin {
 		 * Render widget to given target.
 		 * @param target SFML render target.
 		 */
-		virtual void Expose( sf::RenderTarget& target );
+		virtual void Expose( sf::RenderTarget& target ) const;
 
 		/** Get absolute position on virtual screen: always (0,0)
 		 * @return Absolute position on virtual screen: always (0,0).
@@ -66,7 +66,7 @@ class SFGUI_API Viewport : public Bin {
 	protected:
 		sf::Vector2f GetRequisitionImpl() const;
 
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
 
 	private:
 		Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );

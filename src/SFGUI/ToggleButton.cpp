@@ -26,12 +26,12 @@ const std::string& ToggleButton::GetName() const {
 	return name;
 }
 
-sf::Drawable* ToggleButton::InvalidateImpl() {
+sf::Drawable* ToggleButton::InvalidateImpl() const {
 	if( GetChild() ) {
 		GetChild()->Invalidate();
 	}
 
-	return Context::Get().GetEngine().CreateToggleButtonDrawable( std::dynamic_pointer_cast<ToggleButton>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateToggleButtonDrawable( std::dynamic_pointer_cast<const ToggleButton>( shared_from_this() ) );
 }
 
 void ToggleButton::SetActive( bool active ) {

@@ -61,7 +61,7 @@ class SFGUI_API Desktop {
 		/** Expose.
 		 * @param target Rendering target.
 		 */
-		void Expose( sf::RenderTarget& target );
+		void Expose( sf::RenderTarget& target ) const;
 
 		/** Handle event.
 		 * @param event SFML event.
@@ -83,7 +83,7 @@ class SFGUI_API Desktop {
 		 * All widgets will invalidate and re-request size. This is done
 		 * automagically in SetProperty().
 		 */
-		void Refresh();
+		void Refresh() const;
 
 		/** Load a style from file.
 		 * @param filename Filename.
@@ -99,14 +99,14 @@ class SFGUI_API Desktop {
 
 		sf::View m_view;
 
-		Context m_context;
+		mutable Context m_context;
 		std::unique_ptr<Engine> m_engine;
 
 		WidgetsList m_children;
-		WidgetsList m_obsolete_children;
+		mutable WidgetsList m_obsolete_children;
 		std::weak_ptr<Widget> m_last_receiver;
 
-		bool m_do_refresh;
+		mutable bool m_do_refresh;
 };
 
 }

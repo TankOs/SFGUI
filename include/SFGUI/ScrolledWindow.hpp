@@ -116,10 +116,10 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
-		virtual void HandleChildInvalidate( Widget::Ptr child );
+		virtual void HandleChildInvalidate( Widget::Ptr child ) const;
 
 	protected:
-		sf::Drawable* InvalidateImpl();
+		sf::Drawable* InvalidateImpl() const;
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
@@ -134,9 +134,9 @@ class SFGUI_API ScrolledWindow : public Container {
 
 		/** Recalculate Content Allocation
 		 */
-		void RecalculateContentAllocation();
+		void RecalculateContentAllocation() const;
 
-		void HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
 		void HandleAdd( Widget::Ptr child );
 
 		Scrollbar::Ptr m_horizontal_scrollbar;
@@ -147,7 +147,7 @@ class SFGUI_API ScrolledWindow : public Container {
 
 		mutable bool m_recalc_adjustments;
 
-		sf::FloatRect m_content_allocation;
+		mutable sf::FloatRect m_content_allocation;
 		mutable bool m_recalc_content_allocation;
 };
 

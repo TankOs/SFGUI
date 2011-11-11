@@ -22,6 +22,10 @@ class SFGUI_API Window : public Bin {
 			Toplevel = Titlebar | Background | Resize //!< Toplevel window.
 		};
 
+		/** Dtor.
+		 */
+		virtual ~Window();
+
 		/** Create widget.
 		 */
 		static Ptr Create();
@@ -65,12 +69,12 @@ class SFGUI_API Window : public Bin {
 		 */
 		Window();
 
-		virtual sf::Drawable* InvalidateImpl();
+		virtual sf::Drawable* InvalidateImpl() const;
 
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
-		void HandleSizeAllocate( const sf::FloatRect& old_allocation );
+		void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		void HandleMouseMoveEvent( int x, int y );
 		void HandleAdd( Widget::Ptr child );

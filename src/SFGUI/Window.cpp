@@ -13,6 +13,9 @@ Window::Window() :
 	//SetFlags( Draggable ); // TODO: Do it via StartDrag() operation, not flags.
 }
 
+Window::~Window() {
+}
+
 Window::Ptr Window::Create() {
 	Window::Ptr  window( new Window );
 
@@ -21,8 +24,8 @@ Window::Ptr Window::Create() {
 	return window;
 }
 
-sf::Drawable* Window::InvalidateImpl() {
-	return Context::Get().GetEngine().CreateWindowDrawable( std::dynamic_pointer_cast<Window>( shared_from_this() ) );
+sf::Drawable* Window::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateWindowDrawable( std::dynamic_pointer_cast<const Window>( shared_from_this() ) );
 }
 
 void Window::SetTitle( const sf::String& title ) {
@@ -47,7 +50,7 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-void Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
 	if( !GetChild() ) {
 		return;
 	}

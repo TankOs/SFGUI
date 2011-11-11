@@ -96,7 +96,7 @@ sf::Vector2f Box::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
 	AllocateChildren();
 }
 
@@ -121,9 +121,9 @@ float Box::GetSpacing() const {
 	return m_spacing;
 }
 
-void Box::AllocateChildren() {
-	ChildrenCont::iterator  iter( m_children.begin() );
-	ChildrenCont::iterator  iterend( m_children.end() );
+void Box::AllocateChildren() const {
+	ChildrenCont::const_iterator  iter( m_children.begin() );
+	ChildrenCont::const_iterator  iterend( m_children.end() );
 	sf::Vector2f  allocation( 0.f, 0.f );
 	sf::Vector2f  position( GetBorderWidth(), GetBorderWidth() );
 	unsigned int  num_expand( 0 );

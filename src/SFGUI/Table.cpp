@@ -11,7 +11,8 @@ Table::Table() :
 }
 
 Table::Ptr Table::Create() {
-	return Ptr( new Table );
+	Ptr table( new Table );
+	return Ptr( table );
 }
 
 sf::Vector2f Table::GetRequisitionImpl() const {
@@ -76,7 +77,7 @@ void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_
 }
 
 
-void Table::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Table::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
 	AllocateChildrenSizes();
 }
 
@@ -233,7 +234,7 @@ void Table::UpdateRequisitions() const {
 	}
 }
 
-void Table::AllocateChildrenSizes() {
+void Table::AllocateChildrenSizes() const {
 	// Process columns.
 	float width( 0.f );
 	std::size_t num_expand( 0 );
@@ -321,8 +322,8 @@ void Table::AllocateChildrenSizes() {
 	}
 
 	// Allocate children sizes.
-	TableCellList::iterator cell_iter( m_cells.begin() );
-	TableCellList::iterator cell_iter_end( m_cells.end() );
+	TableCellList::const_iterator cell_iter( m_cells.begin() );
+	TableCellList::const_iterator cell_iter_end( m_cells.end() );
 
 	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
 		// Calc actual allocation both for single- and multi-spanned cells.

@@ -11,7 +11,7 @@ void StyleGrammar::GrammarToken() {
 	end_rule        = ell::CharGrammarBase<char>::end;
 
 	identifier_rule = lexeme( alpha >> *( alnum | chset("-") ) )[ &StyleGrammar::PushIdentifier ];
-	value_rule      = lexeme( +( alnum | chset(".#- ") ) )[ &StyleGrammar::PushValue ];
+	value_rule      = lexeme( +( alnum | chset(".#- /") ) )[ &StyleGrammar::PushValue ];
 
 	skipper_rule.set_name( "Skipper" );
 	comment_rule.set_name( "Comment" );

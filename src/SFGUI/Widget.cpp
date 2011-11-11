@@ -62,7 +62,7 @@ bool Widget::HasFocus( Ptr widget ) {
 	return parent->HasFocus( widget );
 }
 
-void Widget::AllocateSize( const sf::FloatRect& rect ) {
+void Widget::AllocateSize( const sf::FloatRect& rect ) const {
 	sf::FloatRect  oldallocation( m_allocation );
 
 	// Make sure allocation is pixel-aligned.
@@ -88,7 +88,7 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 	Invalidate();
 }
 
-void Widget::RequestSize() {
+void Widget::RequestSize() const {
 	m_recalc_requisition = true;
 	Container::Ptr parent = m_parent.lock();
 
@@ -117,7 +117,7 @@ const sf::FloatRect& Widget::GetAllocation() const {
 	return m_allocation;
 }
 
-void Widget::Expose( sf::RenderTarget& target ) {
+void Widget::Expose( sf::RenderTarget& target ) const {
 	if( m_invalidated ) {
 		m_invalidated = false;
 
@@ -138,17 +138,21 @@ void Widget::Expose( sf::RenderTarget& target ) {
 	}
 }
 
-void Widget::Invalidate() {
+void Widget::Invalidate() const {
+	if( m_invalidated ) {
+		return;
+	}
+
 	m_invalidated = true;
 
-	Container::Ptr parent = m_parent.lock();
+	Container::PtrConst parent = m_parent.lock();
 
 	if( parent ) {
-		parent->HandleChildInvalidate( shared_from_this() );
+		parent->HandleChildInvalidate( static_cast<Widget::PtrConst>( shared_from_this() ) );
 	}
 }
 
-sf::Drawable* Widget::InvalidateImpl() {
+sf::Drawable* Widget::InvalidateImpl() const {
 	return 0;
 }
 
@@ -168,7 +172,7 @@ void Widget::SetParent( Widget::Ptr parent ) {
 	m_parent = cont;
 }
 
-void Widget::SetPosition( const sf::Vector2f& position ) {
+void Widget::SetPosition( const sf::Vector2f& position ) const {
 	sf::FloatRect  oldallocation( GetAllocation() );
 
 	// Make sure allocation is pixel-aligned.
@@ -360,7 +364,7 @@ const sf::Vector2f& Widget::GetRequisition() const {
 	return m_requisition;
 }
 
-void Widget::SetRequisition( const sf::Vector2f& requisition ) {
+void Widget::SetRequisition( const sf::Vector2f& requisition ) const {
 	if( requisition.x > 0.f || requisition.y >= 0.f ) {
 		m_custom_requisition.reset( new sf::Vector2f( requisition ) );
 	}
@@ -421,10 +425,10 @@ void Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*
 void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
 }
 
-void Widget::HandleSizeAllocate( const sf::FloatRect& /*new_allocation*/ ) {
+void Widget::HandleSizeAllocate( const sf::FloatRect& /*new_allocation*/ ) const {
 }
 
-void Widget::HandleExpose( sf::RenderTarget& /*target*/ ) {
+void Widget::HandleExpose( sf::RenderTarget& /*target*/ ) const {
 }
 
 void Widget::HandleStateChange( State /*old_state*/ ) {
@@ -449,11 +453,11 @@ void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {
 	}
 }
 
-void Widget::HandleAbsolutePositionChange() {
+void Widget::HandleAbsolutePositionChange() const {
 	UpdateDrawablePosition();
 }
 
-void Widget::Refresh() {
+void Widget::Refresh() const {
 	sf::FloatRect old_allocation( GetAllocation() );
 
 	RequestSize();

@@ -25,12 +25,12 @@ const std::string& CheckButton::GetName() const {
 	return name;
 }
 
-sf::Drawable* CheckButton::InvalidateImpl() {
+sf::Drawable* CheckButton::InvalidateImpl() const {
 	if( GetChild() ) {
 		GetChild()->Invalidate();
 	}
 
-	return Context::Get().GetEngine().CreateCheckButtonDrawable( std::dynamic_pointer_cast<CheckButton>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateCheckButtonDrawable( std::dynamic_pointer_cast<const CheckButton>( shared_from_this() ) );
 }
 
 sf::Vector2f CheckButton::GetRequisitionImpl() const {

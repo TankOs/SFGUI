@@ -78,7 +78,7 @@ class SFGUI_API Entry : public Widget {
 		Signal OnTextChanged; //!< Fired when the text changes.
 
 	protected:
-		sf::Drawable* InvalidateImpl();
+		sf::Drawable* InvalidateImpl() const;
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:

@@ -16,13 +16,11 @@ Desktop::Desktop( const sf::Window& window ) :
 {
 }
 
-void Desktop::Expose( sf::RenderTarget& target ) {
+void Desktop::Expose( sf::RenderTarget& target ) const {
 	if( m_do_refresh ) {
 		Refresh();
 		m_do_refresh = false;
 	}
-
-	RemoveObsoleteChildren();
 
 	// Cache current view and set ours.
 	const sf::View& old_view( target.GetView() );
@@ -32,8 +30,8 @@ void Desktop::Expose( sf::RenderTarget& target ) {
 	Context::Activate( m_context );
 
 	// Expose children.
-	WidgetsList::reverse_iterator w_iter( m_children.end() );
-	WidgetsList::reverse_iterator w_iter_end( m_children.begin() );
+	WidgetsList::const_reverse_iterator w_iter( m_children.end() );
+	WidgetsList::const_reverse_iterator w_iter_end( m_children.begin() );
 
 	for( ; w_iter != w_iter_end; ++w_iter ) {
 		(*w_iter)->Expose( target );
@@ -158,9 +156,9 @@ void Desktop::RemoveObsoleteChildren() {
 	m_obsolete_children.clear();
 }
 
-void Desktop::Refresh() {
-	WidgetsList::reverse_iterator w_iter( m_children.end() );
-	WidgetsList::reverse_iterator w_iter_end( m_children.begin() );
+void Desktop::Refresh() const {
+	WidgetsList::const_reverse_iterator w_iter( m_children.end() );
+	WidgetsList::const_reverse_iterator w_iter_end( m_children.begin() );
 
 	for( ; w_iter != w_iter_end; ++w_iter ) {
 		(*w_iter)->Refresh();

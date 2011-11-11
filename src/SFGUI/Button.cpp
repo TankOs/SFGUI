@@ -21,10 +21,10 @@ Button::Ptr Button::Create( const sf::String& label ) {
 	return ptr;
 }
 
-sf::Drawable* Button::InvalidateImpl() {
+sf::Drawable* Button::InvalidateImpl() const {
 	m_label->Invalidate();
 
-	return Context::Get().GetEngine().CreateButtonDrawable( std::dynamic_pointer_cast<Button>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateButtonDrawable( std::dynamic_pointer_cast<const Button>( shared_from_this() ) );
 
 }
 
@@ -70,7 +70,7 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 	}
 }
 
-void Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) {
+void Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 
 	sf::FloatRect  label_allocation(

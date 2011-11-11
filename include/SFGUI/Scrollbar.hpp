@@ -55,7 +55,7 @@ class SFGUI_API Scrollbar : public Range {
 		bool IsIncreaseStepperPressed() const;
 
 	protected:
-		sf::Drawable* InvalidateImpl();
+		sf::Drawable* InvalidateImpl() const;
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
@@ -65,7 +65,7 @@ class SFGUI_API Scrollbar : public Range {
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );
-		virtual void HandleExpose( sf::RenderTarget& target );
+		virtual void HandleExpose( sf::RenderTarget& target ) const;
 
 		Orientation m_orientation;
 
@@ -74,10 +74,10 @@ class SFGUI_API Scrollbar : public Range {
 		bool m_decrease_pressed;
 		bool m_increase_pressed;
 
-		int m_page_decreasing;
-		int m_page_increasing;
+		mutable int m_page_decreasing;
+		mutable int m_page_increasing;
 
-		sf::Clock m_change_timer;
+		mutable sf::Clock m_change_timer;
 
 		float m_slider_click_offset;
 };
