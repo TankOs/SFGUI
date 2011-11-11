@@ -158,7 +158,7 @@ void GuessMyNumber::Run() {
 	sfg::Context::Get().GetEngine().SetProperty( "Button#guess > Label", "FontSize", 20.f );
 
 	// Make sure all properties are applied.
-	window->RefreshAll();
+	window->Refresh();
 
 	while( render_window.IsOpened() ) {
 		while( render_window.PollEvent( event ) ) {

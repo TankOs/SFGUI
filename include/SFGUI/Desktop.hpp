@@ -83,7 +83,13 @@ class SFGUI_API Desktop {
 		 * All widgets will invalidate and re-request size. This is done
 		 * automagically in SetProperty().
 		 */
-		void RefreshAll();
+		void Refresh();
+
+		/** Load a style from file.
+		 * @param filename Filename.
+		 * @return true on success, false otherwise.
+		 */
+		bool LoadThemeFromFile( const std::string& filename );
 
 	private:
 		typedef std::list<std::shared_ptr<Widget> > WidgetsList;
@@ -99,6 +105,8 @@ class SFGUI_API Desktop {
 		WidgetsList m_children;
 		WidgetsList m_obsolete_children;
 		std::weak_ptr<Widget> m_last_receiver;
+
+		bool m_do_refresh;
 };
 
 }

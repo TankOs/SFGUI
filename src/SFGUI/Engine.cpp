@@ -90,7 +90,7 @@ const sf::Font& Engine::LoadFontFromFile( const std::string& filename ) const {
 	return m_fonts[filename];
 }
 
-bool Engine::LoadStyleFromFile( const std::string& filename ) {
+bool Engine::LoadThemeFromFile( const std::string& filename ) {
 #ifndef SFGUI_WITH_STYLE_PARSER
 	#ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Cannot load style file. Style file loading support not built."

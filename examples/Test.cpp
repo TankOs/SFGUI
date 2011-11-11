@@ -18,7 +18,7 @@ class SampleApp {
 		void OnRangeValueChange();
 		void OnToggleSpaceClick();
 		void OnLimitCharsToggle();
-		void OnLoadStyleClick();
+		void OnLoadThemeClick();
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -94,7 +94,7 @@ void SampleApp::Run() {
 	btnhidewindow->SetId( "close" );
 
 	sfg::Button::Ptr btntogglespace( sfg::Button::Create( L"Box Spacing") );
-	sfg::Button::Ptr btnloadstyle( sfg::Button::Create( L"Load Style File") );
+	sfg::Button::Ptr btnloadstyle( sfg::Button::Create( L"Load theme") );
 
 	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
@@ -186,7 +186,7 @@ void SampleApp::Run() {
 	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
 	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
 	m_limit_check->OnToggle.Connect( &SampleApp::OnLimitCharsToggle, this );
-	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadStyleClick, this );
+	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadThemeClick, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -288,9 +288,8 @@ void SampleApp::OnLimitCharsToggle() {
 	}
 }
 
-void SampleApp::OnLoadStyleClick() {
-	sfg::Context::Get().GetEngine().LoadStyleFromFile( "style.sgs" );
-	m_desktop.RefreshAll();
+void SampleApp::OnLoadThemeClick() {
+	m_desktop.LoadThemeFromFile( "style.sgs" );
 }
 
 int main() {

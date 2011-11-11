@@ -256,6 +256,7 @@ void ScrolledWindow::RecalculateContentAllocation() {
 		GetViewport()->AllocateSize( m_content_allocation );
 	}
 
+	m_recalc_adjustments = false;
 	m_recalc_content_allocation = false;
 }
 
@@ -318,11 +319,7 @@ Viewport::Ptr ScrolledWindow::GetViewport() const {
 }
 
 void ScrolledWindow::HandleChildInvalidate( Widget::Ptr child  ) {
-	// A child just got invalidated, have to recalculate everything.
-	m_recalc_adjustments = true;
-	m_recalc_content_allocation = true;
 	Invalidate();
-
 	Container::HandleChildInvalidate( child );
 }
 

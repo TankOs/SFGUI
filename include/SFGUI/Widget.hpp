@@ -176,6 +176,12 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 */
 		const std::string& GetClass() const;
 
+		/** Refresh.
+		 * Invalidates the widget, re-requests size and triggers allocation
+		 * handlers.
+		 */
+		virtual void Refresh();
+
 		// Signals.
 		Signal OnStateChange; //!< Fired when state changed. (old state)
 		Signal OnGainFocus; //!< Fired when focus gained.

@@ -56,12 +56,7 @@ class SFGUI_API Container : public Widget {
 		 */
 		float GetBorderWidth() const;
 
-		/** Refresh all children and this container.
-		 * Refreshing means to invalidate and re-request size. This can be useful
-		 * after changing properties during runtime (i.e. AFTER widget
-		 * initialization).
-		 */
-		void RefreshAll();
+		void Refresh();
 
 		virtual void HandleEvent( const sf::Event& event );
 

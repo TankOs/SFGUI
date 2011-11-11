@@ -71,10 +71,12 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) {
 	m_allocation.Width = std::floor( rect.Width + .5f );
 	m_allocation.Height = std::floor( rect.Height + .5f );
 
-	if( oldallocation.Top == m_allocation.Top &&
-	    oldallocation.Left == m_allocation.Left &&
-	    oldallocation.Width == m_allocation.Width &&
-	    oldallocation.Height == m_allocation.Height ) {
+	if(
+		oldallocation.Top == m_allocation.Top &&
+		oldallocation.Left == m_allocation.Left &&
+		oldallocation.Width == m_allocation.Width &&
+		oldallocation.Height == m_allocation.Height
+	) {
 		// Nothing even changed. Save the hierarchy the trouble.
 		return;
 	}
@@ -449,6 +451,24 @@ void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {
 
 void Widget::HandleAbsolutePositionChange() {
 	UpdateDrawablePosition();
+}
+
+void Widget::Refresh() {
+	sf::FloatRect old_allocation( GetAllocation() );
+
+	RequestSize();
+
+	if(
+		old_allocation.Left == GetAllocation().Left &&
+		old_allocation.Top == GetAllocation().Top &&
+		old_allocation.Width == GetAllocation().Width &&
+		old_allocation.Height == GetAllocation().Height
+	) {
+		HandleAbsolutePositionChange();
+		HandleSizeAllocate( old_allocation );
+	}
+
+	Invalidate();
 }
 
 }

@@ -6,7 +6,8 @@
 namespace sfg {
 
 Desktop::Desktop( const sf::FloatRect& viewport ) :
-	m_view( viewport )
+	m_view( viewport ),
+	m_do_refresh( false )
 {
 }
 
@@ -16,6 +17,11 @@ Desktop::Desktop( const sf::Window& window ) :
 }
 
 void Desktop::Expose( sf::RenderTarget& target ) {
+	if( m_do_refresh ) {
+		Refresh();
+		m_do_refresh = false;
+	}
+
 	RemoveObsoleteChildren();
 
 	// Cache current view and set ours.
@@ -121,6 +127,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 
 void Desktop::Add( std::shared_ptr<Widget> widget ) {
 	m_children.push_front( widget );
+	widget->Refresh();
 }
 
 void Desktop::Remove( std::shared_ptr<Widget> widget ) {
@@ -151,22 +158,24 @@ void Desktop::RemoveObsoleteChildren() {
 	m_obsolete_children.clear();
 }
 
-void Desktop::RefreshAll() {
+void Desktop::Refresh() {
 	WidgetsList::reverse_iterator w_iter( m_children.end() );
 	WidgetsList::reverse_iterator w_iter_end( m_children.begin() );
 
 	for( ; w_iter != w_iter_end; ++w_iter ) {
-		// Check for container/regular widget.
-		std::shared_ptr<Container> container( std::dynamic_pointer_cast<Container>( *w_iter ) );
-
-		if( !container ) {
-			(*w_iter)->Invalidate();
-			(*w_iter)->RequestSize();
-		}
-		else {
-			container->RefreshAll();
-		}
+		(*w_iter)->Refresh();
 	}
+}
+
+bool Desktop::LoadThemeFromFile( const std::string& filename ) {
+	bool result( m_context.GetEngine().LoadThemeFromFile( filename ) );
+
+	if( !result ) {
+		return false;
+	}
+
+	Refresh();
+	return true;
 }
 
 }

@@ -66,26 +66,15 @@ float Container::GetBorderWidth() const {
 	return m_border_width;
 }
 
-void Container::RefreshAll() {
+void Container::Refresh() {
 	WidgetsList::iterator w_iter( m_children.begin() );
 	WidgetsList::iterator w_iter_end( m_children.end() );
 
 	for( ; w_iter != w_iter_end; ++w_iter ) {
-		// If the child is also a container, we'll delegate the call.
-		Container::Ptr container( std::dynamic_pointer_cast<Container>( *w_iter ) );
-
-		if( !container ) {
-			(*w_iter)->Invalidate();
-			(*w_iter)->RequestSize();
-		}
-		else {
-			container->RefreshAll();
-		}
+		(*w_iter)->Refresh();
 	}
 
-	// No need to request size for a container, because it's delegated to the top
-	// anyways when children request size.
-	Invalidate();
+	Widget::Refresh();
 }
 
 void Container::HandleEvent( const sf::Event& event ) {
