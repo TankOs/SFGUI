@@ -318,7 +318,9 @@ Viewport::Ptr ScrolledWindow::GetViewport() const {
 	return std::static_pointer_cast<Viewport>( *( --GetChildren().end() ) );
 }
 
-void ScrolledWindow::HandleChildInvalidate( Widget::Ptr child  ) const {
+void ScrolledWindow::HandleChildInvalidate( Widget::PtrConst child  ) const {
+	// A child has been invalidated. Update Scrollbars.
+	m_recalc_adjustments = true;
 	Invalidate();
 	Container::HandleChildInvalidate( child );
 }

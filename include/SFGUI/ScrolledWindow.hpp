@@ -116,7 +116,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
-		virtual void HandleChildInvalidate( Widget::Ptr child ) const;
+		virtual void HandleChildInvalidate( Widget::PtrConst child ) const;
 
 	protected:
 		sf::Drawable* InvalidateImpl() const;
