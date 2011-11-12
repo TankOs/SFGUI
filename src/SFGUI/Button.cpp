@@ -83,6 +83,12 @@ void Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const
 	m_label->AllocateSize( label_allocation );
 }
 
+void Button::HandleStateChange( State old_state ) {
+	m_label->RequestSize();
+
+	Widget::HandleStateChange( old_state );
+}
+
 sf::Vector2f Button::GetRequisitionImpl() const {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	sf::Vector2f requisition( m_label->GetRequisition() );

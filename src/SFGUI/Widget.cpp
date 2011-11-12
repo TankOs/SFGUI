@@ -297,11 +297,10 @@ void Widget::SetState( State state ) {
 	State old_state( m_state );
 	m_state = state;
 
-	HandleStateChange( old_state );
-
 	// If HandleStateChange() changed the state, do not call observer, will be
 	// done from there too.
-	if( m_state != state ) {
+	if( m_state != old_state ) {
+		HandleStateChange( old_state );
 		OnStateChange();
 	}
 

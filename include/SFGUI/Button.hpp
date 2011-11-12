@@ -49,6 +49,7 @@ class SFGUI_API Button : public Bin {
 		void HandleMouseLeave( int x, int y );
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		virtual void HandleStateChange( State old_state );
 		void HandleMouseClick( int x, int y );
 
 		Label::Ptr  m_label;
