@@ -94,7 +94,7 @@ class SFGUI_API Entry : public Widget {
 
 		/** Recalculate visible string.
 		 */
-		void RecalculateVisibleString();
+		void RecalculateVisibleString() const;
 
 		/** Move cursor.
 		 * @param delta Number of units to move cursor by. Negative to move left. Positive to move right.
@@ -109,13 +109,14 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleExpose( sf::RenderTarget& target ) const;
 		virtual void HandleFocusChange( Widget::Ptr focused_widget );
 		virtual void HandleStateChange( State old_state );
+		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;
-		sf::String m_visible_string;
+		mutable sf::String m_visible_string;
 
 		// The offset in the string at which the visible portion starts
-		std::size_t m_visible_offset;
+		mutable std::size_t m_visible_offset;
 
 		std::size_t m_cursor_position;
 		mutable sf::Clock m_cursor_timer;

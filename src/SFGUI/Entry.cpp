@@ -87,7 +87,7 @@ std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 }
 
 
-void Entry::RecalculateVisibleString() {
+void Entry::RecalculateVisibleString() const {
 	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	const sf::Font& font( Context::Get().GetEngine().LoadFontFromFile( font_name ) );
@@ -257,6 +257,10 @@ void Entry::HandleStateChange( State old_state ) {
 	}
 
 	Widget::HandleStateChange( old_state );
+}
+
+void Entry::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
+	RecalculateVisibleString();
 }
 
 sf::Vector2f Entry::GetRequisitionImpl() const {
