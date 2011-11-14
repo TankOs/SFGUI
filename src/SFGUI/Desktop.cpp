@@ -59,6 +59,9 @@ sf::Vector2f Desktop::TransformToLocal( const sf::Vector2f& global ) const {
 }
 
 void Desktop::HandleEvent( const sf::Event& event ) {
+	// Activate context.
+	Context::Activate( m_context );
+
 	RemoveObsoleteChildren();
 
 	sf::Vector2f local_pos;
@@ -128,6 +131,9 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		m_children.erase( new_top_iter );
 		m_children.push_front( widget );
 	}
+
+	// Restore previous context.
+	Context::Deactivate();
 }
 
 void Desktop::Add( std::shared_ptr<Widget> widget ) {
@@ -165,13 +171,20 @@ void Desktop::RemoveObsoleteChildren() {
 	m_obsolete_children.clear();
 }
 
+
 void Desktop::Refresh() const {
+	// Activate context.
+	Context::Activate( m_context );
+
 	WidgetsList::const_reverse_iterator w_iter( m_children.end() );
 	WidgetsList::const_reverse_iterator w_iter_end( m_children.begin() );
 
 	for( ; w_iter != w_iter_end; ++w_iter ) {
 		(*w_iter)->Refresh();
 	}
+
+	// Restore previous context.
+	Context::Deactivate();
 }
 
 bool Desktop::LoadThemeFromFile( const std::string& filename ) {
