@@ -82,6 +82,11 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 	}
 
 	for( ; w_iter != w_iter_end; ++w_iter ) {
+		// Skip widget if not visible.
+		if( !(*w_iter)->IsVisible() ) {
+			continue;
+		}
+
 		// If the event is a mouse button press, check if we need to focus another widget.
 		if(
 			new_top_iter == w_iter_end &&
