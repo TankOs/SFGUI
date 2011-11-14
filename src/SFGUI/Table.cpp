@@ -37,6 +37,8 @@ sf::Vector2f Table::GetRequisitionImpl() const {
 		size.y += row_iter->requisition;
 	}
 
+	AllocateChildrenSizes();
+
 	return size;
 }
 

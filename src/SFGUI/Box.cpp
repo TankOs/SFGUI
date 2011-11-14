@@ -45,6 +45,7 @@ void Box::HandleAdd( Widget::Ptr child ) {
 		Remove( child );
 	}
 
+	RequestSize();
 	AllocateChildren();
 }
 
@@ -92,6 +93,8 @@ sf::Vector2f Box::GetRequisitionImpl() const {
 			requisition.y -= GetSpacing();
 		}
 	}
+
+	AllocateChildren();
 
 	return requisition;
 }
