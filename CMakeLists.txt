@@ -74,6 +74,7 @@ set(
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/NonCopyable.hpp
 	${INC_DIR}/SFGUI/Object.hpp
+	${INC_DIR}/SFGUI/ProgressBar.hpp
 	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
 	${INC_DIR}/SFGUI/Scale.hpp
@@ -104,6 +105,7 @@ set(
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/NonCopyable.cpp
 	${SRC_DIR}/SFGUI/Object.cpp
+	${SRC_DIR}/SFGUI/ProgressBar.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
 	${SRC_DIR}/SFGUI/Scale.cpp

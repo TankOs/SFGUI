@@ -24,6 +24,7 @@ class SFGUI_API BREW : public Engine {
 		RenderQueue* CreateScaleDrawable( std::shared_ptr<const Scale> scale ) const;
 		RenderQueue* CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const;
 		RenderQueue* CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const;
+		RenderQueue* CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.

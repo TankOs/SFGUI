@@ -28,6 +28,7 @@ class Scrollbar;
 class ScrolledWindow;
 class ToggleButton;
 class CheckButton;
+class ProgressBar;
 
 /** Abstract base class for widget rendering.
  */
@@ -92,6 +93,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual RenderQueue* CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const = 0;
+
+		/** Create drawable for progress bar widgets.
+		 * @param progress_bar Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual RenderQueue* CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const = 0;
 
 		/** Get line height of a font.
 		 * @param font Font.

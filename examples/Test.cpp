@@ -15,11 +15,11 @@ class SampleApp {
 		void OnAddButtonVClick();
 		void OnToggleTitlebarClick();
 		void OnHideWindowClicked();
-		void OnRangeValueChange();
 		void OnToggleSpaceClick();
 		void OnLimitCharsToggle();
 		void OnLoadThemeClick();
 		void OnToggleCullingClick();
+		void OnAdjustmentChange();
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -30,6 +30,9 @@ class SampleApp {
 		sfg::Box::Ptr m_scrolled_window_box;
 		sfg::ToggleButton::Ptr m_titlebar_toggle;
 		sfg::CheckButton::Ptr m_limit_check;
+		sfg::Scale::Ptr m_scale;
+		sfg::ProgressBar::Ptr m_progress;
+		sfg::ProgressBar::Ptr m_progress_vert;
 
 		sfg::Desktop m_desktop;
 
@@ -136,6 +139,12 @@ void SampleApp::Run() {
 	sfg::Entry::Ptr username_entry( sfg::Entry::Create() );
 	username_entry->SetMaximumLength( 8 );
 
+	m_progress = sfg::ProgressBar::Create( sfg::ProgressBar::HORIZONTAL );
+	m_progress->SetRequisition( sf::Vector2f( 0.f, 20.f ) );
+
+	m_progress_vert = sfg::ProgressBar::Create( sfg::ProgressBar::VERTICAL );
+	m_progress_vert->SetRequisition( sf::Vector2f( 20.f, 0.f ) );
+
 	m_table = sfg::Table::Create();
 	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<sf::Uint32>( 0, 0, 2, 1 ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
 	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
@@ -143,6 +152,7 @@ void SampleApp::Run() {
 	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->Attach( password, sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 2, 1, 1, 2 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( m_progress_vert, sf::Rect<sf::Uint32>( 3, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
 
@@ -167,14 +177,15 @@ void SampleApp::Run() {
 	sfg::Scrollbar::Ptr scrollbar( sfg::Scrollbar::Create() );
 	scrollbar->SetRange( .0f, 100.f );
 
-	sfg::Scale::Ptr scale( sfg::Scale::Create() );
-	scale->SetAdjustment( scrollbar->GetAdjustment() );
-	scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
-	boxtoolbar2->Pack( scale, false );
+	m_scale = sfg::Scale::Create();
+	m_scale->SetAdjustment( scrollbar->GetAdjustment() );
+	m_scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
+	boxtoolbar2->Pack( m_scale, false );
 
 	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( scrollbar, false );
+	boxmain->Pack( m_progress, false );
 	boxmain->Pack( boxtoolbar, false );
 	boxmain->Pack( boxtoolbar2, false );
 	boxmain->Pack( m_boxbuttonsh, false );
@@ -193,6 +204,7 @@ void SampleApp::Run() {
 	m_limit_check->OnToggle.Connect( &SampleApp::OnLimitCharsToggle, this );
 	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadThemeClick, this );
 	btntoggleculling->OnClick.Connect( &SampleApp::OnToggleCullingClick, this );
+	m_scale->GetAdjustment()->OnChange.Connect( &SampleApp::OnAdjustmentChange, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -308,6 +320,11 @@ void SampleApp::OnLoadThemeClick() {
 
 void SampleApp::OnToggleCullingClick() {
 	m_cull = !m_cull;
+}
+
+void SampleApp::OnAdjustmentChange() {
+	m_progress->SetFraction( m_scale->GetValue() / 100.f );
+	m_progress_vert->SetFraction( m_scale->GetValue() / 100.f );
 }
 
 int main() {

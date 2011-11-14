@@ -81,3 +81,10 @@ Window#second_window {
   TitleHeight: 30.0f;
   FontSize: 20;
 }
+
+ProgressBar {
+	BarColor: #aaaa00ff;
+	BarBorderColor: #aaaa00ff;
+	BarBorderWidth: 5;
+	BarBorderColorShift: 0;
+}
