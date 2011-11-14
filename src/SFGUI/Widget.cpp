@@ -19,6 +19,15 @@ Widget::Widget() :
 }
 
 Widget::~Widget() {
+	if( m_drawable ) {
+		const RenderQueue::DrawablesVector& drawables = m_drawable->GetDrawables();
+		std::size_t drawables_size = drawables.size();
+
+		for( std::size_t index = 0; index < drawables_size; ++index ) {
+			delete drawables[index].first;
+			delete drawables[index].second;
+		}
+	}
 }
 
 bool Widget::IsSensitive() const {
@@ -118,8 +127,24 @@ const sf::FloatRect& Widget::GetAllocation() const {
 }
 
 void Widget::Expose( sf::RenderTarget& target ) const {
+	CullingTarget culling_target( target );
+	culling_target.Cull( false );
+	Expose( culling_target );
+}
+
+void Widget::Expose( CullingTarget& target ) const {
 	if( m_invalidated ) {
 		m_invalidated = false;
+
+		if( m_drawable ) {
+			const RenderQueue::DrawablesVector& drawables = m_drawable->GetDrawables();
+			std::size_t drawables_size = drawables.size();
+
+			for( std::size_t index = 0; index < drawables_size; ++index ) {
+				delete drawables[index].first;
+				delete drawables[index].second;
+			}
+		}
 
 		m_drawable.reset( InvalidateImpl() );
 
@@ -152,7 +177,7 @@ void Widget::Invalidate() const {
 	}
 }
 
-sf::Drawable* Widget::InvalidateImpl() const {
+RenderQueue* Widget::InvalidateImpl() const {
 	return 0;
 }
 
@@ -427,7 +452,7 @@ void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
 void Widget::HandleSizeAllocate( const sf::FloatRect& /*new_allocation*/ ) const {
 }
 
-void Widget::HandleExpose( sf::RenderTarget& /*target*/ ) const {
+void Widget::HandleExpose( CullingTarget& /*target*/ ) const {
 }
 
 void Widget::HandleStateChange( State /*old_state*/ ) {

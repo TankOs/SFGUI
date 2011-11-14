@@ -3,9 +3,9 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Object.hpp>
 #include <SFGUI/Signal.hpp>
+#include <SFGUI/CullingTarget.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Window/Event.hpp>
 #include <map>
 #include <string>
@@ -103,6 +103,12 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param target SFML render target.
 		 */
 		virtual void Expose( sf::RenderTarget& target ) const;
+
+		/** Expose.
+		 * Render widget to given target.
+		 * @param target culling target.
+		 */
+		virtual void Expose( CullingTarget& target ) const;
 
 		/** Invalidate widget (prepare internal sf::Drawable).
 		 * Implement InvalidateImpl() for your own code.
@@ -212,7 +218,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * to Invalidate().
 		 * @return Pointer to new drawable -- ownership is taken by caller.
 		 */
-		virtual sf::Drawable* InvalidateImpl() const;
+		virtual RenderQueue* InvalidateImpl() const;
 
 		/** Requisition implementation (recalculate requisition).
 		 * @return New requisition.
@@ -255,7 +261,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * Called every frame usually.
 		 * @param target Render target.
 		 */
-		virtual void HandleExpose( sf::RenderTarget& target ) const;
+		virtual void HandleExpose( CullingTarget& target ) const;
 
 		/** Handle state changes.
 		 * The default behaviour is to accept any state change and invalidate the
@@ -316,7 +322,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		mutable bool m_invalidated;
 		mutable bool m_recalc_requisition;
 
-		mutable std::unique_ptr<sf::Drawable> m_drawable;
+		mutable std::unique_ptr<RenderQueue> m_drawable;
 };
 
 }

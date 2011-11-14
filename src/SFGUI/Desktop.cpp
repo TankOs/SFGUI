@@ -17,6 +17,13 @@ Desktop::Desktop( const sf::Window& window ) :
 }
 
 void Desktop::Expose( sf::RenderTarget& target ) const {
+	CullingTarget culling_target( target );
+	culling_target.Cull( false );
+
+	Expose( culling_target );
+}
+
+void Desktop::Expose( CullingTarget& target ) const {
 	if( m_do_refresh ) {
 		Refresh();
 		m_do_refresh = false;

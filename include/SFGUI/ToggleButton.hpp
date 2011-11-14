@@ -39,7 +39,7 @@ class SFGUI_API ToggleButton : public Button {
 		Signal OnToggle; //<! Fired when toggled.
 
 	protected:
-		virtual sf::Drawable* InvalidateImpl() const;
+		virtual RenderQueue* InvalidateImpl() const;
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 

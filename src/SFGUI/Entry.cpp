@@ -25,7 +25,7 @@ Entry::Ptr Entry::Create( const sf::String& text ) {
 	return ptr;
 }
 
-sf::Drawable* Entry::InvalidateImpl() const {
+RenderQueue* Entry::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateEntryDrawable( std::dynamic_pointer_cast<const Entry>( shared_from_this() ) );
 }
 
@@ -229,7 +229,7 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 	SetCursorPosition( GetPositionFromMouseX( x ) );
 }
 
-void Entry::HandleExpose( sf::RenderTarget& /*target*/  ) const {
+void Entry::HandleExpose( CullingTarget& /*target*/  ) const {
 	if( GetState() != Active ) {
 		return;
 	}

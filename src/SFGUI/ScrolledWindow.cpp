@@ -124,7 +124,7 @@ const sf::FloatRect& ScrolledWindow::GetContentAllocation() const {
 	return m_content_allocation;
 }
 
-sf::Drawable* ScrolledWindow::InvalidateImpl() const {
+RenderQueue* ScrolledWindow::InvalidateImpl() const {
 	if( m_recalc_adjustments ) {
 		RecalculateAdjustments();
 	}

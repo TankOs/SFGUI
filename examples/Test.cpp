@@ -19,6 +19,7 @@ class SampleApp {
 		void OnToggleSpaceClick();
 		void OnLimitCharsToggle();
 		void OnLoadThemeClick();
+		void OnToggleCullingClick();
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -34,6 +35,7 @@ class SampleApp {
 
 		unsigned int m_fps_counter;
 		sf::Clock m_fps_clock;
+		bool m_cull;
 };
 
 class Ouchy : public std::enable_shared_from_this<Ouchy> {
@@ -69,7 +71,8 @@ void Ouchy::DoOuch() {
 }
 
 SampleApp::SampleApp() :
-	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) )
+	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) ),
+	m_cull( true )
 {
 }
 
@@ -95,6 +98,7 @@ void SampleApp::Run() {
 
 	sfg::Button::Ptr btntogglespace( sfg::Button::Create( L"Box Spacing") );
 	sfg::Button::Ptr btnloadstyle( sfg::Button::Create( L"Load theme") );
+	sfg::Button::Ptr btntoggleculling( sfg::Button::Create( L"Toggle culling") );
 
 	m_entry = sfg::Entry::Create( L"Type something!" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
@@ -121,6 +125,7 @@ void SampleApp::Run() {
 	boxtoolbar2->SetSpacing( 5.f );
 	boxtoolbar2->Pack( btntogglespace, false );
 	boxtoolbar2->Pack( btnloadstyle, false );
+	boxtoolbar2->Pack( btntoggleculling, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -146,7 +151,7 @@ void SampleApp::Run() {
 	for( int i = 0; i < 7; i++ ) {
 		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::Horizontal );
 
-		for( int j = 0; j < 5; j++ ) {
+		for( int j = 0; j < 20; j++ ) {
 			box->Pack( sfg::Button::Create( L"One button among many" ), true );
 		}
 
@@ -187,6 +192,7 @@ void SampleApp::Run() {
 	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
 	m_limit_check->OnToggle.Connect( &SampleApp::OnLimitCharsToggle, this );
 	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadThemeClick, this );
+	btntoggleculling->OnClick.Connect( &SampleApp::OnToggleCullingClick, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -211,6 +217,8 @@ void SampleApp::Run() {
 	m_fps_counter = 0;
 	m_fps_clock.Reset();
 
+	sfg::CullingTarget culling_target( window );
+
 	while( window.IsOpened() ) {
 		while( window.PollEvent( event ) ) {
 			m_desktop.HandleEvent( event );
@@ -220,21 +228,27 @@ void SampleApp::Run() {
 			}
 		}
 
+		window.Clear( sf::Color( 80, 80, 80 ) );
+		culling_target.Cull( m_cull );
+		m_desktop.Expose( culling_target );
+		window.Display();
+
 		if( m_fps_clock.GetElapsedTime() >= 1000 ) {
 			m_fps_clock.Reset();
 
 			std::stringstream sstr;
-			sstr << m_fps_counter;
-			window.SetTitle( std::string( "SFGUI test -- FPS: " ) + sstr.str() );
+			sstr << "SFGUI test -- FPS: " << m_fps_counter;
+			if( m_cull ) {
+				sstr << " -- Cull K/D: " << culling_target.GetCount().first
+				     << "/" << culling_target.GetCount().second;
+			}
+			window.SetTitle( sstr.str() );
 
 			m_fps_counter = 0;
+			culling_target.ResetCount();
 		}
 
 		++m_fps_counter;
-
-		window.Clear( sf::Color( 80, 80, 80 ) );
-		m_desktop.Expose( window );
-		window.Display();
 	}
 }
 
@@ -274,8 +288,8 @@ void SampleApp::OnToggleSpaceClick() {
 		m_scrolled_window_box->SetBorderWidth( .0f );
 	}
 	else {
-		m_scrolled_window_box->SetSpacing( 10.f );
-		m_scrolled_window_box->SetBorderWidth( 30.f );
+		m_scrolled_window_box->SetSpacing( 40.f );
+		m_scrolled_window_box->SetBorderWidth( 40.f );
 	}
 }
 
@@ -290,6 +304,10 @@ void SampleApp::OnLimitCharsToggle() {
 
 void SampleApp::OnLoadThemeClick() {
 	m_desktop.LoadThemeFromFile( "style.sgs" );
+}
+
+void SampleApp::OnToggleCullingClick() {
+	m_cull = !m_cull;
 }
 
 int main() {

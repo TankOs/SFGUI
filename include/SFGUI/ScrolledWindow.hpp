@@ -119,7 +119,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		virtual void HandleChildInvalidate( Widget::PtrConst child ) const;
 
 	protected:
-		sf::Drawable* InvalidateImpl() const;
+		RenderQueue* InvalidateImpl() const;
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:

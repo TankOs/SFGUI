@@ -26,7 +26,7 @@ const std::string& ToggleButton::GetName() const {
 	return name;
 }
 
-sf::Drawable* ToggleButton::InvalidateImpl() const {
+RenderQueue* ToggleButton::InvalidateImpl() const {
 	if( GetChild() ) {
 		GetChild()->Invalidate();
 	}

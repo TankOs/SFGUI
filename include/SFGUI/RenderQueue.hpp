@@ -1,8 +1,11 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Shape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <vector>
+#include <memory>
 
 namespace sfg {
 
@@ -10,15 +13,40 @@ namespace sfg {
  */
 class SFGUI_API RenderQueue : public sf::Drawable {
 	public:
+		typedef std::vector< std::pair<sf::Drawable*, sf::FloatRect*> >  DrawablesVector;
+
 		/** Dtor.
 		 */
 		~RenderQueue();
 
-		/** Add drawable to the queue.
-		 * Keep in mind that the queue takes ownership of the drawable.
-		 * @param drawable Drawable to add and manage.
+		/** Add shape to the queue.
+		 * Keep in mind that the queue takes ownership of the shape.
+		 * @param shape Shape to add and manage.
 		 */
-		void Add( sf::Drawable* drawable );
+		void Add( sf::Shape* shape );
+
+		/** Add sprite to the queue.
+		 * Keep in mind that the queue takes ownership of the sprite.
+		 * @param sprite Sprite to add and manage.
+		 */
+		void Add( sf::Sprite* sprite );
+
+		/** Add text to the queue.
+		 * Keep in mind that the queue takes ownership of the text.
+		 * @param text Text to add and manage.
+		 */
+		void Add( sf::Text* text );
+
+		/** Add queue to this queue.
+		 * Keep in mind that this queue takes ownership of the queue.
+		 * @param queue Queue to add and manage.
+		 */
+		void Add( RenderQueue* queue );
+
+		/** Get the Drawables in this queue.
+		 * @return Drawables in this queue.
+		 */
+		const DrawablesVector& GetDrawables() const;
 
 	protected:
 		/** Render.
@@ -28,8 +56,6 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		void Render( sf::RenderTarget& target, sf::Renderer& renderer ) const;
 
 	private:
-		typedef std::vector<sf::Drawable*>  DrawablesVector;
-
 		DrawablesVector m_children;
 };
 

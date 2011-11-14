@@ -41,7 +41,7 @@ class SFGUI_API Button : public Bin {
 		 */
 		Button();
 
-		virtual sf::Drawable* InvalidateImpl() const;
+		virtual RenderQueue* InvalidateImpl() const;
 		virtual sf::Vector2f GetRequisitionImpl() const;
 
 	private:

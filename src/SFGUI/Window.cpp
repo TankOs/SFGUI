@@ -24,7 +24,7 @@ Window::Ptr Window::Create() {
 	return window;
 }
 
-sf::Drawable* Window::InvalidateImpl() const {
+RenderQueue* Window::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateWindowDrawable( std::dynamic_pointer_cast<const Window>( shared_from_this() ) );
 }
 

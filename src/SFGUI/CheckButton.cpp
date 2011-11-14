@@ -25,7 +25,7 @@ const std::string& CheckButton::GetName() const {
 	return name;
 }
 
-sf::Drawable* CheckButton::InvalidateImpl() const {
+RenderQueue* CheckButton::InvalidateImpl() const {
 	if( GetChild() ) {
 		GetChild()->Invalidate();
 	}

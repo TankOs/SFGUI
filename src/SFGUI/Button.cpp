@@ -21,7 +21,7 @@ Button::Ptr Button::Create( const sf::String& label ) {
 	return ptr;
 }
 
-sf::Drawable* Button::InvalidateImpl() const {
+RenderQueue* Button::InvalidateImpl() const {
 	m_label->Invalidate();
 
 	return Context::Get().GetEngine().CreateButtonDrawable( std::dynamic_pointer_cast<const Button>( shared_from_this() ) );

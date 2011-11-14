@@ -85,7 +85,9 @@ std::vector<Rule> ParseFile( std::string filename ) {
 	file.unsetf( std::ios::skipws );
 
 	if( !file.good() ) {
-		std::cout << "Error opening file: " << filename << "\n";
+#ifdef SFGUI_DEBUG
+		std::cerr << "Error opening file: " << filename << "\n";
+#endif
 		file.close();
 		return std::vector<Rule>();
 	}

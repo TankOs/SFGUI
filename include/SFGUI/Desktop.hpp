@@ -63,6 +63,11 @@ class SFGUI_API Desktop {
 		 */
 		void Expose( sf::RenderTarget& target ) const;
 
+		/** Expose.
+		 * @param target Rendering target.
+		 */
+		void Expose( CullingTarget& target ) const;
+
 		/** Handle event.
 		 * @param event SFML event.
 		 */

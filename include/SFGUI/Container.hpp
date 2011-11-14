@@ -84,7 +84,7 @@ class SFGUI_API Container : public Widget {
 		 */
 		virtual void HandleRemove( Widget::Ptr child );
 
-		virtual void HandleExpose( sf::RenderTarget& target ) const;
+		virtual void HandleExpose( CullingTarget& target ) const;
 
 	private:
 		float m_border_width;

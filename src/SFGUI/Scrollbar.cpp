@@ -87,7 +87,7 @@ bool Scrollbar::IsIncreaseStepperPressed() const {
 }
 
 
-sf::Drawable* Scrollbar::InvalidateImpl() const {
+RenderQueue* Scrollbar::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateScrollbarDrawable( std::dynamic_pointer_cast<const Scrollbar>( shared_from_this() ) );
 }
 
@@ -273,7 +273,7 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	}
 }
 
-void Scrollbar::HandleExpose( sf::RenderTarget& /*target*/ ) const {
+void Scrollbar::HandleExpose( CullingTarget& /*target*/ ) const {
 	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "StepperSpeed", shared_from_this() ) );
 
 	if( m_change_timer.GetElapsedTime() < static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {

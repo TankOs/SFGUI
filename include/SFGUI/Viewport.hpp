@@ -28,7 +28,7 @@ class SFGUI_API Viewport : public Bin {
 		 * Render widget to given target.
 		 * @param target SFML render target.
 		 */
-		virtual void Expose( sf::RenderTarget& target ) const;
+		virtual void Expose( CullingTarget& target ) const;
 
 		/** Get absolute position on virtual screen: always (0,0)
 		 * @return Absolute position on virtual screen: always (0,0).

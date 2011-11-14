@@ -69,7 +69,7 @@ class SFGUI_API Window : public Bin {
 		 */
 		Window();
 
-		virtual sf::Drawable* InvalidateImpl() const;
+		virtual RenderQueue* InvalidateImpl() const;
 
 		sf::Vector2f GetRequisitionImpl() const;
 

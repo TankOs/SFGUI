@@ -78,7 +78,7 @@ class SFGUI_API Entry : public Widget {
 		Signal OnTextChanged; //!< Fired when the text changes.
 
 	protected:
-		sf::Drawable* InvalidateImpl() const;
+		RenderQueue* InvalidateImpl() const;
 		sf::Vector2f GetRequisitionImpl() const;
 
 	private:
@@ -106,7 +106,7 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleTextEvent( sf::Uint32 character );
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
-		virtual void HandleExpose( sf::RenderTarget& target ) const;
+		virtual void HandleExpose( CullingTarget& target ) const;
 		virtual void HandleFocusChange( Widget::Ptr focused_widget );
 		virtual void HandleStateChange( State old_state );
 		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;

@@ -15,15 +15,15 @@ class SFGUI_API BREW : public Engine {
 		 */
 		BREW();
 
-		sf::Drawable* CreateWindowDrawable( std::shared_ptr<const Window> window ) const;
-		sf::Drawable* CreateButtonDrawable( std::shared_ptr<const Button> button ) const;
-		sf::Drawable* CreateToggleButtonDrawable( std::shared_ptr<const ToggleButton> button ) const;
-		sf::Drawable* CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const;
-		sf::Drawable* CreateLabelDrawable( std::shared_ptr<const Label> label ) const;
-		sf::Drawable* CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const;
-		sf::Drawable* CreateScaleDrawable( std::shared_ptr<const Scale> scale ) const;
-		sf::Drawable* CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const;
-		sf::Drawable* CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const;
+		RenderQueue* CreateWindowDrawable( std::shared_ptr<const Window> window ) const;
+		RenderQueue* CreateButtonDrawable( std::shared_ptr<const Button> button ) const;
+		RenderQueue* CreateToggleButtonDrawable( std::shared_ptr<const ToggleButton> button ) const;
+		RenderQueue* CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const;
+		RenderQueue* CreateLabelDrawable( std::shared_ptr<const Label> label ) const;
+		RenderQueue* CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const;
+		RenderQueue* CreateScaleDrawable( std::shared_ptr<const Scale> scale ) const;
+		RenderQueue* CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const;
+		RenderQueue* CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.

@@ -29,7 +29,7 @@ const sf::String& Label::GetText() const {
 	return m_text;
 }
 
-sf::Drawable* Label::InvalidateImpl() const {
+RenderQueue* Label::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateLabelDrawable( std::dynamic_pointer_cast<const Label>( shared_from_this() ) );
 }
 

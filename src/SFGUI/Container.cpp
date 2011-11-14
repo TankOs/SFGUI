@@ -47,7 +47,7 @@ const Container::WidgetsList& Container::GetChildren() const {
 	return m_children;
 }
 
-void Container::HandleExpose( sf::RenderTarget& target ) const {
+void Container::HandleExpose( CullingTarget& target ) const {
 	WidgetsList::const_iterator iter( m_children.begin() );
 	WidgetsList::const_iterator iterend( m_children.end() );
 
