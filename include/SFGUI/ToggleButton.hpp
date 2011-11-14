@@ -41,7 +41,7 @@ class SFGUI_API ToggleButton : public Button {
 	protected:
 		virtual RenderQueue* InvalidateImpl() const;
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y );
 
 		/** Ctor.
 		 */

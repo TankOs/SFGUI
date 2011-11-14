@@ -288,10 +288,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		virtual void HandleMouseLeave( int x, int y );
 
 		/** Handle mouse click.
+		 * @param button Button.
 		 * @param x Mouse X position.
 		 * @param y Mouse Y position.
 		 */
-		virtual void HandleMouseClick( int x, int y );
+		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y );
 
 		/** Handle focus change.
 		 * @param focused_widget Widget currently being focused.

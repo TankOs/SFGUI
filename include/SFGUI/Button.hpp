@@ -44,13 +44,14 @@ class SFGUI_API Button : public Bin {
 		virtual RenderQueue* InvalidateImpl() const;
 		virtual sf::Vector2f GetRequisitionImpl() const;
 
+		void HandleMouseClick( sf::Mouse::Button button, int x, int y );
+
 	private:
 		void HandleMouseEnter( int x, int y );
 		void HandleMouseLeave( int x, int y );
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
 		virtual void HandleStateChange( State old_state );
-		void HandleMouseClick( int x, int y );
 
 		Label::Ptr  m_label;
 };

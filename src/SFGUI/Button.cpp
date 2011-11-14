@@ -104,7 +104,11 @@ const std::string& Button::GetName() const {
 	return name;
 }
 
-void Button::HandleMouseClick( int /*x*/, int /*y*/ ) {
+void Button::HandleMouseClick( sf::Mouse::Button button, int /*x*/, int /*y*/ ) {
+	if( button != sf::Mouse::Left ) {
+		return;
+	}
+
 	OnClick();
 }
 

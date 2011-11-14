@@ -274,7 +274,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 				// When released inside the widget, the event can be considered a click.
 				if( m_mouse_in ) {
-					HandleMouseClick( event.MouseButton.X, event.MouseButton.Y );
+					HandleMouseClick( event.MouseButton.Button, event.MouseButton.X, event.MouseButton.Y );
 				}
 
 				OnMouseButtonRelease();
@@ -468,7 +468,7 @@ void Widget::HandleMouseEnter( int /*x*/, int /*y*/ ) {
 void Widget::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 }
 
-void Widget::HandleMouseClick( int /*x*/, int /*y*/ ) {
+void Widget::HandleMouseClick( sf::Mouse::Button /*button*/, int /*x*/, int /*y*/ ) {
 }
 
 void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {

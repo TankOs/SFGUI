@@ -49,23 +49,12 @@ bool ToggleButton::IsActive() const {
 	return m_active;
 }
 
-void ToggleButton::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
-	if( !IsMouseInWidget() ) {
-		SetState( Normal );
-		return;
-	}
-
-	if( button != sf::Mouse::Left ) {
-		return;
-	}
-
-	if( press ) {
-		SetState( Active );
-	}
-	else {
-		SetState( Prelight );
+void ToggleButton::HandleMouseClick( sf::Mouse::Button button, int x, int y ) {
+	if( button == sf::Mouse::Left ) {
 		SetActive( !IsActive() );
 	}
+
+	Button::HandleMouseClick( button, x, y );
 }
 
 }
