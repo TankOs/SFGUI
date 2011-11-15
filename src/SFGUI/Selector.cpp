@@ -377,6 +377,41 @@ bool Selector::operator==( const Selector& other ) {
 }
 
 bool Selector::Matches( Widget::PtrConst widget ) const {
+	// If selector is a wildcard, get next non-wildcard and look for first match
+	// to continue there.
+	if( m_widget.empty() && m_id.empty() && m_class.empty() && m_state == -1 ) {
+		Ptr next_selector( GetParent() );
+
+		// Get next non-wildcard selector.
+		while( next_selector ) {
+			if( !next_selector->m_widget.empty() ) {
+				break;
+			}
+
+			next_selector = next_selector->m_parent;
+		}
+
+		// If there are only wildcards, we have a match.
+		if( !next_selector ) {
+			return true;
+		}
+
+		// We'll now advance the widget until it or one of its parents match.
+		Widget::PtrConst next_widget( widget );
+
+		while( next_widget ) {
+			// In case we got a match, continue "normal" operation from there.
+			if( next_selector->Matches( next_widget ) ) {
+				return true;
+			}
+
+			next_widget = next_widget->GetParent();
+		}
+
+		// No parent matched.
+		return false;
+	}
+
 	// If selector has a parent but widget doesn't, we don't need to go on any
 	// further.
 	if( m_parent && !widget->GetParent() ) {

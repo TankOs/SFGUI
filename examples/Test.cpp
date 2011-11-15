@@ -327,7 +327,7 @@ void SampleApp::OnLimitCharsToggle() {
 }
 
 void SampleApp::OnLoadThemeClick() {
-	m_desktop.LoadThemeFromFile( "style.sgs" );
+	m_desktop.LoadThemeFromFile( "style.theme" );
 }
 
 void SampleApp::OnToggleCullingClick() {

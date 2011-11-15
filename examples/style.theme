@@ -1,0 +1,37 @@
+Window {
+	BackgroundColor: #abcdef55;
+}
+
+Window > * > Label {
+	FontSize: 18;
+	FontName: linden_hill.otf;
+}
+
+Button {
+	BackgroundColor: #000000ff;
+}
+
+Button:Prelight {
+	BackgroundColor: #444444ff;
+}
+
+Button > Label {
+	Color: #ffffffff;
+}
+
+ScrolledWindow > * > Button {
+	BackgroundColor: #123456ff;
+}
+
+ScrolledWindow > * > Button:Prelight {
+	BackgroundColor: #345678ff;
+}
+
+ScrolledWindow > * > Label {
+	Color: #ffffffff;
+}
+
+Button#close {
+	BackgroundColor: #ff0000ff;
+}
+

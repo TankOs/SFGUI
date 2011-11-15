@@ -105,6 +105,11 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 				selector += style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector;
 			}
 
+			// ID selector
+			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector.size() ) {
+				selector += "#" + style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector;
+			}
+
 			// Class selector
 			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector.size() ) {
 				selector += "." + style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector;
@@ -113,11 +118,6 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 			// State selector
 			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector.size() ) {
 				selector += ":" + style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector;
-			}
-
-			// ID selector
-			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector.size() ) {
-				selector += "#" + style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector;
 			}
 		}
 
