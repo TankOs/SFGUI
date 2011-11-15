@@ -83,16 +83,16 @@ void CullingTarget::Draw( const RenderQueue& queue ) {
 	std::size_t children_size = drawables.size();
 
 	for( RenderQueue::DrawablesVector::size_type index = 0; index < children_size; ++index ) {
-		if( m_view_rect.Left > drawables[index].second->Left + drawables[index].second->Width ) {
+		if( m_view_rect.Left > drawables[index].second.Left + drawables[index].second.Width ) {
 			continue;
 		}
-		if( m_view_rect.Top > drawables[index].second->Top + drawables[index].second->Height ) {
+		if( m_view_rect.Top > drawables[index].second.Top + drawables[index].second.Height ) {
 			continue;
 		}
-		if( drawables[index].second->Left > m_view_rect.Left + m_view_rect.Width ) {
+		if( drawables[index].second.Left > m_view_rect.Left + m_view_rect.Width ) {
 			continue;
 		}
-		if( drawables[index].second->Top > m_view_rect.Top + m_view_rect.Height ) {
+		if( drawables[index].second.Top > m_view_rect.Top + m_view_rect.Height ) {
 			continue;
 		}
 

@@ -19,15 +19,14 @@ Widget::Widget() :
 }
 
 Widget::~Widget() {
-	if( m_drawable ) {
+	/*if( m_drawable ) {
 		const RenderQueue::DrawablesVector& drawables = m_drawable->GetDrawables();
 		std::size_t drawables_size = drawables.size();
 
 		for( std::size_t index = 0; index < drawables_size; ++index ) {
 			delete drawables[index].first;
-			delete drawables[index].second;
 		}
-	}
+	}*/
 }
 
 bool Widget::IsSensitive() const {
@@ -135,16 +134,6 @@ void Widget::Expose( sf::RenderTarget& target ) const {
 void Widget::Expose( CullingTarget& target ) const {
 	if( m_invalidated ) {
 		m_invalidated = false;
-
-		if( m_drawable ) {
-			const RenderQueue::DrawablesVector& drawables = m_drawable->GetDrawables();
-			std::size_t drawables_size = drawables.size();
-
-			for( std::size_t index = 0; index < drawables_size; ++index ) {
-				delete drawables[index].first;
-				delete drawables[index].second;
-			}
-		}
 
 		m_drawable.reset( InvalidateImpl() );
 

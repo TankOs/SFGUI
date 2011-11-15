@@ -4,33 +4,39 @@
 namespace sfg {
 
 RenderQueue::~RenderQueue() {
+	DrawablesVector::iterator d_iter( m_children.begin() );
+	DrawablesVector::iterator d_iter_end( m_children.end() );
+	
+	for( ; d_iter != d_iter_end; ++d_iter ) {
+		delete d_iter->first;
+	}
 }
 
 void RenderQueue::Add( sf::Shape* shape ) {
-	sf::FloatRect* aabb = new sf::FloatRect( .0f, .0f, .0f, .0f );
+	sf::FloatRect aabb( .0f, .0f, .0f, .0f );
 
 	unsigned int points_count = shape->GetPointsCount();
 
 	for( unsigned int point_index = 0; point_index < points_count; ++point_index ) {
 		sf::Vector2f point = shape->GetPointPosition( point_index );
 
-		aabb->Left = std::min( point.x, aabb->Left );
-		aabb->Top = std::min( point.y, aabb->Top );
-		aabb->Width = std::max( point.x - aabb->Left, aabb->Width );
-		aabb->Height = std::max( point.y - aabb->Top, aabb->Height );
+		aabb.Left = std::min( point.x, aabb.Left );
+		aabb.Top = std::min( point.y, aabb.Top );
+		aabb.Width = std::max( point.x - aabb.Left, aabb.Width );
+		aabb.Height = std::max( point.y - aabb.Top, aabb.Height );
 	}
 
-	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect*>( shape, aabb ) );
+	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( shape, aabb ) );
 }
 
 void RenderQueue::Add( sf::Sprite* sprite ) {
-	sf::FloatRect* aabb = new sf::FloatRect( sprite->GetPosition(), sprite->GetSize() );
-	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect*>( sprite, aabb ) );
+	sf::FloatRect aabb( sprite->GetPosition(), sprite->GetSize() );
+	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( sprite, aabb ) );
 }
 
 void RenderQueue::Add( sf::Text* text ) {
-	sf::FloatRect* aabb = new sf::FloatRect( text->GetRect() );
-	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect*>( text, aabb ) );
+	sf::FloatRect aabb( text->GetRect() );
+	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( text, aabb ) );
 }
 
 void RenderQueue::Add( RenderQueue* queue ) {
@@ -41,6 +47,7 @@ void RenderQueue::Add( RenderQueue* queue ) {
 		m_children.push_back( *iter );
 	}
 
+	queue->m_children.clear();
 	delete queue;
 }
 
