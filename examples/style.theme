@@ -15,7 +15,7 @@ Button:Prelight {
 	BackgroundColor: #444444ff;
 }
 
-Button > Label {
+Button {
 	Color: #ffffffff;
 }
 
@@ -27,7 +27,7 @@ ScrolledWindow > * > Button:Prelight {
 	BackgroundColor: #345678ff;
 }
 
-ScrolledWindow > * > Label {
+ScrolledWindow > * > Button {
 	Color: #ffffffff;
 }
 
@@ -35,3 +35,6 @@ Button#close {
 	BackgroundColor: #ff0000ff;
 }
 
+CheckButton {
+	FontSize: 18;
+}

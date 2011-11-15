@@ -5,8 +5,7 @@
 namespace sfg {
 
 Button::Button() :
-	Bin(),
-	m_label( Label::Create( L"" ) )
+	Bin()
 {
 }
 
@@ -22,24 +21,18 @@ Button::Ptr Button::Create( const sf::String& label ) {
 }
 
 RenderQueue* Button::InvalidateImpl() const {
-	m_label->Invalidate();
-
 	return Context::Get().GetEngine().CreateButtonDrawable( std::dynamic_pointer_cast<const Button>( shared_from_this() ) );
 
 }
 
 void Button::SetLabel( const sf::String& label ) {
-	if( !GetChild() ) {
-		Add( m_label );
-	}
-
-	m_label->SetText( label );
+	m_label = label;
 	RequestSize();
 	Invalidate();
 }
 
 const sf::String& Button::GetLabel() const {
-	return m_label->GetText();
+	return m_label;
 }
 
 void Button::HandleMouseEnter( int /*x*/, int /*y*/ ) {
@@ -70,31 +63,19 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 	}
 }
 
-void Button::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
-	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
-
-	sf::FloatRect  label_allocation(
-		GetBorderWidth() + padding,
-		GetBorderWidth() + padding,
-		GetAllocation().Width - 2 * GetBorderWidth() - 2 * padding,
-		GetAllocation().Height - 2 * GetBorderWidth() - 2 * padding
-	);
-
-	m_label->AllocateSize( label_allocation );
-}
-
-void Button::HandleStateChange( State old_state ) {
-	m_label->RequestSize();
-
-	Widget::HandleStateChange( old_state );
-}
-
 sf::Vector2f Button::GetRequisitionImpl() const {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
-	sf::Vector2f requisition( m_label->GetRequisition() );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
+	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
-	requisition.x += 2 * GetBorderWidth() + 2 * padding;
-	requisition.y += 2 * GetBorderWidth() + 2 * padding;
+	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
+	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
+
+	sf::Vector2f requisition(
+		metrics.x + 2 * GetBorderWidth() + 2 * padding,
+		metrics.y + 2 * GetBorderWidth() + 2 * padding
+	);
 
 	return requisition;
 }

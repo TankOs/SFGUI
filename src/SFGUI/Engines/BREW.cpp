@@ -42,18 +42,18 @@ BREW::BREW() :
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "Padding", 5.f );
 	SetProperty( "Button:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
-	SetProperty( "Button:Prelight > Label", "Color", sf::Color::White );
+	SetProperty( "Button:Prelight", "Color", sf::Color::White );
 	SetProperty( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty( "Button:Active > Label", "Color", sf::Color::Black );
+	SetProperty( "Button:Active", "Color", sf::Color::Black );
 
 	// ToggleButton-specific.
 	SetProperty( "ToggleButton", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "ToggleButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "ToggleButton", "Padding", 5.f );
 	SetProperty( "ToggleButton:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
-	SetProperty( "ToggleButton:Prelight > Label", "Color", sf::Color::White );
+	SetProperty( "ToggleButton:Prelight", "Color", sf::Color::White );
 	SetProperty( "ToggleButton:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty( "ToggleButton:Active > Label", "Color", sf::Color::Black );
+	SetProperty( "ToggleButton:Active", "Color", sf::Color::Black );
 
 	// CheckButton-specific.
 	SetProperty( "CheckButton", "Spacing", 5.f );
@@ -211,7 +211,11 @@ RenderQueue* BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) 
 	sf::Color border_color_dark( border_color_light );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
+	sf::Color color( GetProperty<sf::Color>( "Color", button ) );
 	float border_width( GetProperty<float>( "BorderWidth", button ) );
+	const std::string& font_name( GetProperty<std::string>( "FontName", button ) );
+	unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );
+	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
@@ -236,6 +240,20 @@ RenderQueue* BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) 
 		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
 	}
 
+	// Label.
+	if( button->GetLabel().GetSize() > 0 ) {
+		sf::Vector2f metrics = GetTextMetrics( button->GetLabel(), font, font_size );
+		metrics.y = GetLineHeight( font, font_size );
+
+		sf::Text* text( new sf::Text( button->GetLabel(), font, font_size ) );
+		text->SetPosition(
+			std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f ),
+			std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f )
+		);
+		text->SetColor( color );
+		queue->Add( text );
+	}
+
 	return queue;
 }
 
@@ -244,7 +262,11 @@ RenderQueue* BREW::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButto
 	sf::Color border_color_dark( border_color_light );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
+	sf::Color color( GetProperty<sf::Color>( "Color", button ) );
 	float border_width( GetProperty<float>( "BorderWidth", button ) );
+	const std::string& font_name( GetProperty<std::string>( "FontName", button ) );
+	unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );
+	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
@@ -269,6 +291,19 @@ RenderQueue* BREW::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButto
 		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
 	}
 
+	// Label.
+	if( button->GetLabel().GetSize() > 0 ) {
+		sf::Vector2f metrics = GetTextMetrics( button->GetLabel(), font, font_size );
+		metrics.y = GetLineHeight( font, font_size );
+
+		sf::Text* text( new sf::Text( button->GetLabel(), font, font_size ) );
+		text->SetPosition(
+			std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f ),
+			std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f )
+		);
+		text->SetColor( color );
+		queue->Add( text );
+	}
 
 	return queue;
 }
@@ -277,11 +312,16 @@ RenderQueue* BREW::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton>
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", check ) );
 	sf::Color border_color_dark( border_color_light );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", check ) );
+	sf::Color color( GetProperty<sf::Color>( "Color", check ) );
 	sf::Color check_color( GetProperty<sf::Color>( "CheckColor", check ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", check ) );
 	float border_width( GetProperty<float>( "BorderWidth", check ) );
 	float box_size( GetProperty<float>( "BoxSize", check ) );
+	float spacing( GetProperty<float>( "Spacing", check ) );
 	float check_size( std::min( box_size, GetProperty<float>( "CheckSize", check ) ) );
+	const std::string& font_name( GetProperty<std::string>( "FontName", check ) );
+	unsigned int font_size( GetProperty<unsigned int>( "FontSize", check ) );
+	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 	RenderQueue* queue( new RenderQueue );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
@@ -328,6 +368,19 @@ RenderQueue* BREW::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton>
 		)
 	);
 
+	// Label.
+	if( check->GetLabel().GetSize() > 0 ) {
+		sf::Vector2f metrics = GetTextMetrics( check->GetLabel(), font, font_size );
+		metrics.y = GetLineHeight( font, font_size );
+
+		sf::Text* text( new sf::Text( check->GetLabel(), font, font_size ) );
+		text->SetPosition(
+			std::floor( box_size + spacing ),
+			std::floor( check->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f )
+		);
+		text->SetColor( color );
+		queue->Add( text );
+	}
 
 	return queue;
 }

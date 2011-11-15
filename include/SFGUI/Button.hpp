@@ -1,6 +1,5 @@
 #pragma once
 #include <SFGUI/Bin.hpp>
-#include <SFGUI/Label.hpp>
 #include <SFML/System/String.hpp>
 
 namespace sfg {
@@ -50,10 +49,8 @@ class SFGUI_API Button : public Bin {
 		void HandleMouseEnter( int x, int y );
 		void HandleMouseLeave( int x, int y );
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
-		virtual void HandleStateChange( State old_state );
 
-		Label::Ptr  m_label;
+		sf::String m_label;
 };
 
 }

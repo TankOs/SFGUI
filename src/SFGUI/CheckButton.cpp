@@ -34,16 +34,21 @@ RenderQueue* CheckButton::InvalidateImpl() const {
 }
 
 sf::Vector2f CheckButton::GetRequisitionImpl() const {
+	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
+	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 	float spacing( Context::Get().GetEngine().GetProperty<float>( "Spacing", shared_from_this() ) );
 	float box_size( Context::Get().GetEngine().GetProperty<float>( "BoxSize", shared_from_this() ) );
 	sf::Vector2f requisition( box_size, box_size );
 
-	if( GetChild() ) {
-		requisition.x = std::max(
-			requisition.x,
-			GetChild()->GetRequisition().x + spacing + box_size
-		);
-		requisition.y = std::max( requisition.y, GetChild()->GetRequisition().y );
+	if( GetLabel().GetSize() > 0 ) {
+		sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( GetLabel(), font, font_size );
+		requisition.x = std::max( requisition.x, metrics.x );
+		requisition.y = std::max( requisition.y, Context::Get().GetEngine().GetLineHeight( font, font_size ) );
+
+		requisition.x += spacing + 2.f * padding;
+		requisition.y += 2.f * padding;
 	}
 
 	return requisition;
