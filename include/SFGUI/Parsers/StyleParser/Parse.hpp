@@ -14,11 +14,17 @@ struct Declaration {
 	std::string m_property_value;
 };
 
+struct Combinator {
+	std::string m_combinator;
+};
+
 struct SimpleSelector {
 	std::string m_type_selector;
 	std::string m_class_selector;
 	std::string m_state_selector;
 	std::string m_id_selector;
+
+	std::string m_combinator;
 };
 
 struct Selector {

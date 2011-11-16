@@ -232,9 +232,9 @@ void SampleApp::Run() {
 	m_desktop.GetEngine().GetResourceManager().AddFont( "custom_font", my_font, false ); // false -> do not manage!
 
 	// Set properties.
-	m_desktop.SetProperty( "Button#close:Normal > Label", "Color", sf::Color::Yellow );
-	m_desktop.SetProperty( "Button#close > Label", "FontName", "linden_hill.otf" );
-	m_desktop.SetProperty( "Button#close > Label", "FontSize", 15.f );
+	m_desktop.SetProperty( "Button#close:Normal", "Color", sf::Color::Yellow );
+	m_desktop.SetProperty( "Button#close", "FontName", "linden_hill.otf" );
+	m_desktop.SetProperty( "Button#close", "FontSize", 15.f );
 	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontName", "custom_font" );
 	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontSize", 18.f );
 

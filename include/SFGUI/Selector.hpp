@@ -17,11 +17,29 @@ class SFGUI_API Selector {
 		typedef std::shared_ptr<Selector> Ptr; ///< Shared pointer.
 		typedef std::shared_ptr<Selector> PtrConst; ///< Shared pointer (const object).
 
+		enum HierarchyType {
+			Invalid = 0, //!< Invalid hierarchy type;
+			Root = 1 << 0, //!< Current simple selector is the root of the selector.
+			Child = 1 << 1, //!< Current simple selector is a child of the parent.
+			Descendant = 1 << 2 //!< Current simple selector is a descendant of the parent.
+		};
+
 		/** Create selector.
 		 * @param str String to parse.
 		 * @return Selector or NULL in case of a parser error.
 		 */
 		static Ptr Create( const std::string& str );
+
+		/** Create selector.
+		 * @param widget Widget string.
+		 * @param id ID string.
+		 * @param class_ Class string.
+		 * @param state State string.
+		 * @param hierarchy Hierarchy type.
+		 * @param parent Selector parent.
+		 * @return Selector.
+		 */
+		static Ptr Create( const std::string& widget, const std::string& id, const std::string& class_, const std::string& state, int hierarchy, Ptr parent );
 
 		/** Get widget name.
 		 * @return Widget name or empty if all.
@@ -83,6 +101,8 @@ class SFGUI_API Selector {
 		static void EatWhitespace( std::string::const_iterator& begin, const std::string::const_iterator& end );
 
 		Ptr m_parent;
+
+		int m_hierarchy_type;
 
 		std::string m_widget;
 		std::string m_id;

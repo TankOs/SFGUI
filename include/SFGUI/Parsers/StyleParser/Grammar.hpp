@@ -52,34 +52,38 @@ struct StyleGrammar : ell::Parser<char>, ell::Grammar<char>
 		void PushID();
 		void PushSimpleSelector();
 		void PushSelector();
+		void PushCombinatorChild();
+		void PushCombinatorDescendant();
 		void PushDeclaration();
 		void PushRule();
 		void PushStyle();
 
-    ell::Rule<char> end_rule;
+		ell::Rule<char> end_rule;
 		ell::Rule<char> identifier_rule, value_rule;
-    ell::Rule<char> type_rule, class_rule, state_rule, id_rule;
-    ell::Rule<char> simple_selector_rule, selector_rule;
-    ell::Rule<char> declaration_rule, rule_rule, style_rule;
+		ell::Rule<char> type_rule, class_rule, state_rule, id_rule;
+		ell::Rule<char> simple_selector_rule, selector_combinator_rule, selector_rule;
+		ell::Rule<char> declaration_rule, rule_rule, style_rule;
 
-    ell::Rule<char> skipper_rule;
-    ell::Rule<char> comment_rule;
+		ell::Rule<char> skipper_rule;
+		ell::Rule<char> comment_rule;
 
-    std::stack<ell::string> m_identifiers;
-    std::stack<ell::string> m_values;
+		std::stack<ell::string> m_identifiers;
+		std::stack<ell::string> m_values;
 
-    std::stack<ell::string> m_types;
-    std::stack<ell::string> m_classes;
-    std::stack<ell::string> m_states;
-    std::stack<ell::string> m_ids;
+		std::stack<ell::string> m_types;
+		std::stack<ell::string> m_classes;
+		std::stack<ell::string> m_states;
+		std::stack<ell::string> m_ids;
 
-    std::stack<struct SimpleSelector> m_simple_selectors;
-    std::stack<struct Selector> m_selectors;
+		std::stack<struct SimpleSelector> m_simple_selectors;
+		std::stack<struct Selector> m_selectors;
 
-    std::stack<struct Declaration> m_declarations;
-    std::stack<struct Rule> m_rules;
+		std::stack<struct Combinator> m_combinators;
 
-    std::vector<struct Rule> m_style;
+		std::stack<struct Declaration> m_declarations;
+		std::stack<struct Rule> m_rules;
+
+		std::vector<struct Rule> m_style;
 };
 
 }

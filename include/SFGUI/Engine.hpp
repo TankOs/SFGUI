@@ -127,6 +127,16 @@ class SFGUI_API Engine {
 		template <typename T>
 		bool SetProperty( const std::string& selector, const std::string& property, const T& value );
 
+		/** Set property.
+		 * @param selector Valid selector object.
+		 * @param property Property.
+		 * @param value Value.
+		 * @return true on success, false when: Invalid selector or invalid property.
+		 * @throws BadValue when value couldn't be converted to string.
+		 */
+		template <typename T>
+		bool SetProperty( sfg::Selector::Ptr selector, const std::string& property, const T& value );
+
 		/** Get property.
 		 * @param property Name of property.
 		 * @param widget Widget to be used for building the property path.

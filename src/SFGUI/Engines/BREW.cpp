@@ -22,15 +22,15 @@ BREW::BREW() :
 	Engine()
 {
 	// Set defaults.
-	SetProperty( "", "Color", sf::Color( 0xc6, 0xcb, 0xc4 ) );
-	SetProperty( "", "FontSize", 12 );
-	SetProperty( "", "FontName", "" ); // Uses SFML's default font when empty.
-	SetProperty( "", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
-	SetProperty( "", "BorderColor", sf::Color( 0x66, 0x66, 0x66 ) );
-	SetProperty( "", "BorderColorShift", 0x20 );
-	SetProperty( "", "BorderWidth", 1.f );
-	SetProperty( "", "Padding", 5.f );
-	SetProperty( "", "Thickness", 2.f );
+	SetProperty( "*", "Color", sf::Color( 0xc6, 0xcb, 0xc4 ) );
+	SetProperty( "*", "FontSize", 12 );
+	SetProperty( "*", "FontName", "" ); // Uses SFML's default font when empty.
+	SetProperty( "*", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
+	SetProperty( "*", "BorderColor", sf::Color( 0x66, 0x66, 0x66 ) );
+	SetProperty( "*", "BorderColorShift", 0x20 );
+	SetProperty( "*", "BorderWidth", 1.f );
+	SetProperty( "*", "Padding", 5.f );
+	SetProperty( "*", "Thickness", 2.f );
 
 	// Window-specific.
 	SetProperty( "Window", "TitleHeight", 25.f );

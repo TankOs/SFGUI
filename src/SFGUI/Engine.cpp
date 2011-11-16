@@ -90,35 +90,27 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 	for( std::size_t rule_index = 0; rule_index < num_rules; ++rule_index ) {
 		std::size_t num_simple_selectors = style[ rule_index ].m_selector.m_simple_selectors.size();
 
-		std::string selector("");
+		Selector::Ptr selector;
 
 		// Iterate over all simple selectors
 		for( std::size_t simple_selector_index = 0; simple_selector_index < num_simple_selectors; ++simple_selector_index ) {
+			int hierarchy = Selector::Root;
 
-			// If this isn't the root simple selector add a '>'
-			if( simple_selector_index > 0 ) {
-				selector += " > ";
+			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == ">" ) {
+				hierarchy = Selector::Child;
+			}
+			else if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == " " ) {
+				hierarchy = Selector::Descendant;
 			}
 
-			// Type selector
-			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector.size() ) {
-				selector += style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector;
-			}
-
-			// ID selector
-			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector.size() ) {
-				selector += "#" + style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector;
-			}
-
-			// Class selector
-			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector.size() ) {
-				selector += "." + style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector;
-			}
-
-			// State selector
-			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector.size() ) {
-				selector += ":" + style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector;
-			}
+			selector = Selector::Create(
+				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector,
+				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector,
+				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector,
+				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector,
+				hierarchy,
+				selector
+			);
 		}
 
 		std::size_t num_declarations = style[ rule_index ].m_declarations.size();
@@ -169,7 +161,7 @@ const std::string* Engine::GetValue( const std::string& property, std::shared_pt
 		}
 
 		// Look for general properties now.
-		name_iter = prop_iter->second.find( "" );
+		name_iter = prop_iter->second.find( "*" );
 
 		if( name_iter != prop_iter->second.end() ) {
 			SelectorValueList::const_iterator sv_iter( name_iter->second.begin() );

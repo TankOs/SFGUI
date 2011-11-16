@@ -5,7 +5,7 @@ namespace parser {
 namespace style {
 
 void StyleGrammar::GrammarSimpleSelector() {
-	type_rule  = ( identifier_rule )[ &StyleGrammar::PushType ];
+	type_rule  = ( identifier_rule | ch('*') )[ &StyleGrammar::PushType ];
 	class_rule = ( ch('.') >> identifier_rule )[ &StyleGrammar::PushClass ];
 	state_rule = ( ch(':') >> identifier_rule )[ &StyleGrammar::PushState ];
 	id_rule    = ( ch('#') >> identifier_rule )[ &StyleGrammar::PushID ];

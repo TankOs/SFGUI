@@ -15,8 +15,13 @@ void StyleGrammar::PushValue( const ell::string& value ) {
 }
 
 void StyleGrammar::PushType() {
-	m_types.push( m_identifiers.top() );
-	m_identifiers.pop();
+	if( m_identifiers.empty() ) {
+		m_types.push( "*" );
+	}
+	else {
+		m_types.push( m_identifiers.top() );
+		m_identifiers.pop();
+	}
 }
 
 void StyleGrammar::PushClass() {
@@ -75,14 +80,44 @@ void StyleGrammar::PushSimpleSelector() {
 void StyleGrammar::PushSelector() {
 	struct Selector selector;
 
+	if( !m_combinators.empty() ) {
+		m_combinators.pop();
+	}
+
 	while( !m_simple_selectors.empty() ) {
-		selector.m_simple_selectors.push_back( m_simple_selectors.top() );
+		SimpleSelector simple_selector = m_simple_selectors.top();
+
+		if( m_combinators.empty() ) {
+			simple_selector.m_combinator = "";
+		}
+		else {
+			simple_selector.m_combinator = m_combinators.top().m_combinator;
+			m_combinators.pop();
+		}
+
+		selector.m_simple_selectors.push_back( simple_selector );
 		m_simple_selectors.pop();
 	}
 
 	std::reverse( selector.m_simple_selectors.begin(), selector.m_simple_selectors.end() );
 
 	m_selectors.push( selector );
+}
+
+void StyleGrammar::PushCombinatorChild() {
+	struct Combinator combinator;
+
+	combinator.m_combinator = ">";
+
+	m_combinators.push( combinator );
+}
+
+void StyleGrammar::PushCombinatorDescendant() {
+	struct Combinator combinator;
+
+	combinator.m_combinator = " ";
+
+	m_combinators.push( combinator );
 }
 
 void StyleGrammar::PushDeclaration() {

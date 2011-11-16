@@ -4,12 +4,14 @@
 namespace sfg {
 
 Selector::Selector() :
+	m_hierarchy_type( Invalid ),
 	m_state( -1 ),
 	m_hash( 0 )
 {
 }
 
 Selector::Selector( const Selector& other ) :
+	m_hierarchy_type( other.m_hierarchy_type ),
 	m_widget( other.m_widget ),
 	m_id( other.m_id ),
 	m_class( other.m_class ),
@@ -22,6 +24,7 @@ Selector::Selector( const Selector& other ) :
 }
 
 Selector& Selector::operator=( const Selector& other ) {
+	m_hierarchy_type = other.m_hierarchy_type;
 	m_widget = other.m_widget;
 	m_id = other.m_id;
 	m_class = other.m_class;
@@ -43,29 +46,37 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 	bool parse_next( true );
 	Ptr selector;
 
+	int hierarchy_type = Root;
+
 	while( parse_next ) {
+		// Eat any whitespace before the current simple selector.
+		EatWhitespace( str_iter, str.end() );
+
 		// Check bounds.
 		if( str_iter == str.end() ) {
 			break;
 		}
 
-		// If it's not the first selector part, check for next delimiter.
+		// If it's not the first simple selector, check for combinator.
 		if( selector ) {
-			if( *str_iter != '>' ) {
-				return Ptr();
-			}
+			if( *str_iter == '>' ) {
+				hierarchy_type = Child;
 
-			// Skip delimiter.
-			++str_iter;
+				// Skip combinator.
+				++str_iter;
+
+				// Eat any whitespace after the '>'.
+				EatWhitespace( str_iter, str.end() );
+			}
+			else {
+				hierarchy_type = Descendant;
+			}
 
 			// Check bounds.
 			if( str_iter == str.end() ) {
 				return Ptr();
 			}
 		}
-
-		// Eat any leading whitespace.
-		EatWhitespace( str_iter, str.end() );
 
 		Ptr next( new Selector );
 
@@ -79,7 +90,9 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 			return Ptr();
 		}
 
-		// If it's the first selector part, set it as current root.
+		next->m_hierarchy_type = hierarchy_type;
+
+		// If it's the first simple selector, set it as current root.
 		if( !selector ) {
 			selector = next;
 		}
@@ -92,13 +105,54 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 
 	// If there's no selector yet, it means we want to reach ALL widgets, which
 	// is perfectly fine.
+	// binary1248 says: Actually, we want this case to be handled by the wildcard
+	// which means if there is no selector, no widget (wildcard) was parsed
+	// and the input is invalid.
 	if( !selector ) {
-		selector = Ptr( new Selector );
+		//selector = Ptr( new Selector );
+		return Ptr();
 	}
 
 	// Hash.
 	std::hash<std::string> string_hasher;
 	selector->m_hash = string_hasher( selector->BuildString() );
+
+	return selector;
+}
+
+Selector::Ptr Selector::Create( const std::string& widget, const std::string& id, const std::string& class_, const std::string& state, int hierarchy, Ptr parent ) {
+	Ptr selector( new Selector );
+
+	selector->m_widget = widget;
+	selector->m_id = id;
+	selector->m_class = class_;
+
+	if( state == "Normal" ) {
+		selector->m_state = Widget::Normal;
+	}
+	else if( state == "Active" ) {
+		selector->m_state = Widget::Active;
+	}
+	else if( state == "Prelight" ) {
+		selector->m_state = Widget::Prelight;
+	}
+	else if( state == "Selected" ) {
+		selector->m_state = Widget::Selected;
+	}
+	else if( state == "Insensitive" ) {
+		selector->m_state = Widget::Insensitive;
+	}
+	else if( !state.empty() ) {
+		throw( ParserException( "Invalid state: " + state ) );
+	}
+
+	selector->m_hierarchy_type = hierarchy;
+
+	if( hierarchy == Root ) {
+		return selector;
+	}
+
+	selector->m_parent = parent;
 
 	return selector;
 }
@@ -121,7 +175,9 @@ std::string Selector::ParseWidget( std::string::const_iterator& begin, const std
 		// Check for valid char.
 		if(
 			(*begin < 'a' || *begin > 'z') &&
-			(*begin < 'A' || *begin > 'Z')
+			(*begin < 'A' || *begin > 'Z') &&
+			(*begin != '*' )
+			// TODO: Handle the cases where letters and asterisks (or multiple asterisks) get mixed together.
 		) {
 			throw( ParserException( std::string( "Invalid character for widget name: " ) + *begin ) );
 		}
@@ -316,7 +372,16 @@ std::string Selector::BuildString() const {
 	// Build parent's string first.
 	if( m_parent ) {
 		str += m_parent->BuildString();
-		str += ">";
+
+		switch( m_hierarchy_type ) {
+			case Child: {
+				str += ">";
+			} break;
+			case Descendant: {
+				str += " ";
+			} break;
+			default: break;
+		}
 	}
 
 	// Append own string.
@@ -377,71 +442,46 @@ bool Selector::operator==( const Selector& other ) {
 }
 
 bool Selector::Matches( Widget::PtrConst widget ) const {
-	// If selector is a wildcard, get next non-wildcard and look for first match
-	// to continue there.
-	if( m_widget.empty() && m_id.empty() && m_class.empty() && m_state == -1 ) {
-		Ptr next_selector( GetParent() );
+	if( !widget ) {
+		return false;
+	}
 
-		// Get next non-wildcard selector.
-		while( next_selector ) {
-			if( !next_selector->m_widget.empty() ) {
-				break;
-			}
+	// Recursion is your friend ;)
 
-			next_selector = next_selector->m_parent;
-		}
+	// Check if current stage is a pass...
+	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && m_state == -1 ) | // Wildcard
+		  ( ( m_widget.empty() || m_widget == widget->GetName()  ) &&    //
+		    ( m_id.empty()     || m_id     == widget->GetId()    ) &&    // Selector and widget match
+		    ( m_class.empty()  || m_class  == widget->GetClass() ) &&    //
+		    ( m_state == (-1)  || m_state  == widget->GetState() ) ) ) { //
+		// Current stage is a pass...
 
-		// If there are only wildcards, we have a match.
-		if( !next_selector ) {
-			return true;
-		}
-
-		// We'll now advance the widget until it or one of its parents match.
-		Widget::PtrConst next_widget( widget );
-
-		while( next_widget ) {
-			// In case we got a match, continue "normal" operation from there.
-			if( next_selector->Matches( next_widget ) ) {
+		// Differentiate between different hierarchy types
+		switch( m_hierarchy_type ) {
+			case Root: {
+				// No parent, matching success
 				return true;
-			}
-
-			next_widget = next_widget->GetParent();
+			} break;
+			case Child: {
+				// This is a child, check direct parent only
+				return ( GetParent() && GetParent()->Matches( widget->GetParent() ) );
+			} break;
+			case Descendant: {
+				// This is a descendant, check all parents and try to match to all of widgets parents
+				for( PtrConst parent = GetParent(); parent; parent = parent->GetParent() ) {
+					for( Widget::PtrConst widget_parent = widget->GetParent(); widget_parent; widget_parent = widget_parent->GetParent() ) {
+						if( parent->Matches( widget_parent ) ) {
+							return true;
+						}
+					}
+				}
+			} break;
+			default: break;
 		}
-
-		// No parent matched.
-		return false;
 	}
 
-	// If selector has a parent but widget doesn't, we don't need to go on any
-	// further.
-	if( m_parent && !widget->GetParent() ) {
-		return false;
-	}
-
-	// Check attributes.
-	if( !m_widget.empty() && m_widget != widget->GetName() ) {
-		return false;
-	}
-
-	if( !m_id.empty() && widget->GetId() != m_id ) {
-		return false;
-	}
-
-	if( !m_class.empty() && widget->GetClass() != m_class ) {
-		return false;
-	}
-
-	if( m_state > -1 && widget->GetState() != m_state ) {
-		return false;
-	}
-
-	// Check parent, if needed.
-	if( m_parent ) {
-		return m_parent->Matches( widget->GetParent() );
-	}
-
-	// No parent, success.
-	return true;
+	// Not wildcard and doesn't match, fail... :(
+	return false;
 }
 
 }
