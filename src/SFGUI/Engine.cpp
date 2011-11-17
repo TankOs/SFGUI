@@ -183,4 +183,31 @@ ResourceManager& Engine::GetResourceManager() const {
 	return m_resource_manager;
 }
 
+bool Engine::SetProperty( sfg::Selector::Ptr selector, const std::string& property, const std::string& value ) {
+	if( !selector ) {
+		// Invalid selector string given.
+		return false;
+	}
+
+	// If the selector does already exist, we'll remove it to make sure the newly
+	// added value will get a higher priority than the previous one, because
+	// that's the expected behaviour (LIFO).
+	SelectorValueList& list( m_properties[property][selector->GetWidgetName()] ); // Shortcut.
+	SelectorValueList::iterator list_begin( list.begin() );
+	SelectorValueList::iterator list_end( list.end() );
+
+	for( ; list_begin != list_end; ++list_begin ) {
+		if( *list_begin->first == *selector ) {
+			// Equal, remove.
+			list.erase( list_begin );
+			break;
+		}
+	}
+
+	// Insert at top to get highest priority.
+	list.push_front( SelectorValuePair( selector, value ) );
+
+	return true;
+}
+
 }

@@ -36,7 +36,8 @@ struct StyleGrammar : ell::Parser<char>, ell::Grammar<char>
 	public:
 		StyleGrammar();
 
-		std::vector<struct Rule> GetStyle();
+		const std::vector<struct Rule>& GetStyle() const;
+		void ClearResults();
 
 	private:
 		void GrammarToken();

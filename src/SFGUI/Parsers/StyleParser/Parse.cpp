@@ -9,6 +9,8 @@ namespace sfg {
 namespace parser {
 namespace style {
 
+static StyleGrammar _grammar;
+
 std::string GetLine( std::string str, std::size_t line ) {
 	for( std::size_t current_line = 1; current_line < line; ++current_line ) {
 		std::size_t position = str.find( '\n' );
@@ -43,7 +45,7 @@ std::size_t ColumnPosition( std::string str, std::size_t string_position ) {
 }
 
 std::vector<Rule> ParseString( std::string str ) {
-	static StyleGrammar grammar;
+	_grammar.ClearResults();
 	//ELL_ENABLE_DUMP( grammar );
 
 	bool result = false;
@@ -51,8 +53,8 @@ std::vector<Rule> ParseString( std::string str ) {
 	std::vector<Rule> rules;
 
 	try {
-		grammar.parse( str.c_str() );
-		rules = grammar.GetStyle();
+		_grammar.parse( str.c_str() );
+		rules = _grammar.GetStyle();
 		result = true;
 	}
 	catch( const std::runtime_error& e ) {
@@ -61,12 +63,12 @@ std::vector<Rule> ParseString( std::string str ) {
 #ifdef SFGUI_DEBUG
 		std::cerr << "Error parsing string:\n"
 		          << str << "\n"
-		          << std::string( grammar.position - str.c_str() ,' ' ) << "^\n"
+		          << std::string( _grammar.position - str.c_str() ,' ' ) << "^\n"
 		          << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
 #endif
 	}
 
-	if( result && ( grammar.get() == '\0' ) ) {
+	if( result && ( _grammar.get() == '\0' ) ) {
 		return rules;
 	}
 
@@ -74,7 +76,7 @@ std::vector<Rule> ParseString( std::string str ) {
 }
 
 std::vector<Rule> ParseFile( std::string filename ) {
-	static StyleGrammar grammar;
+	_grammar.ClearResults();
 	//ELL_ENABLE_DUMP( grammar );
 
 	bool result = false;
@@ -95,22 +97,22 @@ std::vector<Rule> ParseFile( std::string filename ) {
 	std::string str = std::string( std::istreambuf_iterator<char>( file ), std::istreambuf_iterator<char>() );
 
 	try {
-		grammar.parse( str.c_str() );
-		rules = grammar.GetStyle();
+		_grammar.parse( str.c_str() );
+		rules = _grammar.GetStyle();
 		result = true;
 	}
 	catch( const std::runtime_error& e ) {
 		result = false;
 
 #ifdef SFGUI_DEBUG
-		std::cerr << "Error parsing file \"" << filename << "\" at line " << grammar.line_number <<":\n"
-		          << GetLine( str, grammar.line_number ) << "\n"
-		          << std::string( ColumnPosition( str, grammar.position - str.c_str() ) ,' ' ) << "^\n"
+		std::cerr << "Error parsing file \"" << filename << "\" at line " << _grammar.line_number <<":\n"
+		          << GetLine( str, _grammar.line_number ) << "\n"
+		          << std::string( ColumnPosition( str, _grammar.position - str.c_str() ) ,' ' ) << "^\n"
 		          << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
 #endif
 	}
 
-	if( result && ( grammar.get() == '\0' ) ) {
+	if( result && ( _grammar.get() == '\0' ) ) {
 		file.close();
 		return rules;
 	}

@@ -1,6 +1,5 @@
 #include <sstream>
 #include <iomanip>
-
 namespace sfg {
 
 template <typename T>
@@ -47,39 +46,14 @@ bool Engine::SetProperty( const std::string& selector, const std::string& proper
 
 template <typename T>
 bool Engine::SetProperty( sfg::Selector::Ptr selector, const std::string& property, const T& value ) {
-	if( !selector ) {
-		// Invalid selector string given.
-		return false;
-	}
-
-	// Convert value into string.
 	std::stringstream sstr;
-	
 	sstr << value;
 
-	if( !sstr ) {
+	if( sstr.fail() ) {
 		return false;
 	}
 
-	// If the selector does already exist, we'll remove it to make sure the newly
-	// added value will get a higher priority than the previous one, because
-	// that's the expected behaviour (LIFO).
-	SelectorValueList& list( m_properties[property][selector->GetWidgetName()] ); // Shortcut.
-	SelectorValueList::iterator list_begin( list.begin() );
-	SelectorValueList::iterator list_end( list.end() );
-
-	for( ; list_begin != list_end; ++list_begin ) {
-		if( *list_begin->first == *selector ) {
-			// Equal, remove.
-			list.erase( list_begin );
-			break;
-		}
-	}
-
-	// Insert at top to get highest priority.
-	list.push_front( SelectorValuePair( selector, sstr.str() ) );
-
-	return true;
+	return SetProperty( selector, property, sstr.str() );
 }
 
 }

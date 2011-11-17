@@ -18,8 +18,12 @@ StyleGrammar::StyleGrammar() :
 	style_rule.set_name( "Identifier or *" );
 }
 
-std::vector<struct Rule> StyleGrammar::GetStyle() {
+const std::vector<struct Rule>& StyleGrammar::GetStyle() const {
 	return m_style;
+}
+
+void StyleGrammar::ClearResults() {
+	m_style.clear();
 }
 
 }

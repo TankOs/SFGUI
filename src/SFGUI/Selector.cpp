@@ -148,11 +148,13 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 
 	selector->m_hierarchy_type = hierarchy;
 
-	if( hierarchy == Root ) {
-		return selector;
+	if( hierarchy != Root ) {
+		selector->m_parent = parent;
 	}
 
-	selector->m_parent = parent;
+	// Hash.
+	std::hash<std::string> string_hasher;
+	selector->m_hash = string_hasher( selector->BuildString() );
 
 	return selector;
 }
