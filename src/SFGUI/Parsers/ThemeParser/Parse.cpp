@@ -1,5 +1,5 @@
-#include <SFGUI/Parsers/StyleParser/Grammar.hpp>
-#include <SFGUI/Parsers/StyleParser/Parse.hpp>
+#include <SFGUI/Parsers/ThemeParser/Grammar.hpp>
+#include <SFGUI/Parsers/ThemeParser/Parse.hpp>
 
 #include <vector>
 #include <string>
@@ -7,9 +7,9 @@
 
 namespace sfg {
 namespace parser {
-namespace style {
+namespace theme {
 
-static StyleGrammar _grammar;
+static ThemeGrammar _grammar;
 
 std::string GetLine( std::string str, std::size_t line ) {
 	for( std::size_t current_line = 1; current_line < line; ++current_line ) {
@@ -54,7 +54,7 @@ std::vector<Rule> ParseString( std::string str ) {
 
 	try {
 		_grammar.parse( str.c_str() );
-		rules = _grammar.GetStyle();
+		rules = _grammar.GetTheme();
 		result = true;
 	}
 	catch( const std::runtime_error& e ) {
@@ -98,7 +98,7 @@ std::vector<Rule> ParseFile( std::string filename ) {
 
 	try {
 		_grammar.parse( str.c_str() );
-		rules = _grammar.GetStyle();
+		rules = _grammar.GetTheme();
 		result = true;
 	}
 	catch( const std::runtime_error& e ) {

@@ -228,12 +228,12 @@ void SampleApp::Run() {
 
 	// Play around with resource manager.
 	sf::Font my_font;
-	my_font.LoadFromFile( "linden_hill.otf" );
+	my_font.LoadFromFile( "data/linden_hill.otf" );
 	m_desktop.GetEngine().GetResourceManager().AddFont( "custom_font", my_font, false ); // false -> do not manage!
 
 	// Set properties.
 	m_desktop.SetProperty( "Button#close:Normal", "Color", sf::Color::Yellow );
-	m_desktop.SetProperty( "Button#close", "FontName", "linden_hill.otf" );
+	m_desktop.SetProperty( "Button#close", "FontName", "data/linden_hill.otf" );
 	m_desktop.SetProperty( "Button#close", "FontSize", 15.f );
 	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontName", "custom_font" );
 	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontSize", 18.f );
@@ -327,7 +327,7 @@ void SampleApp::OnLimitCharsToggle() {
 }
 
 void SampleApp::OnLoadThemeClick() {
-	m_desktop.LoadThemeFromFile( "style.theme" );
+	m_desktop.LoadThemeFromFile( "data/example.theme" );
 }
 
 void SampleApp::OnToggleCullingClick() {

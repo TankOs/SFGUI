@@ -1,7 +1,7 @@
 #include <SFGUI/Engine.hpp>
 
 #ifdef SFGUI_WITH_STYLE_PARSER
-	#include <SFGUI/Parsers/StyleParser/Parse.hpp>
+	#include <SFGUI/Parsers/ThemeParser/Parse.hpp>
 #endif
 
 #include <SFML/Graphics/Text.hpp>
@@ -73,22 +73,22 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 bool Engine::LoadThemeFromFile( const std::string& filename ) {
 #ifndef SFGUI_WITH_STYLE_PARSER
 	#ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Cannot load style file. Style file loading support not built."
+		std::cerr << "SFGUI warning: Cannot load theme file. Theme file loading support not built."
 	#endif
 	return false;
 #endif
 
-	parser::style::Style style = parser::style::ParseFile( filename );
+	parser::theme::Theme theme = parser::theme::ParseFile( filename );
 
-	if( style.empty() ) {
+	if( theme.empty() ) {
 		return false;
 	}
 
-	std::size_t num_rules = style.size();
+	std::size_t num_rules = theme.size();
 
 	// Iterate over all rules
 	for( std::size_t rule_index = 0; rule_index < num_rules; ++rule_index ) {
-		std::size_t num_simple_selectors = style[ rule_index ].m_selector.m_simple_selectors.size();
+		std::size_t num_simple_selectors = theme[ rule_index ].m_selector.m_simple_selectors.size();
 
 		Selector::Ptr selector;
 
@@ -96,20 +96,20 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 		for( std::size_t simple_selector_index = 0; simple_selector_index < num_simple_selectors; ++simple_selector_index ) {
 			int hierarchy = Selector::Root;
 
-			if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == ">" ) {
+			if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == ">" ) {
 				hierarchy = Selector::Child;
 			}
-			else if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == " " ) {
+			else if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == " " ) {
 				hierarchy = Selector::Descendant;
 			}
-			else if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == "," ) {
+			else if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == "," ) {
 				// Grouping combinator detected. Stop eating simple selectors and set the properties now.
-				std::size_t num_declarations = style[ rule_index ].m_declarations.size();
+				std::size_t num_declarations = theme[ rule_index ].m_declarations.size();
 
 				// Iterate over all declarations
 				for( std::size_t declaration_index = 0; declaration_index < num_declarations; ++declaration_index ) {
-					std::string property_name = style[ rule_index ].m_declarations[ declaration_index ].m_property_name;
-					std::string property_value = style[ rule_index ].m_declarations[ declaration_index ].m_property_value;
+					std::string property_name = theme[ rule_index ].m_declarations[ declaration_index ].m_property_name;
+					std::string property_value = theme[ rule_index ].m_declarations[ declaration_index ].m_property_value;
 
 					// Finally set the property
 					SetProperty( selector, property_name, property_value );
@@ -120,21 +120,21 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 			}
 
 			selector = Selector::Create(
-				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector,
-				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector,
-				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector,
-				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector,
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector,
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector,
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector,
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector,
 				hierarchy,
 				selector
 			);
 		}
 
-		std::size_t num_declarations = style[ rule_index ].m_declarations.size();
+		std::size_t num_declarations = theme[ rule_index ].m_declarations.size();
 
 		// Iterate over all declarations
 		for( std::size_t declaration_index = 0; declaration_index < num_declarations; ++declaration_index ) {
-			std::string property_name = style[ rule_index ].m_declarations[ declaration_index ].m_property_name;
-			std::string property_value = style[ rule_index ].m_declarations[ declaration_index ].m_property_value;
+			std::string property_name = theme[ rule_index ].m_declarations[ declaration_index ].m_property_name;
+			std::string property_value = theme[ rule_index ].m_declarations[ declaration_index ].m_property_value;
 
 			// Finally set the property
 			SetProperty( selector, property_name, property_value );

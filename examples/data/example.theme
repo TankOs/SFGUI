@@ -6,7 +6,7 @@ Window {
 /* This is NOT equivalent to "Window Label" */
 Window > * > * > Label {
 	FontSize: 18;
-	FontName: linden_hill.otf;
+	FontName: data/linden_hill.otf;
 }
 
 Button {

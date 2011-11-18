@@ -20,12 +20,15 @@ elseif( MSVC_VERSION )
 endif()
 
 set( SFGUI_STATIC false CACHE BOOL "Build static library." )
-set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI example applications." )
-set( BUILD_STYLE_PARSER true CACHE BOOL "Build SFGUI style file parser." )
+set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
+set( BUILD_THEME_PARSER true CACHE BOOL "Build SFGUI theme parser." )
 
 if( WINDOWS )
 	set( BIN_EXTENSION ".exe" )
 	set( SFML_STATIC false CACHE BOOL "Was SFML built as a static library?" )
+	set( SHARE_TARGET_DIR . )
+else()
+	set( SHARE_TARGET_DIR share/SFGUI )
 endif()
 
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
@@ -133,15 +136,15 @@ if( BUILD_STYLE_PARSER )
 	set(
 		SOURCES
 		${SOURCES}
-		${INC_DIR}/SFGUI/Parsers/StyleParser/Grammar.hpp
-		${INC_DIR}/SFGUI/Parsers/StyleParser/Parse.hpp
-		${SRC_DIR}/SFGUI/Parsers/StyleParser/Grammar.cpp
-		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarPredicates.cpp
-		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarSelector.cpp
-		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarSimpleSelector.cpp
-		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarStatement.cpp
-		${SRC_DIR}/SFGUI/Parsers/StyleParser/GrammarToken.cpp
-		${SRC_DIR}/SFGUI/Parsers/StyleParser/Parse.cpp
+		${INC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.hpp
+		${INC_DIR}/SFGUI/Parsers/ThemeParser/Parse.hpp
+		${SRC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.cpp
+		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarPredicates.cpp
+		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSelector.cpp
+		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSimpleSelector.cpp
+		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarStatement.cpp
+		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarToken.cpp
+		${SRC_DIR}/SFGUI/Parsers/ThemeParser/Parse.cpp
 	)
 
 	add_definitions( -D SFGUI_WITH_STYLE_PARSER )
@@ -170,7 +173,15 @@ endif()
 
 set_target_properties( sfgui PROPERTIES COMPILE_DEFINITIONS SFGUI_EXPORTS )
 
-target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} )
+target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
+
+### EXAMPLES ###
+
+if( BUILD_EXAMPLES )
+	add_subdirectory( "examples" )
+endif()
+
+### INSTALL TARGETS ###
 
 install(
 	TARGETS sfgui
@@ -185,10 +196,6 @@ install(
 )
 
 install(
-	FILES ${PROJECT_SOURCE_DIR}/cmake/FindSFGUI.cmake
-	DESTINATION ${CMAKE_ROOT}/Modules/
+	FILES README AUTHORS LICENSE
+	DESTINATION ${SHARE_TARGET_DIR}
 )
-
-if( BUILD_EXAMPLES )
-	add_subdirectory( "examples" )
-endif()

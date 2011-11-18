@@ -23,21 +23,21 @@
 	#include <ell/Parser.h>
 #endif
 
-#include <SFGUI/Parsers/StyleParser/Parse.hpp>
+#include <SFGUI/Parsers/ThemeParser/Parse.hpp>
 
 #include <string>
 #include <stack>
 
 namespace sfg {
 namespace parser {
-namespace style {
+namespace theme {
 
-struct StyleGrammar : ell::Parser<char>, ell::Grammar<char>
+struct ThemeGrammar : ell::Parser<char>, ell::Grammar<char>
 {
 	public:
-		StyleGrammar();
+		ThemeGrammar();
 
-		const std::vector<struct Rule>& GetStyle() const;
+		const std::vector<struct Rule>& GetTheme() const;
 		void ClearResults();
 
 	private:
@@ -59,13 +59,13 @@ struct StyleGrammar : ell::Parser<char>, ell::Grammar<char>
 		void PushCombinatorGroup();
 		void PushDeclaration();
 		void PushRule();
-		void PushStyle();
+		void PushTheme();
 
 		ell::Rule<char> end_rule;
 		ell::Rule<char> identifier_rule, value_rule;
 		ell::Rule<char> type_rule, class_rule, state_rule, id_rule;
 		ell::Rule<char> simple_selector_rule, selector_combinator_rule, selector_rule;
-		ell::Rule<char> declaration_rule, rule_rule, style_rule;
+		ell::Rule<char> declaration_rule, rule_rule, theme_rule;
 
 		ell::Rule<char> skipper_rule;
 		ell::Rule<char> comment_rule;
@@ -86,7 +86,7 @@ struct StyleGrammar : ell::Parser<char>, ell::Grammar<char>
 		std::stack<struct Declaration> m_declarations;
 		std::stack<struct Rule> m_rules;
 
-		std::vector<struct Rule> m_style;
+		std::vector<struct Rule> m_theme;
 };
 
 }

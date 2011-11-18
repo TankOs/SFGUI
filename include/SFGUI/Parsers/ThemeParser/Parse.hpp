@@ -7,7 +7,7 @@
 
 namespace sfg {
 namespace parser {
-namespace style {
+namespace theme {
 
 struct Declaration {
 	std::string m_property_name;
@@ -39,7 +39,7 @@ struct Rule {
 std::vector<Rule> ParseString( std::string str );
 std::vector<Rule> ParseFile( std::string filename );
 
-typedef std::vector<Rule> Style;
+typedef std::vector<Rule> Theme;
 
 }
 }

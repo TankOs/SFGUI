@@ -1,21 +1,21 @@
-#include <SFGUI/Parsers/StyleParser/Grammar.hpp>
+#include <SFGUI/Parsers/ThemeParser/Grammar.hpp>
 
 namespace sfg {
 namespace parser {
-namespace style {
+namespace theme {
 
-void StyleGrammar::GrammarSelector() {
+void ThemeGrammar::GrammarSelector() {
 	simple_selector_rule     = ( ( type_rule ) >> !(
 	                           ( class_rule >> !( ( state_rule >> !id_rule ) | ( id_rule >> !state_rule ) ) ) |
 	                           ( state_rule >> !( ( id_rule >> !class_rule ) | ( class_rule >> !id_rule ) ) ) |
 	                           ( id_rule >> !( ( state_rule >> !class_rule ) | ( class_rule >> !state_rule ) ) )
-	                           ) )[ &StyleGrammar::PushSimpleSelector ];
+	                           ) )[ &ThemeGrammar::PushSimpleSelector ];
 
-	selector_combinator_rule = ( ( ch('>') )[ &StyleGrammar::PushCombinatorChild ] |
-	                             ( ch(',') )[ &StyleGrammar::PushCombinatorGroup ] |
-	                             ( eps     )[ &StyleGrammar::PushCombinatorDescendant ] );
+	selector_combinator_rule = ( ( ch('>') )[ &ThemeGrammar::PushCombinatorChild ] |
+	                             ( ch(',') )[ &ThemeGrammar::PushCombinatorGroup ] |
+	                             ( eps     )[ &ThemeGrammar::PushCombinatorDescendant ] );
 
-	selector_rule            = ( simple_selector_rule % selector_combinator_rule )[ &StyleGrammar::PushSelector ];
+	selector_rule            = ( simple_selector_rule % selector_combinator_rule )[ &ThemeGrammar::PushSelector ];
 
 	simple_selector_rule.set_name( "Simple Selector" );
 	selector_combinator_rule.set_name( "Selector Combinator" );

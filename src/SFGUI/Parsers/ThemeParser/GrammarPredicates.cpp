@@ -1,20 +1,20 @@
-#include <SFGUI/Parsers/StyleParser/Grammar.hpp>
+#include <SFGUI/Parsers/ThemeParser/Grammar.hpp>
 
 #include <algorithm>
 
 namespace sfg {
 namespace parser {
-namespace style {
+namespace theme {
 
-void StyleGrammar::PushIdentifier( const ell::string& identifier ) {
+void ThemeGrammar::PushIdentifier( const ell::string& identifier ) {
 	m_identifiers.push( identifier );
 }
 
-void StyleGrammar::PushValue( const ell::string& value ) {
+void ThemeGrammar::PushValue( const ell::string& value ) {
 	m_values.push( value );
 }
 
-void StyleGrammar::PushType() {
+void ThemeGrammar::PushType() {
 	if( m_identifiers.empty() ) {
 		m_types.push( "*" );
 	}
@@ -24,22 +24,22 @@ void StyleGrammar::PushType() {
 	}
 }
 
-void StyleGrammar::PushClass() {
+void ThemeGrammar::PushClass() {
 	m_classes.push( m_identifiers.top() );
 	m_identifiers.pop();
 }
 
-void StyleGrammar::PushState() {
+void ThemeGrammar::PushState() {
 	m_states.push( m_identifiers.top() );
 	m_identifiers.pop();
 }
 
-void StyleGrammar::PushID() {
+void ThemeGrammar::PushID() {
 	m_ids.push( m_identifiers.top() );
 	m_identifiers.pop();
 }
 
-void StyleGrammar::PushSimpleSelector() {
+void ThemeGrammar::PushSimpleSelector() {
 	struct SimpleSelector simple_selector;
 
 	if( m_types.empty() ) {
@@ -77,7 +77,7 @@ void StyleGrammar::PushSimpleSelector() {
 	m_simple_selectors.push( simple_selector );
 }
 
-void StyleGrammar::PushSelector() {
+void ThemeGrammar::PushSelector() {
 	struct Selector selector;
 
 	if( !m_combinators.empty() ) {
@@ -104,7 +104,7 @@ void StyleGrammar::PushSelector() {
 	m_selectors.push( selector );
 }
 
-void StyleGrammar::PushCombinatorChild() {
+void ThemeGrammar::PushCombinatorChild() {
 	struct Combinator combinator;
 
 	combinator.m_combinator = ">";
@@ -112,7 +112,7 @@ void StyleGrammar::PushCombinatorChild() {
 	m_combinators.push( combinator );
 }
 
-void StyleGrammar::PushCombinatorDescendant() {
+void ThemeGrammar::PushCombinatorDescendant() {
 	struct Combinator combinator;
 
 	combinator.m_combinator = " ";
@@ -120,7 +120,7 @@ void StyleGrammar::PushCombinatorDescendant() {
 	m_combinators.push( combinator );
 }
 
-void StyleGrammar::PushCombinatorGroup() {
+void ThemeGrammar::PushCombinatorGroup() {
 	struct Combinator combinator;
 
 	combinator.m_combinator = ",";
@@ -128,7 +128,7 @@ void StyleGrammar::PushCombinatorGroup() {
 	m_combinators.push( combinator );
 }
 
-void StyleGrammar::PushDeclaration() {
+void ThemeGrammar::PushDeclaration() {
 	struct Declaration declaration;
 
 	declaration.m_property_name = m_identifiers.top().str();
@@ -140,7 +140,7 @@ void StyleGrammar::PushDeclaration() {
 	m_declarations.push( declaration );
 }
 
-void StyleGrammar::PushRule() {
+void ThemeGrammar::PushRule() {
 	struct Rule rule;
 
 	if( m_selectors.empty() ) {
@@ -162,13 +162,13 @@ void StyleGrammar::PushRule() {
 	m_rules.push( rule );
 }
 
-void StyleGrammar::PushStyle() {
+void ThemeGrammar::PushTheme() {
 	while( !m_rules.empty() ) {
-		m_style.push_back( m_rules.top() );
+		m_theme.push_back( m_rules.top() );
 		m_rules.pop();
 	}
 
-	std::reverse( m_style.begin(), m_style.end() );
+	std::reverse( m_theme.begin(), m_theme.end() );
 }
 
 }
