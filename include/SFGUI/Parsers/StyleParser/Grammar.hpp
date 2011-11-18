@@ -55,6 +55,7 @@ struct StyleGrammar : ell::Parser<char>, ell::Grammar<char>
 		void PushSelector();
 		void PushCombinatorChild();
 		void PushCombinatorDescendant();
+		void PushCombinatorGroup();
 		void PushDeclaration();
 		void PushRule();
 		void PushStyle();

@@ -38,6 +38,10 @@ Button#close {
 	BackgroundColor: #ff0000ff;
 }
 
-CheckButton {
+/* Grouping multiple selectors is also possible.
+   This is the same as writing the same declarations
+   in multiple rule blocks for each widget, just
+   compact. :) */
+CheckButton, ToggleButton {
 	FontSize: 18;
 }

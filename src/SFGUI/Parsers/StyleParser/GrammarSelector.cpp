@@ -11,7 +11,9 @@ void StyleGrammar::GrammarSelector() {
 	                           ( id_rule >> !( ( state_rule >> !class_rule ) | ( class_rule >> !state_rule ) ) )
 	                           ) )[ &StyleGrammar::PushSimpleSelector ];
 
-	selector_combinator_rule = ( ( ch('>') )[ &StyleGrammar::PushCombinatorChild ] | eps[ &StyleGrammar::PushCombinatorDescendant ] );
+	selector_combinator_rule = ( ( ch('>') )[ &StyleGrammar::PushCombinatorChild ] |
+	                             ( ch(',') )[ &StyleGrammar::PushCombinatorGroup ] |
+	                             ( eps     )[ &StyleGrammar::PushCombinatorDescendant ] );
 
 	selector_rule            = ( simple_selector_rule % selector_combinator_rule )[ &StyleGrammar::PushSelector ];
 

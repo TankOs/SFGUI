@@ -102,6 +102,22 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 			else if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == " " ) {
 				hierarchy = Selector::Descendant;
 			}
+			else if( style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == "," ) {
+				// Grouping combinator detected. Stop eating simple selectors and set the properties now.
+				std::size_t num_declarations = style[ rule_index ].m_declarations.size();
+
+				// Iterate over all declarations
+				for( std::size_t declaration_index = 0; declaration_index < num_declarations; ++declaration_index ) {
+					std::string property_name = style[ rule_index ].m_declarations[ declaration_index ].m_property_name;
+					std::string property_value = style[ rule_index ].m_declarations[ declaration_index ].m_property_value;
+
+					// Finally set the property
+					SetProperty( selector, property_name, property_value );
+				}
+
+				// Reset the current simple selector to be the root of a new chain.
+				selector = Selector::Ptr();
+			}
 
 			selector = Selector::Create(
 				style[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector,

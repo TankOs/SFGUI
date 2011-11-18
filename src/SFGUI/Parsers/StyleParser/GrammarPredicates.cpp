@@ -120,6 +120,14 @@ void StyleGrammar::PushCombinatorDescendant() {
 	m_combinators.push( combinator );
 }
 
+void StyleGrammar::PushCombinatorGroup() {
+	struct Combinator combinator;
+
+	combinator.m_combinator = ",";
+
+	m_combinators.push( combinator );
+}
+
 void StyleGrammar::PushDeclaration() {
 	struct Declaration declaration;
 
