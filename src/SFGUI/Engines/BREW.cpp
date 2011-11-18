@@ -81,7 +81,8 @@ BREW::BREW() :
 	SetProperty( "Scrollbar", "TroughColor", sf::Color( 0x70, 0x70, 0x70 ) );
 	SetProperty( "Scrollbar", "StepperBackgroundColor", sf::Color( 0x68, 0x6a, 0x65 ) );
 	SetProperty( "Scrollbar", "StepperArrowColor", sf::Color( 0xd9, 0xdc, 0xd5 ) );
-	SetProperty( "Scrollbar", "StepperSpeed", 20.f );
+	SetProperty( "Scrollbar", "StepperSpeed", 10.f );
+	SetProperty( "Scrollbar", "StepperRepeatDelay", 300 );
 	SetProperty( "Scrollbar", "SliderMinimumLength", 15.f );
 
 	// ScrolledWindow-specific.
