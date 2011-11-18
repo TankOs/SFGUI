@@ -1,8 +1,5 @@
 #include <SFGUI/Engine.hpp>
-
-#ifdef SFGUI_WITH_STYLE_PARSER
-	#include <SFGUI/Parsers/ThemeParser/Parse.hpp>
-#endif
+#include <SFGUI/Parsers/ThemeParser/Parse.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 #include <sstream>
@@ -71,13 +68,6 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 }
 
 bool Engine::LoadThemeFromFile( const std::string& filename ) {
-#ifndef SFGUI_WITH_STYLE_PARSER
-	#ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Cannot load theme file. Theme file loading support not built."
-	#endif
-	return false;
-#endif
-
 	parser::theme::Theme theme = parser::theme::ParseFile( filename );
 
 	if( theme.empty() ) {

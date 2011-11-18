@@ -21,7 +21,6 @@ endif()
 
 set( SFGUI_STATIC false CACHE BOOL "Build static library." )
 set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
-set( BUILD_THEME_PARSER true CACHE BOOL "Build SFGUI theme parser." )
 
 if( WINDOWS )
 	set( BIN_EXTENSION ".exe" )
@@ -78,6 +77,8 @@ set(
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/NonCopyable.hpp
 	${INC_DIR}/SFGUI/Object.hpp
+	${INC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.hpp
+	${INC_DIR}/SFGUI/Parsers/ThemeParser/Parse.hpp
 	${INC_DIR}/SFGUI/ProgressBar.hpp
 	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
@@ -113,6 +114,13 @@ set(
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/NonCopyable.cpp
 	${SRC_DIR}/SFGUI/Object.cpp
+	${SRC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.cpp
+	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarPredicates.cpp
+	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSelector.cpp
+	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSimpleSelector.cpp
+	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarStatement.cpp
+	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarToken.cpp
+	${SRC_DIR}/SFGUI/Parsers/ThemeParser/Parse.cpp
 	${SRC_DIR}/SFGUI/ProgressBar.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
@@ -131,24 +139,6 @@ set(
 	${SRC_DIR}/SFGUI/Widget.cpp
 	${SRC_DIR}/SFGUI/Window.cpp
 )
-
-if( BUILD_STYLE_PARSER )
-	set(
-		SOURCES
-		${SOURCES}
-		${INC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.hpp
-		${INC_DIR}/SFGUI/Parsers/ThemeParser/Parse.hpp
-		${SRC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.cpp
-		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarPredicates.cpp
-		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSelector.cpp
-		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSimpleSelector.cpp
-		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarStatement.cpp
-		${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarToken.cpp
-		${SRC_DIR}/SFGUI/Parsers/ThemeParser/Parse.cpp
-	)
-
-	add_definitions( -D SFGUI_WITH_STYLE_PARSER )
-endif()
 
 include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
