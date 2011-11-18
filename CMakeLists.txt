@@ -20,7 +20,7 @@ elseif( MSVC_VERSION )
 endif()
 
 set( SFGUI_STATIC false CACHE BOOL "Build static library." )
-set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
+set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
 
 if( WINDOWS )
 	set( BIN_EXTENSION ".exe" )
@@ -167,7 +167,7 @@ target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${S
 
 ### EXAMPLES ###
 
-if( BUILD_EXAMPLES )
+if( SFGUI_BUILD_EXAMPLES )
 	add_subdirectory( "examples" )
 endif()
 
