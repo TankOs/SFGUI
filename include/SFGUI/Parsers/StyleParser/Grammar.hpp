@@ -1,4 +1,5 @@
 #pragma once
+#include <ciso646> // For our beloved friend MSVC.
 
 // Since we don't want to mess with the ell headers (LGPL) to
 // fix the warnings we just disable them for these 2 includes.
