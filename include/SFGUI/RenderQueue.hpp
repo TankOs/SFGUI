@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/OpenGL.hpp>
 #include <vector>
 #include <memory>
 
@@ -14,6 +15,10 @@ namespace sfg {
 class SFGUI_API RenderQueue : public sf::Drawable {
 	public:
 		typedef std::vector< std::pair<sf::Drawable*, sf::FloatRect> >  DrawablesVector;
+
+		/** Ctor.
+		 */
+		RenderQueue();
 
 		/** Dtor.
 		 */
@@ -48,6 +53,11 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		 */
 		const DrawablesVector& GetDrawables() const;
 
+		/** Set position of the drawable
+		 * @param position Position
+		 */
+		void SetPosition( const sf::Vector2f& position );
+
 	protected:
 		/** Render.
 		 * @param target SFML render target.
@@ -57,6 +67,10 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 
 	private:
 		DrawablesVector m_children;
+
+		GLuint m_display_list;
+
+		mutable bool m_display_list_compiled;
 };
 
 }

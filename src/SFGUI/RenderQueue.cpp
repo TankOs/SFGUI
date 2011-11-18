@@ -3,10 +3,19 @@
 
 namespace sfg {
 
+RenderQueue::RenderQueue() :
+	m_display_list( 0 ),
+	m_display_list_compiled( false )
+{
+	m_display_list = glGenLists( 1 );
+}
+
 RenderQueue::~RenderQueue() {
+	glDeleteLists( m_display_list, 1 );
+
 	DrawablesVector::iterator d_iter( m_children.begin() );
 	DrawablesVector::iterator d_iter_end( m_children.end() );
-	
+
 	for( ; d_iter != d_iter_end; ++d_iter ) {
 		delete d_iter->first;
 	}
@@ -56,11 +65,37 @@ const RenderQueue::DrawablesVector& RenderQueue::GetDrawables() const {
 }
 
 void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& /*renderer*/ ) const {
-	std::size_t children_size = m_children.size();
+	if( !m_display_list ) {
+		// Display list couldn't be created, render normally.
 
-	for( DrawablesVector::size_type index = 0; index < children_size; ++index ) {
-		target.Draw( *( m_children[index].first ) );
+		std::size_t children_size = m_children.size();
+
+		for( DrawablesVector::size_type index = 0; index < children_size; ++index ) {
+			target.Draw( *( m_children[index].first ) );
+		}
 	}
+	else if( !m_display_list_compiled ) {
+		glNewList( m_display_list, GL_COMPILE_AND_EXECUTE );
+
+		std::size_t children_size = m_children.size();
+
+		for( DrawablesVector::size_type index = 0; index < children_size; ++index ) {
+			target.Draw( *( m_children[index].first ) );
+		}
+
+		glEndList();
+
+		m_display_list_compiled = true;
+	}
+	else {
+		glCallList( m_display_list );
+	}
+}
+
+void RenderQueue::SetPosition( const sf::Vector2f& position ) {
+	m_display_list_compiled = false;
+
+	sf::Drawable::SetPosition( position );
 }
 
 }
