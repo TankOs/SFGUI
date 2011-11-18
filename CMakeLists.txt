@@ -150,7 +150,7 @@ endif()
 include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
-include_directories( "${PROJECT_SOURCE_DIR}/extlibs/headers/ell/libELL/Include" )
+include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
 
 if( NOT SFGUI_STATIC )
 	add_library( sfgui SHARED ${SOURCES} )
