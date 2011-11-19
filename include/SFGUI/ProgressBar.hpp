@@ -35,12 +35,12 @@ class SFGUI_API ProgressBar : public Widget {
 		Orientation GetOrientation() const;
 
 		/** Set fraction.
-		 * @param fraction Fraction.
+		 * @param fraction Fraction (from 0.0f to 1.0f).
 		 */
 		void SetFraction( float fraction );
 
 		/** Get fraction.
-		 * @return Fraction.
+		 * @return Fraction (from 0.0f to 1.0f).
 		 */
 		float GetFraction() const;
 

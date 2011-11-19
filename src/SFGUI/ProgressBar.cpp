@@ -16,7 +16,7 @@ ProgressBar::Ptr ProgressBar::Create( Orientation orientation ) {
 }
 
 void ProgressBar::SetFraction( float fraction ) {
-	m_fraction = fraction;
+	m_fraction = std::max( 0.f, std::min( 1.f, fraction ) );
 	Invalidate();
 }
 
