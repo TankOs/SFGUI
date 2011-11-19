@@ -5,6 +5,8 @@
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <stack>
+#include <list>
 
 namespace sfg {
 
@@ -19,12 +21,17 @@ class SFGUI_API CullingTarget {
 		 */
 		CullingTarget( sf::RenderTarget& target );
 
-		/** Set the viewport of this target.
+		/** Push a new viewport onto this target.
 		 * @param view Viewport.
 		 */
-		void SetView( const sf::View& view );
+		void PushView( const sf::View& view );
 
-		/** Get the viewport of this target.
+		/** Pop the current viewport from this target.
+		 * @param view Viewport.
+		 */
+		void PopView();
+
+		/** Get the current viewport of this target.
 		 * @return Viewport.
 		 */
 		const sf::View& GetView() const;
@@ -51,7 +58,7 @@ class SFGUI_API CullingTarget {
 		/** Draw a RenderQueue
 		 * @param queue RenderQueue.
 		 */
-		void Draw( const RenderQueue& queue );
+		void Draw( RenderQueue* queue );
 
 		/** Enable/Disable culling.
 		 * @param enable true to enable culling, false to disable (default: true);
@@ -59,6 +66,8 @@ class SFGUI_API CullingTarget {
 		void Cull( bool enable = true );
 
 	private:
+		void UpdateView();
+
 		sf::RenderTarget& m_real_target;
 
 		std::pair<std::size_t, std::size_t> m_cull_count;
@@ -66,7 +75,18 @@ class SFGUI_API CullingTarget {
 		sf::FloatRect m_view_rect;
 		sf::FloatRect m_viewport;
 
+		sf::IntRect m_view_aabb;
+
 		bool m_cull;
+
+		bool m_out_of_view;
+
+		std::stack<sf::View> m_view_stack;
+
+		std::list< std::pair<sf::IntRect, unsigned int> > m_view_cache;
+
+		unsigned int m_current_view_id;
+		unsigned int m_last_view_id;
 };
 
 }

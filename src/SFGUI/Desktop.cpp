@@ -24,9 +24,8 @@ void Desktop::Expose( sf::RenderTarget& target ) const {
 }
 
 void Desktop::Expose( CullingTarget& target ) const {
-	// Cache current view and set ours.
-	const sf::View& old_view( target.GetView() );
-	target.SetView( m_view );
+	// Push our view.
+	target.PushView( m_view );
 
 	// Activate context.
 	Context::Activate( m_context );
@@ -43,7 +42,7 @@ void Desktop::Expose( CullingTarget& target ) const {
 	Context::Deactivate();
 
 	// Restore previous view.
-	target.SetView( old_view );
+	target.PopView();
 }
 
 sf::Vector2f Desktop::TransformToLocal( const sf::Vector2f& global ) const {

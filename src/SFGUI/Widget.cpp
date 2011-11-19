@@ -138,6 +138,9 @@ void Widget::Expose( CullingTarget& target ) const {
 		m_invalidated = false;
 
 		m_drawable.reset( InvalidateImpl() );
+		if( m_drawable ) {
+			m_drawable->Compile();
+		}
 
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
@@ -146,7 +149,7 @@ void Widget::Expose( CullingTarget& target ) const {
 
 	if( IsVisible() ) {
 		if( m_drawable ) {
-			target.Draw( *m_drawable );
+			target.Draw( m_drawable.get() );
 		}
 
 		HandleExpose( target );

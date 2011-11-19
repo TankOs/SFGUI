@@ -48,15 +48,44 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		 */
 		void Add( RenderQueue* queue );
 
-		/** Get the Drawables in this queue.
-		 * @return Drawables in this queue.
+		/** Get the AABBs of this queue.
+		 * @return AABBs of this queue.
 		 */
-		const DrawablesVector& GetDrawables() const;
+		sf::IntRect* GetAABBs() const;
 
-		/** Set position of the drawable
-		 * @param position Position
+		/** Get the amount of AABBs of this queue.
+		 * @return Amount of AABBs of this queue.
+		 */
+		std::size_t GetAABBSize() const;
+
+		/** Set position of the drawable.
+		 * @param position Position.
 		 */
 		void SetPosition( const sf::Vector2f& position );
+
+		/** Compiles AABBs.
+		 */
+		void Compile();
+
+		/** Get the last View ID this queue was checked against.
+		 * @return ID of the last view checked against.
+		 */
+		unsigned int GetCheckedViewID();
+
+		/** Set the last View ID this queue was checked against.
+		 * @param id ID of the last view checked against.
+		 */
+		void SetCheckedViewID( unsigned int id );
+
+		/** Check whether this queue passed culling stage the last check.
+		 * @return true if this widget passed culling stage the last check.
+		 */
+		bool GetCullPass();
+
+		/** Set whether this queue passed culling stage the last check.
+		 * @param result true if this widget passed culling stage the last check.
+		 */
+		void SetCullPass( bool result );
 
 	protected:
 		/** Render.
@@ -72,6 +101,12 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		mutable GLint m_texture_id;
 
 		mutable bool m_display_list_compiled;
+
+		sf::IntRect* m_compiled_aabbs;
+		std::size_t m_compiled_aabbs_size;
+
+		unsigned int m_checked_view_id;
+		bool m_last_cull_passed;
 };
 
 }

@@ -65,13 +65,11 @@ void Viewport::Expose( CullingTarget& target ) const {
 				)
 			);
 
-			sf::View original_view = target.GetView();
-
-			target.SetView( view );
+			target.PushView( view );
 
 			GetChild()->Expose( target );
 
-			target.SetView( original_view );
+			target.PopView();
 		}
 
 		OnExpose();
