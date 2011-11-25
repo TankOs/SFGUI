@@ -9,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Viewport : public Bin {
 	public:
-		typedef std::shared_ptr<Viewport>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Viewport>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Viewport> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Viewport> PtrConst; //!< Shared pointer.
 
 		/** Create viewport.
 		 * @return Viewport.

@@ -10,33 +10,33 @@ namespace sfg {
  */
 class SFGUI_API ScrolledWindow : public Container {
 	public:
-		typedef std::shared_ptr<ScrolledWindow>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const ScrolledWindow>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<ScrolledWindow> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const ScrolledWindow> PtrConst; //!< Shared pointer.
 
 		/** Content Placement
 		 */
 		enum Placement {
-			Top = 1 << 0,
-			Bottom = 1 << 1,
-			Left = 1 << 2,
-			Right = 1 << 3,
-			TopLeft = Top | Left, //!< Top left corner.
-			TopRight = Top | Right, //!< Top right corner.
-			BottomLeft = Bottom | Left, //!< Bottom left corner.
-			BottomRight = Bottom | Right, //!< Bottom right corner.
-			PlacementDefault = TopLeft
+			TOP = 1 << 0,
+			BOTTOM = 1 << 1,
+			LEFT = 1 << 2,
+			RIGHT = 1 << 3,
+			TOP_LEFT = TOP | LEFT, //!< Top left corner.
+			TOP_RIGHT = TOP | RIGHT, //!< Top right corner.
+			BOTTOM_LEFT = BOTTOM | LEFT, //!< Bottom left corner.
+			BOTTOM_ROGHT = BOTTOM | RIGHT, //!< Bottom right corner.
+			DEFAULT_PLACEMENT = TOP_LEFT
 		};
 
 		/** Scrollbar policy.
 		 */
 		enum ScrollbarPolicy {
-			HorizontalAlways = 1 << 0, //!< Always display horizontal scrollbar.
-			HorizontalAutomatic = 1 << 1, //!< Display horizontal scrollbar only when needed.
-			HorizontalNever = 1 << 2, //!< Never display horizontal scrollbar.
-			VerticalAlways = 1 << 3, //!< Always display vertical scrollbar.
-			VerticalAutomatic = 1 << 4, //!< Display vertical scrollbar only when needed.
-			VerticalNever = 1 << 5, //!< Never display vertical scrollbar.
-			PolicyDefault = HorizontalAlways | VerticalAlways
+			HORIZONTAL_ALWAYS = 1 << 0, //!< Always display horizontal scrollbar.
+			HORIZONTAL_AUTOMATIC = 1 << 1, //!< Display horizontal scrollbar only when needed.
+			HORIZONTAL_NEVER = 1 << 2, //!< Never display horizontal scrollbar.
+			VERTICAL_ALWAYS = 1 << 3, //!< Always display vertical scrollbar.
+			VERTICAL_AUTOMATIC = 1 << 4, //!< Display vertical scrollbar only when needed.
+			VERTICAL_NEVER = 1 << 5, //!< Never display vertical scrollbar.
+			DEFAULT_POLICY = HORIZONTAL_ALWAYS | VERTICAL_ALWAYS
 		};
 
 		/** Create scrolled window.

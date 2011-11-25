@@ -46,7 +46,7 @@ class SampleApp {
 
 class Ouchy : public std::enable_shared_from_this<Ouchy> {
 	public:
-		typedef std::shared_ptr<Ouchy>  Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<Ouchy> Ptr; //!< Shared pointer.
 		Ouchy( sfg::Button::Ptr button );
 
 		void DoOuch();
@@ -114,8 +114,8 @@ SampleApp::SampleApp() :
 }
 
 void SampleApp::Run() {
-	sf::RenderWindow  window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" );
-	sf::Event  event;
+	sf::RenderWindow window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" );
+	sf::Event event;
 
 	//window.SetFramerateLimit( 60 );
 	//window.UseVerticalSync( true );
@@ -148,7 +148,7 @@ void SampleApp::Run() {
 	password->HideText( '*' );
 
 	// Layout.
-	sfg::Box::Ptr boxtoolbar( sfg::Box::Create( sfg::Box::Horizontal ) );
+	sfg::Box::Ptr boxtoolbar( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
 	boxtoolbar->SetSpacing( 5.f );
 	boxtoolbar->Pack( btnaddbuttonh, false );
 	boxtoolbar->Pack( btnaddbuttonv, false );
@@ -157,16 +157,16 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( m_entry, true );
 	boxtoolbar->Pack( m_limit_check, false );
 
-	sfg::Box::Ptr boxtoolbar2( sfg::Box::Create( sfg::Box::Horizontal ) );
+	sfg::Box::Ptr boxtoolbar2( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
 	boxtoolbar2->SetSpacing( 5.f );
 	boxtoolbar2->Pack( btntogglespace, false );
 	boxtoolbar2->Pack( btnloadstyle, false );
 	boxtoolbar2->Pack( btntoggleculling, false );
 
-	m_boxbuttonsh = sfg::Box::Create( sfg::Box::Horizontal );
+	m_boxbuttonsh = sfg::Box::Create( sfg::Box::HORIZONTAL );
 	m_boxbuttonsh->SetSpacing( 5.f );
 
-	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Vertical );
+	m_boxbuttonsv = sfg::Box::Create( sfg::Box::VERTICAL );
 	m_boxbuttonsv->SetSpacing( 5.f );
 
 	sfg::Entry::Ptr username_entry( sfg::Entry::Create() );
@@ -189,10 +189,10 @@ void SampleApp::Run() {
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
 
-	m_scrolled_window_box = sfg::Box::Create( sfg::Box::Vertical );
+	m_scrolled_window_box = sfg::Box::Create( sfg::Box::VERTICAL );
 
 	for( int i = 0; i < 7; i++ ) {
-		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::Horizontal );
+		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
 
 		for( int j = 0; j < 20; j++ ) {
 			box->Pack( sfg::Button::Create( L"One button among many" ), true );
@@ -203,8 +203,8 @@ void SampleApp::Run() {
 
 	m_scrolled_window = sfg::ScrolledWindow::Create();
 	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 200.f ) );
-	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HorizontalAutomatic | sfg::ScrolledWindow::VerticalAutomatic );
-	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TopLeft );
+	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HORIZONTAL_AUTOMATIC | sfg::ScrolledWindow::VERTICAL_AUTOMATIC );
+	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TOP_LEFT );
 	m_scrolled_window->AddWithViewport( m_scrolled_window_box );
 
 	sfg::Scrollbar::Ptr scrollbar( sfg::Scrollbar::Create() );
@@ -215,7 +215,7 @@ void SampleApp::Run() {
 	m_scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 	boxtoolbar2->Pack( m_scale, false );
 
-	sfg::Box::Ptr  boxmain( sfg::Box::Create( sfg::Box::Vertical ) );
+	sfg::Box::Ptr boxmain( sfg::Box::Create( sfg::Box::VERTICAL ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( scrollbar, false );
 	boxmain->Pack( m_progress, false );
@@ -246,7 +246,7 @@ void SampleApp::Run() {
 	second_window->SetId( "second_window" );
 	second_window->SetBorderWidth( 10.f );
 	second_window->SetTitle( "Another window" );
-	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::Vertical, 5.f ) );
+	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	box->Pack( sfg::Label::Create( "Aliquam sed pretium lacus." ), false );
 	box->Pack( sfg::Label::Create( "Nullam placerat mauris vel nulla sagittis pellentesque." ), false );
 	box->Pack( sfg::Label::Create( "Suspendisse in justo dui." ), false );
@@ -299,7 +299,7 @@ void SampleApp::Run() {
 			sstr << "SFGUI test -- FPS: " << m_fps_counter;
 			if( m_cull ) {
 				sstr << " -- Cull K/D: " << culling_target.GetCount().first
-				     << "/" << culling_target.GetCount().second;
+				 << "/" << culling_target.GetCount().second;
 			}
 			window.SetTitle( sstr.str() );
 
@@ -312,7 +312,7 @@ void SampleApp::Run() {
 }
 
 void SampleApp::OnAddButtonHClick() {
-	sfg::Button::Ptr  button( sfg::Button::Create( L"New ->" ) );
+	sfg::Button::Ptr button( sfg::Button::Create( L"New ->" ) );
 
 	Ouchy::Ptr ouchy( new Ouchy( button ) );
 	Ouchy::m_ouchies.push_back( ouchy );
@@ -323,7 +323,7 @@ void SampleApp::OnAddButtonHClick() {
 }
 
 void SampleApp::OnAddButtonVClick() {
-	sfg::Button::Ptr  button( sfg::Button::Create( L"<- New" ) );
+	sfg::Button::Ptr button( sfg::Button::Create( L"<- New" ) );
 
 	Ouchy::Ptr ouchy( new Ouchy( button ) );
 	Ouchy::m_ouchies.push_back( ouchy );
@@ -375,7 +375,7 @@ void SampleApp::OnAdjustmentChange() {
 }
 
 int main() {
-	SampleApp  app;
+	SampleApp app;
 	app.Run();
 	return 0;
 }

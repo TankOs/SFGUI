@@ -63,7 +63,7 @@ float Engine::GetLineHeight( const sf::Font& font, unsigned int font_size ) cons
 }
 
 sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {
-	sf::Text  text( string, font, font_size );
+	sf::Text text( string, font, font_size );
 	return sf::Vector2f( text.GetRect().Width, text.GetRect().Height );
 }
 
@@ -84,13 +84,13 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 
 		// Iterate over all simple selectors
 		for( std::size_t simple_selector_index = 0; simple_selector_index < num_simple_selectors; ++simple_selector_index ) {
-			int hierarchy = Selector::Root;
+			int hierarchy = Selector::ROOT;
 
 			if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == ">" ) {
-				hierarchy = Selector::Child;
+				hierarchy = Selector::CHILD;
 			}
 			else if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == " " ) {
-				hierarchy = Selector::Descendant;
+				hierarchy = Selector::DESCENDANT;
 			}
 			else if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == "," ) {
 				// Grouping combinator detected. Stop eating simple selectors and set the properties now.

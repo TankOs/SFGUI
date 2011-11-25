@@ -27,7 +27,7 @@ void Container::Add( Widget::Ptr widget ) {
 }
 
 void Container::Remove( Widget::Ptr widget ) {
-	WidgetsList::iterator  iter( std::find( m_children.begin(), m_children.end(), widget ) );
+	WidgetsList::iterator iter( std::find( m_children.begin(), m_children.end(), widget ) );
 
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
@@ -38,7 +38,7 @@ void Container::Remove( Widget::Ptr widget ) {
 }
 
 bool Container::IsChild( Widget::Ptr widget ) const {
-	WidgetsList::const_iterator  iter( std::find( m_children.begin(), m_children.end(), widget ) );
+	WidgetsList::const_iterator iter( std::find( m_children.begin(), m_children.end(), widget ) );
 
 	return iter != m_children.end();
 }
@@ -84,8 +84,8 @@ void Container::HandleEvent( const sf::Event& event ) {
 	}
 
 	// Pass event to children.
-	WidgetsList::iterator  iter( m_children.begin() );
-	WidgetsList::iterator  iterend( m_children.end() );
+	WidgetsList::iterator iter( m_children.begin() );
+	WidgetsList::iterator iterend( m_children.end() );
 
 	// Create a copy of the event and transform mouse coordinates to local
 	// coordinates if event is a mouse event.
@@ -118,7 +118,7 @@ void Container::HandleAdd( Widget::Ptr /*child*/ ) {
 void Container::HandleRemove( Widget::Ptr /*child*/ ) {
 }
 
-void Container::HandleChildInvalidate( Widget::PtrConst child  ) const {
+void Container::HandleChildInvalidate( Widget::PtrConst child ) const {
 	Container::PtrConst parent = GetParent();
 
 	if( parent ) {

@@ -9,21 +9,21 @@ namespace sfg {
  */
 class SFGUI_API Scrollbar : public Range {
 	public:
-		typedef std::shared_ptr<Scrollbar>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Scrollbar>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Scrollbar> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Scrollbar> PtrConst; //!< Shared pointer.
 
 		/** Scrollbar orientation.
 		 */
 		enum Orientation {
-			Horizontal = 0, //!< Horizontal scrollbar.
-			Vertical //!< Vertical scrollbar.
+			HORIZONTAL = 0, //!< Horizontal scrollbar.
+			VERTICAL //!< Vertical scrollbar.
 		};
 
 		/** Create scrollbar widget.
 		 * @param orientation Orientation.
 		 * @return Scrollbar widget.
 		 */
-		static Ptr Create( Orientation orientation = Horizontal );
+		static Ptr Create( Orientation orientation = HORIZONTAL );
 
 		virtual const std::string& GetName() const;
 
@@ -32,7 +32,7 @@ class SFGUI_API Scrollbar : public Range {
 		 * @param orientation Orientation.
 		 * @return Scrollbar widget.
 		 */
-		static Ptr Create( Adjustment::Ptr adjustment, Orientation orientation = Horizontal );
+		static Ptr Create( Adjustment::Ptr adjustment, Orientation orientation = HORIZONTAL );
 
 		/** Get the orientation of this scrollbar widget
 		 * @return orientation of this scrollbar widget
@@ -61,7 +61,7 @@ class SFGUI_API Scrollbar : public Range {
 	private:
 		/** Ctor.
 		 */
-		Scrollbar( Adjustment::Ptr adjustment, Orientation orientation = Horizontal );
+		Scrollbar( Adjustment::Ptr adjustment, Orientation orientation = HORIZONTAL );
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );

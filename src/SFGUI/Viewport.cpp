@@ -16,7 +16,7 @@ Viewport::Ptr Viewport::Create() {
 }
 
 Viewport::Ptr Viewport::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
-	Viewport::Ptr  ptr( new Viewport( horizontal_adjustment, vertical_adjustment ) );
+	Viewport::Ptr ptr( new Viewport( horizontal_adjustment, vertical_adjustment ) );
 	return ptr;
 }
 

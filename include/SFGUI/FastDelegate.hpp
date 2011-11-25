@@ -1,6 +1,6 @@
 /*
  *	Delegate.h
- *  CoreGame
+ * CoreGame
  *	Efficient delegates in C++ that generate only two lines of asm code
  *
  *	Created by Don Clugston.
@@ -23,51 +23,51 @@
 //
 // History:
 //
-// 24-Apr-04 1.0  * Submitted to CodeProject.
-// 28-Apr-04 1.1  * Prevent most unsafe uses of evil static function hack.
-//				  * Improved syntax for horrible_cast (thanks Paul Bludov).
-//				  * Tested on Metrowerks MWCC and Intel ICL (IA32)
-//				  * Compiled, but not run, on Comeau C++ and Intel Itanium ICL.
+// 24-Apr-04 1.0 * Submitted to CodeProject.
+// 28-Apr-04 1.1 * Prevent most unsafe uses of evil static function hack.
+//				 * Improved syntax for horrible_cast (thanks Paul Bludov).
+//				 * Tested on Metrowerks MWCC and Intel ICL (IA32)
+//				 * Compiled, but not run, on Comeau C++ and Intel Itanium ICL.
 //	27-Jun-04 1.2 * Now works on Borland C++ Builder 5.5
-//				  * Now works on /clr "managed C++" code on VC7, VC7.1
-//				  * Comeau C++ now compiles without warnings.
-//				  * Prevent the virtual inheritance case from being used on
-//					  VC6 and earlier, which generate incorrect code.
-//				  * Improved warning and error messages. Non-standard hacks
+//				 * Now works on /clr "managed C++" code on VC7, VC7.1
+//				 * Comeau C++ now compiles without warnings.
+//				 * Prevent the virtual inheritance case from being used on
+//					 VC6 and earlier, which generate incorrect code.
+//				 * Improved warning and error messages. Non-standard hacks
 //					 now have compile-time checks to make them safer.
-//				  * implicit_cast used instead of static_cast in many cases.
-//				  * If calling a const member function, a const class pointer can be used.
-//				  * MakeDelegate() global helper function added to simplify pass-by-value.
-//				  * Added fastdelegate.clear()
+//				 * implicit_cast used instead of static_cast in many cases.
+//				 * If calling a const member function, a const class pointer can be used.
+//				 * MakeDelegate() global helper function added to simplify pass-by-value.
+//				 * Added fastdelegate.clear()
 // 16-Jul-04 1.2.1* Workaround for gcc bug (const member function pointers in templates)
-// 30-Oct-04 1.3  * Support for (non-void) return values.
-//				  * No more workarounds in client code!
+// 30-Oct-04 1.3 * Support for (non-void) return values.
+//				 * No more workarounds in client code!
 //					 MSVC and Intel now use a clever hack invented by John Dlugosz:
 //					 - The FASTDELEGATEDECLARE workaround is no longer necessary.
 //					 - No more warning messages for VC6
-//				  * Less use of macros. Error messages should be more comprehensible.
-//				  * Added include guards
-//				  * Added delegate::empty() to test if invocation is safe (Thanks Neville Franks).
-//				  * Now tested on VS 2005 Express Beta, PGI C++
-// 24-Dec-04 1.4  * Added DelegateMemento, to allow collections of disparate delegates.
-//				  * <,>,<=,>= comparison operators to allow storage in ordered containers.
-//				  * Substantial reduction of code size, especially the 'Closure' class.
-//				  * Standardised all the compiler-specific workarounds.
-//				  * MFP conversion now works for CodePlay (but not yet supported in the full code).
-//				  * Now compiles without warnings on _any_ supported compiler, including BCC 5.5.1
-//				  * New syntax: delegate< int (char *, double) >.
+//				 * Less use of macros. Error messages should be more comprehensible.
+//				 * Added include guards
+//				 * Added delegate::empty() to test if invocation is safe (Thanks Neville Franks).
+//				 * Now tested on VS 2005 Express Beta, PGI C++
+// 24-Dec-04 1.4 * Added DelegateMemento, to allow collections of disparate delegates.
+//				 * <,>,<=,>= comparison operators to allow storage in ordered containers.
+//				 * Substantial reduction of code size, especially the 'Closure' class.
+//				 * Standardised all the compiler-specific workarounds.
+//				 * MFP conversion now works for CodePlay (but not yet supported in the full code).
+//				 * Now compiles without warnings on _any_ supported compiler, including BCC 5.5.1
+//				 * New syntax: delegate< int (char *, double) >.
 // 14-Feb-05 1.4.1* Now treats =0 as equivalent to .clear(), ==0 as equivalent to .empty(). (Thanks elfric).
-//				  * Now tested on Intel ICL for AMD64, VS2005 Beta for AMD64 and Itanium.
-// 30-Mar-05 1.5  * Safebool idiom: "if (dg)" is now equivalent to "if (!dg.empty())"
-//				  * Fully supported by CodePlay VectorC
-//				  * Bugfix for Metrowerks: empty() was buggy because a valid MFP can be 0 on MWCC!
-//				  * More optimal assignment,== and != operators for static function pointers.
+//				 * Now tested on Intel ICL for AMD64, VS2005 Beta for AMD64 and Itanium.
+// 30-Mar-05 1.5 * Safebool idiom: "if (dg)" is now equivalent to "if (!dg.empty())"
+//				 * Fully supported by CodePlay VectorC
+//				 * Bugfix for Metrowerks: empty() was buggy because a valid MFP can be 0 on MWCC!
+//				 * More optimal assignment,== and != operators for static function pointers.
 //
 //
 //
 // 2011-10-29
-//   * Removed all delegates except Delegate. Nothing else needed by SFGUI.
-//   * MakeDelegate() removed, not needed.
+// * Removed all delegates except Delegate. Nothing else needed by SFGUI.
+// * MakeDelegate() removed, not needed.
 
 #ifndef _DELEGATES_H_
 #define _DELEGATES_H_
@@ -151,12 +151,12 @@
 //						General tricks used in this code
 //
 // (a) Error messages are generated by typdefing an array of negative size to
-//	   generate compile-time errors.
+//	 generate compile-time errors.
 // (b) Warning messages on MSVC are generated by declaring unused variables, and
 //		enabling the "variable XXX is never used" warning.
 // (c) Unions are used in a few compiler-specific cases to perform illegal casts.
 // (d) For Microsoft and Intel, when adjusting the 'this' pointer, it's cast to
-//	   (char *) first to ensure that the correct number of *bytes* are added.
+//	 (char *) first to ensure that the correct number of *bytes* are added.
 //
 ////////////////////////////////////////////////////////////////////////////////
 //						Helper templates
@@ -435,8 +435,8 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 2*sizeof(int) >
 		typedef int ERROR_CantUsehorrible_cast[sizeof(function_to_bind)==sizeof(u.s)
 			&& sizeof(function_to_bind)==sizeof(u.ProbeFunc)
 			&& sizeof(u2.virtfunc)==sizeof(u2.s) ? 1 : -1];
-   // Unfortunately, taking the address of a MF prevents it from being inlined, so
-   // this next line can't be completely optimised away by the compiler.
+ // Unfortunately, taking the address of a MF prevents it from being inlined, so
+ // this next line can't be completely optimised away by the compiler.
 		u2.virtfunc = &GenericVirtualClass::GetThis;
 		u.s.codeptr = u2.s.codeptr;
 		return (pthis->*u.ProbeFunc)();
@@ -460,7 +460,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 		// This means that an incorrect function could be called!!!
 		// Compiling with the /vmg option leads to potentially incorrect code.
 		// This is probably the reason that the IDE has a user interface for specifying
-		// the /vmg option, but it is disabled -  you can only specify /vmg on
+		// the /vmg option, but it is disabled - you can only specify /vmg on
 		// the command line. In VC1.5 and earlier, the compiler would ICE if it ever
 		// encountered this situation.
 		// It is OK to use the /vmg option if /vmm or /vms is specified.
@@ -534,7 +534,7 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 
 #endif // MS/Intel hacks
 
-}  // namespace detail
+} // namespace detail
 
 ////////////////////////////////////////////////////////////////////////////////
 //						Fast Delegates, part 2:
@@ -558,9 +558,9 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 // A static function pointer is stored inside the class.
 // Here are the valid values:
 // +-- Static pointer --+--pThis --+-- pMemFunc-+-- Meaning------+
-// |   0				|  0	   |   0		| Empty			 |
-// |   !=0				|(dontcare)|  Invoker	| Static function|
-// |   0				|  !=0	   |  !=0*		| Method call	 |
+// | 0				| 0	 | 0		| Empty			 |
+// | !=0				|(dontcare)| Invoker	| Static function|
+// | 0				| !=0	 | !=0*		| Method call	 |
 // +--------------------+----------+------------+----------------+
 //	* For Metrowerks, this can be 0. (first virtual function in a
 //		 single_inheritance class).
@@ -574,8 +574,8 @@ struct SimplifyMemFunc<SINGLE_MEMFUNCPTR_SIZE + 3*sizeof(int) >
 // possible to store the function pointer in the this pointer, using another
 // horrible_cast. In this case the DelegateMemento implementation is simple:
 // +--pThis --+-- pMemFunc-+-- Meaning---------------------+
-// |	0	  |	 0		   | Empty						   |
-// |  !=0	  |	 !=0*	   | Static function or method call|
+// |	0	 |	 0		 | Empty						 |
+// | !=0	 |	 !=0*	 | Static function or method call|
 // +----------+------------+-------------------------------+
 //	* For Metrowerks, this can be 0. (first virtual function in a
 //		 single_inheritance class).
@@ -659,7 +659,7 @@ public:
 #endif
 		{}
 protected:
-	void SetMementoFrom(const DelegateMemento &right)  {
+	void SetMementoFrom(const DelegateMemento &right) {
 		m_pFunction = right.m_pFunction;
 		m_pthis = right.m_pthis;
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
@@ -675,10 +675,10 @@ protected:
 // It's the class that does most of the actual work.
 // The signatures are specified by:
 // GenericMemFunc: must be a type of GenericClass member function pointer.
-// StaticFuncPtr:  must be a type of function pointer with the same signature
-//				   as GenericMemFunc.
+// StaticFuncPtr: must be a type of function pointer with the same signature
+//				 as GenericMemFunc.
 // UnvoidStaticFuncPtr: is the same as StaticFuncPtr, except on VC6
-//				   where it never returns void (returns DefaultVoid instead).
+//				 where it never returns void (returns DefaultVoid instead).
 
 // An outer class, delegateN<>, handles the invoking and creates the
 // necessary typedefs.
@@ -795,8 +795,8 @@ public:
 		if (function_to_bind==0) { // cope with assignment to 0
 			m_pFunction=0;
 		} else {
-		   // We'll be ignoring the 'this' pointer, but we need to make sure we pass
-		   // a valid value to bindmemfunc().
+		 // We'll be ignoring the 'this' pointer, but we need to make sure we pass
+		 // a valid value to bindmemfunc().
 			bindmemfunc(pParent, static_function_invoker);
 		}
 
@@ -892,7 +892,7 @@ public:
 	Delegate() { clear(); }
 	Delegate(const Delegate &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
-	void operator = (const Delegate &x)  {
+	void operator = (const Delegate &x) {
 		m_Closure.CopyFrom(this, x.m_Closure); }
 	bool operator ==(const Delegate &x) const {
 		return m_Closure.IsEqual(x.m_Closure);	}
@@ -944,7 +944,7 @@ public:
 	inline bool operator==(StaticFunctionPtr funcptr) {
 		return m_Closure.IsEqualToStaticFuncPtr(funcptr);	}
 	inline bool operator!=(StaticFunctionPtr funcptr) {
-		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);	  }
+		return !m_Closure.IsEqualToStaticFuncPtr(funcptr);	 }
 	inline bool operator ! () const {	// Is it bound to anything?
 			return !m_Closure; }
 	inline bool empty() const	{

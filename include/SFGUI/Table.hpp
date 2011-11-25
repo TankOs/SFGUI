@@ -19,6 +19,13 @@ class SFGUI_API Table : public Container {
 		typedef std::shared_ptr<Table> Ptr; ///< Shared pointer shortcut.
 		typedef std::shared_ptr<const Table> PtrConst; ///< Shared pointer shortcut.
 
+		/** Attach options.
+		 */
+		enum {
+			EXPAND = 1 << 0, ///< Expand child to maximum possible size.
+			FILL = 1 << 1 ///< Fill child to available size.
+		};
+
 		/** Ctor.
 		 */
 		Table();

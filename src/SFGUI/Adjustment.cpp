@@ -18,7 +18,7 @@ Adjustment::~Adjustment() {
 }
 
 Adjustment::Ptr Adjustment::Create( float value, float lower, float upper, float minor_step, float major_step, float page_size ) {
-	Adjustment::Ptr  ptr( new Adjustment( value, lower, upper, minor_step, major_step, page_size ) );
+	Adjustment::Ptr ptr( new Adjustment( value, lower, upper, minor_step, major_step, page_size ) );
 	return ptr;
 }
 
@@ -34,7 +34,7 @@ Adjustment& Adjustment::operator=( const Adjustment& adjustment ) {
 }
 
 float Adjustment::GetValue() const {
-  return m_value;
+ return m_value;
 }
 
 void Adjustment::SetValue( float new_value ) {

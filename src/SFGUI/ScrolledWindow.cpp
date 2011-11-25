@@ -8,14 +8,14 @@ ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustmen
 	Container(),
 	m_horizontal_scrollbar(),
 	m_vertical_scrollbar(),
-	m_policy( PolicyDefault ),
-	m_placement( PlacementDefault ),
+	m_policy( DEFAULT_POLICY ),
+	m_placement( DEFAULT_PLACEMENT ),
 	m_recalc_adjustments( false ),
 	m_content_allocation(),
 	m_recalc_content_allocation( false )
 {
-	m_horizontal_scrollbar = Scrollbar::Create( horizontal_adjustment, Scrollbar::Horizontal );
-	m_vertical_scrollbar = Scrollbar::Create( vertical_adjustment, Scrollbar::Vertical );
+	m_horizontal_scrollbar = Scrollbar::Create( horizontal_adjustment, Scrollbar::HORIZONTAL );
+	m_vertical_scrollbar = Scrollbar::Create( vertical_adjustment, Scrollbar::VERTICAL );
 }
 
 ScrolledWindow::Ptr ScrolledWindow::Create() {
@@ -23,7 +23,7 @@ ScrolledWindow::Ptr ScrolledWindow::Create() {
 }
 
 ScrolledWindow::Ptr ScrolledWindow::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
-	ScrolledWindow::Ptr  ptr( new ScrolledWindow( horizontal_adjustment, vertical_adjustment ) );
+	ScrolledWindow::Ptr ptr( new ScrolledWindow( horizontal_adjustment, vertical_adjustment ) );
 
 	std::static_pointer_cast<Container>( ptr )->Add( ptr->m_horizontal_scrollbar );
 	std::static_pointer_cast<Container>( ptr )->Add( ptr->m_vertical_scrollbar );
@@ -66,8 +66,8 @@ void ScrolledWindow::SetScrollbarPolicy( int policy ) {
 
 void ScrolledWindow::SetPlacement( Placement placement ) {
 	if(
-		(((placement & Top) == Top) ^ ((placement & Bottom) == Bottom)) &&
-		(((placement & Left) == Left) ^ ((placement & Right) == Right))
+		(((placement & TOP) == TOP) ^ ((placement & BOTTOM) == BOTTOM)) &&
+		(((placement & LEFT) == LEFT) ^ ((placement & RIGHT) == RIGHT))
 	) {
 		m_placement = placement;
 
@@ -77,11 +77,11 @@ void ScrolledWindow::SetPlacement( Placement placement ) {
 }
 
 bool ScrolledWindow::IsHorizontalScrollbarVisible() const {
-	if( m_policy & HorizontalAlways ) {
+	if( m_policy & HORIZONTAL_ALWAYS ) {
 		return true;
 	}
 
-	if( m_policy & HorizontalNever ) {
+	if( m_policy & HORIZONTAL_NEVER ) {
 		return false;
 	}
 
@@ -99,11 +99,11 @@ bool ScrolledWindow::IsHorizontalScrollbarVisible() const {
 }
 
 bool ScrolledWindow::IsVerticalScrollbarVisible() const {
-	if( m_policy & VerticalAlways ) {
+	if( m_policy & VERTICAL_ALWAYS ) {
 		return true;
 	}
 
-	if( m_policy & VerticalNever ) {
+	if( m_policy & VERTICAL_NEVER ) {
 		return false;
 	}
 
@@ -190,7 +190,7 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	if( IsVerticalScrollbarVisible() ) {
 		m_content_allocation.Width -= ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
 
-		if( m_placement & Right ) { // Content placed at Right
+		if( m_placement & RIGHT ) { // Content placed at Right
 			m_content_allocation.Left += ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
 		}
 	}
@@ -198,12 +198,12 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	if( IsHorizontalScrollbarVisible() ) {
 		m_content_allocation.Height -= ( m_horizontal_scrollbar->GetRequisition().x + scrollbar_spacing );
 
-		if( m_placement & Bottom ) { // Content placed at Bottom
+		if( m_placement & BOTTOM ) { // Content placed at Bottom
 			m_content_allocation.Top += ( m_horizontal_scrollbar->GetRequisition().x + scrollbar_spacing );
 		}
 	}
 
-	if( m_placement & Top ) { // Content placed at Top
+	if( m_placement & TOP ) { // Content placed at Top
 		m_horizontal_scrollbar->SetAllocation(
 			sf::FloatRect(
 				m_content_allocation.Left - border_width,
@@ -224,7 +224,7 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 		);
 	}
 
-	if( m_placement & Left ) { // Content placed at Left
+	if( m_placement & LEFT ) { // Content placed at Left
 		m_vertical_scrollbar->SetAllocation(
 			sf::FloatRect(
 				m_content_allocation.Width + 2.f * border_width + scrollbar_spacing,
@@ -318,7 +318,7 @@ Viewport::Ptr ScrolledWindow::GetViewport() const {
 	return std::static_pointer_cast<Viewport>( *( --GetChildren().end() ) );
 }
 
-void ScrolledWindow::HandleChildInvalidate( Widget::PtrConst child  ) const {
+void ScrolledWindow::HandleChildInvalidate( Widget::PtrConst child ) const {
 	// A child has been invalidated. Update Scrollbars.
 	m_recalc_adjustments = true;
 	Invalidate();

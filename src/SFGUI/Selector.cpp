@@ -4,7 +4,7 @@
 namespace sfg {
 
 Selector::Selector() :
-	m_hierarchy_type( Invalid ),
+	m_hierarchy_type( INVALID ),
 	m_state( -1 ),
 	m_hash( 0 )
 {
@@ -46,7 +46,7 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 	bool parse_next( true );
 	Ptr selector;
 
-	int hierarchy_type = Root;
+	int hierarchy_type = ROOT;
 
 	while( parse_next ) {
 		// Eat any whitespace before the current simple selector.
@@ -60,7 +60,7 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 		// If it's not the first simple selector, check for combinator.
 		if( selector ) {
 			if( *str_iter == '>' ) {
-				hierarchy_type = Child;
+				hierarchy_type = CHILD;
 
 				// Skip combinator.
 				++str_iter;
@@ -69,7 +69,7 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 				EatWhitespace( str_iter, str.end() );
 			}
 			else {
-				hierarchy_type = Descendant;
+				hierarchy_type = DESCENDANT;
 			}
 
 			// Check bounds.
@@ -127,20 +127,20 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 	selector->m_id = id;
 	selector->m_class = class_;
 
-	if( state == "Normal" ) {
-		selector->m_state = Widget::Normal;
+	if( state == "NORMAL" ) {
+		selector->m_state = Widget::NORMAL;
 	}
-	else if( state == "Active" ) {
-		selector->m_state = Widget::Active;
+	else if( state == "ACTIVE" ) {
+		selector->m_state = Widget::ACTIVE;
 	}
-	else if( state == "Prelight" ) {
-		selector->m_state = Widget::Prelight;
+	else if( state == "PRELIGHT" ) {
+		selector->m_state = Widget::PRELIGHT;
 	}
-	else if( state == "Selected" ) {
-		selector->m_state = Widget::Selected;
+	else if( state == "SELECTED" ) {
+		selector->m_state = Widget::SELECTED;
 	}
-	else if( state == "Insensitive" ) {
-		selector->m_state = Widget::Insensitive;
+	else if( state == "INSENSITIVE" ) {
+		selector->m_state = Widget::INSENSITIVE;
 	}
 	else if( !state.empty() ) {
 		throw( ParserException( "Invalid state: " + state ) );
@@ -148,7 +148,7 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 
 	selector->m_hierarchy_type = hierarchy;
 
-	if( hierarchy != Root ) {
+	if( hierarchy != ROOT ) {
 		selector->m_parent = parent;
 	}
 
@@ -321,20 +321,20 @@ int Selector::ParseState( std::string::const_iterator& begin, const std::string:
 	}
 
 	// Check state string.
-	if( token == "Normal" ) {
-		return Widget::Normal;
+	if( token == "NORMAL" ) {
+		return Widget::NORMAL;
 	}
-	else if( token == "Active" ) {
-		return Widget::Active;
+	else if( token == "ACTIVE" ) {
+		return Widget::ACTIVE;
 	}
-	else if( token == "Prelight" ) {
-		return Widget::Prelight;
+	else if( token == "PRELIGHT" ) {
+		return Widget::PRELIGHT;
 	}
-	else if( token == "Selected" ) {
-		return Widget::Selected;
+	else if( token == "SELECTED" ) {
+		return Widget::SELECTED;
 	}
-	else if( token == "Insensitive" ) {
-		return Widget::Insensitive;
+	else if( token == "INSENSITIVE" ) {
+		return Widget::INSENSITIVE;
 	}
 
 	throw( ParserException( "Invalid state: " + token ) );
@@ -376,10 +376,10 @@ std::string Selector::BuildString() const {
 		str += m_parent->BuildString();
 
 		switch( m_hierarchy_type ) {
-			case Child: {
+			case CHILD: {
 				str += ">";
 			} break;
-			case Descendant: {
+			case DESCENDANT: {
 				str += " ";
 			} break;
 			default: break;
@@ -409,20 +409,20 @@ std::string Selector::BuildString() const {
 		str += ":";
 
 		switch( m_state ) {
-			case Widget::Normal:
-				str += "Normal";
+			case Widget::NORMAL:
+				str += "NORMAL";
 				break;
-			case Widget::Prelight:
-				str += "Prelight";
+			case Widget::PRELIGHT:
+				str += "PRELIGHT";
 				break;
-			case Widget::Active:
-				str += "Active";
+			case Widget::ACTIVE:
+				str += "ACTIVE";
 				break;
-			case Widget::Selected:
-				str += "Selected";
+			case Widget::SELECTED:
+				str += "SELECTED";
 				break;
-			case Widget::Insensitive:
-				str += "Insensitive";
+			case Widget::INSENSITIVE:
+				str += "INSENSITIVE";
 				break;
 
 			default:
@@ -452,23 +452,23 @@ bool Selector::Matches( Widget::PtrConst widget ) const {
 
 	// Check if current stage is a pass...
 	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && m_state == -1 ) | // Wildcard
-		  ( ( m_widget.empty() || m_widget == widget->GetName()  ) &&    //
-		    ( m_id.empty()     || m_id     == widget->GetId()    ) &&    // Selector and widget match
-		    ( m_class.empty()  || m_class  == widget->GetClass() ) &&    //
-		    ( m_state == (-1)  || m_state  == widget->GetState() ) ) ) { //
+		 ( ( m_widget.empty() || m_widget == widget->GetName() ) && //
+		 ( m_id.empty() || m_id == widget->GetId() ) && // Selector and widget match
+		 ( m_class.empty() || m_class == widget->GetClass() ) && //
+		 ( m_state == (-1) || m_state == widget->GetState() ) ) ) { //
 		// Current stage is a pass...
 
 		// Differentiate between different hierarchy types
 		switch( m_hierarchy_type ) {
-			case Root: {
+			case ROOT: {
 				// No parent, matching success
 				return true;
 			} break;
-			case Child: {
+			case CHILD: {
 				// This is a child, check direct parent only
 				return ( GetParent() && GetParent()->Matches( widget->GetParent() ) );
 			} break;
-			case Descendant: {
+			case DESCENDANT: {
 				// This is a descendant, check all parents and try to match to all of widgets parents
 				for( PtrConst parent = GetParent(); parent; parent = parent->GetParent() ) {
 					for( Widget::PtrConst widget_parent = widget->GetParent(); widget_parent; widget_parent = widget_parent->GetParent() ) {

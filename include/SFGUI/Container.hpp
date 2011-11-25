@@ -11,16 +11,9 @@ namespace sfg {
  */
 class SFGUI_API Container : public Widget {
 	public:
-		typedef std::shared_ptr<Container>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Container>  PtrConst; //!< Shared pointer.
-		typedef std::list<Widget::Ptr>  WidgetsList;
-
-		/** Pack options.
-		 */
-		enum PackOptions {
-			EXPAND = 1 << 0, ///< Expand widget to maximum possible size.
-			FILL = 1 << 1 ///< Fill widget to allocated size.
-		};
+		typedef std::shared_ptr<Container> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Container> PtrConst; //!< Shared pointer.
+		typedef std::list<Widget::Ptr> WidgetsList;
 
 		/** Dtor.
 		 */

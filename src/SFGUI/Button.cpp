@@ -13,7 +13,7 @@ Button::~Button() {
 }
 
 Button::Ptr Button::Create( const sf::String& label ) {
-	Button::Ptr  ptr( new Button );
+	Button::Ptr ptr( new Button );
 
 	ptr->SetLabel( label );
 
@@ -36,29 +36,29 @@ const sf::String& Button::GetLabel() const {
 }
 
 void Button::HandleMouseEnter( int /*x*/, int /*y*/ ) {
-	if( GetState() == Normal ) {
-		SetState( Prelight );
+	if( GetState() == NORMAL ) {
+		SetState( PRELIGHT );
 	}
 }
 
 void Button::HandleMouseLeave( int /*x*/, int /*y*/ ) {
-	if( GetState() == Prelight ) {
-		SetState( Normal );
+	if( GetState() == PRELIGHT ) {
+		SetState( NORMAL );
 	}
 }
 
 void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
 	if( !IsMouseInWidget() ) {
-		SetState( Normal );
+		SetState( NORMAL );
 		return;
 	}
 
 	if( button == sf::Mouse::Left ) {
 		if( press ) {
-			SetState( Active );
+			SetState( ACTIVE );
 		}
 		else {
-			SetState( Prelight );
+			SetState( PRELIGHT );
 		}
 	}
 }

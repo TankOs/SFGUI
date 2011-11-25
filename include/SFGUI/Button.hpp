@@ -8,8 +8,8 @@ namespace sfg {
  */
 class SFGUI_API Button : public Bin {
 	public:
-		typedef std::shared_ptr<Button>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Button>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Button> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Button> PtrConst; //!< Shared pointer.
 
 		/** Create button.
 		 * @param label Label.

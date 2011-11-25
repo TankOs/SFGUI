@@ -8,7 +8,7 @@ Widget::Widget() :
 	Object(),
 	m_sensitive( true ),
 	m_visible( true ),
-	m_state( Normal ),
+	m_state( NORMAL ),
 	m_mouse_in( false ),
 	m_mouse_button_down( -1 ),
 	m_allocation( 0, 0, 0, 0 ),
@@ -62,7 +62,7 @@ bool Widget::HasFocus( Ptr widget ) {
 }
 
 void Widget::SetAllocation( const sf::FloatRect& rect ) {
-	sf::FloatRect  oldallocation( m_allocation );
+	sf::FloatRect oldallocation( m_allocation );
 
 	// Make sure allocation is pixel-aligned.
 	m_allocation.Left = std::floor( rect.Left + .5f );
@@ -109,9 +109,9 @@ void Widget::RequestResize() {
 		parent->RequestResize();
 	}
 	else {
-		sf::Vector2f  requisition( GetRequisition() );
+		sf::Vector2f requisition( GetRequisition() );
 
-		sf::FloatRect  allocation(
+		sf::FloatRect allocation(
 			GetAllocation().Left,
 			GetAllocation().Top,
 			std::max( GetAllocation().Width, requisition.x ),
@@ -173,7 +173,7 @@ RenderQueue* Widget::InvalidateImpl() const {
 }
 
 void Widget::SetParent( Widget::Ptr parent ) {
-	Container::Ptr  cont( std::dynamic_pointer_cast<Container>( parent ) );
+	Container::Ptr cont( std::dynamic_pointer_cast<Container>( parent ) );
 
 	if( !cont ) {
 		return;
@@ -189,14 +189,14 @@ void Widget::SetParent( Widget::Ptr parent ) {
 }
 
 void Widget::SetPosition( const sf::Vector2f& position ) {
-	sf::FloatRect  oldallocation( GetAllocation() );
+	sf::FloatRect oldallocation( GetAllocation() );
 
 	// Make sure allocation is pixel-aligned.
 	m_allocation.Left = std::floor( position.x + .5f );
 	m_allocation.Top = std::floor( position.y + .5f );
 
 	if( oldallocation.Top == m_allocation.Top &&
-	    oldallocation.Left == m_allocation.Left ) {
+	 oldallocation.Left == m_allocation.Left ) {
 		// Nothing even changed. Save the hierarchy the trouble.
 		return;
 	}
@@ -275,7 +275,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::KeyPressed:
-			if( GetState() == Active ) {
+			if( GetState() == ACTIVE ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.Key.Code, true );
 				OnKeyPress();
@@ -284,7 +284,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::KeyReleased:
-			if( GetState() == Active ) {
+			if( GetState() == ACTIVE ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.Key.Code, false );
 				OnKeyRelease();
@@ -292,7 +292,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::TextEntered:
-			if( GetState() == Active ) {
+			if( GetState() == ACTIVE ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleTextEvent( event.Text.Unicode );
 				OnText();
@@ -320,7 +320,7 @@ void Widget::SetState( State state ) {
 		OnStateChange();
 	}
 
-	if( state == Active ) {
+	if( state == ACTIVE ) {
 		GrabFocus( shared_from_this() );
 	}
 }
@@ -445,7 +445,7 @@ void Widget::HandleMouseClick( sf::Mouse::Button /*button*/, int /*x*/, int /*y*
 
 void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {
 	if( focused_widget != shared_from_this() ) {
-		SetState( Normal );
+		SetState( NORMAL );
 	}
 }
 

@@ -28,7 +28,7 @@ int main() {
 	window->SetTitle( "Title" );
 
 	// Create our box.
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::Horizontal );
+	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
 
 	// Create a label.
 	label = sfg::Label::Create();
@@ -48,14 +48,14 @@ int main() {
 
 	// Create the scale itself.
 	// We want a horizontal scale.
-	scale = sfg::Scale::Create( sfg::Scale::Horizontal );
+	scale = sfg::Scale::Create( sfg::Scale::HORIZONTAL );
 
 	// Create our scrollbar smart pointer.
 	sfg::Scrollbar::Ptr scrollbar;
 
 	// Create the scrollbar itself.
 	// We want a vertical scrollbar.
-	scrollbar = sfg::Scrollbar::Create( sfg::Scrollbar::Vertical );
+	scrollbar = sfg::Scrollbar::Create( sfg::Scrollbar::VERTICAL );
 
 	// We can link both widgets together by their adjustments.
 	adjustment = scrollbar->GetAdjustment();
@@ -91,7 +91,7 @@ int main() {
 
 	// To keep our scale's slider from expanding too much we use another box
 	// set to verticle orientation.
-	sfg::Box::Ptr scalebox = sfg::Box::Create( sfg::Box::Vertical );
+	sfg::Box::Ptr scalebox = sfg::Box::Create( sfg::Box::VERTICAL );
 	scalebox->Pack( scale, false, false );
 
 	// Pack into box

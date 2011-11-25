@@ -64,9 +64,9 @@ void CullingTarget::Draw( const RenderQueue& queue ) {
 	}
 
 	if( ( m_viewport.Left > 1.f ) ||
-	    ( m_viewport.Top > 1.f )  ||
-	    ( m_viewport.Left + m_viewport.Width < .0f ) ||
-	    ( m_viewport.Top + m_viewport.Height < .0f ) ) {
+	 ( m_viewport.Top > 1.f ) ||
+	 ( m_viewport.Left + m_viewport.Width < .0f ) ||
+	 ( m_viewport.Top + m_viewport.Height < .0f ) ) {
 		m_cull_count.second++;
 		return;
 	}

@@ -9,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Label : public Widget {
 	public:
-		typedef std::shared_ptr<Label>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Label>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Label> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Label> PtrConst; //!< Shared pointer.
 
 		/** Create label.
 		 * @param text Text.
@@ -54,7 +54,7 @@ class SFGUI_API Label : public Widget {
 		sf::Vector2f CalculateRequisition();
 
 	private:
-		sf::String  m_text;
+		sf::String m_text;
 		sf::Vector2f m_alignment;
 };
 

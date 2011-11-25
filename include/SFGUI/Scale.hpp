@@ -8,21 +8,21 @@ namespace sfg {
  */
 class SFGUI_API Scale : public Range {
 	public:
-		typedef std::shared_ptr<Scale>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Scale>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Scale> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Scale> PtrConst; //!< Shared pointer.
 
 		/** Scale orientation.
 		 */
 		enum Orientation {
-			Horizontal = 0, //!< Horizontal scale.
-			Vertical //!< Vertical scale.
+			HORIZONTAL = 0, //!< Horizontal scale.
+			VERTICAL //!< Vertical scale.
 		};
 
 		/** Create scale widget.
 		 * @param orientation Orientation.
 		 * @return Scale widget.
 		 */
-		static Ptr Create( Orientation orientation = Horizontal );
+		static Ptr Create( Orientation orientation = HORIZONTAL );
 
 		virtual const std::string& GetName() const;
 
@@ -33,7 +33,7 @@ class SFGUI_API Scale : public Range {
 		 * @param orientation Orientation.
 		 * @return Scale widget.
 		 */
-		static Ptr Create( float min, float max, float step, Orientation orientation = Horizontal );
+		static Ptr Create( float min, float max, float step, Orientation orientation = HORIZONTAL );
 
 		/** Get the orientation of this scale widget
 		 * @return orientation of this scale widget
@@ -52,7 +52,7 @@ class SFGUI_API Scale : public Range {
 	private:
 		/** Ctor.
 		 */
-		Scale( Orientation orientation = Horizontal );
+		Scale( Orientation orientation = HORIZONTAL );
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );

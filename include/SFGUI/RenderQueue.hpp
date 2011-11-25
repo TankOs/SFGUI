@@ -14,7 +14,7 @@ namespace sfg {
  */
 class SFGUI_API RenderQueue : public sf::Drawable {
 	public:
-		typedef std::vector< std::pair<sf::Drawable*, sf::FloatRect> >  DrawablesVector;
+		typedef std::vector< std::pair<sf::Drawable*, sf::FloatRect> > DrawablesVector;
 
 		/** Ctor.
 		 */

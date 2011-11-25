@@ -18,17 +18,17 @@ class Container;
  */
 class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widget> {
 	public:
-		typedef std::shared_ptr<Widget>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Widget>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Widget> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Widget> PtrConst; //!< Shared pointer.
 
 		/** Widget state.
 		 */
 		enum State {
-			Normal = 0, /*!< Normal. */
-			Active, /*!< Active, e.g. when a button is pressed. */
-			Prelight, /*!< Prelight, e.g. when the mouse moves over a widget. */
-			Selected, /*!< Selected, e.g. when a list item in a list is selected. */
-			Insensitive /*!< Insensitive, disabled widget. */
+			NORMAL = 0, /*!< Normal. */
+			ACTIVE, /*!< Active, e.g. when a button is pressed. */
+			PRELIGHT, /*!< Prelight, e.g. when the mouse moves over a widget. */
+			SELECTED, /*!< Selected, e.g. when a list item in a list is selected. */
+			INSENSITIVE /*!< Insensitive, disabled widget. */
 		};
 
 		/** Destructor.
@@ -303,18 +303,18 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		void GrabFocus( Ptr widget );
 		bool HasFocus( Ptr widget );
 
-		std::weak_ptr<Container>  m_parent;
+		std::weak_ptr<Container> m_parent;
 
 		std::string m_id;
 		std::string m_class;
 
-		bool  m_sensitive;
-		bool  m_visible;
-		Ptr   m_focus_widget;
+		bool m_sensitive;
+		bool m_visible;
+		Ptr m_focus_widget;
 
-		State  m_state;
-		bool  m_mouse_in;
-		int  m_mouse_button_down;
+		State m_state;
+		bool m_mouse_in;
+		int m_mouse_button_down;
 
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;

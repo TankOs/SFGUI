@@ -55,7 +55,7 @@ void DesktopExample::Run() {
 	create_window_button->SetId( "create_window" );
 
 	// Layout.
-	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::Vertical, 5.f ) );
+	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );
 	main_box->Pack( create_window_button, false );
 
@@ -102,7 +102,7 @@ void DesktopExample::OnCreateWindowClick() {
 	sfg::Button::Ptr destroy_button( sfg::Button::Create( "Destroy" ) );
 
 	// Layout.
-	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::Vertical, 5.f ) );
+	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	box->Pack( sfg::Label::Create( "This is a newly created window, from runtime, interactively." ), false );
 	box->Pack( sfg::Label::Create( "You can move me around, try it!" ), false );
 	box->Pack( sfg::Label::Create( "Or click the button below to destroy me. :-(" ), false );

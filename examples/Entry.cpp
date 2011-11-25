@@ -26,7 +26,7 @@ int main() {
 	window->SetTitle( "Title" );
 
 	// Create our box.
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::Horizontal );
+	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
 
 	// Create a button.
 	sfg::Button::Ptr button = sfg::Button::Create();

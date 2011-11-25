@@ -11,8 +11,8 @@ namespace sfg {
  */
 class SFGUI_API Window : public Bin {
 	public:
-		typedef std::shared_ptr<Window>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Window>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Window> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Window> PtrConst; //!< Shared pointer.
 
 		enum Style {
 			NoStyle = 0, //!< Transparent window.

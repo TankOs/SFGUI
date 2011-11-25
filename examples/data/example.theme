@@ -13,7 +13,7 @@ Button {
 	BackgroundColor: #000000ff;
 }
 
-Button:Prelight {
+Button:PRELIGHT {
 	BackgroundColor: #444444ff;
 }
 
@@ -26,7 +26,7 @@ ScrolledWindow Button {
 	BackgroundColor: #123456ff;
 }
 
-ScrolledWindow Button:Prelight {
+ScrolledWindow Button:PRELIGHT {
 	BackgroundColor: #345678ff;
 }
 

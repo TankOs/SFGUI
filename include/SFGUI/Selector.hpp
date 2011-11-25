@@ -18,10 +18,10 @@ class SFGUI_API Selector {
 		typedef std::shared_ptr<Selector> PtrConst; ///< Shared pointer (const object).
 
 		enum HierarchyType {
-			Invalid = 0, //!< Invalid hierarchy type;
-			Root = 1 << 0, //!< Current simple selector is the root of the selector.
-			Child = 1 << 1, //!< Current simple selector is a child of the parent.
-			Descendant = 1 << 2 //!< Current simple selector is a descendant of the parent.
+			INVALID = 0, //!< Invalid hierarchy type;
+			ROOT = 1 << 0, //!< Current simple selector is the root of the selector.
+			CHILD = 1 << 1, //!< Current simple selector is a child of the parent.
+			DESCENDANT = 1 << 2 //!< Current simple selector is a descendant of the parent.
 		};
 
 		/** Create selector.

@@ -9,14 +9,14 @@ namespace sfg {
  */
 class SFGUI_API Box : public Container {
 	public:
-		typedef std::shared_ptr<Box>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Box>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Box> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Box> PtrConst; //!< Shared pointer.
 
 		/** Box orientation.
 		 */
 		enum Orientation {
-			Horizontal = 0, //!< Arrange horizontally.
-			Vertical //!< Arrange vertically.
+			HORIZONTAL = 0, //!< Arrange horizontally.
+			VERTICAL //!< Arrange vertically.
 		};
 
 		/** Create box.
@@ -24,7 +24,7 @@ class SFGUI_API Box : public Container {
 		 * @param spacing Spacing = space between widgets.
 		 * @return Box.
 		 */
-		static Ptr Create( Orientation orientation = Horizontal, float spacing = 0.f );
+		static Ptr Create( Orientation orientation = HORIZONTAL, float spacing = 0.f );
 
 		virtual const std::string& GetName() const;
 
@@ -53,17 +53,17 @@ class SFGUI_API Box : public Container {
 
 	private:
 		struct ChildInfo {
-			Widget::Ptr  widget;
-			bool         expand;
-			bool         fill;
+			Widget::Ptr widget;
+			bool expand;
+			bool fill;
 
 			ChildInfo( Widget::Ptr widget_, bool expand_ = true, bool fill_ = true );
 			bool operator==( const ChildInfo& rhs ) const;
 		};
 
-		typedef std::list<ChildInfo>  ChildrenCont;
+		typedef std::list<ChildInfo> ChildrenCont;
 
-		Box( Orientation orientation = Horizontal, float spacing = 0.f );
+		Box( Orientation orientation = HORIZONTAL, float spacing = 0.f );
 
 		void HandleAdd( Widget::Ptr child );
 		void HandleRemove( Widget::Ptr child );
@@ -71,9 +71,9 @@ class SFGUI_API Box : public Container {
 
 		void AllocateChildren() const;
 
-		Orientation  m_orientation;
-		float  m_spacing;
-		ChildrenCont  m_children;
+		Orientation m_orientation;
+		float m_spacing;
+		ChildrenCont m_children;
 };
 
 }

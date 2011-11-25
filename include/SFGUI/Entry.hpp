@@ -9,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Entry : public Widget {
 	public:
-		typedef std::shared_ptr<Entry>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Entry>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Entry> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Entry> PtrConst; //!< Shared pointer.
 
 		/** Create entry.
 		 * @param text Text.

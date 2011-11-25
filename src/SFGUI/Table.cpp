@@ -162,7 +162,7 @@ void Table::UpdateRequisitions() {
 				float width_missing( required_width - width );
 
 				// If there're no expandable columns, mark every column as being
-				// expandable.  Results in homogeneous distribution of extra width.
+				// expandable. Results in homogeneous distribution of extra width.
 				bool force_expand( false );
 
 				if( num_expand == 0 ) {

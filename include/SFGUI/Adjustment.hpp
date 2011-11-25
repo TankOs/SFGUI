@@ -9,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Adjustment : public Object, public std::enable_shared_from_this<Adjustment> {
 	public:
-		typedef std::shared_ptr<Adjustment>  Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Adjustment>  PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Adjustment> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Adjustment> PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */

@@ -21,12 +21,12 @@ Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 }
 
 Scrollbar::Ptr Scrollbar::Create( Orientation orientation ) {
-	Scrollbar::Ptr  ptr( new Scrollbar( Adjustment::Ptr(), orientation ) );
+	Scrollbar::Ptr ptr( new Scrollbar( Adjustment::Ptr(), orientation ) );
 	return ptr;
 }
 
 Scrollbar::Ptr Scrollbar::Create( Adjustment::Ptr adjustment, Orientation orientation ) {
-	Scrollbar::Ptr  ptr( new Scrollbar( adjustment, orientation ) );
+	Scrollbar::Ptr ptr( new Scrollbar( adjustment, orientation ) );
 	return ptr;
 }
 
@@ -43,7 +43,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 	float value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), .0f );
 	float pages = value_range / adjustment->GetPageSize() + 1.f;
 
-	if( m_orientation == Horizontal ) {
+	if( m_orientation == HORIZONTAL ) {
 		float stepper_length = GetAllocation().Height;
 		float trough_length = GetAllocation().Width - 2.f * stepper_length;
 		float slider_length = std::max( mimimum_slider_length, trough_length / pages );
@@ -114,7 +114,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 		if( slider_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_dragging = true;
 
-			if( m_orientation == Horizontal ) {
+			if( m_orientation == HORIZONTAL ) {
 				float slider_mid = slider_rect.Left + slider_rect.Width / 2.f;
 				m_slider_click_offset = static_cast<float>( x ) - slider_mid;
 			}
@@ -126,7 +126,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			return;
 		}
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			float stepper_length = GetAllocation().Height;
 
 			sf::FloatRect decrease_stepper_rect( GetAllocation().Left, GetAllocation().Top, stepper_length, GetAllocation().Height );
@@ -178,7 +178,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 		float slider_center_x = slider_rect.Left + slider_rect.Width / 2.f;
 		float slider_center_y = slider_rect.Top + slider_rect.Height / 2.f;
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			if( GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				if( static_cast<float>( x ) < slider_center_x ) {
 					m_page_decreasing = x;
@@ -244,7 +244,7 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	float value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), adjustment->GetMinorStep() / 2.f );
 	float steps = value_range / adjustment->GetMinorStep();
 
-	if( m_orientation == Horizontal ) {
+	if( m_orientation == HORIZONTAL ) {
 		float stepper_length = GetAllocation().Height;
 
 		float slider_center_x = slider_rect.Left + slider_rect.Width / 2.0f;
@@ -268,7 +268,7 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 		float slider_center_y = slider_rect.Top + slider_rect.Height / 2.0f;
 		float step_distance = ( GetAllocation().Height - 2.f * stepper_length ) / steps;
 
-		float delta =  static_cast<float>( y ) - ( slider_center_y + m_slider_click_offset );
+		float delta = static_cast<float>( y ) - ( slider_center_y + m_slider_click_offset );
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Decrement();
@@ -321,7 +321,7 @@ void Scrollbar::HandleExpose( CullingTarget& /*target*/ ) const {
 	if( m_page_decreasing ) {
 		GetAdjustment()->DecrementPage();
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			if( slider_rect.Left + slider_rect.Width < static_cast<float>( m_page_decreasing ) ) {
 				m_page_decreasing = 0;
 			}
@@ -338,7 +338,7 @@ void Scrollbar::HandleExpose( CullingTarget& /*target*/ ) const {
 	else if( m_page_increasing ) {
 		GetAdjustment()->IncrementPage();
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			if( slider_rect.Left + slider_rect.Width > static_cast<float>( m_page_increasing ) ) {
 				m_page_increasing = 0;
 			}

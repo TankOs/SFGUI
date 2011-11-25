@@ -8,10 +8,10 @@ const float PI = 3.14159265f;
 int main() {
 	sf::RenderWindow render_window( sf::VideoMode( 800, 600 ), "SFGUI with OpenGL example" );
 
-	sfg::Scale::Ptr red_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Horizontal ) );
-	sfg::Scale::Ptr green_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Horizontal ) );
-	sfg::Scale::Ptr blue_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Horizontal ) );
-	sfg::Scale::Ptr angle_scale( sfg::Scale::Create( 0.f, 360.f, 1.f, sfg::Scale::Horizontal ) );
+	sfg::Scale::Ptr red_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
+	sfg::Scale::Ptr green_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
+	sfg::Scale::Ptr blue_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
+	sfg::Scale::Ptr angle_scale( sfg::Scale::Create( 0.f, 360.f, 1.f, sfg::Scale::HORIZONTAL ) );
 	sfg::CheckButton::Ptr auto_check( sfg::CheckButton::Create( "Auto" ) );
 
 	sfg::Table::Ptr table( sfg::Table::Create() );

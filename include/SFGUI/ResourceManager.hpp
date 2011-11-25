@@ -68,7 +68,7 @@ class SFGUI_API ResourceManager {
 		const sf::Font* GetFont( const std::string& path );
 
 		/** Get texture.
-		 * Will be loaded if not done so  before.
+		 * Will be loaded if not done so before.
 		 * @param path Path.
 		 * @return Texture or NULL if failed to load.
 		 */

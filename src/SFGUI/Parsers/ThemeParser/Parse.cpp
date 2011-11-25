@@ -62,9 +62,9 @@ std::vector<Rule> ParseString( std::string str ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "Error parsing string:\n"
-		          << str << "\n"
-		          << std::string( _grammar.position - str.c_str() ,' ' ) << "^\n"
-		          << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
+		 << str << "\n"
+		 << std::string( _grammar.position - str.c_str() ,' ' ) << "^\n"
+		 << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
 #endif
 	}
 
@@ -106,9 +106,9 @@ std::vector<Rule> ParseFile( std::string filename ) {
 
 #ifdef SFGUI_DEBUG
 		std::cerr << "Error parsing file \"" << filename << "\" at line " << _grammar.line_number <<":\n"
-		          << GetLine( str, _grammar.line_number ) << "\n"
-		          << std::string( ColumnPosition( str, _grammar.position - str.c_str() ) ,' ' ) << "^\n"
-		          << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
+		 << GetLine( str, _grammar.line_number ) << "\n"
+		 << std::string( ColumnPosition( str, _grammar.position - str.c_str() ) ,' ' ) << "^\n"
+		 << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
 #endif
 	}
 

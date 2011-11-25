@@ -20,7 +20,7 @@ Entry::Entry() :
 }
 
 Entry::Ptr Entry::Create( const sf::String& text ) {
-	Entry::Ptr  ptr( new Entry );
+	Entry::Ptr ptr( new Entry );
 
 	ptr->SetText( text );
 
@@ -67,7 +67,7 @@ sf::Uint32 Entry::GetHideCharacter() const {
 std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
-  std::basic_string<sf::Uint32> string( m_visible_string.Begin(), m_visible_string.End() );
+ std::basic_string<sf::Uint32> string( m_visible_string.Begin(), m_visible_string.End() );
 	float text_start = GetAllocation().Left + 2.f;
 	float last_delta = std::fabs( text_start - (float)mouse_pos_x );
 	std::size_t cursor_position = 0;
@@ -159,7 +159,7 @@ void Entry::HandleTextEvent( sf::Uint32 character ) {
 }
 
 void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
-	if( !press || GetState() != Active ) {
+	if( !press || GetState() != ACTIVE ) {
 		return;
 	}
 
@@ -205,14 +205,14 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 }
 
 void Entry::HandleMouseEnter( int /*x*/, int /*y*/ ) {
-	if( GetState() != Active ) {
-		SetState( Prelight );
+	if( GetState() != ACTIVE ) {
+		SetState( PRELIGHT );
 	}
 }
 
 void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
-	if( GetState() != Active ) {
-		SetState( Normal );
+	if( GetState() != ACTIVE ) {
+		SetState( NORMAL );
 	}
 }
 
@@ -226,12 +226,12 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		return;
 	}
 
-	SetState( Active );
+	SetState( ACTIVE );
 	SetCursorPosition( GetPositionFromMouseX( x ) );
 }
 
-void Entry::HandleExpose( CullingTarget& /*target*/  ) const {
-	if( GetState() != Active ) {
+void Entry::HandleExpose( CullingTarget& /*target*/ ) const {
+	if( GetState() != ACTIVE ) {
 		return;
 	}
 
@@ -245,14 +245,14 @@ void Entry::HandleExpose( CullingTarget& /*target*/  ) const {
 
 void Entry::HandleFocusChange( Widget::Ptr focused_widget ) {
 	if( focused_widget == shared_from_this() ) {
-		SetState( Active );
+		SetState( ACTIVE );
 	}
 
 	Widget::HandleFocusChange( focused_widget );
 }
 
 void Entry::HandleStateChange( State old_state ) {
-	if( GetState() == Active ) {
+	if( GetState() == ACTIVE ) {
 		m_cursor_timer.Reset();
 		m_cursor_status = true;
 	}

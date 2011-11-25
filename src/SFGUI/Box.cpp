@@ -11,7 +11,7 @@ Box::Box( Orientation orientation, float spacing ) :
 }
 
 Box::Ptr Box::Create( Orientation orientation, float spacing ) {
-	Box::Ptr  ptr( new Box( orientation, spacing ) );
+	Box::Ptr ptr( new Box( orientation, spacing ) );
 	return ptr;
 }
 
@@ -32,7 +32,7 @@ void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
 }
 
 void Box::HandleAdd( Widget::Ptr child ) {
-	ChildrenCont::const_iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
+	ChildrenCont::const_iterator iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget
 	// manually, which is not allowed for this class.
@@ -50,7 +50,7 @@ void Box::HandleAdd( Widget::Ptr child ) {
 }
 
 void Box::HandleRemove( Widget::Ptr child ) {
-	ChildrenCont::iterator  iter( std::find( m_children.begin(), m_children.end(), child ) );
+	ChildrenCont::iterator iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
@@ -60,19 +60,19 @@ void Box::HandleRemove( Widget::Ptr child ) {
 }
 
 sf::Vector2f Box::CalculateRequisition() {
-	sf::Vector2f  requisition( 0, 0 );
-	ChildrenCont::const_iterator  iter( m_children.begin() );
-	ChildrenCont::const_iterator  iterend( m_children.end() );
-	unsigned int  num_visible( 0 );
+	sf::Vector2f requisition( 0, 0 );
+	ChildrenCont::const_iterator iter( m_children.begin() );
+	ChildrenCont::const_iterator iterend( m_children.end() );
+	unsigned int num_visible( 0 );
 
 	for( ; iter != iterend; ++iter ) {
 		if( iter->widget->IsVisible() ) {
 			++num_visible;
 		}
 
-		sf::Vector2f  child_requisition( iter->widget->GetRequisition() );
+		sf::Vector2f child_requisition( iter->widget->GetRequisition() );
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			requisition.x += child_requisition.x + GetSpacing();
 			requisition.y = std::max( requisition.y, child_requisition.y );
 		}
@@ -86,7 +86,7 @@ sf::Vector2f Box::CalculateRequisition() {
 		requisition.x += GetBorderWidth() * 2;
 		requisition.y += GetBorderWidth() * 2;
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			requisition.x -= GetSpacing();
 		}
 		else {
@@ -125,16 +125,16 @@ float Box::GetSpacing() const {
 }
 
 void Box::AllocateChildren() const {
-	ChildrenCont::const_iterator  iter( m_children.begin() );
-	ChildrenCont::const_iterator  iterend( m_children.end() );
-	sf::Vector2f  allocation( 0.f, 0.f );
-	sf::Vector2f  position( GetBorderWidth(), GetBorderWidth() );
-	unsigned int  num_expand( 0 );
-	unsigned int  num_visible( 0 );
-	float  extra( 0.f );
-	sf::Vector2f  requisition(
-		m_orientation == Horizontal ? 2 * GetBorderWidth() : GetAllocation().Width,
-		m_orientation == Vertical ? 2 * GetBorderWidth() : GetAllocation().Height
+	ChildrenCont::const_iterator iter( m_children.begin() );
+	ChildrenCont::const_iterator iterend( m_children.end() );
+	sf::Vector2f allocation( 0.f, 0.f );
+	sf::Vector2f position( GetBorderWidth(), GetBorderWidth() );
+	unsigned int num_expand( 0 );
+	unsigned int num_visible( 0 );
+	float extra( 0.f );
+	sf::Vector2f requisition(
+		m_orientation == HORIZONTAL ? 2 * GetBorderWidth() : GetAllocation().Width,
+		m_orientation == VERTICAL ? 2 * GetBorderWidth() : GetAllocation().Height
 	);
 
 	for( ; iter != iterend; ++iter ) {
@@ -148,9 +148,9 @@ void Box::AllocateChildren() const {
 			++num_expand;
 		}
 
-		sf::Vector2f  child_requisition( iter->widget->GetRequisition() );
+		sf::Vector2f child_requisition( iter->widget->GetRequisition() );
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			requisition.x += child_requisition.x;
 			requisition.y = std::max( requisition.y, child_requisition.y + 2 * GetBorderWidth() );
 		}
@@ -162,7 +162,7 @@ void Box::AllocateChildren() const {
 
 	// Add spacings.
 	if( num_visible > 1 ) {
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			requisition.x += static_cast<float>( num_visible - 1 ) * GetSpacing();
 		}
 		else {
@@ -171,7 +171,7 @@ void Box::AllocateChildren() const {
 	}
 
 	if( num_expand > 0 ) {
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			extra = std::max( 0.f, GetAllocation().Width - requisition.x ) / static_cast<float>( num_expand );
 		}
 		else {
@@ -184,7 +184,7 @@ void Box::AllocateChildren() const {
 			continue;
 		}
 
-		if( m_orientation == Horizontal ) {
+		if( m_orientation == HORIZONTAL ) {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
 			allocation.y = requisition.y - 2 * GetBorderWidth();
 

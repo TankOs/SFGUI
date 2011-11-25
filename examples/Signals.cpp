@@ -76,7 +76,7 @@ void Application::Run() {
 	window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::Vertical );
+	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::VERTICAL );
 
 	window->Add( box );
 	window->SetBorderWidth( 10.f );

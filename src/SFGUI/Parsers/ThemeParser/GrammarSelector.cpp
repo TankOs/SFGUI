@@ -5,17 +5,17 @@ namespace parser {
 namespace theme {
 
 void ThemeGrammar::GrammarSelector() {
-	simple_selector_rule     = ( ( type_rule ) >> !(
-	                           ( class_rule >> !( ( state_rule >> !id_rule ) | ( id_rule >> !state_rule ) ) ) |
-	                           ( state_rule >> !( ( id_rule >> !class_rule ) | ( class_rule >> !id_rule ) ) ) |
-	                           ( id_rule >> !( ( state_rule >> !class_rule ) | ( class_rule >> !state_rule ) ) )
-	                           ) )[ &ThemeGrammar::PushSimpleSelector ];
+	simple_selector_rule = ( ( type_rule ) >> !(
+	 ( class_rule >> !( ( state_rule >> !id_rule ) | ( id_rule >> !state_rule ) ) ) |
+	 ( state_rule >> !( ( id_rule >> !class_rule ) | ( class_rule >> !id_rule ) ) ) |
+	 ( id_rule >> !( ( state_rule >> !class_rule ) | ( class_rule >> !state_rule ) ) )
+	 ) )[ &ThemeGrammar::PushSimpleSelector ];
 
 	selector_combinator_rule = ( ( ch('>') )[ &ThemeGrammar::PushCombinatorChild ] |
-	                             ( ch(',') )[ &ThemeGrammar::PushCombinatorGroup ] |
-	                             ( eps     )[ &ThemeGrammar::PushCombinatorDescendant ] );
+	 ( ch(',') )[ &ThemeGrammar::PushCombinatorGroup ] |
+	 ( eps )[ &ThemeGrammar::PushCombinatorDescendant ] );
 
-	selector_rule            = ( simple_selector_rule % selector_combinator_rule )[ &ThemeGrammar::PushSelector ];
+	selector_rule = ( simple_selector_rule % selector_combinator_rule )[ &ThemeGrammar::PushSelector ];
 
 	simple_selector_rule.set_name( "Simple Selector" );
 	selector_combinator_rule.set_name( "Selector Combinator" );

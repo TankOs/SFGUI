@@ -36,24 +36,26 @@ BREW::BREW() :
 	SetProperty( "Window", "TitleHeight", 25.f );
 	SetProperty( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
 	SetProperty( "Window", "HandleSize", 10.f );
+	SetProperty( "Window", "ShadowDistance", 3.f );
+	SetProperty( "Window", "ShadowAlpha", 100.f );
 
 	// Button-specific.
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "Padding", 5.f );
-	SetProperty( "Button:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
-	SetProperty( "Button:Prelight", "Color", sf::Color::White );
-	SetProperty( "Button:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty( "Button:Active", "Color", sf::Color::Black );
+	SetProperty( "Button:PRELIGHT", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "Button:PRELIGHT", "Color", sf::Color::White );
+	SetProperty( "Button:ACTIVE", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "Button:ACTIVE", "Color", sf::Color::Black );
 
 	// ToggleButton-specific.
 	SetProperty( "ToggleButton", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "ToggleButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "ToggleButton", "Padding", 5.f );
-	SetProperty( "ToggleButton:Prelight", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
-	SetProperty( "ToggleButton:Prelight", "Color", sf::Color::White );
-	SetProperty( "ToggleButton:Active", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
-	SetProperty( "ToggleButton:Active", "Color", sf::Color::Black );
+	SetProperty( "ToggleButton:PRELIGHT", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "ToggleButton:PRELIGHT", "Color", sf::Color::White );
+	SetProperty( "ToggleButton:ACTIVE", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
+	SetProperty( "ToggleButton:ACTIVE", "Color", sf::Color::Black );
 
 	// CheckButton-specific.
 	SetProperty( "CheckButton", "Spacing", 5.f );
@@ -62,8 +64,8 @@ BREW::BREW() :
 	SetProperty( "CheckButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "CheckButton", "BackgroundColor", sf::Color( 0x36, 0x36, 0x36 ) );
 	SetProperty( "CheckButton", "CheckColor", sf::Color( 0x9e, 0x9e, 0x9e ) );
-	SetProperty( "CheckButton:Prelight", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
-	SetProperty( "CheckButton:Active", "BackgroundColor", sf::Color( 0x56, 0x56, 0x56 ) );
+	SetProperty( "CheckButton:PRELIGHT", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
+	SetProperty( "CheckButton:ACTIVE", "BackgroundColor", sf::Color( 0x56, 0x56, 0x56 ) );
 
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
@@ -117,7 +119,7 @@ RenderQueue* BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) 
 	if( window->HasStyle( Window::Background ) ) {
 		// Shadow.
 		if( shadow_distance > 0.f ) {
-			sf::Color  shadow_color( 0, 0, 0, shadow_alpha );
+			sf::Color shadow_color( 0, 0, 0, shadow_alpha );
 
 			queue->Add( new sf::Shape( sf::Shape::Rectangle( window->GetAllocation().Width + .1f, shadow_distance + .1f, shadow_distance, window->GetAllocation().Height - shadow_distance, shadow_color ) ) ); // Right.
 			queue->Add( new sf::Shape( sf::Shape::Rectangle( shadow_distance + .1f, window->GetAllocation().Height + .1f, window->GetAllocation().Width, shadow_distance, shadow_color ) ) ); // Bottom.
@@ -127,7 +129,7 @@ RenderQueue* BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) 
 			queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, window->GetAllocation().Width, window->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
 		}
 
-		sf::Shape*  background(
+		sf::Shape* background(
 			new sf::Shape(
 				sf::Shape::Rectangle(
 					border_width + .1f,
@@ -157,7 +159,7 @@ RenderQueue* BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) 
 	}
 
 	if( title_size > 0 ) {
-		sf::Shape*  title(
+		sf::Shape* title(
 			new sf::Shape(
 				sf::Shape::Rectangle(
 					border_width + .1f,
@@ -169,7 +171,7 @@ RenderQueue* BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) 
 			)
 		);
 
-		sf::Text*  title_text(
+		sf::Text* title_text(
 			new sf::Text(
 				window->GetTitle(),
 				title_font,
@@ -178,7 +180,7 @@ RenderQueue* BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) 
 		);
 
 		// Calculate title text position.
-		sf::Vector2f  title_position(
+		sf::Vector2f title_position(
 			std::floor( border_width + 5.f + .5f ),
 			std::floor( border_width + ((title_size / 2.f) - (static_cast<float>( title_font_size ) / 2.f)) + .5f )
 		);
@@ -220,7 +222,7 @@ RenderQueue* BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) 
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
-	RenderQueue*  queue( new RenderQueue );
+	RenderQueue* queue( new RenderQueue );
 
 	queue->Add(
 		new sf::Shape(
@@ -234,7 +236,7 @@ RenderQueue* BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) 
 		)
 	);
 
-	if( button->GetState() != Button::Active ) {
+	if( button->GetState() != Button::ACTIVE ) {
 		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
 	}
 	else {
@@ -271,7 +273,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButto
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
-	RenderQueue*  queue( new RenderQueue );
+	RenderQueue* queue( new RenderQueue );
 
 	queue->Add(
 		new sf::Shape(
@@ -285,7 +287,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButto
 		)
 	);
 
-	if( button->GetState() != Button::Active && !button->IsActive() ) {
+	if( button->GetState() != Button::ACTIVE && !button->IsActive() ) {
 		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
 	}
 	else {
@@ -391,16 +393,16 @@ RenderQueue* BREW::CreateLabelDrawable( std::shared_ptr<const Label> label ) con
 	const unsigned int font_size( GetProperty<unsigned int>( "FontSize", label ) );
 	const sf::Color font_color( GetProperty<sf::Color>( "Color", label ) );
 
-	sf::Text*  vis_label( new sf::Text( label->GetText(), font, font_size ) );
+	sf::Text* vis_label( new sf::Text( label->GetText(), font, font_size ) );
 	vis_label->SetColor( font_color );
 
 	// Calculate alignment.
-	sf::Vector2f  avail_space( label->GetAllocation().Width - label->GetRequisition().x, label->GetAllocation().Height - label->GetRequisition().y );
-	sf::Vector2f  position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
+	sf::Vector2f avail_space( label->GetAllocation().Width - label->GetRequisition().x, label->GetAllocation().Height - label->GetRequisition().y );
+	sf::Vector2f position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
 
 	vis_label->SetPosition( std::floor( position.x + .5f ), std::floor( position.y + .5f ) );
 
-	RenderQueue*  queue( new RenderQueue );
+	RenderQueue* queue( new RenderQueue );
 	queue->Add( vis_label );
 
 	return queue;
@@ -416,7 +418,7 @@ RenderQueue* BREW::CreateEntryDrawable( std::shared_ptr<const Entry> entry ) con
 	float cursor_thickness( GetProperty<float>( "Thickness", entry ) );
 	float border_width( GetProperty<float>( "BorderWidth", entry ) );
 	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", entry ) ) );
-	const unsigned int&  font_size( GetProperty<unsigned int>( "FontSize", entry ) );
+	const unsigned int& font_size( GetProperty<unsigned int>( "FontSize", entry ) );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -433,14 +435,14 @@ RenderQueue* BREW::CreateEntryDrawable( std::shared_ptr<const Entry> entry ) con
 
 	queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().Width, entry->GetAllocation().Height ), border_width, border_color_dark, border_color_light) );
 
-	sf::Text*  vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
+	sf::Text* vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
 	vis_label->SetPosition( text_padding, text_padding );
 
 	queue->Add( vis_label );
 
 	// Draw cursor if entry is active and cursor is visible.
-	if( entry->GetState() == Widget::Active && entry->IsCursorVisible() ) {
+	if( entry->GetState() == Widget::ACTIVE && entry->IsCursorVisible() ) {
 		sf::String cursor_string( entry->GetVisibleText() );
 		if( entry->GetCursorPosition() - entry->GetVisibleOffset() < cursor_string.GetSize() ) {
 			cursor_string.Erase( entry->GetCursorPosition() - entry->GetVisibleOffset(), cursor_string.GetSize() );
@@ -507,7 +509,7 @@ RenderQueue* BREW::CreateScaleDrawable( std::shared_ptr<const Scale> scale ) con
 
 	sf::FloatRect slider_rect = scale->GetSliderRect();
 
-	if( orientation == Scale::Horizontal ) {
+	if( orientation == Scale::HORIZONTAL ) {
 		// Trough
 		queue->Add(
 			new sf::Shape(
@@ -583,7 +585,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scr
 
 	Scrollbar::Orientation orientation = scrollbar->GetOrientation();
 
-	if( orientation == Scrollbar::Horizontal ) {
+	if( orientation == Scrollbar::HORIZONTAL ) {
 		float stepper_length = scrollbar->GetAllocation().Height;
 
 		// Trough
