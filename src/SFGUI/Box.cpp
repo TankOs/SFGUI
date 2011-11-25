@@ -69,6 +69,9 @@ sf::Vector2f Box::CalculateRequisition() {
 		if( iter->widget->IsVisible() ) {
 			++num_visible;
 		}
+		else {
+			continue;
+		}
 
 		sf::Vector2f child_requisition( iter->widget->GetRequisition() );
 
