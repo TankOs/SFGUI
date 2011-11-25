@@ -27,8 +27,8 @@ class SFGUI_API CheckButton : public ToggleButton {
 		CheckButton();
 
 		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f GetRequisitionImpl() const;
-		void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		sf::Vector2f CalculateRequisition();
+		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 };
 
 }

@@ -136,7 +136,7 @@ RenderQueue* ScrolledWindow::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateScrolledWindowDrawable( std::dynamic_pointer_cast<const ScrolledWindow>( shared_from_this() ) );
 }
 
-sf::Vector2f ScrolledWindow::GetRequisitionImpl() const {
+sf::Vector2f ScrolledWindow::CalculateRequisition() {
 	float scrollbar_width( Context::Get().GetEngine().GetProperty<float>( "ScrollbarWidth", shared_from_this() ) );
 	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrollbarSpacing", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
@@ -204,7 +204,7 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	}
 
 	if( m_placement & Top ) { // Content placed at Top
-		m_horizontal_scrollbar->AllocateSize(
+		m_horizontal_scrollbar->SetAllocation(
 			sf::FloatRect(
 				m_content_allocation.Left - border_width,
 				m_content_allocation.Height + 2.f * border_width + scrollbar_spacing,
@@ -214,7 +214,7 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 		);
 	}
 	else { // Content placed at Bottom
-		m_horizontal_scrollbar->AllocateSize(
+		m_horizontal_scrollbar->SetAllocation(
 			sf::FloatRect(
 				m_content_allocation.Left - border_width,
 				0.f,
@@ -225,7 +225,7 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	}
 
 	if( m_placement & Left ) { // Content placed at Left
-		m_vertical_scrollbar->AllocateSize(
+		m_vertical_scrollbar->SetAllocation(
 			sf::FloatRect(
 				m_content_allocation.Width + 2.f * border_width + scrollbar_spacing,
 				m_content_allocation.Top - border_width,
@@ -235,7 +235,7 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 		);
 	}
 	else { // Content placed at Right
-		m_vertical_scrollbar->AllocateSize(
+		m_vertical_scrollbar->SetAllocation(
 			sf::FloatRect(
 				0.f,
 				m_content_allocation.Top - border_width,
@@ -253,15 +253,15 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 		m_vertical_scrollbar->GetAdjustment()->SetMajorStep( m_content_allocation.Height );
 		m_vertical_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.Height );
 
-		GetViewport()->AllocateSize( m_content_allocation );
+		GetViewport()->SetAllocation( m_content_allocation );
 	}
 
 	m_recalc_adjustments = false;
 	m_recalc_content_allocation = false;
 }
 
-void ScrolledWindow::HandleSizeAllocate( const sf::FloatRect& old_allocation ) const {
-	Container::HandleSizeAllocate( old_allocation );
+void ScrolledWindow::HandleAllocationChange( const sf::FloatRect& old_allocation ) {
+	Container::HandleAllocationChange( old_allocation );
 
 	// A parent caused us to move/resize, have to recalculate everything.
 	m_recalc_adjustments = true;

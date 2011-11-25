@@ -71,10 +71,10 @@ class SFGUI_API Window : public Bin {
 
 		virtual RenderQueue* InvalidateImpl() const;
 
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
 	private:
-		void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		void HandleMouseMoveEvent( int x, int y );
 		void HandleAdd( Widget::Ptr child );

@@ -47,7 +47,7 @@ class SFGUI_API Scale : public Range {
 
 	protected:
 		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
 	private:
 		/** Ctor.

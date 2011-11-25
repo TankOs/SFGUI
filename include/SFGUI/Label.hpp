@@ -51,7 +51,7 @@ class SFGUI_API Label : public Widget {
 
 	protected:
 		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
 	private:
 		sf::String  m_text;

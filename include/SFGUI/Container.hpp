@@ -56,7 +56,7 @@ class SFGUI_API Container : public Widget {
 		 */
 		float GetBorderWidth() const;
 
-		void Refresh() const;
+		void Refresh();
 
 		virtual void HandleEvent( const sf::Event& event );
 
@@ -67,7 +67,7 @@ class SFGUI_API Container : public Widget {
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange() const;
+		virtual void HandleAbsolutePositionChange();
 
 	protected:
 		/** Constructor.

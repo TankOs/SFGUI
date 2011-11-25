@@ -15,13 +15,12 @@ Table::Ptr Table::Create() {
 	return Ptr( table );
 }
 
-sf::Vector2f Table::GetRequisitionImpl() const {
+sf::Vector2f Table::CalculateRequisition() {
 	sf::Vector2f size( 0.f, 0.f );
 
-	// Update requisitions.
 	UpdateRequisitions();
 
-	// Count allocations of columns.
+	// Count requisitions of columns.
 	TableOptionsArray::const_iterator column_iter( m_columns.begin() );
 	TableOptionsArray::const_iterator column_iter_end( m_columns.end() );
 
@@ -29,15 +28,13 @@ sf::Vector2f Table::GetRequisitionImpl() const {
 		size.x += column_iter->requisition;
 	}
 
-	// Count allocations of rows.
+	// Count requisitions of rows.
 	TableOptionsArray::const_iterator row_iter( m_rows.begin() );
 	TableOptionsArray::const_iterator row_iter_end( m_rows.end() );
 
 	for( ; row_iter != row_iter_end; ++row_iter ) {
 		size.y += row_iter->requisition;
 	}
-
-	AllocateChildrenSizes();
 
 	return size;
 }
@@ -75,15 +72,15 @@ void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_
 	Add( widget );
 
 	// Request new size.
-	RequestSize();
+	RequestResize();
 }
 
 
-void Table::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
+void Table::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	AllocateChildrenSizes();
 }
 
-void Table::UpdateRequisitions() const {
+void Table::UpdateRequisitions() {
 	// Reset requisitions and expand flags, at first.
 	for( std::size_t column_index = 0; column_index < m_columns.size(); ++column_index ) {
 		m_columns[column_index].requisition = 0.f;
@@ -236,7 +233,7 @@ void Table::UpdateRequisitions() const {
 	}
 }
 
-void Table::AllocateChildrenSizes() const {
+void Table::AllocateChildrenSizes() {
 	// Process columns.
 	float width( 0.f );
 	std::size_t num_expand( 0 );
@@ -366,7 +363,7 @@ void Table::AllocateChildrenSizes() const {
 		const priv::TableOptions& row( m_rows[cell_iter->rect.Top] );
 
 		// Check for FILL flag.
-		cell_iter->child->AllocateSize(
+		cell_iter->child->SetAllocation(
 			sf::FloatRect(
 				column.position + cell_iter->padding.x,
 				row.position + cell_iter->padding.y,
@@ -384,7 +381,8 @@ void Table::SetColumnSpacings( float spacing ) {
 
 	m_general_spacings.x = spacing;
 
-	RequestSize();
+	UpdateRequisitions();
+	RequestResize();
 }
 
 void Table::SetRowSpacings( float spacing ) {
@@ -394,7 +392,8 @@ void Table::SetRowSpacings( float spacing ) {
 
 	m_general_spacings.y = spacing;
 
-	RequestSize();
+	UpdateRequisitions();
+	RequestResize();
 }
 
 void Table::SetColumnSpacing( std::size_t index, float spacing ) {
@@ -403,7 +402,9 @@ void Table::SetColumnSpacing( std::size_t index, float spacing ) {
 	}
 
 	m_columns[index].spacing = spacing;
-	RequestSize();
+
+	UpdateRequisitions();
+	RequestResize();
 }
 
 void Table::SetRowSpacing( std::size_t index, float spacing ) {
@@ -412,7 +413,9 @@ void Table::SetRowSpacing( std::size_t index, float spacing ) {
 	}
 
 	m_rows[index].spacing = spacing;
-	RequestSize();
+
+	UpdateRequisitions();
+	RequestResize();
 }
 
 const std::string& Table::GetName() const {

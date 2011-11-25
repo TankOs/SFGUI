@@ -260,11 +260,11 @@ void Entry::HandleStateChange( State old_state ) {
 	Widget::HandleStateChange( old_state );
 }
 
-void Entry::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
+void Entry::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	RecalculateVisibleString();
 }
 
-sf::Vector2f Entry::GetRequisitionImpl() const {
+sf::Vector2f Entry::CalculateRequisition() {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );

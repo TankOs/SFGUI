@@ -67,7 +67,6 @@ const RenderQueue::DrawablesVector& RenderQueue::GetDrawables() const {
 void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& renderer ) const {
 	if( !m_display_list ) {
 		// Display list couldn't be created, render normally.
-
 		std::size_t children_size = m_children.size();
 
 		for( DrawablesVector::size_type index = 0; index < children_size; ++index ) {

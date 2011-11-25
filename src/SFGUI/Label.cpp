@@ -23,7 +23,7 @@ Label::Ptr Label::Create( const sf::String& text ) {
 
 void Label::SetText( const sf::String& text ) {
 	m_text = text;
-	RequestSize();
+	RequestResize();
 	Invalidate();
 }
 
@@ -35,7 +35,7 @@ RenderQueue* Label::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateLabelDrawable( std::dynamic_pointer_cast<const Label>( shared_from_this() ) );
 }
 
-sf::Vector2f Label::GetRequisitionImpl() const {
+sf::Vector2f Label::CalculateRequisition() {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );

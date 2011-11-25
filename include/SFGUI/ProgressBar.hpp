@@ -49,7 +49,7 @@ class SFGUI_API ProgressBar : public Widget {
 	private:
 		ProgressBar( Orientation orientation = HORIZONTAL );
 
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 		RenderQueue* InvalidateImpl() const;
 
 		Orientation m_orientation;

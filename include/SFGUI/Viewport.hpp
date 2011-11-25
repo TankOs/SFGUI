@@ -64,9 +64,9 @@ class SFGUI_API Viewport : public Bin {
 		virtual const std::string& GetName() const;
 
 	protected:
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 	private:
 		Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );

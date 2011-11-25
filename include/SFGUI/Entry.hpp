@@ -79,7 +79,7 @@ class SFGUI_API Entry : public Widget {
 
 	protected:
 		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
 	private:
 		/** Ctor.
@@ -109,7 +109,7 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleExpose( CullingTarget& target ) const;
 		virtual void HandleFocusChange( Widget::Ptr focused_widget );
 		virtual void HandleStateChange( State old_state );
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;

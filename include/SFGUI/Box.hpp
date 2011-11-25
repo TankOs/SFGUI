@@ -49,7 +49,7 @@ class SFGUI_API Box : public Container {
 		/** Get requisition.
 		 * @return Requisition.
 		 */
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
 	private:
 		struct ChildInfo {
@@ -67,7 +67,7 @@ class SFGUI_API Box : public Container {
 
 		void HandleAdd( Widget::Ptr child );
 		void HandleRemove( Widget::Ptr child );
-		void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		void AllocateChildren() const;
 

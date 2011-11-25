@@ -56,7 +56,7 @@ RenderQueue* Scale::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateScaleDrawable( std::dynamic_pointer_cast<const Scale>( shared_from_this() ) );
 }
 
-sf::Vector2f Scale::GetRequisitionImpl() const {
+sf::Vector2f Scale::CalculateRequisition() {
 	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
 	float slider_width( m_orientation == Horizontal ? GetAllocation().Height : GetAllocation().Width );
 

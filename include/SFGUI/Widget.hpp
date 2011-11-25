@@ -67,11 +67,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Allocate size.
 		 * @param rect Rect.
 		 */
-		void AllocateSize( const sf::FloatRect& rect ) const;
+		void SetAllocation( const sf::FloatRect& rect );
 
 		/** Request new allocation at parent.
 		 */
-		void RequestSize() const;
+		void RequestResize();
 
 		/** Get allocated size (position and size).
 		 * @return Rect.
@@ -91,12 +91,12 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * requisition calculation is re-enabled.
 		 * @param requisition Custom requisition (skip argument to disable custom requisition).
 		 */
-		void SetRequisition( const sf::Vector2f& requisition = sf::Vector2f( 0.f, 0.f ) ) const;
+		void SetRequisition( const sf::Vector2f& requisition = sf::Vector2f( 0.f, 0.f ) );
 
 		/** Set position.
 		 * @param position Position.
 		 */
-		void SetPosition( const sf::Vector2f& position ) const;
+		void SetPosition( const sf::Vector2f& position );
 
 		/** Expose.
 		 * Render widget to given target.
@@ -156,7 +156,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange() const;
+		virtual void HandleAbsolutePositionChange();
 
 		/** Update position of drawable.
 		 */
@@ -186,7 +186,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * Invalidates the widget, re-requests size and triggers allocation
 		 * handlers.
 		 */
-		virtual void Refresh() const;
+		virtual void Refresh();
 
 		// Signals.
 		Signal OnStateChange; //!< Fired when state changed. (old state)
@@ -223,7 +223,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Requisition implementation (recalculate requisition).
 		 * @return New requisition.
 		 */
-		virtual sf::Vector2f GetRequisitionImpl() const = 0;
+		virtual sf::Vector2f CalculateRequisition() = 0;
 
 		/** Check if mouse is inside widget.
 		 * @return true if mouse is inside.
@@ -255,7 +255,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle size allocations.
 		 * @param old_allocation Previous allocation.
 		 */
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		/** Handle expose.
 		 * Called every frame usually.
@@ -316,12 +316,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		bool  m_mouse_in;
 		int  m_mouse_button_down;
 
-		mutable sf::FloatRect m_allocation;
-		mutable sf::Vector2f m_requisition;
-		mutable std::unique_ptr<sf::Vector2f> m_custom_requisition;
+		sf::FloatRect m_allocation;
+		sf::Vector2f m_requisition;
+		std::unique_ptr<sf::Vector2f> m_custom_requisition;
 
 		mutable bool m_invalidated;
-		mutable bool m_recalc_requisition;
 
 		mutable std::unique_ptr<RenderQueue> m_drawable;
 };

@@ -56,7 +56,7 @@ class SFGUI_API Scrollbar : public Range {
 
 	protected:
 		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
 	private:
 		/** Ctor.

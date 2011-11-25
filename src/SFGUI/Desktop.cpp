@@ -7,7 +7,7 @@ namespace sfg {
 
 Desktop::Desktop( const sf::FloatRect& viewport ) :
 	m_view( viewport ),
-	m_do_refresh( false )
+	m_skip_refresh( false )
 {
 }
 
@@ -24,11 +24,6 @@ void Desktop::Expose( sf::RenderTarget& target ) const {
 }
 
 void Desktop::Expose( CullingTarget& target ) const {
-	if( m_do_refresh ) {
-		Refresh();
-		m_do_refresh = false;
-	}
-
 	// Cache current view and set ours.
 	const sf::View& old_view( target.GetView() );
 	target.SetView( m_view );
@@ -177,7 +172,11 @@ void Desktop::RemoveObsoleteChildren() {
 }
 
 
-void Desktop::Refresh() const {
+void Desktop::Refresh() {
+	if( m_skip_refresh ) {
+		return;
+	}
+
 	// Activate context.
 	Context::Activate( m_context );
 
@@ -193,7 +192,9 @@ void Desktop::Refresh() const {
 }
 
 bool Desktop::LoadThemeFromFile( const std::string& filename ) {
+	m_skip_refresh = true;
 	bool result( m_context.GetEngine().LoadThemeFromFile( filename ) );
+	m_skip_refresh = false;
 
 	if( !result ) {
 		return false;

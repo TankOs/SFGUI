@@ -22,7 +22,7 @@ void Container::Add( Widget::Ptr widget ) {
 	// Check if HandleAdd still wants the little boy.
 	if( IsChild( widget ) ) {
 		widget->SetParent( shared_from_this() );
-		RequestSize();
+		RequestResize();
 	}
 }
 
@@ -31,7 +31,7 @@ void Container::Remove( Widget::Ptr widget ) {
 
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
-		RequestSize();
+		RequestResize();
 
 		HandleRemove( widget );
 	}
@@ -58,7 +58,7 @@ void Container::HandleExpose( CullingTarget& target ) const {
 
 void Container::SetBorderWidth( float width ) {
 	m_border_width = width;
-	RequestSize();
+	RequestResize();
 	Invalidate();
 }
 
@@ -66,7 +66,7 @@ float Container::GetBorderWidth() const {
 	return m_border_width;
 }
 
-void Container::Refresh() const {
+void Container::Refresh() {
 	WidgetsList::const_iterator w_iter( m_children.begin() );
 	WidgetsList::const_iterator w_iter_end( m_children.end() );
 
@@ -126,7 +126,7 @@ void Container::HandleChildInvalidate( Widget::PtrConst child  ) const {
 	}
 }
 
-void Container::HandleAbsolutePositionChange() const {
+void Container::HandleAbsolutePositionChange() {
 	WidgetsList::const_iterator iter( m_children.begin() );
 	WidgetsList::const_iterator iter_end( m_children.end() );
 

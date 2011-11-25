@@ -41,7 +41,7 @@ int main() {
 	green_scale->SetValue( .5f );
 	blue_scale->SetValue( .8f );
 
-	//window->AllocateSize( sf::FloatRect( 0.f, 0.f, 300.f, 400.f ) );
+	//window->SetAllocation( sf::FloatRect( 0.f, 0.f, 300.f, 400.f ) );
 
 	render_window.SetActive();
 

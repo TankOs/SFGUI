@@ -13,20 +13,11 @@ Widget::Widget() :
 	m_mouse_button_down( -1 ),
 	m_allocation( 0, 0, 0, 0 ),
 	m_requisition( 0, 0 ),
-	m_invalidated( true ),
-	m_recalc_requisition( true )
+	m_invalidated( true )
 {
 }
 
 Widget::~Widget() {
-	/*if( m_drawable ) {
-		const RenderQueue::DrawablesVector& drawables = m_drawable->GetDrawables();
-		std::size_t drawables_size = drawables.size();
-
-		for( std::size_t index = 0; index < drawables_size; ++index ) {
-			delete drawables[index].first;
-		}
-	}*/
 }
 
 bool Widget::IsSensitive() const {
@@ -70,7 +61,7 @@ bool Widget::HasFocus( Ptr widget ) {
 	return parent->HasFocus( widget );
 }
 
-void Widget::AllocateSize( const sf::FloatRect& rect ) const {
+void Widget::SetAllocation( const sf::FloatRect& rect ) {
 	sf::FloatRect  oldallocation( m_allocation );
 
 	// Make sure allocation is pixel-aligned.
@@ -90,21 +81,32 @@ void Widget::AllocateSize( const sf::FloatRect& rect ) const {
 	}
 
 	HandleAbsolutePositionChange();
-	HandleSizeAllocate( oldallocation );
+	HandleAllocationChange( oldallocation );
 
 	OnSizeAllocate();
 	Invalidate();
 }
 
-void Widget::RequestSize() const {
-	m_recalc_requisition = true;
+void Widget::RequestResize() {
+	m_requisition = CalculateRequisition();
+
+	if( m_custom_requisition ) {
+		if( m_custom_requisition->x > 0.f ) {
+			m_requisition.x = m_custom_requisition->x;
+		}
+
+		if( m_custom_requisition->y > 0.f ) {
+			m_requisition.y = m_custom_requisition->y;
+		}
+	}
+
 	Container::Ptr parent = m_parent.lock();
 
 	// Notify observers.
 	OnSizeRequest();
 
 	if( parent ) {
-		parent->RequestSize();
+		parent->RequestResize();
 	}
 	else {
 		sf::Vector2f  requisition( GetRequisition() );
@@ -116,7 +118,7 @@ void Widget::RequestSize() const {
 			std::max( GetAllocation().Height, requisition.y )
 		);
 
-		AllocateSize( allocation );
+		SetAllocation( allocation );
 	}
 }
 
@@ -186,7 +188,7 @@ void Widget::SetParent( Widget::Ptr parent ) {
 	m_parent = cont;
 }
 
-void Widget::SetPosition( const sf::Vector2f& position ) const {
+void Widget::SetPosition( const sf::Vector2f& position ) {
 	sf::FloatRect  oldallocation( GetAllocation() );
 
 	// Make sure allocation is pixel-aligned.
@@ -200,7 +202,7 @@ void Widget::SetPosition( const sf::Vector2f& position ) const {
 	}
 
 	HandleAbsolutePositionChange();
-	HandleSizeAllocate( oldallocation );
+	HandleAllocationChange( oldallocation );
 
 	if( m_drawable ) {
 		m_drawable->SetPosition( GetAbsolutePosition() );
@@ -353,31 +355,14 @@ void Widget::Show( bool show ) {
 	}
 
 	m_visible = show;
-	RequestSize();
+	RequestResize();
 }
 
 const sf::Vector2f& Widget::GetRequisition() const {
-	// Check if we need to recalculate the requisition.
-	if( m_recalc_requisition ) {
-		m_requisition = GetRequisitionImpl();
-		m_recalc_requisition = false;
-
-		// Check if custom requsition set for width or height.
-		if( m_custom_requisition ) {
-			if( m_custom_requisition->x > 0.f ) {
-				m_requisition.x = m_custom_requisition->x;
-			}
-
-			if( m_custom_requisition->y > 0.f ) {
-				m_requisition.y = m_custom_requisition->y;
-			}
-		}
-	}
-
 	return m_requisition;
 }
 
-void Widget::SetRequisition( const sf::Vector2f& requisition ) const {
+void Widget::SetRequisition( const sf::Vector2f& requisition ) {
 	if( requisition.x > 0.f || requisition.y >= 0.f ) {
 		m_custom_requisition.reset( new sf::Vector2f( requisition ) );
 	}
@@ -385,9 +370,7 @@ void Widget::SetRequisition( const sf::Vector2f& requisition ) const {
 		m_custom_requisition.reset();
 	}
 
-	// Set flag to recalculate requisition and request new size.
-	m_recalc_requisition = true;
-	RequestSize();
+	RequestResize();
 }
 
 sf::Vector2f Widget::GetAbsolutePosition() const {
@@ -438,7 +421,7 @@ void Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*
 void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
 }
 
-void Widget::HandleSizeAllocate( const sf::FloatRect& /*new_allocation*/ ) const {
+void Widget::HandleAllocationChange( const sf::FloatRect& /*new_allocation*/ ) {
 }
 
 void Widget::HandleExpose( CullingTarget& /*target*/ ) const {
@@ -466,14 +449,14 @@ void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {
 	}
 }
 
-void Widget::HandleAbsolutePositionChange() const {
+void Widget::HandleAbsolutePositionChange() {
 	UpdateDrawablePosition();
 }
 
-void Widget::Refresh() const {
+void Widget::Refresh() {
 	sf::FloatRect old_allocation( GetAllocation() );
 
-	RequestSize();
+	RequestResize();
 
 	if(
 		old_allocation.Left == GetAllocation().Left &&
@@ -482,7 +465,7 @@ void Widget::Refresh() const {
 		old_allocation.Height == GetAllocation().Height
 	) {
 		HandleAbsolutePositionChange();
-		HandleSizeAllocate( old_allocation );
+		HandleAllocationChange( old_allocation );
 	}
 
 	Invalidate();

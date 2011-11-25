@@ -29,7 +29,7 @@ const std::string& ProgressBar::GetName() const {
 	return name;
 }
 
-sf::Vector2f ProgressBar::GetRequisitionImpl() const {
+sf::Vector2f ProgressBar::CalculateRequisition() {
 	if( m_orientation == HORIZONTAL ) {
 		return sf::Vector2f( 20.f, 10.f );
 	}
@@ -43,7 +43,7 @@ RenderQueue* ProgressBar::InvalidateImpl() const {
 
 void ProgressBar::SetOrientation( Orientation orientation ) {
 	m_orientation = orientation;
-	RequestSize();
+	RequestResize();
 }
 
 ProgressBar::Orientation ProgressBar::GetOrientation() const {

@@ -4,7 +4,7 @@ template <class T>
 void Desktop::UseEngine() {
 	m_engine.reset( new T );
 	m_context.SetEngine( *m_engine );
-	m_do_refresh = true;
+	Refresh();
 }
 
 template <typename T>
@@ -13,7 +13,7 @@ bool Desktop::SetProperty( const std::string& selector, const std::string& prope
 		return false;
 	}
 
-	m_do_refresh = true;
+	Refresh();
 	return true;
 }
 

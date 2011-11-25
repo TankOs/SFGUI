@@ -120,7 +120,7 @@ class SFGUI_API ScrolledWindow : public Container {
 
 	protected:
 		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f GetRequisitionImpl() const;
+		sf::Vector2f CalculateRequisition();
 
 	private:
 		ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
@@ -136,7 +136,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		void RecalculateContentAllocation() const;
 
-		void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 		void HandleAdd( Widget::Ptr child );
 
 		Scrollbar::Ptr m_horizontal_scrollbar;

@@ -65,15 +65,15 @@ class SFGUI_API Table : public Container {
 		typedef std::list<priv::TableCell> TableCellList;
 		typedef std::vector<priv::TableOptions> TableOptionsArray;
 
-		sf::Vector2f GetRequisitionImpl() const;
-		void UpdateRequisitions() const;
-		void AllocateChildrenSizes() const;
+		sf::Vector2f CalculateRequisition();
+		void UpdateRequisitions();
+		void AllocateChildrenSizes();
 
-		virtual void HandleSizeAllocate( const sf::FloatRect& old_allocation ) const;
+		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		TableCellList m_cells;
-		mutable TableOptionsArray m_columns;
-		mutable TableOptionsArray m_rows;
+		TableOptionsArray m_columns;
+		TableOptionsArray m_rows;
 
 		sf::Vector2f m_general_spacings;
 };

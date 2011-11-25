@@ -92,7 +92,7 @@ RenderQueue* Scrollbar::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateScrollbarDrawable( std::dynamic_pointer_cast<const Scrollbar>( shared_from_this() ) );
 }
 
-sf::Vector2f Scrollbar::GetRequisitionImpl() const {
+sf::Vector2f Scrollbar::CalculateRequisition() {
 	float mimimum_slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderMinimumLength", shared_from_this() ) );
 
 	// Scrollbars should always have a custom requisition set for it's shorter side.

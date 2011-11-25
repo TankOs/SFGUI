@@ -33,7 +33,7 @@ RenderQueue* CheckButton::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateCheckButtonDrawable( std::dynamic_pointer_cast<const CheckButton>( shared_from_this() ) );
 }
 
-sf::Vector2f CheckButton::GetRequisitionImpl() const {
+sf::Vector2f CheckButton::CalculateRequisition() {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
@@ -54,12 +54,12 @@ sf::Vector2f CheckButton::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void CheckButton::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
+void CheckButton::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	float spacing( Context::Get().GetEngine().GetProperty<float>( "Spacing", shared_from_this() ) );
 	float box_size( Context::Get().GetEngine().GetProperty<float>( "BoxSize", shared_from_this() ) );
 
 	if( GetChild() ) {
-		GetChild()->AllocateSize(
+		GetChild()->SetAllocation(
 			sf::FloatRect(
 				box_size + spacing,
 				GetAllocation().Height / 2.f - GetChild()->GetAllocation().Height / 2.f,

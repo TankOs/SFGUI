@@ -10,7 +10,6 @@ Window::Window() :
 	m_dragging( false ),
 	m_resizing( false )
 {
-	//SetFlags( Draggable ); // TODO: Do it via StartDrag() operation, not flags.
 }
 
 Window::~Window() {
@@ -19,7 +18,7 @@ Window::~Window() {
 Window::Ptr Window::Create() {
 	Window::Ptr  window( new Window );
 
-	window->RequestSize();
+	window->RequestResize();
 
 	return window;
 }
@@ -50,12 +49,12 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-void Window::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
+void Window::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	if( !GetChild() ) {
 		return;
 	}
 
-	GetChild()->AllocateSize( GetClientRect() );
+	GetChild()->SetAllocation( GetClientRect() );
 }
 
 void Window::SetStyle( int style ) {
@@ -65,11 +64,11 @@ void Window::SetStyle( int style ) {
 	m_dragging = false;
 	m_resizing = false;
 
-	RequestSize();
+	RequestResize();
 	Invalidate();
 
 	if( GetChild() ) {
-		GetChild()->AllocateSize( GetClientRect() );
+		GetChild()->SetAllocation( GetClientRect() );
 	}
 }
 
@@ -81,7 +80,7 @@ bool Window::HasStyle( Style style ) const {
 	return (m_style & style) == style;
 }
 
-sf::Vector2f Window::GetRequisitionImpl() const {
+sf::Vector2f Window::CalculateRequisition() {
 	sf::Vector2f requisition( 2 * GetBorderWidth(), 2 * GetBorderWidth() );
 
 	if( HasStyle( Titlebar ) ) {
@@ -169,7 +168,7 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 		);
 	}
 	else if( m_resizing ) {
-		AllocateSize(
+		SetAllocation(
 			sf::FloatRect(
 				GetAllocation().Left,
 				GetAllocation().Top,
@@ -185,8 +184,8 @@ void Window::HandleAdd( Widget::Ptr child ) {
 
 	if( GetChild() ) {
 		// Reset allocation so the window will be as large as required.
-		AllocateSize( sf::FloatRect( GetAllocation().Left, GetAllocation().Top, 1.f, 1.f ) );
-		RequestSize();
+		SetAllocation( sf::FloatRect( GetAllocation().Left, GetAllocation().Top, 1.f, 1.f ) );
+		RequestResize();
 	}
 }
 

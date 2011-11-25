@@ -27,7 +27,7 @@ RenderQueue* Button::InvalidateImpl() const {
 
 void Button::SetLabel( const sf::String& label ) {
 	m_label = label;
-	RequestSize();
+	RequestResize();
 	Invalidate();
 }
 
@@ -63,7 +63,7 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 	}
 }
 
-sf::Vector2f Button::GetRequisitionImpl() const {
+sf::Vector2f Button::CalculateRequisition() {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );

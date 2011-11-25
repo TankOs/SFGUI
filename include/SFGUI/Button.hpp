@@ -41,7 +41,7 @@ class SFGUI_API Button : public Bin {
 		Button();
 
 		virtual RenderQueue* InvalidateImpl() const;
-		virtual sf::Vector2f GetRequisitionImpl() const;
+		virtual sf::Vector2f CalculateRequisition();
 
 		void HandleMouseClick( sf::Mouse::Button button, int x, int y );
 

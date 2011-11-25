@@ -45,7 +45,7 @@ void Box::HandleAdd( Widget::Ptr child ) {
 		Remove( child );
 	}
 
-	RequestSize();
+	RequestResize();
 	AllocateChildren();
 }
 
@@ -59,7 +59,7 @@ void Box::HandleRemove( Widget::Ptr child ) {
 	AllocateChildren();
 }
 
-sf::Vector2f Box::GetRequisitionImpl() const {
+sf::Vector2f Box::CalculateRequisition() {
 	sf::Vector2f  requisition( 0, 0 );
 	ChildrenCont::const_iterator  iter( m_children.begin() );
 	ChildrenCont::const_iterator  iterend( m_children.end() );
@@ -99,7 +99,7 @@ sf::Vector2f Box::GetRequisitionImpl() const {
 	return requisition;
 }
 
-void Box::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
+void Box::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	AllocateChildren();
 }
 
@@ -116,7 +116,7 @@ bool Box::ChildInfo::operator==( const ChildInfo& rhs ) const {
 
 void Box::SetSpacing( float spacing ) {
 	m_spacing = spacing;
-	RequestSize();
+	RequestResize();
 	Invalidate();
 }
 
@@ -188,14 +188,14 @@ void Box::AllocateChildren() const {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
 			allocation.y = requisition.y - 2 * GetBorderWidth();
 
-			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
+			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
 			position.x += allocation.x + (num_visible > 1 ? GetSpacing() : 0.f);
 		}
 		else {
 			allocation.x = requisition.x - 2 * GetBorderWidth();
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
-			iter->widget->AllocateSize( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
+			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
 			position.y += allocation.y + (num_visible > 1 ? GetSpacing() : 0.f);
 		}
 

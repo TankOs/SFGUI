@@ -20,11 +20,11 @@ Viewport::Ptr Viewport::Create( Adjustment::Ptr horizontal_adjustment, Adjustmen
 	return ptr;
 }
 
-sf::Vector2f Viewport::GetRequisitionImpl() const {
+sf::Vector2f Viewport::CalculateRequisition() {
 	return sf::Vector2f( 0.f, 0.f );
 }
 
-void Viewport::HandleSizeAllocate( const sf::FloatRect& /*old_allocation*/ ) const {
+void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 }
 
 void Viewport::Expose( CullingTarget& target ) const {
@@ -167,7 +167,7 @@ void Viewport::HandleSizeRequest() {
 		sf::FloatRect new_allocation = GetChild()->GetAllocation();
 		new_allocation.Width = GetChild()->GetRequisition().x;
 		new_allocation.Height = GetChild()->GetRequisition().y;
-		GetChild()->AllocateSize( new_allocation );
+		GetChild()->SetAllocation( new_allocation );
 	}
 }
 
