@@ -22,7 +22,7 @@ class DesktopExample {
 		void OnDestroyWindowClick();
 
 		sfg::Desktop m_desktop;
-		uint32_t m_count;
+		unsigned int m_count;
 };
 
 const unsigned int DesktopExample::SCREEN_WIDTH = 800;

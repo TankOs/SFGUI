@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/NonCopyable.hpp>
-#include <memory>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 
@@ -10,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Object : public NonCopyable {
 	public:
-		typedef std::shared_ptr<Object> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Object> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Object> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Object> PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */

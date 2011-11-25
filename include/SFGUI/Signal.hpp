@@ -3,8 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/FastDelegate.hpp>
 
-#include <map>
-#include <stdint.h>
+#include <vector>
 
 namespace sfg {
 
@@ -32,7 +31,7 @@ class SFGUI_API Signal {
 		 * @param delegate Free function.
 		 * @return Connection serial, use for disconnecting.
 		 */
-		uint32_t Connect( Delegate delegate );
+		unsigned int Connect( Delegate delegate );
 
 		/** Connect to non-static member function.
 		 * @param function Function.
@@ -40,17 +39,23 @@ class SFGUI_API Signal {
 		 * @return Connection serial, use for disconnecting.
 		 */
 		template <class Class>
-		uint32_t Connect( void(Class::*function)(), Class* object );
+		unsigned int Connect( void(Class::*function)(), Class* object );
 
 		/** Emit.
 		 */
 		void operator()() const;
 
 	private:
-		typedef std::map<uint32_t, Delegate> DelegateMap;
+		struct DelegatePair {
+			unsigned int serial;
+			Delegate delegate;
+		};
 
-		uint32_t m_serial;
+		typedef std::vector<DelegatePair> DelegateMap;
+
+		unsigned int m_serial;
 		DelegateMap m_delegates;
+		std::size_t m_delegates_count;
 };
 
 }

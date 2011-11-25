@@ -6,9 +6,9 @@
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/View.hpp>
-#include <memory>
+#include <SFGUI/SharedPtr.hpp>
 #include <string>
-#include <list>
+#include <vector>
 
 namespace sf {
 class Event;
@@ -35,6 +35,10 @@ class SFGUI_API Desktop {
 		 */
 		Desktop( const sf::Window& window );
 
+		/** Dtor.
+		 */
+		~Desktop();
+
 		/** Use a custom engine.
 		 */
 		template <class T>
@@ -56,7 +60,7 @@ class SFGUI_API Desktop {
 		 * @return Value or T() in case property doesn't exist.
 		 */
 		template <typename T>
-		T GetProperty( const std::string& property, std::shared_ptr<const Widget> widget = std::shared_ptr<const Widget>() ) const;
+		T GetProperty( const std::string& property, SharedPtr<const Widget> widget = SharedPtr<const Widget>() ) const;
 
 		/** Expose.
 		 * @param target Rendering target.
@@ -77,12 +81,12 @@ class SFGUI_API Desktop {
 		 * The added widget will be the new top widget.
 		 * @param widget Widget.
 		 */
-		void Add( std::shared_ptr<Widget> widget );
+		void Add( SharedPtr<Widget> widget );
 
 		/** Remove widget.
 		 * @param widget Widget.
 		 */
-		void Remove( std::shared_ptr<Widget> widget );
+		void Remove( SharedPtr<Widget> widget );
 
 		/** Refresh all widgets.
 		 * All widgets will invalidate and re-request size. This is done
@@ -102,7 +106,7 @@ class SFGUI_API Desktop {
 		Engine& GetEngine();
 
 	private:
-		typedef std::list<std::shared_ptr<Widget> > WidgetsList;
+		typedef std::vector<SharedPtr<Widget> > WidgetsList;
 
 		sf::Vector2f TransformToLocal( const sf::Vector2f& global ) const;
 		void RemoveObsoleteChildren();
@@ -110,11 +114,12 @@ class SFGUI_API Desktop {
 		sf::View m_view;
 
 		mutable Context m_context;
-		std::unique_ptr<Engine> m_engine;
+		Engine* m_engine;
 
 		WidgetsList m_children;
+		std::size_t m_children_size;
 		WidgetsList m_obsolete_children;
-		std::weak_ptr<Widget> m_last_receiver;
+		WeakPtr<Widget> m_last_receiver;
 
 		bool m_skip_refresh;
 };

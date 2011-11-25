@@ -12,11 +12,11 @@ Range::Range() :
 Range::~Range() {
 }
 
-Adjustment::Ptr Range::GetAdjustment() const {
+const Adjustment::Ptr& Range::GetAdjustment() const {
 	return m_adjustment;
 }
 
-void Range::SetAdjustment( Adjustment::Ptr adjustment ) {
+void Range::SetAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_adjustment = adjustment;
 
 	// Connect change signal. This also disconnects the previous connection.

@@ -39,7 +39,7 @@ sf::Vector2f Table::CalculateRequisition() {
 	return size;
 }
 
-void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
+void Table::Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
 	assert( rect.Width > 0 );
 	assert( rect.Height > 0 );
 
@@ -138,9 +138,9 @@ void Table::UpdateRequisitions() {
 		if( cell_iter->rect.Width > 1 ) {
 			// Check if there's already enough space.
 			float width( 0.f );
-			uint32_t num_expand( 0 );
+			unsigned int num_expand( 0 );
 
-			for( uint32_t col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width; ++col_index ) {
+			for( unsigned int col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width; ++col_index ) {
 				width += m_columns[col_index].requisition;
 
 				// If not the last column, add spacing too.
@@ -170,7 +170,7 @@ void Table::UpdateRequisitions() {
 					force_expand = true;
 				}
 
-				for( uint32_t col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width && num_expand > 0; ++col_index ) {
+				for( unsigned int col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width && num_expand > 0; ++col_index ) {
 					if( force_expand || m_columns[col_index].expand ) {
 						float extra( width_missing / static_cast<float>( num_expand ) );
 
@@ -186,9 +186,9 @@ void Table::UpdateRequisitions() {
 		if( cell_iter->rect.Height > 1 ) {
 			// Check if there's already enough space.
 			float height( 0.f );
-			uint32_t num_expand( 0 );
+			unsigned int num_expand( 0 );
 
-			for( uint32_t row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height; ++row_index ) {
+			for( unsigned int row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height; ++row_index ) {
 				height += m_rows[row_index].requisition;
 
 				// If not the last row, add spacing too.
@@ -218,7 +218,7 @@ void Table::UpdateRequisitions() {
 					force_expand = true;
 				}
 
-				for( uint32_t row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height && num_expand > 0; ++row_index ) {
+				for( unsigned int row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height && num_expand > 0; ++row_index ) {
 					if( force_expand || m_rows[row_index].expand ) {
 						float extra( height_missing / static_cast<float>( num_expand ) );
 
@@ -329,7 +329,7 @@ void Table::AllocateChildrenSizes() {
 		sf::Vector2f allocation( 0.f, 0.f );
 
 		if( (cell_iter->x_options & FILL) == FILL ) {
-			for( uint32_t col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width; ++col_index ) {
+			for( unsigned int col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width; ++col_index ) {
 				allocation.x += m_columns[col_index].allocation - cell_iter->padding.x * 2.f;
 
 				if( col_index + 1 < m_columns.size() ) {
@@ -344,7 +344,7 @@ void Table::AllocateChildrenSizes() {
 		}
 
 		if( (cell_iter->y_options & FILL) == FILL ) {
-			for( uint32_t row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height; ++row_index ) {
+			for( unsigned int row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height; ++row_index ) {
 				allocation.y += m_rows[row_index].allocation - cell_iter->padding.y * 2.f;
 
 				if( row_index + 1 < m_rows.size() && row_index + 1 == cell_iter->rect.Top + cell_iter->rect.Height ) {

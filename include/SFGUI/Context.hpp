@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 
-#include <memory>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 
@@ -55,7 +55,7 @@ class SFGUI_API Context {
 		 * Called internally only.
 		 * @param widget Widget.
 		 */
-		void SetActiveWidget( std::shared_ptr<Widget> widget );
+		void SetActiveWidget( SharedPtr<Widget> widget );
 
 		/** Get active widget.
 		 * The active widget is the widget that's currently handling an event. You
@@ -63,13 +63,13 @@ class SFGUI_API Context {
 		 * handler. See examples/Desktop.cpp for an example.
 		 * @return Active widget or NULL.
 		 */
-		std::shared_ptr<Widget> GetActiveWidget() const;
+		SharedPtr<Widget> GetActiveWidget() const;
 
 	private:
 		static Context* m_active_context;
 
 		Engine* m_engine;
-		std::weak_ptr<Widget> m_active_widget;
+		WeakPtr<Widget> m_active_widget;
 };
 
 }

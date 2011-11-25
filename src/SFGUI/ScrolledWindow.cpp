@@ -4,7 +4,7 @@
 
 namespace sfg {
 
-ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) :
+ScrolledWindow::ScrolledWindow( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) :
 	Container(),
 	m_horizontal_scrollbar(),
 	m_vertical_scrollbar(),
@@ -22,31 +22,31 @@ ScrolledWindow::Ptr ScrolledWindow::Create() {
 	return ScrolledWindow::Create( Adjustment::Create(), Adjustment::Create() );
 }
 
-ScrolledWindow::Ptr ScrolledWindow::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
+ScrolledWindow::Ptr ScrolledWindow::Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) {
 	ScrolledWindow::Ptr ptr( new ScrolledWindow( horizontal_adjustment, vertical_adjustment ) );
 
-	std::static_pointer_cast<Container>( ptr )->Add( ptr->m_horizontal_scrollbar );
-	std::static_pointer_cast<Container>( ptr )->Add( ptr->m_vertical_scrollbar );
+	StaticPointerCast<Container>( ptr )->Add( ptr->m_horizontal_scrollbar );
+	StaticPointerCast<Container>( ptr )->Add( ptr->m_vertical_scrollbar );
 
 	return ptr;
 }
 
-Adjustment::Ptr ScrolledWindow::GetHorizontalAdjustment() const {
+const Adjustment::Ptr& ScrolledWindow::GetHorizontalAdjustment() const {
 	return m_horizontal_scrollbar->GetAdjustment();
 }
 
-void ScrolledWindow::SetHorizontalAdjustment( Adjustment::Ptr adjustment ) {
+void ScrolledWindow::SetHorizontalAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_horizontal_scrollbar->SetAdjustment( adjustment );
 
 	m_recalc_content_allocation = true;
 	Invalidate();
 }
 
-Adjustment::Ptr ScrolledWindow::GetVerticalAdjustment() const {
+const Adjustment::Ptr& ScrolledWindow::GetVerticalAdjustment() const {
 	return m_vertical_scrollbar->GetAdjustment();
 }
 
-void ScrolledWindow::SetVerticalAdjustment( Adjustment::Ptr adjustment ) {
+void ScrolledWindow::SetVerticalAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_vertical_scrollbar->SetAdjustment( adjustment );
 
 	m_recalc_content_allocation = true;
@@ -133,7 +133,7 @@ RenderQueue* ScrolledWindow::InvalidateImpl() const {
 		RecalculateContentAllocation();
 	}
 
-	return Context::Get().GetEngine().CreateScrolledWindowDrawable( std::dynamic_pointer_cast<const ScrolledWindow>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateScrolledWindowDrawable( DynamicPointerCast<const ScrolledWindow>( shared_from_this() ) );
 }
 
 sf::Vector2f ScrolledWindow::CalculateRequisition() {
@@ -269,7 +269,7 @@ void ScrolledWindow::HandleAllocationChange( const sf::FloatRect& old_allocation
 	Invalidate();
 }
 
-void ScrolledWindow::HandleAdd( Widget::Ptr child ) {
+void ScrolledWindow::HandleAdd( const Widget::Ptr& child ) {
 	if( GetChildren().size() > 3 ) {
 
 #ifdef SFGUI_DEBUG
@@ -284,7 +284,7 @@ void ScrolledWindow::HandleAdd( Widget::Ptr child ) {
 	Invalidate();
 }
 
-void ScrolledWindow::AddWithViewport( Widget::Ptr widget ) {
+void ScrolledWindow::AddWithViewport( const Widget::Ptr& widget ) {
 	Viewport::Ptr viewport = Viewport::Create();
 
 	viewport->SetHorizontalAdjustment( m_horizontal_scrollbar->GetAdjustment() );
@@ -295,13 +295,13 @@ void ScrolledWindow::AddWithViewport( Widget::Ptr widget ) {
 	Container::Add( viewport );
 }
 
-void ScrolledWindow::Add( Widget::Ptr /*widget*/ ) {
+void ScrolledWindow::Add( const Widget::Ptr& /*widget*/ ) {
 #ifdef SFGUI_DEBUG
 	std::cerr << "SFGUI warning: Widgets can only be added to a ScrolledWindow with a Viewport." << std::endl;
 #endif
 }
 
-void ScrolledWindow::Remove( Widget::Ptr widget ) {
+void ScrolledWindow::Remove( const Widget::Ptr& widget ) {
 	Viewport::Ptr viewport = GetViewport();
 
 	if( viewport->GetChild() == widget ) {
@@ -315,10 +315,10 @@ Viewport::Ptr ScrolledWindow::GetViewport() const {
 		return Viewport::Ptr();
 	}
 
-	return std::static_pointer_cast<Viewport>( *( --GetChildren().end() ) );
+	return StaticPointerCast<Viewport>( *( --GetChildren().end() ) );
 }
 
-void ScrolledWindow::HandleChildInvalidate( Widget::PtrConst child ) const {
+void ScrolledWindow::HandleChildInvalidate( const Widget::PtrConst& child ) const {
 	// A child has been invalidated. Update Scrollbars.
 	m_recalc_adjustments = true;
 	Invalidate();

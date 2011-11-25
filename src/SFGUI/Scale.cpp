@@ -53,7 +53,7 @@ const sf::FloatRect Scale::GetSliderRect() const {
 
 
 RenderQueue* Scale::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateScaleDrawable( std::dynamic_pointer_cast<const Scale>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateScaleDrawable( DynamicPointerCast<const Scale>( shared_from_this() ) );
 }
 
 sf::Vector2f Scale::CalculateRequisition() {

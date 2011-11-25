@@ -1,5 +1,6 @@
 #pragma once
 #include <SFGUI/Bin.hpp>
+#include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/String.hpp>
 
 namespace sfg {
@@ -8,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Button : public Bin {
 	public:
-		typedef std::shared_ptr<Button> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Button> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Button> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Button> PtrConst; //!< Shared pointer.
 
 		/** Create button.
 		 * @param label Label.

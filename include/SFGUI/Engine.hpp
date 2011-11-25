@@ -4,6 +4,7 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Selector.hpp>
 #include <SFGUI/ResourceManager.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <string>
@@ -46,61 +47,61 @@ class SFGUI_API Engine {
 		 * @param window Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateWindowDrawable( std::shared_ptr<const Window> window ) const = 0;
+		virtual RenderQueue* CreateWindowDrawable( SharedPtr<const Window> window ) const = 0;
 
 		/** Create drawable for button widgets.
 		 * @param button Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateButtonDrawable( std::shared_ptr<const Button> button ) const = 0;
+		virtual RenderQueue* CreateButtonDrawable( SharedPtr<const Button> button ) const = 0;
 
 		/** Create drawable for toggle button widgets.
 		 * @param button Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateToggleButtonDrawable( std::shared_ptr<const ToggleButton> button ) const = 0;
+		virtual RenderQueue* CreateToggleButtonDrawable( SharedPtr<const ToggleButton> button ) const = 0;
 
 		/** Create drawable for check button widgets.
 		 * @param check Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const = 0;
+		virtual RenderQueue* CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const = 0;
 
 		/** Create drawable for label widgets.
 		 * @param label Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateLabelDrawable( std::shared_ptr<const Label> label ) const = 0;
+		virtual RenderQueue* CreateLabelDrawable( SharedPtr<const Label> label ) const = 0;
 
 		/** Create drawable for entry widgets.
 		 * @param entry Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const = 0;
+		virtual RenderQueue* CreateEntryDrawable( SharedPtr<const Entry> entry ) const = 0;
 
 		/** Create drawable for scale widgets.
 		 * @param scale Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateScaleDrawable( std::shared_ptr<const Scale> scale ) const = 0;
+		virtual RenderQueue* CreateScaleDrawable( SharedPtr<const Scale> scale ) const = 0;
 
 		/** Create drawable for scrollbar widgets.
 		 * @param scrollbar Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const = 0;
+		virtual RenderQueue* CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar ) const = 0;
 
 		/** Create drawable for scrolled window widgets.
 		 * @param scrolled_window Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const = 0;
+		virtual RenderQueue* CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> scrolled_window ) const = 0;
 
 		/** Create drawable for progress bar widgets.
 		 * @param progress_bar Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const = 0;
+		virtual RenderQueue* CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const = 0;
 
 		/** Get line height of a font.
 		 * @param font Font.
@@ -135,7 +136,7 @@ class SFGUI_API Engine {
 		 * @throws BadValue when value couldn't be converted to string.
 		 */
 		template <typename T>
-		bool SetProperty( sfg::Selector::Ptr selector, const std::string& property, const T& value );
+		bool SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const T& value );
 
 		/** Set property.
 		 * @param selector Valid selector object.
@@ -144,7 +145,7 @@ class SFGUI_API Engine {
 		 * @return true on success, false when: Invalid selector or invalid property.
 		 * @throws BadValue when value couldn't be converted to string.
 		 */
-		bool SetProperty( sfg::Selector::Ptr selector, const std::string& property, const std::string& value );
+		bool SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const std::string& value );
 
 		/** Get property.
 		 * @param property Name of property.
@@ -152,7 +153,7 @@ class SFGUI_API Engine {
 		 * @return Value or T() in case property doesn't exist.
 		 */
 		template <typename T>
-		T GetProperty( const std::string& property, std::shared_ptr<const Widget> widget = Widget::Ptr() ) const;
+		T GetProperty( const std::string& property, SharedPtr<const Widget> widget = Widget::Ptr() ) const;
 
 		/** Load a theme from file.
 		 * @param filename Filename.
@@ -174,11 +175,11 @@ class SFGUI_API Engine {
 
 	private:
 		typedef std::pair<Selector::PtrConst, std::string> SelectorValuePair;
-		typedef std::list<SelectorValuePair> SelectorValueList;
+		typedef std::vector<SelectorValuePair> SelectorValueList;
 		typedef std::map<const std::string, SelectorValueList> WidgetNameMap;
 		typedef std::map<const std::string, WidgetNameMap> PropertyMap;
 
-		const std::string* GetValue( const std::string& property, std::shared_ptr<const Widget> widget ) const;
+		const std::string* GetValue( const std::string& property, SharedPtr<const Widget> widget ) const;
 
 		PropertyMap m_properties;
 

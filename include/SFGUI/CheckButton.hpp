@@ -3,14 +3,14 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/ToggleButton.hpp>
 
-#include <memory>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 
 class SFGUI_API CheckButton : public ToggleButton {
 	public:
-		typedef std::shared_ptr<CheckButton> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const CheckButton> PtrConst; //!< Shared pointer to const.
+		typedef SharedPtr<CheckButton> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const CheckButton> PtrConst; //!< Shared pointer to const.
 
 		/** Create check button.
 		 * @param label Label.

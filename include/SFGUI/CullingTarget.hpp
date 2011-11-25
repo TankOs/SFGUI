@@ -5,7 +5,7 @@
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
-#include <stack>
+#include <vector>
 #include <list>
 
 namespace sfg {
@@ -66,6 +66,11 @@ class SFGUI_API CullingTarget {
 		void Cull( bool enable = true );
 
 	private:
+		struct ViewCachePair {
+			unsigned int id;
+			sf::IntRect aabb;
+		};
+
 		void UpdateView();
 
 		sf::RenderTarget& m_real_target;
@@ -81,9 +86,11 @@ class SFGUI_API CullingTarget {
 
 		bool m_out_of_view;
 
-		std::stack<sf::View> m_view_stack;
+		std::vector<sf::View> m_view_stack;
+		std::size_t m_view_stack_size;
 
-		std::list< std::pair<sf::IntRect, unsigned int> > m_view_cache;
+		std::vector<ViewCachePair> m_view_cache;
+		std::size_t m_view_cache_size;
 
 		unsigned int m_current_view_id;
 		unsigned int m_last_view_id;

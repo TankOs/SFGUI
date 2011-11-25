@@ -101,7 +101,7 @@ BREW::BREW() :
 	SetProperty( "ProgressBar", "BarBorderWidth", 1.f );
 }
 
-RenderQueue* BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) const {
+RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 	RenderQueue* queue( new RenderQueue );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", window ) );
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", window ) );
@@ -209,7 +209,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	return queue;
 }
 
-RenderQueue* BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) const {
+RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
 	sf::Color border_color_dark( border_color_light );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
@@ -260,7 +260,7 @@ RenderQueue* BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) 
 	return queue;
 }
 
-RenderQueue* BREW::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButton> button ) const {
+RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> button ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
 	sf::Color border_color_dark( border_color_light );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
@@ -311,7 +311,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButto
 	return queue;
 }
 
-RenderQueue* BREW::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const {
+RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", check ) );
 	sf::Color border_color_dark( border_color_light );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", check ) );
@@ -388,7 +388,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton>
 	return queue;
 }
 
-RenderQueue* BREW::CreateLabelDrawable( std::shared_ptr<const Label> label ) const {
+RenderQueue* BREW::CreateLabelDrawable( SharedPtr<const Label> label ) const {
 	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", label ) ) );
 	const unsigned int font_size( GetProperty<unsigned int>( "FontSize", label ) );
 	const sf::Color font_color( GetProperty<sf::Color>( "Color", label ) );
@@ -408,7 +408,7 @@ RenderQueue* BREW::CreateLabelDrawable( std::shared_ptr<const Label> label ) con
 	return queue;
 }
 
-RenderQueue* BREW::CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const {
+RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", entry ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", entry ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", entry ) );
@@ -492,7 +492,7 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	return queue;
 }
 
-RenderQueue* BREW::CreateScaleDrawable( std::shared_ptr<const Scale> scale ) const {
+RenderQueue* BREW::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scale ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scale ) );
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", scale ) );
@@ -566,7 +566,7 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	return queue;
 }
 
-RenderQueue* BREW::CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const {
+RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scrollbar ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scrollbar ) );
 	sf::Color slider_border_color_light( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
@@ -768,7 +768,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scr
 	return queue;
 }
 
-RenderQueue* BREW::CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const {
+RenderQueue* BREW::CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> scrolled_window ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", scrolled_window ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", scrolled_window ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", scrolled_window ) );
@@ -790,7 +790,7 @@ RenderQueue* BREW::CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledW
 	return queue;
 }
 
-RenderQueue* BREW::CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const {
+RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const {
 	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", progress_bar ) );
 	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", progress_bar ) );
 	sf::Color bar_border_color_light( GetProperty<sf::Color>( "BarBorderColor", progress_bar ) );
@@ -822,7 +822,7 @@ RenderQueue* BREW::CreateProgressBarDrawable( std::shared_ptr<const ProgressBar>
 
 	if( progress_bar->GetFraction() > 0.f ) {
 		sf::FloatRect bar_rect;
-		
+
 		if( progress_bar->GetOrientation() == ProgressBar::HORIZONTAL ) {
 			float frac_width( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().Width * progress_bar->GetFraction() ) );
 

@@ -2,6 +2,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Adjustment.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 
@@ -9,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Range : public Widget {
 	public:
-		typedef std::shared_ptr<Range> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Range> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Range> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Range> PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */
@@ -19,12 +20,12 @@ class SFGUI_API Range : public Widget {
 		/** Get the Adjustment for this Range widget.
 		 * @return Adjustment for this Range widget.
 		 */
-		Adjustment::Ptr GetAdjustment() const;
+		const Adjustment::Ptr& GetAdjustment() const;
 
 		/** Set the Adjustment for this Range widget.
 		 * @param adjustment new Adjustment.
 		 */
-		void SetAdjustment( Adjustment::Ptr adjustment );
+		void SetAdjustment( const Adjustment::Ptr& adjustment );
 
 		/** Get the value of this Range widget.
 		 * @return Value of this Range widget.
@@ -58,7 +59,7 @@ class SFGUI_API Range : public Widget {
 
 		Adjustment::Ptr m_adjustment;
 
-		uint32_t m_change_connection;
+		unsigned int m_change_connection;
 };
 
 }

@@ -28,7 +28,7 @@ Entry::Ptr Entry::Create( const sf::String& text ) {
 }
 
 RenderQueue* Entry::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateEntryDrawable( std::dynamic_pointer_cast<const Entry>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateEntryDrawable( DynamicPointerCast<const Entry>( shared_from_this() ) );
 }
 
 void Entry::SetText( const sf::String& text ) {
@@ -243,7 +243,7 @@ void Entry::HandleExpose( CullingTarget& /*target*/ ) const {
 	}
 }
 
-void Entry::HandleFocusChange( Widget::Ptr focused_widget ) {
+void Entry::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 	if( focused_widget == shared_from_this() ) {
 		SetState( ACTIVE );
 	}

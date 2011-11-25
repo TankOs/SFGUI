@@ -30,7 +30,7 @@ RenderQueue* CheckButton::InvalidateImpl() const {
 		GetChild()->Invalidate();
 	}
 
-	return Context::Get().GetEngine().CreateCheckButtonDrawable( std::dynamic_pointer_cast<const CheckButton>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateCheckButtonDrawable( DynamicPointerCast<const CheckButton>( shared_from_this() ) );
 }
 
 sf::Vector2f CheckButton::CalculateRequisition() {

@@ -2,6 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 #include <SFML/System/String.hpp>
 
@@ -9,8 +10,8 @@ namespace sfg {
 
 class SFGUI_API ProgressBar : public Widget {
 	public:
-		typedef std::shared_ptr<ProgressBar> Ptr; ///< Shared pointer.
-		typedef std::shared_ptr<const ProgressBar> PtrConst; ///< Shared pointer to const.
+		typedef SharedPtr<ProgressBar> Ptr; ///< Shared pointer.
+		typedef SharedPtr<const ProgressBar> PtrConst; ///< Shared pointer to const.
 
 		/** Orientation.
 		 */

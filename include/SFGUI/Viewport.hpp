@@ -2,6 +2,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Adjustment.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 
@@ -9,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Viewport : public Bin {
 	public:
-		typedef std::shared_ptr<Viewport> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Viewport> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Viewport> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Viewport> PtrConst; //!< Shared pointer.
 
 		/** Create viewport.
 		 * @return Viewport.
@@ -22,7 +23,7 @@ class SFGUI_API Viewport : public Bin {
 		 * @param vertical_adjustment Vertical adjustment.
 		 * @return Viewport.
 		 */
-		static Ptr Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
+		static Ptr Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
 
 		/** Expose.
 		 * Render widget to given target.
@@ -38,22 +39,22 @@ class SFGUI_API Viewport : public Bin {
 		/** Get the horizontal Adjustment for this Viewport.
 		 * @return Horizontal Adjustment for this Viewport.
 		 */
-		Adjustment::Ptr GetHorizontalAdjustment() const;
+		const Adjustment::Ptr& GetHorizontalAdjustment() const;
 
 		/** Set the horizontal adjustment of this Viewport
 		 * @param horizontal_adjustment Horizontal Adjustment
 		 */
-		void SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment );
+		void SetHorizontalAdjustment( const Adjustment::Ptr& horizontal_adjustment );
 
 		/** Get the vertical Adjustment for this Viewport.
 		 * @return Vertical Adjustment for this Viewport.
 		 */
-		Adjustment::Ptr GetVerticalAdjustment() const;
+		const Adjustment::Ptr& GetVerticalAdjustment() const;
 
 		/** Set the vertical adjustment of this Viewport
 		 * @param vertical_adjustment Vertical Adjustment
 		 */
-		void SetVerticalAdjustment( Adjustment::Ptr vertical_adjustment );
+		void SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment );
 
 		/** Handle SFML event.
 		 * Handle an SFML event and fire proper signals.
@@ -69,7 +70,7 @@ class SFGUI_API Viewport : public Bin {
 		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 	private:
-		Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
+		Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
 
 		void HandleSizeRequest();
 

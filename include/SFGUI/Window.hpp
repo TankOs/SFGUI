@@ -2,6 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Bin.hpp>
+#include <SFGUI/SharedPtr.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/String.hpp>
 
@@ -11,8 +12,8 @@ namespace sfg {
  */
 class SFGUI_API Window : public Bin {
 	public:
-		typedef std::shared_ptr<Window> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Window> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Window> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Window> PtrConst; //!< Shared pointer.
 
 		enum Style {
 			NoStyle = 0, //!< Transparent window.
@@ -77,7 +78,7 @@ class SFGUI_API Window : public Bin {
 		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		void HandleMouseMoveEvent( int x, int y );
-		void HandleAdd( Widget::Ptr child );
+		void HandleAdd( const Widget::Ptr& child );
 
 		sf::String m_title;
 		int m_style;

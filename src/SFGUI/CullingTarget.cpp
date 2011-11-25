@@ -7,32 +7,36 @@ CullingTarget::CullingTarget( sf::RenderTarget& target ) :
 	m_cull_count( std::pair<std::size_t, std::size_t>( 0, 0 ) ),
 	m_cull( true ),
 	m_out_of_view( false ),
+	m_view_stack_size( 0 ),
+	m_view_cache_size( 0 ),
 	m_last_view_id( 0 )
 {
 	PushView( m_real_target.GetView() );
 }
 
 void CullingTarget::PushView( const sf::View& view ) {
-	m_view_stack.push( view );
+	m_view_stack.push_back( view );
+	++m_view_stack_size;
 
 	UpdateView();
 }
 
 void CullingTarget::PopView() {
-	if( m_view_stack.size() == 1 ) {
+	if( m_view_stack_size == 1 ) {
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Can't pop last view from view stack." << std::endl;
 #endif
 		return;
 	}
 
-	m_view_stack.pop();
+	m_view_stack.pop_back();
+	--m_view_stack_size;
 
 	UpdateView();
 }
 
 void CullingTarget::UpdateView() {
-	const sf::View& view = m_view_stack.top();
+	const sf::View& view = m_view_stack[ m_view_stack_size - 1 ];
 
 	m_real_target.SetView( view );
 
@@ -60,30 +64,32 @@ void CullingTarget::UpdateView() {
 		m_out_of_view = false;
 	}
 
-	std::list< std::pair<sf::IntRect, unsigned int> >::const_iterator cache_pair( m_view_cache.begin() );
-	std::list< std::pair<sf::IntRect, unsigned int> >::const_iterator cache_end( m_view_cache.end() );
-
 	// Check if view AABB is already in cache
-	for( ; cache_pair != cache_end; ++cache_pair ) {
-		if( m_view_aabb.Left == cache_pair->first.Left &&
-				m_view_aabb.Top == cache_pair->first.Top &&
-				m_view_aabb.Width == cache_pair->first.Width &&
-				m_view_aabb.Height == cache_pair->first.Height  ) {
-				m_current_view_id = cache_pair->second;
+	for( std::size_t index = 0; index < m_view_cache_size; ++index ) {
+		const ViewCachePair& cache_pair = m_view_cache[ index ];
+		if( m_view_aabb.Left == cache_pair.aabb.Left &&
+				m_view_aabb.Top == cache_pair.aabb.Top &&
+				m_view_aabb.Width == cache_pair.aabb.Width &&
+				m_view_aabb.Height == cache_pair.aabb.Height  ) {
+				m_current_view_id = cache_pair.id;
 				return;
 		}
 	}
 
 	// Kick out an old view AABB and add new view AABB to cache
-	if( m_view_cache.size() > 8 ) {
-		m_view_cache.pop_back();
+	if( m_view_cache_size >= 8 ) {
+		m_view_cache.erase( m_view_cache.begin() );
+		--m_view_cache_size;
 	}
 
-	m_view_cache.push_front( std::pair<sf::IntRect, unsigned int>( m_view_aabb, ++m_last_view_id ) );
+	ViewCachePair view_cache_pair = { ++m_last_view_id, m_view_aabb };
+
+	m_view_cache.push_back( view_cache_pair );
+	++m_view_cache_size;
 }
 
 const sf::View& CullingTarget::GetView() const {
-	return m_view_stack.top();
+	return m_view_stack[ m_view_stack_size - 1 ];
 }
 
 unsigned int CullingTarget::GetWidth() const {

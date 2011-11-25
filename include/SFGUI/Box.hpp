@@ -1,5 +1,6 @@
 #pragma once
 #include <SFGUI/Container.hpp>
+#include <SFGUI/SharedPtr.hpp>
 #include <list>
 
 namespace sfg {
@@ -9,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Box : public Container {
 	public:
-		typedef std::shared_ptr<Box> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Box> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Box> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Box> PtrConst; //!< Shared pointer.
 
 		/** Box orientation.
 		 */
@@ -33,7 +34,7 @@ class SFGUI_API Box : public Container {
 		 * @param expand Expand widget to highest possible size.
 		 * @param fill Fill calculated size.
 		 */
-		void Pack( Widget::Ptr widget, bool expand = true, bool fill = true );
+		void Pack( const Widget::Ptr& widget, bool expand = true, bool fill = true );
 
 		/** Set spacing.
 		 * @param spacing Spacing.
@@ -57,7 +58,7 @@ class SFGUI_API Box : public Container {
 			bool expand;
 			bool fill;
 
-			ChildInfo( Widget::Ptr widget_, bool expand_ = true, bool fill_ = true );
+			ChildInfo( const Widget::Ptr& widget_, bool expand_ = true, bool fill_ = true );
 			bool operator==( const ChildInfo& rhs ) const;
 		};
 
@@ -65,8 +66,8 @@ class SFGUI_API Box : public Container {
 
 		Box( Orientation orientation = HORIZONTAL, float spacing = 0.f );
 
-		void HandleAdd( Widget::Ptr child );
-		void HandleRemove( Widget::Ptr child );
+		void HandleAdd( const Widget::Ptr& child );
+		void HandleRemove( const Widget::Ptr& child );
 		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		void AllocateChildren() const;

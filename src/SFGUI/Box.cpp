@@ -20,7 +20,7 @@ const std::string& Box::GetName() const {
 	return name;
 }
 
-void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
+void Box::Pack( const Widget::Ptr& widget, bool expand, bool fill ) {
 	if( IsChild( widget ) ) {
 		return;
 	}
@@ -31,7 +31,7 @@ void Box::Pack( Widget::Ptr widget, bool expand, bool fill ) {
 	Add( widget );
 }
 
-void Box::HandleAdd( Widget::Ptr child ) {
+void Box::HandleAdd( const Widget::Ptr& child ) {
 	ChildrenCont::const_iterator iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget
@@ -49,7 +49,7 @@ void Box::HandleAdd( Widget::Ptr child ) {
 	AllocateChildren();
 }
 
-void Box::HandleRemove( Widget::Ptr child ) {
+void Box::HandleRemove( const Widget::Ptr& child ) {
 	ChildrenCont::iterator iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	if( iter != m_children.end() ) {
@@ -106,7 +106,7 @@ void Box::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	AllocateChildren();
 }
 
-Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
+Box::ChildInfo::ChildInfo( const Widget::Ptr& widget_, bool expand_, bool fill_ ) :
 	widget( widget_ ),
 	expand( expand_ ),
 	fill( fill_ )

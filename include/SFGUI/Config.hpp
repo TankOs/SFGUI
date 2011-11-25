@@ -4,7 +4,7 @@
 #if defined( _WIN32 ) || defined( __WIN32__ )
 	#define SFGUI_SYSTEM_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
-	
+
 	#ifndef NOMINMAX
 		#define NOMINMAX
 	#endif
@@ -16,13 +16,13 @@
 	#else
 		#define SFGUI_API __declspec( dllimport )
 	#endif
-	
-	#ifdef _MSC_VER
-		#pragma warning(disable : 4251) // Suppress a warning which is meaningless for us
-		#pragma warning(disable : 4503) // Suppress warnings about truncated names. Enable again if linker errors occur.
-	#endif
 #else
 	#define SFGUI_API
+#endif
+
+#ifdef _MSC_VER
+	#pragma warning(disable : 4251) // Suppress a warning which is meaningless for us
+	#pragma warning(disable : 4503) // Suppress warnings about truncated names. Enable again if linker errors occur.
 #endif
 
 #if !defined( NDEBUG )

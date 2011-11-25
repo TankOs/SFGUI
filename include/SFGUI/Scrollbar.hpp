@@ -1,6 +1,7 @@
 #pragma once
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Range.hpp>
+#include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/Clock.hpp>
 
 namespace sfg {
@@ -9,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Scrollbar : public Range {
 	public:
-		typedef std::shared_ptr<Scrollbar> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Scrollbar> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Scrollbar> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Scrollbar> PtrConst; //!< Shared pointer.
 
 		/** Scrollbar orientation.
 		 */
@@ -32,7 +33,7 @@ class SFGUI_API Scrollbar : public Range {
 		 * @param orientation Orientation.
 		 * @return Scrollbar widget.
 		 */
-		static Ptr Create( Adjustment::Ptr adjustment, Orientation orientation = HORIZONTAL );
+		static Ptr Create( const Adjustment::Ptr& adjustment, Orientation orientation = HORIZONTAL );
 
 		/** Get the orientation of this scrollbar widget
 		 * @return orientation of this scrollbar widget
@@ -61,7 +62,7 @@ class SFGUI_API Scrollbar : public Range {
 	private:
 		/** Ctor.
 		 */
-		Scrollbar( Adjustment::Ptr adjustment, Orientation orientation = HORIZONTAL );
+		Scrollbar( const Adjustment::Ptr& adjustment, Orientation orientation = HORIZONTAL );
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );

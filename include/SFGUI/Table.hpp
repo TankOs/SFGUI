@@ -4,6 +4,7 @@
 #include <SFGUI/TableCell.hpp>
 #include <SFGUI/TableOptions.hpp>
 #include <SFGUI/Container.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 #include <list>
 #include <vector>
@@ -16,8 +17,8 @@ namespace sfg {
  */
 class SFGUI_API Table : public Container {
 	public:
-		typedef std::shared_ptr<Table> Ptr; ///< Shared pointer shortcut.
-		typedef std::shared_ptr<const Table> PtrConst; ///< Shared pointer shortcut.
+		typedef SharedPtr<Table> Ptr; ///< Shared pointer shortcut.
+		typedef SharedPtr<const Table> PtrConst; ///< Shared pointer shortcut.
 
 		/** Attach options.
 		 */
@@ -44,7 +45,7 @@ class SFGUI_API Table : public Container {
 		 * @param y_options Pack options for y axis.
 		 * @param padding Padding.
 		 */
-		void Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
+		void Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
 
 		/** Set column spacing.
 		 * @param index Column index.

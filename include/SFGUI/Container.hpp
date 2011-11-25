@@ -2,7 +2,8 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <list>
+#include <SFGUI/SharedPtr.hpp>
+#include <vector>
 
 namespace sfg {
 
@@ -11,9 +12,9 @@ namespace sfg {
  */
 class SFGUI_API Container : public Widget {
 	public:
-		typedef std::shared_ptr<Container> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Container> PtrConst; //!< Shared pointer.
-		typedef std::list<Widget::Ptr> WidgetsList;
+		typedef SharedPtr<Container> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Container> PtrConst; //!< Shared pointer.
+		typedef std::vector<Widget::Ptr> WidgetsList;
 
 		/** Dtor.
 		 */
@@ -22,17 +23,17 @@ class SFGUI_API Container : public Widget {
 		/** Add child.
 		 * @param widget Widget to add.
 		 */
-		void Add( Widget::Ptr widget );
+		void Add( const Widget::Ptr& widget );
 
 		/** Remove child (from container).
 		 * @param widget Widget to remove.
 		 */
-		void Remove( Widget::Ptr widget );
+		void Remove( const Widget::Ptr& widget );
 
 		/** Check if a widget is a child of this container.
 		 * @param widget Widget to search for.
 		 */
-		bool IsChild( Widget::Ptr widget ) const;
+		bool IsChild( const Widget::Ptr& widget ) const;
 
 		/** Get children.
 		 * @return std::list with children.
@@ -56,7 +57,7 @@ class SFGUI_API Container : public Widget {
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
-		virtual void HandleChildInvalidate( Widget::PtrConst child ) const;
+		virtual void HandleChildInvalidate( const Widget::PtrConst& child ) const;
 
 		/** Handle changing of absolute position
 		 */
@@ -70,12 +71,12 @@ class SFGUI_API Container : public Widget {
 		/** Handle adding children.
 		 * @param child Child widget.
 		 */
-		virtual void HandleAdd( Widget::Ptr child );
+		virtual void HandleAdd( const Widget::Ptr& child );
 
 		/** Handle removing children.
 		 * @param child Child widget.
 		 */
-		virtual void HandleRemove( Widget::Ptr child );
+		virtual void HandleRemove( const Widget::Ptr& child );
 
 		virtual void HandleExpose( CullingTarget& target ) const;
 
@@ -83,6 +84,7 @@ class SFGUI_API Container : public Widget {
 		float m_border_width;
 
 		WidgetsList m_children;
+		std::size_t m_children_size;
 
 };
 

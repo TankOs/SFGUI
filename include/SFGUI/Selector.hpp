@@ -2,6 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 #include <string>
 #include <stdexcept>
@@ -14,8 +15,8 @@ namespace sfg {
  */
 class SFGUI_API Selector {
 	public:
-		typedef std::shared_ptr<Selector> Ptr; ///< Shared pointer.
-		typedef std::shared_ptr<Selector> PtrConst; ///< Shared pointer (const object).
+		typedef SharedPtr<Selector> Ptr; ///< Shared pointer.
+		typedef SharedPtr<Selector> PtrConst; ///< Shared pointer (const object).
 
 		enum HierarchyType {
 			INVALID = 0, //!< Invalid hierarchy type;
@@ -64,7 +65,7 @@ class SFGUI_API Selector {
 		/** Get parent selector.
 		 * @return Parent or NULL if none set.
 		 */
-		PtrConst GetParent() const;
+		const PtrConst& GetParent() const;
 
 		/** Build full selector string.
 		 * @return Selector string.
@@ -85,7 +86,7 @@ class SFGUI_API Selector {
 		 * @param widget Widget.
 		 * @return true if matches.
 		 */
-		bool Matches( Widget::PtrConst widget ) const;
+		bool Matches( const Widget::PtrConst& widget ) const;
 
 	private:
 		typedef std::runtime_error ParserException;

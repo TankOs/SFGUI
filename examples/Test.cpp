@@ -44,9 +44,9 @@ class SampleApp {
 		sf::Sprite m_background_sprite;
 };
 
-class Ouchy : public std::enable_shared_from_this<Ouchy> {
+class Ouchy : public sfg::EnableSharedFromThis<Ouchy> {
 	public:
-		typedef std::shared_ptr<Ouchy> Ptr; //!< Shared pointer.
+		typedef sfg::SharedPtr<Ouchy> Ptr; //!< Shared pointer.
 		Ouchy( sfg::Button::Ptr button );
 
 		void DoOuch();

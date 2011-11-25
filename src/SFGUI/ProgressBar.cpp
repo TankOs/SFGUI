@@ -38,7 +38,7 @@ sf::Vector2f ProgressBar::CalculateRequisition() {
 }
 
 RenderQueue* ProgressBar::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateProgressBarDrawable( std::dynamic_pointer_cast<const ProgressBar>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateProgressBarDrawable( DynamicPointerCast<const ProgressBar>( shared_from_this() ) );
 }
 
 void ProgressBar::SetOrientation( Orientation orientation ) {

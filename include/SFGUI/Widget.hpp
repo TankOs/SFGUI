@@ -4,6 +4,7 @@
 #include <SFGUI/Object.hpp>
 #include <SFGUI/Signal.hpp>
 #include <SFGUI/CullingTarget.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Window/Event.hpp>
@@ -16,10 +17,10 @@ class Container;
 
 /** Base class for widgets.
  */
-class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widget> {
+class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 	public:
-		typedef std::shared_ptr<Widget> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Widget> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Widget> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Widget> PtrConst; //!< Shared pointer.
 
 		/** Widget state.
 		 */
@@ -120,17 +121,17 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * don't want to call this method directly.
 		 * @param parent Parent.
 		 */
-		void SetParent( Widget::Ptr parent );
+		void SetParent( const Widget::Ptr& parent );
 
 		/** Get parent.
 		 * @return Parent.
 		 */
-		std::shared_ptr<Container> GetParent();
+		SharedPtr<Container> GetParent();
 
 		/** Get parent.
 		 * @return Parent.
 		 */
-		std::shared_ptr<const Container> GetParent() const;
+		SharedPtr<const Container> GetParent() const;
 
 		/** Set widget's state.
 		 * @param state State.
@@ -297,13 +298,13 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle focus change.
 		 * @param focused_widget Widget currently being focused.
 		 */
-		virtual void HandleFocusChange( Widget::Ptr focused_widget );
+		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
 
 	private:
 		void GrabFocus( Ptr widget );
 		bool HasFocus( Ptr widget );
 
-		std::weak_ptr<Container> m_parent;
+		WeakPtr<Container> m_parent;
 
 		std::string m_id;
 		std::string m_class;
@@ -318,11 +319,11 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;
-		std::unique_ptr<sf::Vector2f> m_custom_requisition;
+		sf::Vector2f* m_custom_requisition;
 
 		mutable bool m_invalidated;
 
-		mutable std::unique_ptr<RenderQueue> m_drawable;
+		mutable RenderQueue* m_drawable;
 };
 
 }

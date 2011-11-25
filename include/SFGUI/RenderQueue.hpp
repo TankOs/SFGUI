@@ -6,7 +6,7 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/OpenGL.hpp>
 #include <vector>
-#include <memory>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 

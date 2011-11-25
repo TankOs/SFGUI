@@ -52,11 +52,11 @@ void Context::SetEngine( Engine& engine ) {
 	m_engine = &engine;
 }
 
-void Context::SetActiveWidget( std::shared_ptr<Widget> widget ) {
+void Context::SetActiveWidget( SharedPtr<Widget> widget ) {
 	m_active_widget = widget;
 }
 
-std::shared_ptr<Widget> Context::GetActiveWidget() const {
+SharedPtr<Widget> Context::GetActiveWidget() const {
 	return m_active_widget.lock();
 }
 

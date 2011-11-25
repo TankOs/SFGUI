@@ -1,9 +1,11 @@
 #include <sstream>
 #include <iomanip>
+#include <typeinfo>
+
 namespace sfg {
 
 template <typename T>
-T Engine::GetProperty( const std::string& property, std::shared_ptr<const Widget> widget ) const {
+T Engine::GetProperty( const std::string& property, SharedPtr<const Widget> widget ) const {
 	static const T default_ = T();
 
 	const std::string* value( GetValue( property, widget ) );
@@ -45,7 +47,7 @@ bool Engine::SetProperty( const std::string& selector, const std::string& proper
 }
 
 template <typename T>
-bool Engine::SetProperty( sfg::Selector::Ptr selector, const std::string& property, const T& value ) {
+bool Engine::SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const T& value ) {
 	std::stringstream sstr;
 	sstr << value;
 

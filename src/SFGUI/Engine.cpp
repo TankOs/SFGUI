@@ -145,7 +145,7 @@ void Engine::ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, i
 	dark_color.b = static_cast<sf::Uint8>( std::max( 0, static_cast<int>( dark_color.b ) - offset ) );
 }
 
-const std::string* Engine::GetValue( const std::string& property, std::shared_ptr<const Widget> widget ) const {
+const std::string* Engine::GetValue( const std::string& property, SharedPtr<const Widget> widget ) const {
 	// Look for property.
 	PropertyMap::const_iterator prop_iter( m_properties.find( property ) );
 
@@ -155,13 +155,12 @@ const std::string* Engine::GetValue( const std::string& property, std::shared_pt
 
 		if( name_iter != prop_iter->second.end() ) {
 			// Check against selectors.
-			SelectorValueList::const_iterator sv_iter( name_iter->second.begin() );
-			SelectorValueList::const_iterator sv_iter_end( name_iter->second.end() );
+			std::size_t selector_value_list_size = name_iter->second.size();
 
-			for( ; sv_iter != sv_iter_end; ++sv_iter ) {
-				if( sv_iter->first->Matches( widget ) ) {
+			for( std::size_t index = 0; index < selector_value_list_size; ++index ) {
+				if( name_iter->second[index].first->Matches( widget ) ) {
 					// Found, return value.
-					return &sv_iter->second;
+					return &name_iter->second[index].second;
 				}
 			}
 		}
@@ -170,13 +169,12 @@ const std::string* Engine::GetValue( const std::string& property, std::shared_pt
 		name_iter = prop_iter->second.find( "*" );
 
 		if( name_iter != prop_iter->second.end() ) {
-			SelectorValueList::const_iterator sv_iter( name_iter->second.begin() );
-			SelectorValueList::const_iterator sv_iter_end( name_iter->second.end() );
+			std::size_t selector_value_list_size = name_iter->second.size();
 
-			for( ; sv_iter != sv_iter_end; ++sv_iter ) {
-				if( sv_iter->first->Matches( widget ) ) {
+			for( std::size_t index = 0; index < selector_value_list_size; ++index ) {
+				if( name_iter->second[index].first->Matches( widget ) ) {
 					// Found, return value.
-					return &sv_iter->second;
+					return &name_iter->second[index].second;
 				}
 			}
 		}
@@ -189,7 +187,7 @@ ResourceManager& Engine::GetResourceManager() const {
 	return m_resource_manager;
 }
 
-bool Engine::SetProperty( sfg::Selector::Ptr selector, const std::string& property, const std::string& value ) {
+bool Engine::SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const std::string& value ) {
 	if( !selector ) {
 		// Invalid selector string given.
 		return false;
@@ -211,7 +209,7 @@ bool Engine::SetProperty( sfg::Selector::Ptr selector, const std::string& proper
 	}
 
 	// Insert at top to get highest priority.
-	list.push_front( SelectorValuePair( selector, value ) );
+	list.insert( list.begin(), SelectorValuePair( selector, value ) );
 
 	return true;
 }

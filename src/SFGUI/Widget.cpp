@@ -13,11 +13,15 @@ Widget::Widget() :
 	m_mouse_button_down( -1 ),
 	m_allocation( 0, 0, 0, 0 ),
 	m_requisition( 0, 0 ),
-	m_invalidated( true )
+	m_custom_requisition( 0 ),
+	m_invalidated( true ),
+	m_drawable( 0 )
 {
 }
 
 Widget::~Widget() {
+	delete m_drawable;
+	delete m_custom_requisition;
 }
 
 bool Widget::IsSensitive() const {
@@ -137,7 +141,8 @@ void Widget::Expose( CullingTarget& target ) const {
 	if( m_invalidated ) {
 		m_invalidated = false;
 
-		m_drawable.reset( InvalidateImpl() );
+		delete m_drawable;
+		m_drawable = InvalidateImpl();
 		if( m_drawable ) {
 			m_drawable->Compile();
 		}
@@ -149,7 +154,7 @@ void Widget::Expose( CullingTarget& target ) const {
 
 	if( IsVisible() ) {
 		if( m_drawable ) {
-			target.Draw( m_drawable.get() );
+			target.Draw( m_drawable );
 		}
 
 		HandleExpose( target );
@@ -175,8 +180,8 @@ RenderQueue* Widget::InvalidateImpl() const {
 	return 0;
 }
 
-void Widget::SetParent( Widget::Ptr parent ) {
-	Container::Ptr cont( std::dynamic_pointer_cast<Container>( parent ) );
+void Widget::SetParent( const Widget::Ptr& parent ) {
+	Container::Ptr cont( DynamicPointerCast<Container>( parent ) );
 
 	if( !cont ) {
 		return;
@@ -367,10 +372,12 @@ const sf::Vector2f& Widget::GetRequisition() const {
 
 void Widget::SetRequisition( const sf::Vector2f& requisition ) {
 	if( requisition.x > 0.f || requisition.y >= 0.f ) {
-		m_custom_requisition.reset( new sf::Vector2f( requisition ) );
+		delete m_custom_requisition;
+		m_custom_requisition = new sf::Vector2f( requisition );
 	}
 	else {
-		m_custom_requisition.reset();
+		delete m_custom_requisition;
+		m_custom_requisition = 0;
 	}
 
 	RequestResize();
@@ -446,7 +453,7 @@ void Widget::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 void Widget::HandleMouseClick( sf::Mouse::Button /*button*/, int /*x*/, int /*y*/ ) {
 }
 
-void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {
+void Widget::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 	if( focused_widget != shared_from_this() ) {
 		SetState( NORMAL );
 	}

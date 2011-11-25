@@ -57,16 +57,20 @@ std::vector<Rule> ParseString( std::string str ) {
 		rules = _grammar.GetTheme();
 		result = true;
 	}
+#ifdef SFGUI_DEBUG
 	catch( const std::runtime_error& e ) {
 		result = false;
 
-#ifdef SFGUI_DEBUG
 		std::cerr << "Error parsing string:\n"
 		 << str << "\n"
 		 << std::string( _grammar.position - str.c_str() ,' ' ) << "^\n"
 		 << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
-#endif
 	}
+#else
+	catch( const std::runtime_error& /*e*/ ) {
+		result = false;
+	}
+#endif
 
 	if( result && ( _grammar.get() == '\0' ) ) {
 		return rules;
@@ -101,16 +105,20 @@ std::vector<Rule> ParseFile( std::string filename ) {
 		rules = _grammar.GetTheme();
 		result = true;
 	}
+#ifdef SFGUI_DEBUG
 	catch( const std::runtime_error& e ) {
 		result = false;
 
-#ifdef SFGUI_DEBUG
 		std::cerr << "Error parsing file \"" << filename << "\" at line " << _grammar.line_number <<":\n"
 		 << GetLine( str, _grammar.line_number ) << "\n"
 		 << std::string( ColumnPosition( str, _grammar.position - str.c_str() ) ,' ' ) << "^\n"
 		 << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
-#endif
 	}
+#else
+	catch( const std::runtime_error& /*e*/ ) {
+		result = false;
+	}
+#endif
 
 	if( result && ( _grammar.get() == '\0' ) ) {
 		file.close();

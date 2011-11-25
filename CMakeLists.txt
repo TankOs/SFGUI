@@ -45,8 +45,8 @@ endif()
 
 if( COMPILER_GCC )
 	if( NOT CMAKE_CXX_FLAGS )
-		set( CMAKE_CXX_FLAGS "--std=c++0x -Wall -Wextra -Wshadow -Wconversion -pedantic" CACHE STRING "C++ compiler flags" FORCE )
-		set( CMAKE_C_FLAGS "--std=c++0x -Wall -Wextra -Wshadow -Wconversion -pedantic" CACHE STRING "C compiler flags" FORCE )
+		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
+		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
 	endif()
 
 	if( NOT CMAKE_CXX_FLAGS_DEBUG )
@@ -89,6 +89,8 @@ set(
 	${INC_DIR}/SFGUI/Scrollbar.hpp
 	${INC_DIR}/SFGUI/ScrolledWindow.hpp
 	${INC_DIR}/SFGUI/Selector.hpp
+	${INC_DIR}/SFGUI/SharedPtr.hpp
+	${INC_DIR}/SFGUI/SharedPtr.inl
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
 	${INC_DIR}/SFGUI/Table.hpp

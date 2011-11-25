@@ -32,7 +32,7 @@ const sf::String& Label::GetText() const {
 }
 
 RenderQueue* Label::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateLabelDrawable( std::dynamic_pointer_cast<const Label>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateLabelDrawable( DynamicPointerCast<const Label>( shared_from_this() ) );
 }
 
 sf::Vector2f Label::CalculateRequisition() {

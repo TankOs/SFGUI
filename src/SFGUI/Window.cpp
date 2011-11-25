@@ -24,7 +24,7 @@ Window::Ptr Window::Create() {
 }
 
 RenderQueue* Window::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateWindowDrawable( std::dynamic_pointer_cast<const Window>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateWindowDrawable( DynamicPointerCast<const Window>( shared_from_this() ) );
 }
 
 void Window::SetTitle( const sf::String& title ) {
@@ -179,7 +179,7 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 	}
 }
 
-void Window::HandleAdd( Widget::Ptr child ) {
+void Window::HandleAdd( const Widget::Ptr& child ) {
 	Bin::HandleAdd( child );
 
 	if( GetChild() ) {

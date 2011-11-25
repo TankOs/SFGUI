@@ -4,7 +4,7 @@
 
 namespace sfg {
 
-Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
+Scrollbar::Scrollbar( const Adjustment::Ptr& adjustment, Orientation orientation ) :
 	Range(),
 	m_orientation( orientation ),
 	m_dragging( false ),
@@ -25,7 +25,7 @@ Scrollbar::Ptr Scrollbar::Create( Orientation orientation ) {
 	return ptr;
 }
 
-Scrollbar::Ptr Scrollbar::Create( Adjustment::Ptr adjustment, Orientation orientation ) {
+Scrollbar::Ptr Scrollbar::Create( const Adjustment::Ptr& adjustment, Orientation orientation ) {
 	Scrollbar::Ptr ptr( new Scrollbar( adjustment, orientation ) );
 	return ptr;
 }
@@ -89,7 +89,7 @@ bool Scrollbar::IsIncreaseStepperPressed() const {
 
 
 RenderQueue* Scrollbar::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateScrollbarDrawable( std::dynamic_pointer_cast<const Scrollbar>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateScrollbarDrawable( DynamicPointerCast<const Scrollbar>( shared_from_this() ) );
 }
 
 sf::Vector2f Scrollbar::CalculateRequisition() {

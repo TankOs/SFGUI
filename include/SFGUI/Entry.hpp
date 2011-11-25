@@ -1,5 +1,6 @@
 #pragma once
 #include <SFGUI/Widget.hpp>
+#include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/String.hpp>
 #include <SFML/System/Clock.hpp>
 
@@ -9,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Entry : public Widget {
 	public:
-		typedef std::shared_ptr<Entry> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Entry> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Entry> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Entry> PtrConst; //!< Shared pointer.
 
 		/** Create entry.
 		 * @param text Text.
@@ -64,12 +65,12 @@ class SFGUI_API Entry : public Widget {
 		 * @return UTF-32 Character.
 		 */
 		sf::Uint32 GetHideCharacter() const;
-		
+
 		/** Get maximum length.
 		 * @return Maximum length (0 if disabled).
 		 */
 		std::size_t GetMaximumLength() const;
-		
+
 		/** Set maximum length.
 		 * @param max_length Maximum length (0 to disable).
 		 */
@@ -107,7 +108,7 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleTextEvent( sf::Uint32 character );
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
 		virtual void HandleExpose( CullingTarget& target ) const;
-		virtual void HandleFocusChange( Widget::Ptr focused_widget );
+		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
 		virtual void HandleStateChange( State old_state );
 		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
@@ -124,7 +125,7 @@ class SFGUI_API Entry : public Widget {
 
 		// The UTF-32 character which hides each character of the string
 		sf::Uint32 m_text_placeholder;
-		
+
 		// The maximum text lenght. If it equals to 0, it disables this limit
 		std::size_t m_max_length;
 };

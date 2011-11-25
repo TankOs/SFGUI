@@ -7,13 +7,18 @@ namespace sfg {
 
 Desktop::Desktop( const sf::FloatRect& viewport ) :
 	m_view( viewport ),
-	m_skip_refresh( false )
-{
+	m_engine( 0 ),
+	m_children_size( 0 ),
+	m_skip_refresh( false ){
 }
 
 Desktop::Desktop( const sf::Window& window ) :
 	m_view( sf::FloatRect( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) ) )
 {
+}
+
+Desktop::~Desktop() {
+	delete m_engine;
 }
 
 void Desktop::Expose( sf::RenderTarget& target ) const {
@@ -31,11 +36,8 @@ void Desktop::Expose( CullingTarget& target ) const {
 	Context::Activate( m_context );
 
 	// Expose children.
-	WidgetsList::const_reverse_iterator w_iter( m_children.end() );
-	WidgetsList::const_reverse_iterator w_iter_end( m_children.begin() );
-
-	for( ; w_iter != w_iter_end; ++w_iter ) {
-		(*w_iter)->Expose( target );
+	for( int index = m_children_size - 1; index >= 0; --index ) {
+		m_children[index]->Expose( target );
 	}
 
 	// Restore previous context.
@@ -128,19 +130,20 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 	if( new_top_iter != w_iter_end ) {
 		sfg::Widget::Ptr widget( *new_top_iter );
 		m_children.erase( new_top_iter );
-		m_children.push_front( widget );
+		m_children.insert( m_children.begin(), widget );
 	}
 
 	// Restore previous context.
 	Context::Deactivate();
 }
 
-void Desktop::Add( std::shared_ptr<Widget> widget ) {
-	m_children.push_front( widget );
+void Desktop::Add( SharedPtr<Widget> widget ) {
+	m_children.insert( m_children.begin(), widget );
+	++m_children_size;
 	widget->Refresh();
 }
 
-void Desktop::Remove( std::shared_ptr<Widget> widget ) {
+void Desktop::Remove( SharedPtr<Widget> widget ) {
 	// We do this in an isolated method to keep iterators valid.
 	m_obsolete_children.push_back( widget );
 
@@ -165,6 +168,7 @@ void Desktop::RemoveObsoleteChildren() {
 		}
 
 		m_children.erase( w_iter );
+		--m_children_size;
 	}
 
 	m_obsolete_children.clear();
@@ -179,11 +183,8 @@ void Desktop::Refresh() {
 	// Activate context.
 	Context::Activate( m_context );
 
-	WidgetsList::const_reverse_iterator w_iter( m_children.end() );
-	WidgetsList::const_reverse_iterator w_iter_end( m_children.begin() );
-
-	for( ; w_iter != w_iter_end; ++w_iter ) {
-		(*w_iter)->Refresh();
+	for( int index = m_children_size - 1; index >= 0; --index ) {
+		m_children[index]->Refresh();
 	}
 
 	// Restore previous context.

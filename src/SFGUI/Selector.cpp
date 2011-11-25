@@ -95,6 +95,7 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 		// If it's the first simple selector, set it as current root.
 		if( !selector ) {
 			selector = next;
+			continue;
 		}
 		else {
 			// If it's not the first, parent the current root.
@@ -114,8 +115,17 @@ Selector::Ptr Selector::Create( const std::string& str ) {
 	}
 
 	// Hash.
-	std::hash<std::string> string_hasher;
-	selector->m_hash = string_hasher( selector->BuildString() );
+	std::size_t hash = static_cast<std::size_t>( 2166136261UL );
+
+	std::string selector_string = selector->BuildString();
+	std::size_t length = selector_string.length();
+
+	for ( ; length; --length ) {
+		hash ^= static_cast<std::size_t>( selector_string[ length - 1 ] );
+		hash *= static_cast<std::size_t>( 16777619UL );
+	}
+
+	selector->m_hash = hash;
 
 	return selector;
 }
@@ -153,8 +163,17 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 	}
 
 	// Hash.
-	std::hash<std::string> string_hasher;
-	selector->m_hash = string_hasher( selector->BuildString() );
+	std::size_t hash = static_cast<std::size_t>( 2166136261UL );
+
+	std::string selector_string = selector->BuildString();
+	std::size_t length = selector_string.length();
+
+	for ( ; length; --length ) {
+		hash ^= static_cast<std::size_t>( selector_string[ length - 1 ] );
+		hash *= static_cast<std::size_t>( 16777619UL );
+	}
+
+	selector->m_hash = hash;
 
 	return selector;
 }
@@ -364,7 +383,7 @@ int Selector::GetState() const {
 	return m_state;
 }
 
-Selector::PtrConst Selector::GetParent() const {
+const Selector::PtrConst& Selector::GetParent() const {
 	return m_parent;
 }
 
@@ -443,7 +462,7 @@ bool Selector::operator==( const Selector& other ) {
 	return m_hash == other.m_hash;
 }
 
-bool Selector::Matches( Widget::PtrConst widget ) const {
+bool Selector::Matches( const Widget::PtrConst& widget ) const {
 	if( !widget ) {
 		return false;
 	}
@@ -451,11 +470,11 @@ bool Selector::Matches( Widget::PtrConst widget ) const {
 	// Recursion is your friend ;)
 
 	// Check if current stage is a pass...
-	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && m_state == -1 ) | // Wildcard
+	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && m_state == -1 ) || // Wildcard
 		 ( ( m_widget.empty() || m_widget == widget->GetName() ) && //
 		 ( m_id.empty() || m_id == widget->GetId() ) && // Selector and widget match
-		 ( m_class.empty() || m_class == widget->GetClass() ) && //
-		 ( m_state == (-1) || m_state == widget->GetState() ) ) ) { //
+		 ( m_class.empty() || m_class  == widget->GetClass() ) && //
+		 ( m_state == (-1) || m_state  == widget->GetState() ) ) ) { //
 		// Current stage is a pass...
 
 		// Differentiate between different hierarchy types

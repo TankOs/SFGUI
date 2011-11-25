@@ -2,8 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Button.hpp>
-
-#include <memory>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 
@@ -12,8 +11,8 @@ namespace sfg {
  */
 class SFGUI_API ToggleButton : public Button {
 	public:
-		typedef std::shared_ptr<ToggleButton> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const ToggleButton> PtrConst; //!< Shared pointer to const.
+		typedef SharedPtr<ToggleButton> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const ToggleButton> PtrConst; //!< Shared pointer to const.
 
 		/** Create toggle button.
 		 * @param label Label.

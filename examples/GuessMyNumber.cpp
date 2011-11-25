@@ -27,8 +27,8 @@ class GuessMyNumber {
 		void OnGuessClick();
 		void OnNewGameClick();
 
-		uint8_t m_number;
-		uint32_t m_tries;
+		unsigned char m_number;
+		unsigned int m_tries;
 
 		sfg::Entry::Ptr m_number_entry;
 		sfg::Label::Ptr m_tries_label;
@@ -55,7 +55,7 @@ GuessMyNumber::GuessMyNumber() :
 
 void GuessMyNumber::ResetGame() {
 	m_tries = 0;
-	m_number = static_cast<uint8_t>( std::rand() % 100 + 1 );
+	m_number = static_cast<unsigned char>( std::rand() % 100 + 1 );
 
 	m_hint_label->SetText( "-" );
 
@@ -75,7 +75,7 @@ void GuessMyNumber::OnNewGameClick() {
 
 void GuessMyNumber::OnGuessClick() {
 	// Validate number.
-	uint32_t buf_number( 0 );
+	unsigned int buf_number( 0 );
 
 	std::stringstream sstr( static_cast<std::string>( m_number_entry->GetText() ) );
 	sstr >> buf_number;
@@ -88,7 +88,7 @@ void GuessMyNumber::OnGuessClick() {
 	++m_tries;
 	UpdateUI();
 
-	uint8_t number( static_cast<uint8_t>( buf_number ) );
+	unsigned char number( static_cast<unsigned char>( buf_number ) );
 	if( number < m_number ) {
 		m_hint_label->SetText( "My number is higher." );
 	}

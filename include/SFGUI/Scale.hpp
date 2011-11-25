@@ -1,6 +1,7 @@
 #pragma once
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Range.hpp>
+#include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
 
@@ -8,8 +9,8 @@ namespace sfg {
  */
 class SFGUI_API Scale : public Range {
 	public:
-		typedef std::shared_ptr<Scale> Ptr; //!< Shared pointer.
-		typedef std::shared_ptr<const Scale> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Scale> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Scale> PtrConst; //!< Shared pointer.
 
 		/** Scale orientation.
 		 */

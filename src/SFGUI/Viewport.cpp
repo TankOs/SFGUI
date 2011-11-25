@@ -2,7 +2,7 @@
 
 namespace sfg {
 
-Viewport::Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) :
+Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) :
 	Bin()
 {
 	OnSizeRequest.Connect( &Viewport::HandleSizeRequest, this );
@@ -15,7 +15,7 @@ Viewport::Ptr Viewport::Create() {
 	return Viewport::Create( Adjustment::Create(), Adjustment::Create() );
 }
 
-Viewport::Ptr Viewport::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
+Viewport::Ptr Viewport::Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) {
 	Viewport::Ptr ptr( new Viewport( horizontal_adjustment, vertical_adjustment ) );
 	return ptr;
 }
@@ -142,19 +142,19 @@ sf::Vector2f Viewport::GetAbsolutePosition() const {
 	return sf::Vector2f( .0f, .0f );
 }
 
-Adjustment::Ptr Viewport::GetHorizontalAdjustment() const {
+const Adjustment::Ptr& Viewport::GetHorizontalAdjustment() const {
 	return m_horizontal_adjustment;
 }
 
-void Viewport::SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment ) {
+void Viewport::SetHorizontalAdjustment( const Adjustment::Ptr& horizontal_adjustment ) {
 	m_horizontal_adjustment = horizontal_adjustment;
 }
 
-Adjustment::Ptr Viewport::GetVerticalAdjustment() const {
+const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
 	return m_vertical_adjustment;
 }
 
-void Viewport::SetVerticalAdjustment( Adjustment::Ptr vertical_adjustment ) {
+void Viewport::SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment ) {
 	m_vertical_adjustment = vertical_adjustment;
 }
 

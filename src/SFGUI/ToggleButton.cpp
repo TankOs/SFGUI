@@ -31,7 +31,7 @@ RenderQueue* ToggleButton::InvalidateImpl() const {
 		GetChild()->Invalidate();
 	}
 
-	return Context::Get().GetEngine().CreateToggleButtonDrawable( std::dynamic_pointer_cast<const ToggleButton>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateToggleButtonDrawable( DynamicPointerCast<const ToggleButton>( shared_from_this() ) );
 }
 
 void ToggleButton::SetActive( bool active ) {
