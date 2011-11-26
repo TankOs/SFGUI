@@ -13,7 +13,10 @@ Desktop::Desktop( const sf::FloatRect& viewport ) :
 }
 
 Desktop::Desktop( const sf::Window& window ) :
-	m_view( sf::FloatRect( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) ) )
+	m_view( sf::FloatRect( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) ) ),
+	m_engine( 0 ),
+	m_children_size( 0 ),
+	m_skip_refresh( false )
 {
 }
 
