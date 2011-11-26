@@ -69,6 +69,7 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		DrawablesVector m_children;
 
 		GLuint m_display_list;
+		mutable GLint m_texture_id;
 
 		mutable bool m_display_list_compiled;
 };

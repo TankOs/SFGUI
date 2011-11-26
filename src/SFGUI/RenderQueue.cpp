@@ -64,7 +64,7 @@ const RenderQueue::DrawablesVector& RenderQueue::GetDrawables() const {
 	return m_children;
 }
 
-void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& /*renderer*/ ) const {
+void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& renderer ) const {
 	if( !m_display_list ) {
 		// Display list couldn't be created, render normally.
 
@@ -85,10 +85,21 @@ void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& /*renderer*/ )
 
 		glEndList();
 
+		// See what texture SFML bound so we can do the same...
+		glGetIntegerv( GL_TEXTURE_BINDING_2D, &m_texture_id );
+
 		m_display_list_compiled = true;
 	}
 	else {
+		// Bind the same texture SFML bound...
+		glBindTexture( GL_TEXTURE_2D, m_texture_id );
+
 		glCallList( m_display_list );
+
+		// Unbind if we bound something...
+		if( m_texture_id ) {
+			renderer.SetTexture( 0 );
+		}
 	}
 }
 

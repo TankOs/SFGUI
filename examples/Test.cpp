@@ -39,6 +39,9 @@ class SampleApp {
 		unsigned int m_fps_counter;
 		sf::Clock m_fps_clock;
 		bool m_cull;
+
+		sf::Texture m_background_texture;
+		sf::Sprite m_background_sprite;
 };
 
 class Ouchy : public std::enable_shared_from_this<Ouchy> {
@@ -77,6 +80,37 @@ SampleApp::SampleApp() :
 	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) ),
 	m_cull( true )
 {
+	m_background_texture.Create( 1024, 768 );
+
+	sf::Uint8* pixels = new sf::Uint8[ 1024 * 768 * 4 ];
+
+	sf::Uint8 pixel_value = 139;
+
+	for( std::size_t index = 0; index < 1024 * 768; ++index ) {
+		pixel_value = static_cast<sf::Uint8>( pixel_value ^ ( index + 809 ) );
+		pixel_value = static_cast<sf::Uint8>( pixel_value << ( index % 11 ) );
+		pixel_value = static_cast<sf::Uint8>( pixel_value * 233 );
+
+		pixels[ index * 4 + 0 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // R
+
+		pixel_value ^= static_cast<sf::Uint8>( index );
+		pixel_value = static_cast<sf::Uint8>( pixel_value * 23 );
+
+		pixels[ index * 4 + 1 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // G
+
+		pixel_value ^= static_cast<sf::Uint8>( index );
+		pixel_value = static_cast<sf::Uint8>( pixel_value * 193 );
+
+		pixels[ index * 4 + 2 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // B
+
+		pixels[ index * 4 + 3 ] = 255; // A
+	}
+
+	m_background_texture.Update( pixels );
+
+	m_background_sprite.SetTexture( m_background_texture );
+
+	delete[] pixels;
 }
 
 void SampleApp::Run() {
@@ -254,6 +288,7 @@ void SampleApp::Run() {
 
 		window.Clear( sf::Color( 80, 80, 80 ) );
 		culling_target.Cull( m_cull );
+		window.Draw( m_background_sprite );
 		m_desktop.Expose( culling_target );
 		window.Display();
 
