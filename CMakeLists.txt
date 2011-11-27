@@ -74,6 +74,7 @@ set(
 	${INC_DIR}/SFGUI/Entry.hpp
 	${INC_DIR}/SFGUI/FastDelegate.hpp
 	${INC_DIR}/SFGUI/FileResourceLoader.hpp
+	${INC_DIR}/SFGUI/Frame.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/NonCopyable.hpp
 	${INC_DIR}/SFGUI/Object.hpp
@@ -114,6 +115,7 @@ set(
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
 	${SRC_DIR}/SFGUI/Entry.cpp
 	${SRC_DIR}/SFGUI/FileResourceLoader.cpp
+	${SRC_DIR}/SFGUI/Frame.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/NonCopyable.cpp
 	${SRC_DIR}/SFGUI/Object.cpp

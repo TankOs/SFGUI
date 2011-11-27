@@ -11,6 +11,7 @@
 #include <SFGUI/CheckButton.hpp>
 #include <SFGUI/ProgressBar.hpp>
 #include <SFGUI/Separator.hpp>
+#include <SFGUI/Frame.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -103,6 +104,11 @@ BREW::BREW() :
 
 	// Separator-specific.
 	SetProperty( "Separator", "Color", sf::Color( 0x55, 0x57, 0x52 ) );
+
+	// Frame-specific.
+	SetProperty( "Frame", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "Frame", "Padding", 3.f );
+	SetProperty( "Frame", "LabelPadding", 5.f );
 }
 
 RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
@@ -934,10 +940,10 @@ RenderQueue* BREW::CreateSeparatorDrawable( SharedPtr<const Separator> separator
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Line(
-					0.f,
+					.5f,
 					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + .5f,
-					separator->GetAllocation().Width,
-					1.f,
+					std::floor( separator->GetAllocation().Width - .5f ) + .5f,
+					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + .5f,
 					1.f,
 					color_dark
 				)
@@ -947,10 +953,10 @@ RenderQueue* BREW::CreateSeparatorDrawable( SharedPtr<const Separator> separator
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Line(
-					0.f,
+					.5f,
 					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + 1.5f,
-					separator->GetAllocation().Width,
-					1.f,
+					std::floor( separator->GetAllocation().Width - .5f ) + .5f,
+					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + 1.5f,
 					1.f,
 					color_light
 				)
@@ -962,9 +968,9 @@ RenderQueue* BREW::CreateSeparatorDrawable( SharedPtr<const Separator> separator
 			new sf::Shape(
 				sf::Shape::Line(
 					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + .5f,
-					0.f,
-					1.f,
-					separator->GetAllocation().Height,
+					.5f,
+					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + .5f,
+					std::floor( separator->GetAllocation().Height - .5f ) + .5f,
 					1.f,
 					color_dark
 				)
@@ -975,15 +981,188 @@ RenderQueue* BREW::CreateSeparatorDrawable( SharedPtr<const Separator> separator
 			new sf::Shape(
 				sf::Shape::Line(
 					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + 1.5f,
-					0.f,
-					1.f,
-					separator->GetAllocation().Height,
+					.5f,
+					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + 1.5f,
+					std::floor( separator->GetAllocation().Height - .5f ) + .5f,
 					1.f,
 					color_light
 				)
 			)
 		);
 	}
+
+	return queue;
+}
+
+RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", frame ) );
+	sf::Color border_color_dark( border_color_light );
+	int border_color_shift( GetProperty<int>( "BorderColorShift", frame ) );
+	sf::Color color( GetProperty<sf::Color>( "Color", frame ) );
+	float border_width( GetProperty<float>( "BorderWidth", frame ) );
+	const std::string& font_name( GetProperty<std::string>( "FontName", frame ) );
+	unsigned int font_size( GetProperty<unsigned int>( "FontSize", frame ) );
+	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
+	float label_padding( GetProperty<float>( "LabelPadding", frame ) );
+
+	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
+
+	float line_height = GetLineHeight( font, font_size );
+
+	RenderQueue* queue( new RenderQueue );
+
+	// Bottom
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f,
+				border_width,
+				border_color_dark
+			)
+		)
+	);
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + border_width,
+				border_width,
+				border_color_light
+			)
+		)
+	);
+
+	// Left
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + border_width,
+				border_width,
+				border_color_light
+			)
+		)
+	);
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f,
+				border_width,
+				border_color_dark
+			)
+		)
+	);
+
+	// Right
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + 2 * border_width,
+				border_width,
+				border_color_light
+			)
+		)
+	);
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + 2 * border_width,
+				border_width,
+				border_color_dark
+			)
+		)
+	);
+
+	float label_start_x = line_height;
+	float label_end_x = line_height;
+
+	float alignment = frame->GetAlignment();
+
+	if( frame->GetLabel().GetSize() > 0 ) {
+		sf::Vector2f metrics = GetTextMetrics( frame->GetLabel(), font, font_size );
+		metrics.x += ( 2 * label_padding );
+
+		label_start_x += ( alignment * ( frame->GetAllocation().Width - 2 * line_height - metrics.x ) );
+		label_end_x += ( metrics.x + alignment * ( frame->GetAllocation().Width - 2 * line_height - metrics.x ) );
+
+		sf::Text* text( new sf::Text( frame->GetLabel(), font, font_size ) );
+		text->SetPosition( std::floor( label_start_x + label_padding + .5f ), .0f );
+		text->SetColor( color );
+		queue->Add( text );
+	}
+
+	// Top Left
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( label_start_x + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				border_width,
+				border_color_dark
+			)
+		)
+	);
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( label_start_x + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				border_width,
+				border_color_light
+			)
+		)
+	);
+
+	// Top Right
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( label_end_x + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				border_width,
+				border_color_dark
+			)
+		)
+	);
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( label_end_x + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				border_width,
+				border_color_light
+			)
+		)
+	);
 
 	return queue;
 }

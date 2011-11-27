@@ -5,22 +5,18 @@
 
 namespace sfg {
 
-/** Pushbutton.
+/** Frame.
  */
-class SFGUI_API Button : public Bin {
+class SFGUI_API Frame : public Bin {
 	public:
-		typedef SharedPtr<Button> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Button> PtrConst; //!< Shared pointer.
+		typedef SharedPtr<Frame> Ptr; //!< Shared pointer.
+		typedef SharedPtr<const Frame> PtrConst; //!< Shared pointer.
 
-		/** Create button.
+		/** Create frame.
 		 * @param label Label.
-		 * @return Button.
+		 * @return Frame.
 		 */
 		static Ptr Create( const sf::String& label = L"" );
-
-		/** Dtor.
-		 */
-		virtual ~Button();
 
 		virtual const std::string& GetName() const;
 
@@ -34,24 +30,29 @@ class SFGUI_API Button : public Bin {
 		 */
 		const sf::String& GetLabel() const;
 
-		Signal OnClick; //!< Fired when button clicked.
+		/** Set alignment
+		 * @param alignment Alignment (0..1 for x).
+		 */
+		void SetAlignment( float alignment );
+
+		/** Get alignment.
+		 * @return Alignment.
+		 */
+		float GetAlignment() const;
 
 	protected:
 		/** Ctor.
 		 */
-		Button();
+		Frame();
 
 		virtual RenderQueue* InvalidateImpl() const;
 		virtual sf::Vector2f CalculateRequisition();
 
-		void HandleMouseClick( sf::Mouse::Button button, int x, int y );
-
 	private:
-		void HandleMouseEnter( int x, int y );
-		void HandleMouseLeave( int x, int y );
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		sf::String m_label;
+		float m_alignment;
 };
 
 }

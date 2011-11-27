@@ -157,6 +157,9 @@ void SampleApp::Run() {
 	boxtoolbar->Pack( m_entry, true );
 	boxtoolbar->Pack( m_limit_check, false );
 
+	sfg::Frame::Ptr frame1( sfg::Frame::Create( L"Toolbar 1" ) );
+	frame1->Add( boxtoolbar );
+
 	sfg::Box::Ptr boxtoolbar2( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
 	boxtoolbar2->SetSpacing( 5.f );
 	boxtoolbar2->Pack( btntogglespace, false );
@@ -218,14 +221,18 @@ void SampleApp::Run() {
 	m_scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 	boxtoolbar2->Pack( m_scale, false );
 
+	sfg::Frame::Ptr frame2( sfg::Frame::Create( L"Toolbar 2" ) );
+	frame2->Add( boxtoolbar2 );
+	frame2->SetAlignment( .8f );
+
 	sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
 
 	sfg::Box::Ptr boxmain( sfg::Box::Create( sfg::Box::VERTICAL ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( scrollbar, false );
 	boxmain->Pack( m_progress, false );
-	boxmain->Pack( boxtoolbar, false );
-	boxmain->Pack( boxtoolbar2, false );
+	boxmain->Pack( frame1, false );
+	boxmain->Pack( frame2, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
 	boxmain->Pack( separatorh, false );
