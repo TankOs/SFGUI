@@ -21,3 +21,4 @@
 #include <SFGUI/CheckButton.hpp>
 #include <SFGUI/Viewport.hpp>
 #include <SFGUI/ProgressBar.hpp>
+#include <SFGUI/Separator.hpp>

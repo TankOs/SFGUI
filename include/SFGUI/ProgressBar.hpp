@@ -45,7 +45,7 @@ class SFGUI_API ProgressBar : public Widget {
 		 */
 		float GetFraction() const;
 
-		const std::string& GetName() const;
+		virtual const std::string& GetName() const;
 
 	private:
 		ProgressBar( Orientation orientation = HORIZONTAL );

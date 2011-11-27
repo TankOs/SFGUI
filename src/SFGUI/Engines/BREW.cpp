@@ -10,6 +10,7 @@
 #include <SFGUI/ToggleButton.hpp>
 #include <SFGUI/CheckButton.hpp>
 #include <SFGUI/ProgressBar.hpp>
+#include <SFGUI/Separator.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -99,6 +100,9 @@ BREW::BREW() :
 	SetProperty( "ProgressBar", "BarBorderColor", sf::Color( 0x67, 0x89, 0xab ) );
 	SetProperty( "ProgressBar", "BarBorderColorShift", 0x20 );
 	SetProperty( "ProgressBar", "BarBorderWidth", 1.f );
+
+	// Separator-specific.
+	SetProperty( "Separator", "Color", sf::Color( 0x55, 0x57, 0x52 ) );
 }
 
 RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
@@ -198,13 +202,61 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
 	RenderQueue* queue( new RenderQueue );
 
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + rect.Width - border_width + .1f, rect.Top + .1f, border_width, rect.Height, dark_color ) ) ); // Right.
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + .1f, rect.Top + rect.Height - border_width + .1f, rect.Width, border_width, dark_color ) ) ); // Bottom.
+	// Right.
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( rect.Left + rect.Width - border_width + .5f ) + .5f,
+				std::floor( rect.Top + .5f ) + .5f,
+				std::floor( rect.Left + rect.Width - border_width + .5f ) + .5f,
+				std::floor( rect.Top + rect.Height + .5f ) + .5f,
+				1.f,
+				dark_color
+			)
+		)
+	);
 
-	for( float delta = 0.f; delta < border_width; delta += 1.f ) {
-		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + .1f, rect.Top + delta + .1f, rect.Left + rect.Width - delta, rect.Top + delta, 1.f, light_color ) ) ); // Top.
-		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + delta + .1f, rect.Top + .1f, rect.Left + delta, rect.Top + rect.Height - delta, 1.f, light_color ) ) ); // Left.
-	}
+	// Bottom.
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( rect.Left + .5f ) + .5f,
+				std::floor( rect.Top + rect.Height - border_width + .5f ) + .5f,
+				std::floor( rect.Left + rect.Width + .5f ) + .5f,
+				std::floor( rect.Top + rect.Height - border_width + .5f ) + .5f,
+				1.f,
+				dark_color
+			)
+		)
+	);
+
+	// Top.
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( rect.Left + .5f ) + .5f,
+				std::floor( rect.Top + .5f ) + .5f,
+				std::floor( rect.Left + rect.Width - border_width + .5f ) + .5f,
+				std::floor( rect.Top + .5f ) + .5f,
+				1.f,
+				light_color
+			)
+		)
+	);
+
+	// Left.
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Line(
+				std::floor( rect.Left + .5f ) + .5f,
+				std::floor( rect.Top + .5f ) + .5f,
+				std::floor( rect.Left + .5f ) + .5f,
+				std::floor( rect.Top + rect.Height - border_width + .5f ) + .5f,
+				1.f,
+				light_color
+			)
+		)
+	);
 
 	return queue;
 }
@@ -462,20 +514,6 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	return queue;
 }
 
-RenderQueue* BREW::CreateAbsoluteBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
-	RenderQueue* queue( new RenderQueue );
-
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + rect.Width - border_width + .1f, rect.Top + .1f, border_width, rect.Height, dark_color ) ) ); // Right.
-	queue->Add( new sf::Shape( sf::Shape::Rectangle( rect.Left + .1f, rect.Top + rect.Height - border_width + .1f, rect.Width, border_width, dark_color ) ) ); // Bottom.
-
-	for( float delta = 0.f; delta < border_width; delta += 1.f ) {
-		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + .1f, rect.Top + delta + .1f, rect.Left + rect.Width - delta, rect.Top + delta, 1.f, light_color ) ) ); // Top.
-		queue->Add( new sf::Shape( sf::Shape::Line( rect.Left + delta + .1f, rect.Top + .1f, rect.Left + delta, rect.Top + rect.Height - delta, 1.f, light_color ) ) ); // Left.
-	}
-
-	return queue;
-}
-
 RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
 	RenderQueue* queue( new RenderQueue );
 
@@ -487,7 +525,7 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	aligned_rect.Height = std::floor( rect.Height + .5f );
 
 	queue->Add( new sf::Shape( sf::Shape::Rectangle( aligned_rect, background ) ) ); // Background.
-	queue->Add( CreateAbsoluteBorder( aligned_rect, border_width, light_color, dark_color ) ); // Border
+	queue->Add( CreateBorder( aligned_rect, border_width, light_color, dark_color ) ); // Border
 
 	return queue;
 }
@@ -557,10 +595,10 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	queue->Add( new sf::Shape( sf::Shape::Rectangle( aligned_rect, background ) ) ); // Background.
 
 	if( pressed ) {
-		queue->Add( CreateAbsoluteBorder( aligned_rect, border_width, dark_color, light_color ) );
+		queue->Add( CreateBorder( aligned_rect, border_width, dark_color, light_color ) );
 	}
 	else {
-		queue->Add( CreateAbsoluteBorder( aligned_rect, border_width, light_color, dark_color ) );
+		queue->Add( CreateBorder( aligned_rect, border_width, light_color, dark_color ) );
 	}
 
 	return queue;
@@ -827,20 +865,20 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 			float frac_width( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().Width * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				border_width,
-				border_width,
-				std::max( 0.f, frac_width - 2.f * border_width ),
-				std::max( 0.f, progress_bar->GetAllocation().Height - 2.f * border_width )
+				std::floor( border_width + .5f ),
+				std::floor( border_width + .5f ),
+				std::floor( std::max( 0.f, frac_width - 2.f * border_width ) + .5f ),
+				std::floor( std::max( 0.f, progress_bar->GetAllocation().Height - 2.f * border_width ) + .5f )
 			);
 		}
 		else {
 			float frac_height( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().Height * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				border_width,
-				std::max( 0.f, progress_bar->GetAllocation().Height - frac_height + border_width ),
-				std::max( 0.f, progress_bar->GetAllocation().Width - 2.f * border_width ),
-				std::max( 0.f, frac_height - 2.f * border_width )
+				std::floor( border_width + .5f ),
+				std::floor( std::max( 0.f, progress_bar->GetAllocation().Height - frac_height + border_width ) + .5f ),
+				std::floor( std::max( 0.f, progress_bar->GetAllocation().Width - 2.f * border_width ) + .5f ),
+				std::floor( std::max( 0.f, frac_height - 2.f * border_width ) + .5f )
 			);
 		}
 
@@ -879,6 +917,73 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 			border_color_light
 		)
 	);
+
+	return queue;
+}
+
+RenderQueue* BREW::CreateSeparatorDrawable( SharedPtr<const Separator> separator ) const {
+	sf::Color color_light( GetProperty<sf::Color>( "Color", separator ) );
+	sf::Color color_dark( color_light );
+	int color_shift( GetProperty<int>( "BorderColorShift", separator ) );
+
+	ShiftBorderColors( color_light, color_dark, color_shift );
+
+	RenderQueue* queue( new RenderQueue );
+
+	if( separator->GetOrientation() == Separator::HORIZONTAL ) {
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Line(
+					0.f,
+					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + .5f,
+					separator->GetAllocation().Width,
+					1.f,
+					1.f,
+					color_dark
+				)
+			)
+		);
+
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Line(
+					0.f,
+					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + 1.5f,
+					separator->GetAllocation().Width,
+					1.f,
+					1.f,
+					color_light
+				)
+			)
+		);
+	}
+	else {
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Line(
+					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + .5f,
+					0.f,
+					1.f,
+					separator->GetAllocation().Height,
+					1.f,
+					color_dark
+				)
+			)
+		);
+
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Line(
+					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + 1.5f,
+					0.f,
+					1.f,
+					separator->GetAllocation().Height,
+					1.f,
+					color_light
+				)
+			)
+		);
+	}
 
 	return queue;
 }

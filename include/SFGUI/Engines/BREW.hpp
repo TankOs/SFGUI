@@ -26,6 +26,7 @@ class SFGUI_API BREW : public Engine {
 		RenderQueue* CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar ) const;
 		RenderQueue* CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> scrolled_window ) const;
 		RenderQueue* CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const;
+		RenderQueue* CreateSeparatorDrawable( SharedPtr<const Separator> seperator ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.
@@ -35,15 +36,6 @@ class SFGUI_API BREW : public Engine {
 		 * @return RenderQueue containing border (unmanaged memory!).
 		 */
 		static RenderQueue* CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
-
-		/** Utility function to create borders taking an absolute position.
-		 * @param rect Rectangle with absolute position.
-		 * @param border_width Border width.
-		 * @param light_color Color of lightened edges.
-		 * @param dark_color Color of darkened edges.
-		 * @return RenderQueue containing border (unmanaged memory!).
-		 */
-		static RenderQueue* CreateAbsoluteBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
 
 		/** Utility function to create sliders.
 		 * @param rect Rectangle with absolute position.

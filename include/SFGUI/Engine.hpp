@@ -32,6 +32,7 @@ class ScrolledWindow;
 class ToggleButton;
 class CheckButton;
 class ProgressBar;
+class Separator;
 
 /** Abstract base class for widget rendering.
  */
@@ -102,6 +103,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual RenderQueue* CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const = 0;
+
+		/** Create drawable for seperator widgets.
+		 * @param seperator Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual RenderQueue* CreateSeparatorDrawable( SharedPtr<const Separator> seperator ) const = 0;
 
 		/** Get line height of a font.
 		 * @param font Font.

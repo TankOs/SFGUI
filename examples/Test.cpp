@@ -178,6 +178,8 @@ void SampleApp::Run() {
 	m_progress_vert = sfg::ProgressBar::Create( sfg::ProgressBar::VERTICAL );
 	m_progress_vert->SetRequisition( sf::Vector2f( 20.f, 0.f ) );
 
+	sfg::Separator::Ptr separatorv( sfg::Separator::Create( sfg::Separator::VERTICAL ) );
+
 	m_table = sfg::Table::Create();
 	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<sf::Uint32>( 0, 0, 2, 1 ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
 	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
@@ -185,7 +187,8 @@ void SampleApp::Run() {
 	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->Attach( password, sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 2, 1, 1, 2 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( m_progress_vert, sf::Rect<sf::Uint32>( 3, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( separatorv, sf::Rect<sf::Uint32>( 3, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( m_progress_vert, sf::Rect<sf::Uint32>( 4, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
 
@@ -215,6 +218,8 @@ void SampleApp::Run() {
 	m_scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 	boxtoolbar2->Pack( m_scale, false );
 
+	sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
+
 	sfg::Box::Ptr boxmain( sfg::Box::Create( sfg::Box::VERTICAL ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( scrollbar, false );
@@ -223,6 +228,7 @@ void SampleApp::Run() {
 	boxmain->Pack( boxtoolbar2, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
+	boxmain->Pack( separatorh, false );
 	boxmain->Pack( m_table, true );
 	boxmain->Pack( m_scrolled_window );
 
