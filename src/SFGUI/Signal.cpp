@@ -21,4 +21,8 @@ void Signal::operator()() const {
 	}
 }
 
+void Signal::Disconnect( unsigned int serial ) {
+	m_delegates.erase( serial );
+}
+
 }
