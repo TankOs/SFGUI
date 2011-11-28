@@ -3,21 +3,21 @@
 namespace sfg {
 
 Signal::Signal() :
-	m_serial( 1 ),
-	m_delegates_count( 0 )
+	m_serial( 1 )
 {
 }
 
 unsigned int Signal::Connect( Delegate delegate ) {
-	DelegatePair delegate_pair = { m_serial, delegate };
-	m_delegates.push_back( delegate_pair );
-	++m_delegates_count;
+	m_delegates[m_serial] = delegate;
 	return m_serial++;
 }
 
 void Signal::operator()() const {
-	for( std::size_t index = 0; index < m_delegates_count; ++index ) {
-		m_delegates[index].delegate();
+	DelegateMap::const_iterator dg_iter( m_delegates.begin() );
+	DelegateMap::const_iterator dg_iter_end( m_delegates.end() );
+
+	for( ; dg_iter != dg_iter_end; ++dg_iter ) {
+		dg_iter->second();
 	}
 }
 

@@ -3,7 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/FastDelegate.hpp>
 
-#include <vector>
+#include <map>
 
 namespace sfg {
 
@@ -46,16 +46,10 @@ class SFGUI_API Signal {
 		void operator()() const;
 
 	private:
-		struct DelegatePair {
-			unsigned int serial;
-			Delegate delegate;
-		};
-
-		typedef std::vector<DelegatePair> DelegateMap;
+		typedef std::map<uint32_t, Delegate> DelegateMap;
 
 		unsigned int m_serial;
 		DelegateMap m_delegates;
-		std::size_t m_delegates_count;
 };
 
 }

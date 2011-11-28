@@ -71,8 +71,6 @@ void Viewport::Expose( CullingTarget& target ) const {
 
 			target.PopView();
 		}
-
-		OnExpose();
 	}
 }
 

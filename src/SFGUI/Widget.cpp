@@ -158,7 +158,6 @@ void Widget::Expose( CullingTarget& target ) const {
 		}
 
 		HandleExpose( target );
-		OnExpose();
 	}
 }
 
