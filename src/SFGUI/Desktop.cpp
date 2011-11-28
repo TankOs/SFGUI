@@ -22,6 +22,10 @@ Desktop::~Desktop() {
 	delete m_engine;
 }
 
+void Desktop::UpdateViewRect( const sf::FloatRect& rect ) {
+	m_view.Reset( rect );
+}
+
 void Desktop::Expose( sf::RenderTarget& target ) const {
 	CullingTarget culling_target( target );
 	culling_target.Cull( false );

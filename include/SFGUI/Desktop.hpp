@@ -105,6 +105,11 @@ class SFGUI_API Desktop {
 		 */
 		Engine& GetEngine();
 
+		/** Update view's rect.
+		 * @param rect Rect.
+		 */
+		void UpdateViewRect( const sf::FloatRect& rect );
+
 	private:
 		typedef std::vector<SharedPtr<Widget> > WidgetsList;
 

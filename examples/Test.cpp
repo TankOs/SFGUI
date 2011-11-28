@@ -292,11 +292,14 @@ void SampleApp::Run() {
 
 	while( window.IsOpened() ) {
 		while( window.PollEvent( event ) ) {
-			m_desktop.HandleEvent( event );
-
 			if( event.Type == sf::Event::Closed ) {
 				window.Close();
 			}
+			else if( event.Type == sf::Event::Resized ) {
+				m_desktop.UpdateViewRect( sf::FloatRect( 0.f, 0.f, static_cast<float>( event.Size.Width ), static_cast<float>( event.Size.Height ) ) );
+			}
+
+			m_desktop.HandleEvent( event );
 		}
 
 		window.Clear( sf::Color( 80, 80, 80 ) );
