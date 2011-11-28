@@ -8,14 +8,12 @@ namespace sfg {
 Desktop::Desktop( const sf::FloatRect& viewport ) :
 	m_view( viewport ),
 	m_engine( 0 ),
-	m_children_size( 0 ),
 	m_skip_refresh( false ){
 }
 
 Desktop::Desktop( const sf::Window& window ) :
 	m_view( sf::FloatRect( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) ) ),
 	m_engine( 0 ),
-	m_children_size( 0 ),
 	m_skip_refresh( false )
 {
 }
@@ -39,7 +37,7 @@ void Desktop::Expose( CullingTarget& target ) const {
 	Context::Activate( m_context );
 
 	// Expose children.
-	for( int index = m_children_size - 1; index >= 0; --index ) {
+	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
 		m_children[index]->Expose( target );
 	}
 
@@ -142,7 +140,6 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 
 void Desktop::Add( SharedPtr<Widget> widget ) {
 	m_children.insert( m_children.begin(), widget );
-	++m_children_size;
 	widget->Refresh();
 }
 
@@ -171,7 +168,6 @@ void Desktop::RemoveObsoleteChildren() {
 		}
 
 		m_children.erase( w_iter );
-		--m_children_size;
 	}
 
 	m_obsolete_children.clear();
@@ -186,7 +182,7 @@ void Desktop::Refresh() {
 	// Activate context.
 	Context::Activate( m_context );
 
-	for( int index = m_children_size - 1; index >= 0; --index ) {
+	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
 		m_children[index]->Refresh();
 	}
 

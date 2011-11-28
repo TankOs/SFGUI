@@ -4,8 +4,7 @@ namespace sfg {
 
 Container::Container() :
 	Widget(),
-	m_border_width( 0.f ),
-	m_children_size( 0 )
+	m_border_width( 0.f )
 {
 }
 
@@ -18,7 +17,6 @@ void Container::Add( const Widget::Ptr& widget ) {
 	}
 
 	m_children.push_back( widget );
-	++m_children_size;
 	HandleAdd( widget );
 
 	// Check if HandleAdd still wants the little boy.
@@ -33,7 +31,6 @@ void Container::Remove( const Widget::Ptr& widget ) {
 
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
-		--m_children_size;
 		RequestResize();
 
 		HandleRemove( widget );
@@ -41,7 +38,9 @@ void Container::Remove( const Widget::Ptr& widget ) {
 }
 
 bool Container::IsChild( const Widget::Ptr& widget ) const {
-	for( std::size_t index = 0; index < m_children_size; ++index ) {
+	std::size_t children_size = m_children.size();
+
+	for( std::size_t index = 0; index < children_size; ++index ) {
 		if( m_children[index] == widget ) {
 			return true;
 		}
@@ -55,7 +54,9 @@ const Container::WidgetsList& Container::GetChildren() const {
 }
 
 void Container::HandleExpose( CullingTarget& target ) const {
-	for( std::size_t index = 0; index < m_children_size; ++index ) {
+	std::size_t children_size = m_children.size();
+
+	for( std::size_t index = 0; index < children_size; ++index ) {
 		m_children[index]->Expose( target );
 	}
 }
@@ -71,7 +72,9 @@ float Container::GetBorderWidth() const {
 }
 
 void Container::Refresh() {
-	for( std::size_t index = 0; index < m_children_size; ++index ) {
+	std::size_t children_size = m_children.size();
+
+	for( std::size_t index = 0; index < children_size; ++index ) {
 		m_children[index]->Refresh();
 	}
 
@@ -101,8 +104,10 @@ void Container::HandleEvent( const sf::Event& event ) {
 		local_event.MouseButton.Y -= static_cast<int>( GetAllocation().Top );
 	}
 
+	std::size_t children_size = m_children.size();
+
 	// Pass event to children.
-	for( std::size_t index = 0; index < m_children_size; ++index ) {
+	for( std::size_t index = 0; index < children_size; ++index ) {
 		m_children[index]->HandleEvent( local_event );
 	}
 
@@ -125,8 +130,10 @@ void Container::HandleChildInvalidate( const Widget::PtrConst& child ) const {
 }
 
 void Container::HandleAbsolutePositionChange() {
+	std::size_t children_size = m_children.size();
+
 	// Update children's drawable positions.
-	for( std::size_t index = 0; index < m_children_size; ++index ) {
+	for( std::size_t index = 0; index < children_size; ++index ) {
 		m_children[index]->HandleAbsolutePositionChange();
 	}
 

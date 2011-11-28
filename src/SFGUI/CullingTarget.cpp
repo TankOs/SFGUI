@@ -7,8 +7,6 @@ CullingTarget::CullingTarget( sf::RenderTarget& target ) :
 	m_cull_count( std::pair<std::size_t, std::size_t>( 0, 0 ) ),
 	m_cull( true ),
 	m_out_of_view( false ),
-	m_view_stack_size( 0 ),
-	m_view_cache_size( 0 ),
 	m_last_view_id( 0 )
 {
 	PushView( m_real_target.GetView() );
@@ -16,13 +14,12 @@ CullingTarget::CullingTarget( sf::RenderTarget& target ) :
 
 void CullingTarget::PushView( const sf::View& view ) {
 	m_view_stack.push_back( view );
-	++m_view_stack_size;
 
 	UpdateView();
 }
 
 void CullingTarget::PopView() {
-	if( m_view_stack_size == 1 ) {
+	if( m_view_stack.size() == 1 ) {
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: Can't pop last view from view stack." << std::endl;
 #endif
@@ -30,13 +27,12 @@ void CullingTarget::PopView() {
 	}
 
 	m_view_stack.pop_back();
-	--m_view_stack_size;
 
 	UpdateView();
 }
 
 void CullingTarget::UpdateView() {
-	const sf::View& view = m_view_stack[ m_view_stack_size - 1 ];
+	const sf::View& view = m_view_stack[ m_view_stack.size() - 1 ];
 
 	m_real_target.SetView( view );
 
@@ -64,8 +60,10 @@ void CullingTarget::UpdateView() {
 		m_out_of_view = false;
 	}
 
+	std::size_t view_cache_size = m_view_cache.size();
+
 	// Check if view AABB is already in cache
-	for( std::size_t index = 0; index < m_view_cache_size; ++index ) {
+	for( std::size_t index = 0; index < view_cache_size; ++index ) {
 		const ViewCachePair& cache_pair = m_view_cache[ index ];
 		if( m_view_aabb.Left == cache_pair.aabb.Left &&
 				m_view_aabb.Top == cache_pair.aabb.Top &&
@@ -77,19 +75,17 @@ void CullingTarget::UpdateView() {
 	}
 
 	// Kick out an old view AABB and add new view AABB to cache
-	if( m_view_cache_size >= 8 ) {
+	if( view_cache_size >= 8 ) {
 		m_view_cache.erase( m_view_cache.begin() );
-		--m_view_cache_size;
 	}
 
 	ViewCachePair view_cache_pair = { ++m_last_view_id, m_view_aabb };
 
 	m_view_cache.push_back( view_cache_pair );
-	++m_view_cache_size;
 }
 
 const sf::View& CullingTarget::GetView() const {
-	return m_view_stack[ m_view_stack_size - 1 ];
+	return m_view_stack[ m_view_stack.size() - 1 ];
 }
 
 unsigned int CullingTarget::GetWidth() const {

@@ -87,10 +87,8 @@ class SFGUI_API CullingTarget {
 		bool m_out_of_view;
 
 		std::vector<sf::View> m_view_stack;
-		std::size_t m_view_stack_size;
 
 		std::vector<ViewCachePair> m_view_cache;
-		std::size_t m_view_cache_size;
 
 		unsigned int m_current_view_id;
 		unsigned int m_last_view_id;

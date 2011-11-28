@@ -46,7 +46,7 @@ class SFGUI_API Signal {
 		void operator()() const;
 
 	private:
-		typedef std::map<uint32_t, Delegate> DelegateMap;
+		typedef std::map<unsigned int, Delegate> DelegateMap;
 
 		unsigned int m_serial;
 		DelegateMap m_delegates;
