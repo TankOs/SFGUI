@@ -2,6 +2,8 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <iostream>
+
 namespace sfg {
 
 Frame::Frame() :
@@ -46,17 +48,17 @@ sf::Vector2f Frame::CalculateRequisition() {
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 	float label_padding( Context::Get().GetEngine().GetProperty<float>( "LabelPadding", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
-	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
-	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
-	metrics.x += 2 * label_padding;
+	sf::Vector2f requisition( Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size ) );
+	requisition.x += 2 * label_padding + 4 * border_width;
+	requisition.y = Context::Get().GetEngine().GetLineHeight( font, font_size ) + 4 * border_width;
 
 	Widget::Ptr child = GetChild();
-
-	sf::Vector2f requisition(
-		2 * ( metrics.y + padding ) + ( child ? child->GetRequisition().x : metrics.x ),
-		2 * ( metrics.y + padding ) + ( child ? child->GetRequisition().y : .0f )
-	);
+	if( child ) {
+		requisition.x += 2.f * padding + child->GetRequisition().x;
+		requisition.y += 2.f * padding + child->GetRequisition().y;
+	}
 
 	return requisition;
 }
@@ -67,25 +69,24 @@ const std::string& Frame::GetName() const {
 }
 
 void Frame::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
-	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
-	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
-	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
-	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
-
-	float line_height = Context::Get().GetEngine().GetLineHeight( font, font_size );
-
 	Widget::Ptr child = GetChild();
-
 	if( !child ) {
 		return;
 	}
 
-	sf::FloatRect allocation = GetAllocation();
+	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
+	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
+	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
+	float line_height( Context::Get().GetEngine().GetLineHeight( font, font_size ) );
 
-	allocation.Left = line_height + padding + 1.f;
-	allocation.Top = line_height + padding + 1.f;
-	allocation.Width -= 2 * ( line_height + padding );
-	allocation.Height -= 2 * ( line_height + padding );
+	sf::FloatRect allocation( GetAllocation() );
+
+	allocation.Left = padding + 2 * border_width;
+	allocation.Top = line_height + padding + 2 * border_width;
+	allocation.Width -= 2 * padding + 4 * border_width;
+	allocation.Height -= line_height + 2 * padding + 4 * border_width;
 
 	child->SetAllocation( allocation );
 }

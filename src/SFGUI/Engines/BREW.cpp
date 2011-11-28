@@ -71,7 +71,6 @@ BREW::BREW() :
 
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
-	SetProperty( "Entry", "BorderColor", sf::Color( 0x30, 0x32, 0x2f ) );
 	SetProperty( "Entry", "Color", sf::Color::White );
 
 	// Scale-specific.
@@ -107,7 +106,7 @@ BREW::BREW() :
 
 	// Frame-specific.
 	SetProperty( "Frame", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
-	SetProperty( "Frame", "Padding", 3.f );
+	SetProperty( "Frame", "Padding", 7.f );
 	SetProperty( "Frame", "LabelPadding", 5.f );
 }
 
@@ -207,62 +206,50 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 
 RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
 	RenderQueue* queue( new RenderQueue );
-
-	// Right.
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( rect.Left + rect.Width - border_width + .5f ) + .5f,
-				std::floor( rect.Top + .5f ) + .5f,
-				std::floor( rect.Left + rect.Width - border_width + .5f ) + .5f,
-				std::floor( rect.Top + rect.Height + .5f ) + .5f,
-				1.f,
-				dark_color
-			)
-		)
+	sf::FloatRect rounded_rect(
+		std::floor( rect.Left + .5f ),
+		std::floor( rect.Top + .5f ),
+		std::floor( rect.Width + .5f ),
+		std::floor( rect.Height + .5f )
 	);
 
-	// Bottom.
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( rect.Left + .5f ) + .5f,
-				std::floor( rect.Top + rect.Height - border_width + .5f ) + .5f,
-				std::floor( rect.Left + rect.Width + .5f ) + .5f,
-				std::floor( rect.Top + rect.Height - border_width + .5f ) + .5f,
-				1.f,
-				dark_color
-			)
-		)
-	);
+	border_width = std::floor( border_width + .5f );
 
-	// Top.
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( rect.Left + .5f ) + .5f,
-				std::floor( rect.Top + .5f ) + .5f,
-				std::floor( rect.Left + rect.Width - border_width + .5f ) + .5f,
-				std::floor( rect.Top + .5f ) + .5f,
-				1.f,
-				light_color
-			)
-		)
-	);
+	sf::Shape* right( new sf::Shape );
+	right->EnableFill( true );
+	right->EnableOutline( false );
+	right->AddPoint( rect.Left + rect.Width, rect.Top, dark_color );
+	right->AddPoint( rect.Left + rect.Width - border_width, rect.Top + border_width, dark_color );
+	right->AddPoint( rect.Left + rect.Width - border_width, rect.Top + rect.Height - border_width, dark_color );
+	right->AddPoint( rect.Left + rect.Width, rect.Top + rect.Height, dark_color );
+	queue->Add( right );
 
-	// Left.
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( rect.Left + .5f ) + .5f,
-				std::floor( rect.Top + .5f ) + .5f,
-				std::floor( rect.Left + .5f ) + .5f,
-				std::floor( rect.Top + rect.Height - border_width + .5f ) + .5f,
-				1.f,
-				light_color
-			)
-		)
-	);
+	sf::Shape* bottom( new sf::Shape );
+	bottom->EnableFill( true );
+	bottom->EnableOutline( false );
+	bottom->AddPoint( rect.Left + rect.Width - border_width, rect.Top + rect.Height - border_width, dark_color );
+	bottom->AddPoint( rect.Left + border_width, rect.Top + rect.Height - border_width, dark_color );
+	bottom->AddPoint( rect.Left, rect.Top + rect.Height, dark_color );
+	bottom->AddPoint( rect.Left + rect.Width, rect.Top + rect.Height, dark_color );
+	queue->Add( bottom );
+
+	sf::Shape* left( new sf::Shape );
+	left->EnableFill( true );
+	left->EnableOutline( false );
+	left->AddPoint( rect.Left, rect.Top, light_color );
+	left->AddPoint( rect.Left, rect.Top + rect.Height, light_color );
+	left->AddPoint( rect.Left + border_width, rect.Top + rect.Height - border_width, light_color );
+	left->AddPoint( rect.Left + border_width, rect.Top + border_width, light_color );
+	queue->Add( left );
+
+	sf::Shape* top( new sf::Shape );
+	top->EnableFill( true );
+	top->EnableOutline( false );
+	top->AddPoint( rect.Left, rect.Top, light_color );
+	top->AddPoint( rect.Left + border_width, rect.Top + border_width, light_color );
+	top->AddPoint( rect.Left + rect.Width - border_width, rect.Top + border_width, light_color );
+	top->AddPoint( rect.Left + rect.Width, rect.Top, light_color );
+	queue->Add( top );
 
 	return queue;
 }
@@ -475,8 +462,11 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	float text_padding( GetProperty<float>( "Padding", entry ) );
 	float cursor_thickness( GetProperty<float>( "Thickness", entry ) );
 	float border_width( GetProperty<float>( "BorderWidth", entry ) );
+	int border_color_shift( GetProperty<int>( "BorderColorShift", entry ) );
 	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", entry ) ) );
 	const unsigned int& font_size( GetProperty<unsigned int>( "FontSize", entry ) );
+
+	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -1015,12 +1005,12 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f,
+				0.f + .5f,
+				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
+				frame->GetAllocation().Width + .5f,
+				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
 				border_width,
-				border_color_dark
+				border_color_light
 			)
 		)
 	);
@@ -1028,12 +1018,12 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + border_width,
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + border_width,
+				0.f + .5f,
+				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
+				frame->GetAllocation().Width - border_width + .5f,
+				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
 				border_width,
-				border_color_light
+				border_color_dark
 			)
 		)
 	);
@@ -1042,12 +1032,12 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
+				0.f + .5f,
 				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + border_width,
+				0.f + .5f,
+				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
 				border_width,
-				border_color_light
+				border_color_dark
 			)
 		)
 	);
@@ -1055,12 +1045,12 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
-				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				border_width + .5f,
 				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f,
+				border_width + .5f,
+				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
 				border_width,
-				border_color_dark
+				border_color_light
 			)
 		)
 	);
@@ -1069,10 +1059,10 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + 2 * border_width,
+				std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f,
+				std::floor( line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
 				border_width,
 				border_color_light
 			)
@@ -1082,10 +1072,10 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( frame->GetAllocation().Width - 2.f * border_width + .5f ) + .5f,
 				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f + border_width,
-				std::floor( frame->GetAllocation().Height - line_height / 2.f + .5f ) + .5f + 2 * border_width,
+				std::floor( frame->GetAllocation().Width - 2.f * border_width + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
 				border_width,
 				border_color_dark
 			)
@@ -1114,7 +1104,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
-				std::floor( line_height / 2.f + .5f ) + .5f,
+				0.f + .5f,
 				std::floor( line_height / 2.f + .5f ) + .5f,
 				std::floor( label_start_x + .5f ) + .5f,
 				std::floor( line_height / 2.f + .5f ) + .5f,
@@ -1127,10 +1117,10 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Line(
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				border_width + .5f,
+				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
 				std::floor( label_start_x + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
 				border_width,
 				border_color_light
 			)
@@ -1143,7 +1133,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 			sf::Shape::Line(
 				std::floor( label_end_x + .5f ) + .5f,
 				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Width + .5f ) + .5f,
 				std::floor( line_height / 2.f + .5f ) + .5f,
 				border_width,
 				border_color_dark
@@ -1155,9 +1145,9 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 		new sf::Shape(
 			sf::Shape::Line(
 				std::floor( label_end_x + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
-				std::floor( frame->GetAllocation().Width - line_height / 2.f + .5f ) + .5f + border_width,
-				std::floor( line_height / 2.f + .5f ) + .5f + border_width,
+				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
+				std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f,
+				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
 				border_width,
 				border_color_light
 			)
