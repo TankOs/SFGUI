@@ -8,7 +8,7 @@
 #include <SFML/Graphics/View.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <string>
-#include <vector>
+#include <deque>
 
 namespace sf {
 class Event;
@@ -111,7 +111,7 @@ class SFGUI_API Desktop {
 		void UpdateViewRect( const sf::FloatRect& rect );
 
 	private:
-		typedef std::vector<SharedPtr<Widget> > WidgetsList;
+		typedef std::deque<SharedPtr<Widget> > WidgetsList;
 
 		sf::Vector2f TransformToLocal( const sf::Vector2f& global ) const;
 		void RemoveObsoleteChildren();

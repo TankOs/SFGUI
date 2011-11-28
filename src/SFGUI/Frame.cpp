@@ -2,8 +2,6 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
-#include <iostream>
-
 namespace sfg {
 
 Frame::Frame() :

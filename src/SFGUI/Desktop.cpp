@@ -143,7 +143,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 }
 
 void Desktop::Add( SharedPtr<Widget> widget ) {
-	m_children.insert( m_children.begin(), widget );
+	m_children.push_front( widget );
 	widget->Refresh();
 }
 
