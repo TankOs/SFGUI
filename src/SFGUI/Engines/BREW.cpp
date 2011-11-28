@@ -37,6 +37,7 @@ BREW::BREW() :
 	// Window-specific.
 	SetProperty( "Window", "TitleHeight", 25.f );
 	SetProperty( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
+	SetProperty( "Window", "TitlePadding", 5.f );
 	SetProperty( "Window", "HandleSize", 10.f );
 	SetProperty( "Window", "ShadowDistance", 3.f );
 	SetProperty( "Window", "ShadowAlpha", 100.f );
@@ -119,6 +120,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	sf::Color title_text_color( GetProperty<sf::Color>( "Color", window ) );
 	float border_width( GetProperty<float>( "BorderWidth", window ) );
 	float title_size( GetProperty<float>( "TitleHeight", window ) );
+	float title_padding( GetProperty<float>( "TitlePadding", window ) );
 	float shadow_distance( GetProperty<float>( "ShadowDistance", window ) );
 	float handle_size( GetProperty<float>( "HandleSize", window ) );
 	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
@@ -180,6 +182,9 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			)
 		);
 
+		// Find out visible text, count in "...".
+		float avail_width( window->GetAllocation().Width - 2.f * border_width  - 2.f * title_padding );
+
 		sf::Text* title_text(
 			new sf::Text(
 				window->GetTitle(),
@@ -188,9 +193,30 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			)
 		);
 
+		if( title_text->GetRect().Width > avail_width ) {
+			sf::Text dots( "...", title_font, title_font_size );
+			const sf::String& title_string( window->GetTitle() );
+			sf::String visible_title;
+
+			avail_width = window->GetAllocation().Width - 2.f * border_width  - 2.f * title_padding - dots.GetRect().Width;
+
+			for( std::size_t ch_index = 0; ch_index < title_string.GetSize(); ++ch_index ) {
+				avail_width -= static_cast<float>( title_font.GetGlyph( title_string[ch_index], title_font_size, false ).Advance );
+
+				if( avail_width < 0.f ) {
+					visible_title += "...";
+					break;
+				}
+
+				visible_title += title_string[ch_index];
+			}
+
+			title_text->SetString( visible_title );
+		}
+
 		// Calculate title text position.
 		sf::Vector2f title_position(
-			std::floor( border_width + 5.f + .5f ),
+			std::floor( border_width + title_padding + .5f ),
 			std::floor( border_width + ((title_size / 2.f) - (static_cast<float>( title_font_size ) / 2.f)) + .5f )
 		);
 

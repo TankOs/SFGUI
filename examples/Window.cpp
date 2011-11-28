@@ -20,7 +20,7 @@ int main() {
 	window = sfg::Window::Create();
 
 	// Here we can set the window's title bar text.
-	window->SetTitle( "Title" );
+	window->SetTitle( "A really really really really long title" );
 
 	// For more things to set around the window refer to the
 	// API documentation.
