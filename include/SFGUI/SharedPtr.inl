@@ -123,6 +123,10 @@ SHARED_PTR_INLINE_ATTR bool operator==( const StrongReferenceCount& left, const 
 	return left.m_reference_count == right.m_reference_count;
 }
 
+SHARED_PTR_INLINE_ATTR bool operator<( const StrongReferenceCount& left, const StrongReferenceCount& right ) {
+	return std::less<ReferenceCountBase*>()( left.m_reference_count, right.m_reference_count );
+}
+
 SHARED_PTR_INLINE_ATTR WeakReferenceCount::WeakReferenceCount() :
 	m_reference_count( 0 )
 {
@@ -334,6 +338,11 @@ SHARED_PTR_INLINE_ATTR bool operator!=( const SharedPtr<T>& left, const SharedPt
 }
 
 template<typename T, typename U>
+SHARED_PTR_INLINE_ATTR bool operator<( const SharedPtr<T>& left, const SharedPtr<U>& right ) {
+	return left.m_reference_count < right.m_reference_count;
+}
+
+template<typename T, typename U>
 SHARED_PTR_INLINE_ATTR SharedPtr<T> StaticPointerCast( const SharedPtr<U>& shared_pointer ) {
 	return SharedPtr<T>( shared_pointer, typename SharedPtr<T>::StaticCastTag() );
 }
@@ -410,11 +419,6 @@ SHARED_PTR_INLINE_ATTR void EnableSharedFromThis<T>::SetSharedInstance( const Sh
 	if( !m_weak_pointer.use_count() ) {
 		m_weak_pointer = SharedPtr<T>( *shared_pointer, pointer );
 	}
-}
-
-template<typename T, typename U>
-SHARED_PTR_INLINE_ATTR bool operator<( const SharedPtr<T>& left, const SharedPtr<U>& right ) {
-	return left.get() < right.get();
 }
 
 }

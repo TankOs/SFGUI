@@ -3,6 +3,7 @@
 #include <SFGUI/NonCopyable.hpp>
 
 #include <cassert>
+#include <functional>
 
 ///////////////////////////////////////
 // WARNING:
@@ -109,7 +110,9 @@ class StrongReferenceCount {
 
 		unsigned int UseCount() const;
 
-		friend inline bool operator==( const StrongReferenceCount& left, const StrongReferenceCount& right );
+		friend SHARED_PTR_INLINE_ATTR bool operator==( const StrongReferenceCount& left, const StrongReferenceCount& right );
+
+		friend SHARED_PTR_INLINE_ATTR bool operator<( const StrongReferenceCount& left, const StrongReferenceCount& right );
 
 	private:
 		ReferenceCountBase* m_reference_count;
@@ -133,7 +136,7 @@ class WeakReferenceCount {
 
 		unsigned int UseCount() const;
 
-		friend inline bool operator==( const WeakReferenceCount& left, const WeakReferenceCount& right );
+		friend SHARED_PTR_INLINE_ATTR bool operator==( const WeakReferenceCount& left, const WeakReferenceCount& right );
 
 	private:
 		ReferenceCountBase* m_reference_count;
@@ -142,9 +145,9 @@ class WeakReferenceCount {
 };
 
 template<typename T, typename U, typename V>
-inline void RegisterSharedInstance( const SharedPtr<T>* shared_pointer, const U* pointer, const EnableSharedFromThis<V>* base_pointer );
+SHARED_PTR_INLINE_ATTR void RegisterSharedInstance( const SharedPtr<T>* shared_pointer, const U* pointer, const EnableSharedFromThis<V>* base_pointer );
 
-inline void RegisterSharedInstance( ... );
+SHARED_PTR_INLINE_ATTR void RegisterSharedInstance( ... );
 
 template<typename T>
 class SharedPtr {
@@ -191,6 +194,9 @@ class SharedPtr {
 
 		void swap( SharedPtr<T>& other );
 
+		template<typename U, typename V>
+		friend SHARED_PTR_INLINE_ATTR bool operator<( const SharedPtr<U>& left, const SharedPtr<V>& right );
+
 	private:
 		template<typename U>
 		friend class SharedPtr;
@@ -203,13 +209,13 @@ class SharedPtr {
 };
 
 template<typename T, typename U>
-inline bool operator==( const SharedPtr<T>& left, const SharedPtr<U>& right );
+SHARED_PTR_INLINE_ATTR bool operator==( const SharedPtr<T>& left, const SharedPtr<U>& right );
 
 template<typename T, typename U>
-inline bool operator!=( const SharedPtr<T>& left, const SharedPtr<U>& right );
+SHARED_PTR_INLINE_ATTR bool operator!=( const SharedPtr<T>& left, const SharedPtr<U>& right );
 
 template<typename T, typename U>
-inline bool operator<( const SharedPtr<T>& left, const SharedPtr<U>& right );
+SHARED_PTR_INLINE_ATTR bool operator<( const SharedPtr<T>& left, const SharedPtr<U>& right );
 
 template<typename T, typename U>
 SharedPtr<T> StaticPointerCast( const SharedPtr<U>& shared_pointer );
