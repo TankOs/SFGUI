@@ -209,6 +209,9 @@ template<typename T, typename U>
 inline bool operator!=( const SharedPtr<T>& left, const SharedPtr<U>& right );
 
 template<typename T, typename U>
+inline bool operator<( const SharedPtr<T>& left, const SharedPtr<U>& right );
+
+template<typename T, typename U>
 SharedPtr<T> StaticPointerCast( const SharedPtr<U>& shared_pointer );
 
 template<typename T, typename U>

@@ -412,4 +412,9 @@ SHARED_PTR_INLINE_ATTR void EnableSharedFromThis<T>::SetSharedInstance( const Sh
 	}
 }
 
+template<typename T, typename U>
+SHARED_PTR_INLINE_ATTR bool operator<( const SharedPtr<T>& left, const SharedPtr<U>& right ) {
+	return left.get() < right.get();
+}
+
 }
