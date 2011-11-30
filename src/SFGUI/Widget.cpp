@@ -96,11 +96,11 @@ void Widget::RequestResize() {
 
 	if( m_custom_requisition ) {
 		if( m_custom_requisition->x > 0.f ) {
-			m_requisition.x = m_custom_requisition->x;
+			m_requisition.x = std::max( m_custom_requisition->x, m_requisition.x );
 		}
 
 		if( m_custom_requisition->y > 0.f ) {
-			m_requisition.y = m_custom_requisition->y;
+			m_requisition.y = std::max( m_custom_requisition->y, m_requisition.y );
 		}
 	}
 
@@ -113,13 +113,11 @@ void Widget::RequestResize() {
 		parent->RequestResize();
 	}
 	else {
-		sf::Vector2f requisition( GetRequisition() );
-
 		sf::FloatRect allocation(
 			GetAllocation().Left,
 			GetAllocation().Top,
-			std::max( GetAllocation().Width, requisition.x ),
-			std::max( GetAllocation().Height, requisition.y )
+			std::max( GetAllocation().Width, m_requisition.x ),
+			std::max( GetAllocation().Height, m_requisition.y )
 		);
 
 		SetAllocation( allocation );
