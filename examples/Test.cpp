@@ -42,6 +42,8 @@ class SampleApp {
 
 		sf::Texture m_background_texture;
 		sf::Sprite m_background_sprite;
+
+		sf::RenderWindow m_window;
 };
 
 class Ouchy : public sfg::EnableSharedFromThis<Ouchy> {
@@ -78,7 +80,8 @@ void Ouchy::DoOuch() {
 
 SampleApp::SampleApp() :
 	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) ),
-	m_cull( true )
+	m_cull( true ),
+	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" )
 {
 	m_background_texture.Create( 1024, 768 );
 
@@ -114,11 +117,10 @@ SampleApp::SampleApp() :
 }
 
 void SampleApp::Run() {
-	sf::RenderWindow window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" );
 	sf::Event event;
 
-	//window.SetFramerateLimit( 60 );
-	//window.UseVerticalSync( true );
+	//m_window.SetFramerateLimit( 60 );
+	//m_window.EnableVerticalSync( true );
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create();
@@ -288,12 +290,12 @@ void SampleApp::Run() {
 	m_fps_counter = 0;
 	m_fps_clock.Reset();
 
-	sfg::CullingTarget culling_target( window );
+	sfg::CullingTarget culling_target( m_window );
 
-	while( window.IsOpened() ) {
-		while( window.PollEvent( event ) ) {
+	while( m_window.IsOpened() ) {
+		while( m_window.PollEvent( event ) ) {
 			if( event.Type == sf::Event::Closed ) {
-				window.Close();
+				m_window.Close();
 			}
 			else if( event.Type == sf::Event::Resized ) {
 				m_desktop.UpdateViewRect( sf::FloatRect( 0.f, 0.f, static_cast<float>( event.Size.Width ), static_cast<float>( event.Size.Height ) ) );
@@ -302,11 +304,11 @@ void SampleApp::Run() {
 			m_desktop.HandleEvent( event );
 		}
 
-		window.Clear( sf::Color( 80, 80, 80 ) );
+		m_window.Clear( sf::Color( 80, 80, 80 ) );
 		culling_target.Cull( m_cull );
-		window.Draw( m_background_sprite );
+		m_window.Draw( m_background_sprite );
 		m_desktop.Expose( culling_target );
-		window.Display();
+		m_window.Display();
 
 		if( m_fps_clock.GetElapsedTime() >= 1000 ) {
 			m_fps_clock.Reset();
@@ -317,7 +319,7 @@ void SampleApp::Run() {
 				sstr << " -- Cull K/D: " << culling_target.GetCount().first
 				 << "/" << culling_target.GetCount().second;
 			}
-			window.SetTitle( sstr.str() );
+			m_window.SetTitle( sstr.str() );
 
 			m_fps_counter = 0;
 			culling_target.ResetCount();
