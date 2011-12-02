@@ -23,3 +23,4 @@
 #include <SFGUI/ProgressBar.hpp>
 #include <SFGUI/Separator.hpp>
 #include <SFGUI/Frame.hpp>
+#include <SFGUI/Image.hpp>

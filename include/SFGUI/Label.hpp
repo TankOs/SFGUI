@@ -1,6 +1,7 @@
 #pragma once
+
 #include <SFGUI/Config.hpp>
-#include <SFGUI/Widget.hpp>
+#include <SFGUI/Misc.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/String.hpp>
 
@@ -8,7 +9,7 @@ namespace sfg {
 
 /** Text label.
  */
-class SFGUI_API Label : public Widget {
+class SFGUI_API Label : public Misc {
 	public:
 		typedef SharedPtr<Label> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Label> PtrConst; //!< Shared pointer.
@@ -20,11 +21,6 @@ class SFGUI_API Label : public Widget {
 		static Ptr Create( const sf::String& text = L"" );
 
 		virtual const std::string& GetName() const;
-
-		/** Ctor.
-		 * @param text Text.
-		 */
-		Label( const sf::String& text = "" );
 
 		/** Dtor.
 		 */
@@ -40,23 +36,17 @@ class SFGUI_API Label : public Widget {
 		 */
 		const sf::String& GetText() const;
 
-		/** Set alignment
-		 * @param alignment Alignment (0..1 for x and y).
-		 */
-		void SetAlignment( const sf::Vector2f& alignment );
-
-		/** Get alignment.
-		 * @return Alignment.
-		 */
-		const sf::Vector2f& GetAlignment() const;
-
 	protected:
+		/** Ctor.
+		 * @param text Text.
+		 */
+		Label( const sf::String& text = "" );
+
 		RenderQueue* InvalidateImpl() const;
 		sf::Vector2f CalculateRequisition();
 
 	private:
 		sf::String m_text;
-		sf::Vector2f m_alignment;
 };
 
 }

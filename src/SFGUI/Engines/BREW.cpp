@@ -12,6 +12,7 @@
 #include <SFGUI/ProgressBar.hpp>
 #include <SFGUI/Separator.hpp>
 #include <SFGUI/Frame.hpp>
+#include <SFGUI/Image.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -320,9 +321,12 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 		metrics.y = GetLineHeight( font, font_size );
 
 		sf::Text* text( new sf::Text( button->GetLabel(), font, font_size ) );
+
+		float offset = ( button->GetState() == Button::ACTIVE ) ? border_width : 0.f;
+
 		text->SetPosition(
-			std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f ),
-			std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f )
+			std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f + offset ),
+			std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f + offset )
 		);
 		text->SetColor( color );
 		queue->Add( text );
@@ -371,9 +375,11 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 		metrics.y = GetLineHeight( font, font_size );
 
 		sf::Text* text( new sf::Text( button->GetLabel(), font, font_size ) );
+		float offset = ( ( button->GetState() == Button::ACTIVE ) || button->IsActive() ) ? border_width : 0.f;
+
 		text->SetPosition(
-			std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f ),
-			std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f )
+			std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f + offset ),
+			std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f + offset )
 		);
 		text->SetColor( color );
 		queue->Add( text );
@@ -1179,6 +1185,20 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 			)
 		)
 	);
+
+	return queue;
+}
+
+RenderQueue* BREW::CreateImageDrawable( SharedPtr<const Image> image ) const {
+	RenderQueue* queue( new RenderQueue );
+
+	sf::Sprite* sprite = new sf::Sprite( image->GetTexture() );
+	sprite->SetPosition(
+		( image->GetAllocation().Width - image->GetRequisition().x ) * image->GetAlignment().x,
+		( image->GetAllocation().Height - image->GetRequisition().y ) * image->GetAlignment().y
+	);
+
+	queue->Add( sprite );
 
 	return queue;
 }

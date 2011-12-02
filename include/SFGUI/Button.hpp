@@ -1,5 +1,6 @@
 #pragma once
 #include <SFGUI/Bin.hpp>
+#include <SFGUI/Image.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/String.hpp>
 
@@ -34,6 +35,20 @@ class SFGUI_API Button : public Bin {
 		 */
 		const sf::String& GetLabel() const;
 
+		/** Set Image of the button.
+		 * @param image Image of the button.
+		 */
+		void SetImage( const Image::Ptr& image );
+
+		/** Get contained Image.
+		 * @return Contained Image.
+		 */
+		const Image::Ptr GetImage() const;
+
+		/** Clear Image of the button.
+		 */
+		void ClearImage();
+
 		Signal OnClick; //!< Fired when button clicked.
 
 	protected:
@@ -44,7 +59,13 @@ class SFGUI_API Button : public Bin {
 		virtual RenderQueue* InvalidateImpl() const;
 		virtual sf::Vector2f CalculateRequisition();
 
+		virtual void HandleAdd( const Widget::Ptr& child );
+
 		void HandleMouseClick( sf::Mouse::Button button, int x, int y );
+
+		void HandleAllocationChange( const sf::FloatRect& old_allocation );
+
+		virtual void HandleStateChange( State old_state );
 
 	private:
 		void HandleMouseEnter( int x, int y );

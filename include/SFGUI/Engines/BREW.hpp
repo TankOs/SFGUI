@@ -28,6 +28,7 @@ class SFGUI_API BREW : public Engine {
 		RenderQueue* CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const;
 		RenderQueue* CreateSeparatorDrawable( SharedPtr<const Separator> seperator ) const;
 		RenderQueue* CreateFrameDrawable( SharedPtr<const Frame> frame ) const;
+		RenderQueue* CreateImageDrawable( SharedPtr<const Image> image ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.

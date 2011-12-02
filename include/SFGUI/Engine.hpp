@@ -34,6 +34,7 @@ class CheckButton;
 class ProgressBar;
 class Separator;
 class Frame;
+class Image;
 
 /** Abstract base class for widget rendering.
  */
@@ -116,6 +117,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual RenderQueue* CreateFrameDrawable( SharedPtr<const Frame> frame ) const = 0;
+
+		/** Create drawable for image widgets.
+		 * @param image Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual RenderQueue* CreateImageDrawable( SharedPtr<const Image> image ) const = 0;
 
 		/** Get line height of a font.
 		 * @param font Font.

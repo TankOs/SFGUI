@@ -7,9 +7,10 @@
 namespace sfg {
 
 Label::Label( const sf::String& text ) :
-	m_text( text ),
-	m_alignment( .5f, .5f )
+	Misc(),
+	m_text( text )
 {
+	SetAlignment( sf::Vector2f( .5f, .5f ) );
 	Invalidate();
 }
 
@@ -44,15 +45,6 @@ sf::Vector2f Label::CalculateRequisition() {
 	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
 	return metrics;
-}
-
-void Label::SetAlignment( const sf::Vector2f& alignment ) {
-	m_alignment.x = std::max( 0.f, std::min( 1.f, alignment.x ) );
-	m_alignment.y = std::max( 0.f, std::min( 1.f, alignment.y ) );
-}
-
-const sf::Vector2f& Label::GetAlignment() const {
-	return m_alignment;
 }
 
 const std::string& Label::GetName() const {

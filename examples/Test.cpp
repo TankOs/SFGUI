@@ -229,6 +229,28 @@ void SampleApp::Run() {
 
 	sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
 
+	sfg::Box::Ptr box_image( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
+
+	sf::Image sfgui_logo;
+	sfg::Image::Ptr image = sfg::Image::Create();
+
+	if( sfgui_logo.LoadFromFile("sfgui.png") ) {
+		image->SetImage( sfgui_logo );
+		box_image->Pack( image, false );
+	}
+
+	sf::Image sfgui_logo2;
+	sfg::Image::Ptr image2 = sfg::Image::Create();
+	sfg::Button::Ptr image_button = sfg::Button::Create();
+
+	if( sfgui_logo2.LoadFromFile("button.png") ) {
+		image2->SetImage( sfgui_logo2 );
+		image_button->SetImage( image2 );
+		sfg::Box::Ptr box_button_image( sfg::Box::Create( sfg::Box::VERTICAL ) );
+		box_button_image->Pack( image_button, false );
+		box_image->Pack( box_button_image, false );
+	}
+
 	sfg::Box::Ptr boxmain( sfg::Box::Create( sfg::Box::VERTICAL ) );
 	boxmain->SetSpacing( 5.f );
 	boxmain->Pack( scrollbar, false );
@@ -237,6 +259,7 @@ void SampleApp::Run() {
 	boxmain->Pack( frame2, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
+	boxmain->Pack( box_image );
 	boxmain->Pack( separatorh, false );
 	boxmain->Pack( m_table, true );
 	boxmain->Pack( m_scrolled_window );
