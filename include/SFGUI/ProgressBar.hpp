@@ -53,8 +53,8 @@ class SFGUI_API ProgressBar : public Widget {
 		sf::Vector2f CalculateRequisition();
 		RenderQueue* InvalidateImpl() const;
 
-		Orientation m_orientation;
 		float m_fraction;
+		unsigned char m_orientation;
 };
 
 }

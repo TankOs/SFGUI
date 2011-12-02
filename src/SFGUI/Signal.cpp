@@ -2,19 +2,33 @@
 
 namespace sfg {
 
+unsigned int Signal::m_serial = 1;
+
 Signal::Signal() :
-	m_serial( 1 )
+	m_delegates( 0 )
 {
 }
 
+Signal::~Signal() {
+	delete m_delegates;
+}
+
 unsigned int Signal::Connect( Delegate delegate ) {
-	m_delegates[m_serial] = delegate;
+	if( !m_delegates ) {
+		m_delegates = new DelegateMap;
+	}
+
+	(*m_delegates)[m_serial] = delegate;
 	return m_serial++;
 }
 
 void Signal::operator()() const {
-	DelegateMap::const_iterator dg_iter( m_delegates.begin() );
-	DelegateMap::const_iterator dg_iter_end( m_delegates.end() );
+	if( !m_delegates ) {
+		return;
+	}
+
+	DelegateMap::const_iterator dg_iter( m_delegates->begin() );
+	DelegateMap::const_iterator dg_iter_end( m_delegates->end() );
 
 	for( ; dg_iter != dg_iter_end; ++dg_iter ) {
 		dg_iter->second();
@@ -22,7 +36,16 @@ void Signal::operator()() const {
 }
 
 void Signal::Disconnect( unsigned int serial ) {
-	m_delegates.erase( serial );
+	if( !m_delegates ) {
+		return;
+	}
+
+	m_delegates->erase( serial );
+
+	if( m_delegates->empty() ) {
+		delete m_delegates;
+		m_delegates = 0;
+	}
 }
 
 }

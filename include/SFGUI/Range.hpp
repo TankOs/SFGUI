@@ -13,6 +13,13 @@ class SFGUI_API Range : public Widget {
 		typedef SharedPtr<Range> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Range> PtrConst; //!< Shared pointer.
 
+		/** Orientation.
+		 */
+		enum Orientation {
+			HORIZONTAL = 0, //!< Horizontal range widget.
+			VERTICAL //!< Vertical range widget.
+		};
+
 		/** Dtor.
 		 */
 		virtual ~Range();
@@ -49,10 +56,15 @@ class SFGUI_API Range : public Widget {
 		 */
 		void SetRange( float min, float max );
 
+		/** Get the orientation of this range widget
+		 * @return orientation of this range widget
+		 */
+		Orientation GetOrientation() const;
+
 	protected:
 		/** Ctor.
 		 */
-		Range();
+		Range( Orientation orientation = HORIZONTAL );
 
 	private:
 		void HandleAdjustmentChange();
@@ -60,6 +72,8 @@ class SFGUI_API Range : public Widget {
 		Adjustment::Ptr m_adjustment;
 
 		unsigned int m_change_connection;
+
+		unsigned char m_orientation;
 };
 
 }

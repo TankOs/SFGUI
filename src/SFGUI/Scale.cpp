@@ -6,8 +6,7 @@
 namespace sfg {
 
 Scale::Scale( Orientation orientation ) :
-	Range(),
-	m_orientation( orientation ),
+	Range( orientation ),
 	m_dragging( false )
 {
 }
@@ -24,20 +23,16 @@ Scale::Ptr Scale::Create( float min, float max, float step, Orientation orientat
 	return ptr;
 }
 
-Scale::Orientation Scale::GetOrientation() const {
-	return m_orientation;
-}
-
 const sf::FloatRect Scale::GetSliderRect() const {
 	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
-	float slider_width( m_orientation == HORIZONTAL ? GetAllocation().Height : GetAllocation().Width );
+	float slider_width( ( GetOrientation() == HORIZONTAL ) ? GetAllocation().Height : GetAllocation().Width );
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
 
 	float current_value = adjustment->GetValue();
 	float value_range = adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize();
 
-	if( m_orientation == HORIZONTAL ) {
+	if( GetOrientation() == HORIZONTAL ) {
 		float slider_x = ( GetAllocation().Width - slider_length ) * ( current_value - adjustment->GetLower() ) / value_range;
 		float slider_y = ( GetAllocation().Height - slider_width ) / 2.f;
 
@@ -58,9 +53,9 @@ RenderQueue* Scale::InvalidateImpl() const {
 
 sf::Vector2f Scale::CalculateRequisition() {
 	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
-	float slider_width( m_orientation == HORIZONTAL ? GetAllocation().Height : GetAllocation().Width );
+	float slider_width( ( GetOrientation() == HORIZONTAL ) ? GetAllocation().Height : GetAllocation().Width );
 
-	if( m_orientation == HORIZONTAL ) {
+	if( GetOrientation() == HORIZONTAL ) {
 		return sf::Vector2f( slider_length * 2.f, slider_width );
 	}
 	else {
@@ -101,7 +96,7 @@ void Scale::HandleMouseMoveEvent( int x, int y ) {
 	float value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), adjustment->GetMinorStep() / 2.f );
 	float steps = value_range / adjustment->GetMinorStep();
 
-	if( m_orientation == HORIZONTAL ) {
+	if( GetOrientation() == HORIZONTAL ) {
 		float slider_center_x = GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f;
 		float step_distance = ( GetAllocation().Width - slider_rect.Width ) / steps;
 

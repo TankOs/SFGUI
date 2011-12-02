@@ -5,8 +5,8 @@ namespace sfg {
 
 Box::Box( Orientation orientation, float spacing ) :
 	Container(),
-	m_orientation( orientation ),
-	m_spacing( spacing )
+	m_spacing( spacing ),
+	m_orientation( orientation )
 {
 }
 

@@ -304,26 +304,27 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		void GrabFocus( Ptr widget );
 		bool HasFocus( Ptr widget );
 
-		WeakPtr<Container> m_parent;
-
-		std::string m_id;
-		std::string m_class;
-
-		bool m_sensitive;
-		bool m_visible;
-		Ptr m_focus_widget;
-
-		State m_state;
-		bool m_mouse_in;
-		int m_mouse_button_down;
-
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;
 		sf::Vector2f* m_custom_requisition;
 
-		mutable bool m_invalidated;
+		WeakPtr<Container> m_parent;
+
+		Ptr m_focus_widget;
+
+		std::string m_id;
+		std::string m_class;
 
 		mutable RenderQueue* m_drawable;
+
+		bool m_sensitive;
+		bool m_visible;
+
+		unsigned char m_state;
+		bool m_mouse_in;
+		char m_mouse_button_down;
+
+		mutable bool m_invalidated;
 };
 
 }

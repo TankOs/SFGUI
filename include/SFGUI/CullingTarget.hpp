@@ -73,25 +73,24 @@ class SFGUI_API CullingTarget {
 
 		void UpdateView();
 
-		sf::RenderTarget& m_real_target;
-
-		std::pair<std::size_t, std::size_t> m_cull_count;
+		std::vector<sf::View> m_view_stack;
+		std::vector<ViewCachePair> m_view_cache;
 
 		sf::FloatRect m_view_rect;
 		sf::FloatRect m_viewport;
 
 		sf::IntRect m_view_aabb;
 
-		bool m_cull;
+		std::pair<std::size_t, std::size_t> m_cull_count;
 
-		bool m_out_of_view;
-
-		std::vector<sf::View> m_view_stack;
-
-		std::vector<ViewCachePair> m_view_cache;
+		sf::RenderTarget& m_real_target;
 
 		unsigned int m_current_view_id;
 		unsigned int m_last_view_id;
+
+		bool m_cull;
+
+		bool m_out_of_view;
 };
 
 }

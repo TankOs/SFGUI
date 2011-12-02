@@ -27,6 +27,10 @@ class SFGUI_API Signal {
 		 */
 		Signal();
 
+		/** Dtor.
+		 */
+		~Signal();
+
 		/** Connect to free function.
 		 * @param delegate Free function.
 		 * @return Connection serial, use for disconnecting.
@@ -53,8 +57,8 @@ class SFGUI_API Signal {
 	private:
 		typedef std::map<unsigned int, Delegate> DelegateMap;
 
-		unsigned int m_serial;
-		DelegateMap m_delegates;
+		static unsigned int m_serial;
+		DelegateMap* m_delegates;
 };
 
 }

@@ -6,16 +6,16 @@ namespace sfg {
 
 Widget::Widget() :
 	Object(),
+	m_allocation( 0, 0, 0, 0 ),
+	m_requisition( 0, 0 ),
+	m_custom_requisition( 0 ),
+	m_drawable( 0 ),
 	m_sensitive( true ),
 	m_visible( true ),
 	m_state( NORMAL ),
 	m_mouse_in( false ),
 	m_mouse_button_down( -1 ),
-	m_allocation( 0, 0, 0, 0 ),
-	m_requisition( 0, 0 ),
-	m_custom_requisition( 0 ),
-	m_invalidated( true ),
-	m_drawable( 0 )
+	m_invalidated( true )
 {
 }
 
@@ -315,13 +315,13 @@ void Widget::SetState( State state ) {
 		return;
 	}
 
-	State old_state( m_state );
+	unsigned char old_state( m_state );
 	m_state = state;
 
 	// If HandleStateChange() changed the state, do not call observer, will be
 	// done from there too.
 	if( m_state != old_state ) {
-		HandleStateChange( old_state );
+		HandleStateChange( static_cast<State>( old_state ) );
 		OnStateChange();
 	}
 
@@ -331,7 +331,7 @@ void Widget::SetState( State state ) {
 }
 
 Widget::State Widget::GetState() const {
-	return m_state;
+	return static_cast<State>( m_state );
 }
 
 Container::Ptr Widget::GetParent() {

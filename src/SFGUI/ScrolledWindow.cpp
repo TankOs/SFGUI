@@ -6,12 +6,12 @@ namespace sfg {
 
 ScrolledWindow::ScrolledWindow( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) :
 	Container(),
+	m_content_allocation(),
 	m_horizontal_scrollbar(),
 	m_vertical_scrollbar(),
 	m_policy( DEFAULT_POLICY ),
 	m_placement( DEFAULT_PLACEMENT ),
 	m_recalc_adjustments( false ),
-	m_content_allocation(),
 	m_recalc_content_allocation( false )
 {
 	m_horizontal_scrollbar = Scrollbar::Create( horizontal_adjustment, Scrollbar::HORIZONTAL );
@@ -53,11 +53,11 @@ void ScrolledWindow::SetVerticalAdjustment( const Adjustment::Ptr& adjustment ) 
 	Invalidate();
 }
 
-int ScrolledWindow::GetScrollbarPolicy() const {
+unsigned char ScrolledWindow::GetScrollbarPolicy() const {
 	return m_policy;
 }
 
-void ScrolledWindow::SetScrollbarPolicy( int policy ) {
+void ScrolledWindow::SetScrollbarPolicy( unsigned char policy ) {
 	m_policy = policy;
 
 	m_recalc_content_allocation = true;

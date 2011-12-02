@@ -5,8 +5,8 @@
 namespace sfg {
 
 ProgressBar::ProgressBar( Orientation orientation ) :
-	m_orientation( orientation ),
-	m_fraction( 0.f )
+	m_fraction( 0.f ),
+	m_orientation( orientation )
 {
 }
 
@@ -47,7 +47,7 @@ void ProgressBar::SetOrientation( Orientation orientation ) {
 }
 
 ProgressBar::Orientation ProgressBar::GetOrientation() const {
-	return m_orientation;
+	return static_cast<Orientation>( m_orientation );
 }
 
 }

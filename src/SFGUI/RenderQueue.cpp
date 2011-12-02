@@ -5,11 +5,11 @@ namespace sfg {
 
 RenderQueue::RenderQueue() :
 	m_display_list( 0 ),
-	m_display_list_compiled( false ),
 	m_compiled_aabbs( 0 ),
 	m_compiled_aabbs_size( 0 ),
 	m_checked_view_id( 0 ),
-	m_last_cull_passed( false )
+	m_last_cull_passed( false ),
+	m_display_list_compiled( false )
 {
 	m_display_list = glGenLists( 1 );
 }

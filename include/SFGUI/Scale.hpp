@@ -12,13 +12,6 @@ class SFGUI_API Scale : public Range {
 		typedef SharedPtr<Scale> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Scale> PtrConst; //!< Shared pointer.
 
-		/** Scale orientation.
-		 */
-		enum Orientation {
-			HORIZONTAL = 0, //!< Horizontal scale.
-			VERTICAL //!< Vertical scale.
-		};
-
 		/** Create scale widget.
 		 * @param orientation Orientation.
 		 * @return Scale widget.
@@ -36,11 +29,6 @@ class SFGUI_API Scale : public Range {
 		 */
 		static Ptr Create( float min, float max, float step, Orientation orientation = HORIZONTAL );
 
-		/** Get the orientation of this scale widget
-		 * @return orientation of this scale widget
-		 */
-		Orientation GetOrientation() const;
-
 		/** Get slider rectangle ( position and dimensions )
 		 * @return slider rect
 		 */
@@ -57,8 +45,6 @@ class SFGUI_API Scale : public Range {
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );
-
-		Orientation m_orientation;
 
 		bool m_dragging;
 };

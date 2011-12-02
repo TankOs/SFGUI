@@ -3,11 +3,11 @@
 namespace sfg {
 
 CullingTarget::CullingTarget( sf::RenderTarget& target ) :
-	m_real_target( target ),
 	m_cull_count( std::pair<std::size_t, std::size_t>( 0, 0 ) ),
+	m_real_target( target ),
+	m_last_view_id( 0 ),
 	m_cull( true ),
-	m_out_of_view( false ),
-	m_last_view_id( 0 )
+	m_out_of_view( false )
 {
 	PushView( m_real_target.GetView() );
 }

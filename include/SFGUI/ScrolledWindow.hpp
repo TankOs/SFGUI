@@ -77,12 +77,12 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Get the scrollbar policy for this Scrolled Window.
 		 * @return Scrollbar policy for this Scrolled Window.
 		 */
-		int GetScrollbarPolicy() const;
+		unsigned char GetScrollbarPolicy() const;
 
 		/** Set the scrollbar policy for this Scrolled Window.
 		 * @param policy New policy.
 		 */
-		void SetScrollbarPolicy( int policy );
+		void SetScrollbarPolicy( unsigned char policy );
 
 		/** Set where the content is placed and hence where the scrollbars will appear.
 		 * @param placement new ScrollbarPolicyPair.
@@ -140,15 +140,16 @@ class SFGUI_API ScrolledWindow : public Container {
 		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 		void HandleAdd( const Widget::Ptr& child );
 
+		mutable sf::FloatRect m_content_allocation;
+
 		Scrollbar::Ptr m_horizontal_scrollbar;
 		Scrollbar::Ptr m_vertical_scrollbar;
 
-		int m_policy;
-		int m_placement;
+		unsigned char m_policy;
+		unsigned char m_placement;
 
 		mutable bool m_recalc_adjustments;
 
-		mutable sf::FloatRect m_content_allocation;
 		mutable bool m_recalc_content_allocation;
 };
 

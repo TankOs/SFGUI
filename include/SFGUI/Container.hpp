@@ -84,7 +84,6 @@ class SFGUI_API Container : public Widget {
 		float m_border_width;
 
 		WidgetsList m_children;
-
 };
 
 }

@@ -12,10 +12,10 @@ Entry::Entry() :
 	m_string(),
 	m_visible_string(),
 	m_visible_offset( 0 ),
-	m_cursor_position( 0 ),
-	m_cursor_status( false ),
 	m_text_placeholder( 0 ),
-	m_max_length( 0 )
+	m_max_length( 0 ),
+	m_cursor_position( 0 ),
+	m_cursor_status( false )
 {
 }
 

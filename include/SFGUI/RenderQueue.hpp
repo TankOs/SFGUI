@@ -100,13 +100,13 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		GLuint m_display_list;
 		mutable GLint m_texture_id;
 
-		mutable bool m_display_list_compiled;
-
 		sf::IntRect* m_compiled_aabbs;
 		std::size_t m_compiled_aabbs_size;
 
 		unsigned int m_checked_view_id;
 		bool m_last_cull_passed;
+
+		mutable bool m_display_list_compiled;
 };
 
 }

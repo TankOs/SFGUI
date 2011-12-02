@@ -11,11 +11,11 @@ class TableOptions {
 		 */
 		TableOptions();
 
-		bool expand; ///< Expand row/column?
 		float position; ///< Position.
 		float requisition; ///< Requisition (width or height).
 		float allocation; ///< Allocation (width or height).
 		float spacing; ///< Spacing.
+		bool expand; ///< Expand row/column?
 };
 
 }

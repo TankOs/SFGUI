@@ -72,9 +72,9 @@ class SFGUI_API Box : public Container {
 
 		void AllocateChildren() const;
 
-		Orientation m_orientation;
-		float m_spacing;
 		ChildrenCont m_children;
+		float m_spacing;
+		unsigned char m_orientation;
 };
 
 }

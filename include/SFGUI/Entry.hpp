@@ -119,15 +119,15 @@ class SFGUI_API Entry : public Widget {
 		// The offset in the string at which the visible portion starts
 		mutable std::size_t m_visible_offset;
 
-		std::size_t m_cursor_position;
-		mutable sf::Clock m_cursor_timer;
-		mutable bool m_cursor_status;
-
 		// The UTF-32 character which hides each character of the string
 		sf::Uint32 m_text_placeholder;
 
 		// The maximum text lenght. If it equals to 0, it disables this limit
 		std::size_t m_max_length;
+
+		std::size_t m_cursor_position;
+		mutable sf::Clock m_cursor_timer;
+		mutable bool m_cursor_status;
 };
 
 }

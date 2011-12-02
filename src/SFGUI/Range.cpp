@@ -2,9 +2,10 @@
 
 namespace sfg {
 
-Range::Range() :
+Range::Range( Orientation orientation ) :
 	Widget(),
-	m_change_connection( 0 )
+	m_change_connection( 0 ),
+	m_orientation( orientation )
 {
 	SetAdjustment( Adjustment::Create() );
 }
@@ -43,6 +44,10 @@ void Range::SetRange( float min, float max ) {
 
 void Range::HandleAdjustmentChange() {
 	Invalidate();
+}
+
+Range::Orientation Range::GetOrientation() const {
+	return static_cast<Orientation>( m_orientation );
 }
 
 }

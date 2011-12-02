@@ -13,13 +13,6 @@ class SFGUI_API Scrollbar : public Range {
 		typedef SharedPtr<Scrollbar> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Scrollbar> PtrConst; //!< Shared pointer.
 
-		/** Scrollbar orientation.
-		 */
-		enum Orientation {
-			HORIZONTAL = 0, //!< Horizontal scrollbar.
-			VERTICAL //!< Vertical scrollbar.
-		};
-
 		/** Create scrollbar widget.
 		 * @param orientation Orientation.
 		 * @return Scrollbar widget.
@@ -34,11 +27,6 @@ class SFGUI_API Scrollbar : public Range {
 		 * @return Scrollbar widget.
 		 */
 		static Ptr Create( const Adjustment::Ptr& adjustment, Orientation orientation = HORIZONTAL );
-
-		/** Get the orientation of this scrollbar widget
-		 * @return orientation of this scrollbar widget
-		 */
-		Orientation GetOrientation() const;
 
 		/** Get slider rectangle ( position and dimensions )
 		 * @return slider rect
@@ -68,20 +56,19 @@ class SFGUI_API Scrollbar : public Range {
 		virtual void HandleMouseMoveEvent( int x, int y );
 		virtual void HandleExpose( CullingTarget& target ) const;
 
-		Orientation m_orientation;
+		mutable sf::Clock m_change_timer;
+
+		float m_slider_click_offset;
+
+		mutable int m_page_decreasing;
+		mutable int m_page_increasing;
 
 		bool m_dragging;
 
 		bool m_decrease_pressed;
 		bool m_increase_pressed;
 
-		mutable int m_page_decreasing;
-		mutable int m_page_increasing;
-
-		mutable sf::Clock m_change_timer;
 		mutable bool m_repeat_wait;
-
-		float m_slider_click_offset;
 };
 
 }

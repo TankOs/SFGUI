@@ -80,12 +80,13 @@ class SFGUI_API Window : public Bin {
 		void HandleMouseMoveEvent( int x, int y );
 		void HandleAdd( const Widget::Ptr& child );
 
+		sf::Vector2f m_drag_offset;
+
 		sf::String m_title;
 		int m_style;
 
 		bool m_dragging;
 		bool m_resizing;
-		sf::Vector2f m_drag_offset;
 };
 
 }
