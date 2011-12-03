@@ -31,6 +31,7 @@ class SFGUI_API BREW : public Engine {
 		RenderQueue* CreateImageDrawable( SharedPtr<const Image> image ) const;
 		RenderQueue* CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) const;
 		RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const;
+		RenderQueue* CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const;
 
 		/** Utility function to create borders.
 		 * @param rect Rectangle.

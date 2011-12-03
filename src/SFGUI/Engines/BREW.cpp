@@ -15,6 +15,7 @@
 #include <SFGUI/Image.hpp>
 #include <SFGUI/Notebook.hpp>
 #include <SFGUI/Spinner.hpp>
+#include <SFGUI/ComboBox.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -124,6 +125,10 @@ BREW::BREW() :
 	SetProperty( "Spinner", "Steps", 13 );
 	SetProperty( "Spinner", "Fade", 5.f );
 	SetProperty( "Spinner", "StoppedAlpha", 47 );
+	
+	// ComboBox-specific.
+	SetProperty( "ComboBox", "HighlightedColor", sf::Color( 0x8c, 0x8c, 0x8c ) );
+	SetProperty( "ComboBox", "ArrowColor", sf::Color( 0xc6, 0xcb, 0xc4 ) );
 }
 
 RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
@@ -1225,6 +1230,115 @@ RenderQueue* BREW::CreateImageDrawable( SharedPtr<const Image> image ) const {
 	);
 
 	queue->Add( sprite );
+	return queue;
+}
+
+RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const {
+	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", combo_box ) );
+	sf::Color border_color_dark( border_color_light );
+	int border_color_shift( GetProperty<int>( "BorderColorShift", combo_box ) );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", combo_box ) );
+	sf::Color highlighted_color( GetProperty<sf::Color>( "HighlightedColor", combo_box ) );
+	sf::Color color( GetProperty<sf::Color>( "Color", combo_box ) );
+	sf::Color arrow_color( GetProperty<sf::Color>( "ArrowColor", combo_box ) );
+	float border_width( GetProperty<float>( "BorderWidth", combo_box ) );
+	const std::string& font_name( GetProperty<std::string>( "FontName", combo_box ) );
+	unsigned int font_size( GetProperty<unsigned int>( "FontSize", combo_box ) );
+	float padding( GetProperty<float>( "Padding", combo_box ) );
+	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
+
+	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
+
+	RenderQueue*  queue( new RenderQueue );
+	
+	float expanded_height = 2 * combo_box->GetBorderWidth() + 2 * padding + static_cast<float>( combo_box->GetNumberEntries() ) * GetLineHeight( font, font_size );
+
+	queue->Add(
+		new sf::Shape(
+			sf::Shape::Rectangle(
+				0.f,
+				0.f,
+				combo_box->GetAllocation().Width,
+				combo_box->GetAllocation().Height,
+				background_color
+			)
+		)
+	);
+	
+	if( combo_box->IsPoppedUp() ) {
+		queue->Add(
+			new sf::Shape(
+				sf::Shape::Rectangle(
+					0.f,
+					combo_box->GetAllocation().Height,
+					combo_box->GetAllocation().Width,
+					expanded_height,
+					background_color
+				)
+			)
+		);
+	}
+	
+	if( combo_box->GetState() != ComboBox::ACTIVE ) {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
+	}
+	else {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
+	}
+	
+	if( combo_box->IsPoppedUp() ) {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, combo_box->GetAllocation().Height, combo_box->GetAllocation().Width, expanded_height ), border_width, border_color_light, border_color_dark ) );
+	}
+
+	// Labels.
+	if( combo_box->IsPoppedUp() ) {
+		for ( int i = 0; i < combo_box->GetNumberEntries(); ++i ) {
+			if( combo_box->GetEntryText( i ).GetSize() > 0 ) {
+				sf::Vector2f metrics = GetTextMetrics( combo_box->GetEntryText( i ), font, font_size );
+				metrics.y = GetLineHeight( font, font_size );
+				
+				if( i == combo_box->GetHighlighted() ) {
+					queue->Add(
+						new sf::Shape(
+							sf::Shape::Rectangle(
+								0.f,
+								std::floor( combo_box->GetAllocation().Height + combo_box->GetBorderWidth() + padding + static_cast<float>( i ) * metrics.y + .5f ),
+								combo_box->GetAllocation().Width,
+								metrics.y,
+								highlighted_color
+							)
+						)
+					);
+				}
+				
+				sf::Text* text( new sf::Text( combo_box->GetEntryText( i ), font, font_size ) );
+				text->SetPosition(
+					std::floor( combo_box->GetBorderWidth() + padding + .5f ),
+					std::floor( combo_box->GetAllocation().Height + combo_box->GetBorderWidth() + padding + static_cast<float>( i ) * metrics.y + .5f )
+				);
+				text->SetColor( color );
+				queue->Add( text );
+			}
+		}
+	}
+	if( combo_box->GetActiveText().GetSize() > 0 ) {
+		sf::Text* text( new sf::Text( combo_box->GetActiveText(), font, font_size ) );
+		text->SetPosition(
+			std::floor( combo_box->GetBorderWidth() + padding + .5f ),
+			std::floor( combo_box->GetBorderWidth() + padding + .5f )
+		);
+		text->SetColor( color );
+		queue->Add( text );
+	}
+		
+	sf::Shape* shape( new sf::Shape() );
+	shape->EnableFill( true );
+	shape->EnableOutline( false );
+	shape->AddPoint( GetLineHeight( font, font_size ) / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
+	shape->AddPoint( GetLineHeight( font, font_size ) * 3.f / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
+	shape->AddPoint( GetLineHeight( font, font_size ) / 2.f, GetLineHeight( font, font_size ) * 3.f / 4.f, arrow_color );
+	shape->SetPosition( combo_box->GetAllocation().Width - combo_box->GetBorderWidth() - padding - GetLineHeight( font, font_size ), combo_box->GetBorderWidth() + padding );
+	queue->Add( shape );
 
 	return queue;
 }

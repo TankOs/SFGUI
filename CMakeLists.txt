@@ -63,6 +63,7 @@ set(
 	${INC_DIR}/SFGUI/Box.hpp
 	${INC_DIR}/SFGUI/Button.hpp
 	${INC_DIR}/SFGUI/CheckButton.hpp
+	${INC_DIR}/SFGUI/ComboBox.hpp
 	${INC_DIR}/SFGUI/Config.hpp
 	${INC_DIR}/SFGUI/Container.hpp
 	${INC_DIR}/SFGUI/Context.hpp
@@ -114,6 +115,7 @@ set(
 	${SRC_DIR}/SFGUI/Box.cpp
 	${SRC_DIR}/SFGUI/Button.cpp
 	${SRC_DIR}/SFGUI/CheckButton.cpp
+	${SRC_DIR}/SFGUI/ComboBox.cpp
 	${SRC_DIR}/SFGUI/Container.cpp
 	${SRC_DIR}/SFGUI/Context.cpp
 	${SRC_DIR}/SFGUI/CullingTarget.cpp

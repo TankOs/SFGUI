@@ -37,6 +37,7 @@ class Frame;
 class Image;
 class Notebook;
 class Spinner;
+class ComboBox;
 
 /** Abstract base class for widget rendering.
  */
@@ -119,6 +120,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual RenderQueue* CreateFrameDrawable( SharedPtr<const Frame> frame ) const = 0;
+		
+		/** Create drawable for combo box widgets.
+		 * @param combo_box Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual RenderQueue* CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const = 0;
 
 		/** Create drawable for image widgets.
 		 * @param image Widget.
