@@ -10,6 +10,7 @@
 #include <SFGUI/Desktop.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Entry.hpp>
+#include <SFGUI/Fixed.hpp>
 #include <SFGUI/Label.hpp>
 #include <SFGUI/Range.hpp>
 #include <SFGUI/Scale.hpp>

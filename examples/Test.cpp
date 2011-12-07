@@ -231,6 +231,11 @@ void SampleApp::Run() {
 
 	sfg::Box::Ptr box_image( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
 
+	sfg::Fixed::Ptr fixed_container( sfg::Fixed::Create() );
+	sfg::Button::Ptr fixed_button( sfg::Button::Create( L"I'm at (34,61)" ) );
+	fixed_container->Put( fixed_button, sf::Vector2f( 34.f, 61.f ) );
+	box_image->Pack( fixed_container, false );
+
 	sf::Image sfgui_logo;
 	sfg::Image::Ptr image = sfg::Image::Create();
 

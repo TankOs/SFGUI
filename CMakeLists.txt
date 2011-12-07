@@ -75,6 +75,7 @@ set(
 	${INC_DIR}/SFGUI/Entry.hpp
 	${INC_DIR}/SFGUI/FastDelegate.hpp
 	${INC_DIR}/SFGUI/FileResourceLoader.hpp
+	${INC_DIR}/SFGUI/Fixed.hpp
 	${INC_DIR}/SFGUI/Frame.hpp
 	${INC_DIR}/SFGUI/Image.hpp
 	${INC_DIR}/SFGUI/Label.hpp
@@ -119,6 +120,7 @@ set(
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
 	${SRC_DIR}/SFGUI/Entry.cpp
 	${SRC_DIR}/SFGUI/FileResourceLoader.cpp
+	${SRC_DIR}/SFGUI/Fixed.cpp
 	${SRC_DIR}/SFGUI/Frame.cpp
 	${SRC_DIR}/SFGUI/Image.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
