@@ -225,7 +225,7 @@ void SampleApp::Run() {
 
 	sfg::Frame::Ptr frame2( sfg::Frame::Create( L"Toolbar 2" ) );
 	frame2->Add( boxtoolbar2 );
-	frame2->SetAlignment( .8f );
+	frame2->SetAlignment( sf::Vector2f( .8f, .0f ) );
 
 	sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
 
@@ -250,6 +250,14 @@ void SampleApp::Run() {
 		box_button_image->Pack( image_button, false );
 		box_image->Pack( box_button_image, false );
 	}
+
+	sfg::Button::Ptr aligned_button( sfg::Button::Create( L"I'm way over here" ) );
+
+	sfg::Alignment::Ptr alignment( sfg::Alignment::Create() );
+	alignment->Add( aligned_button );
+	box_image->Pack( alignment, true );
+	alignment->SetAlignment( sf::Vector2f( 1.f, 1.f ) );
+	alignment->SetScale( sf::Vector2f( 0.f, .5f ) );
 
 	sfg::Box::Ptr boxmain( sfg::Box::Create( sfg::Box::VERTICAL ) );
 	boxmain->SetSpacing( 5.f );

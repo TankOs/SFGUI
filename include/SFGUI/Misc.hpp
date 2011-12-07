@@ -1,18 +1,15 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/Widget.hpp>
 #include <SFGUI/SharedPtr.hpp>
+#include <SFML/System.hpp>
 
 namespace sfg {
 
-/** Base class for all widgets with alignment.
+/** Interface for all widgets with alignment.
  */
-class SFGUI_API Misc : public Widget {
+class SFGUI_API Misc {
 	public:
-		typedef SharedPtr<Misc> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Misc> PtrConst; //!< Shared pointer.
-
 		/** Dtor.
 		 */
 		~Misc();
@@ -31,6 +28,8 @@ class SFGUI_API Misc : public Widget {
 		/** Ctor.
 		 */
 		Misc();
+
+		virtual void HandleAlignmentChange( const sf::Vector2f& old_alignment );
 
 	private:
 		sf::Vector2f m_alignment;

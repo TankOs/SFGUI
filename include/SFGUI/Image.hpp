@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+#include <SFGUI/Widget.hpp>
 #include <SFGUI/Misc.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <SFML/Graphics/Image.hpp>
@@ -9,7 +10,7 @@ namespace sfg {
 
 /** Image.
  */
-class SFGUI_API Image : public Misc {
+class SFGUI_API Image : public Widget, public Misc {
 	public:
 		typedef SharedPtr<Image> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Image> PtrConst; //!< Shared pointer.

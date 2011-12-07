@@ -1,5 +1,6 @@
 #pragma once
 #include <SFGUI/Bin.hpp>
+#include <SFGUI/Misc.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/String.hpp>
 
@@ -7,7 +8,7 @@ namespace sfg {
 
 /** Frame.
  */
-class SFGUI_API Frame : public Bin {
+class SFGUI_API Frame : public Bin, public Misc {
 	public:
 		typedef SharedPtr<Frame> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Frame> PtrConst; //!< Shared pointer.
@@ -29,16 +30,6 @@ class SFGUI_API Frame : public Bin {
 		 * @return Label.
 		 */
 		const sf::String& GetLabel() const;
-
-		/** Set alignment
-		 * @param alignment Alignment (0..1 for x).
-		 */
-		void SetAlignment( float alignment );
-
-		/** Get alignment.
-		 * @return Alignment.
-		 */
-		float GetAlignment() const;
 
 	protected:
 		/** Ctor.

@@ -6,8 +6,9 @@ namespace sfg {
 
 Frame::Frame() :
 	Bin(),
-	m_alignment( .0f )
+	Misc()
 {
+	SetAlignment( sf::Vector2f( 0.f, 0.f ) );
 }
 
 Frame::Ptr Frame::Create( const sf::String& label ) {
@@ -30,14 +31,6 @@ void Frame::SetLabel( const sf::String& label ) {
 
 const sf::String& Frame::GetLabel() const {
 	return m_label;
-}
-
-void Frame::SetAlignment( float alignment ) {
-	m_alignment = std::max( 0.f, std::min( 1.f, alignment ) );
-}
-
-float Frame::GetAlignment() const {
-	return m_alignment;
 }
 
 sf::Vector2f Frame::CalculateRequisition() {

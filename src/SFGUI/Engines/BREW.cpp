@@ -1117,7 +1117,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	float label_start_x = line_height;
 	float label_end_x = line_height;
 
-	float alignment = frame->GetAlignment();
+	float alignment = frame->GetAlignment().x;
 
 	if( frame->GetLabel().GetSize() > 0 ) {
 		sf::Vector2f metrics = GetTextMetrics( frame->GetLabel(), font, font_size );

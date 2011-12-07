@@ -58,6 +58,7 @@ endif()
 set(
 	SOURCES
 	${INC_DIR}/SFGUI/Adjustment.hpp
+	${INC_DIR}/SFGUI/Alignment.hpp
 	${INC_DIR}/SFGUI/Bin.hpp
 	${INC_DIR}/SFGUI/Box.hpp
 	${INC_DIR}/SFGUI/Button.hpp
@@ -105,6 +106,7 @@ set(
 	${INC_DIR}/SFGUI/Widget.hpp
 	${INC_DIR}/SFGUI/Window.hpp
 	${SRC_DIR}/SFGUI/Adjustment.cpp
+	${SRC_DIR}/SFGUI/Alignment.cpp
 	${SRC_DIR}/SFGUI/Bin.cpp
 	${SRC_DIR}/SFGUI/Box.cpp
 	${SRC_DIR}/SFGUI/Button.cpp

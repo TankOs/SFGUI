@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+#include <SFGUI/Widget.hpp>
 #include <SFGUI/Misc.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/String.hpp>
@@ -9,7 +10,7 @@ namespace sfg {
 
 /** Text label.
  */
-class SFGUI_API Label : public Misc {
+class SFGUI_API Label : public Widget, public Misc {
 	public:
 		typedef SharedPtr<Label> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Label> PtrConst; //!< Shared pointer.
