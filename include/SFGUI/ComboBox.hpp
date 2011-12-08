@@ -10,8 +10,11 @@ namespace sfg {
  */
 class SFGUI_API ComboBox : public Bin {
 	public:
-		typedef SharedPtr<ComboBox>  Ptr; //!< Shared pointer.
-		typedef SharedPtr<const ComboBox>  PtrConst; //!< Shared pointer.
+		typedef SharedPtr<ComboBox> Ptr; ///< Shared pointer.
+		typedef SharedPtr<const ComboBox> PtrConst; ///< Shared pointer to const.
+		typedef std::size_t IndexType; ///< Type for item indices.
+
+		static const IndexType NONE; ///< Value for specifying an invalid index/no item selected.
 		
 		/** Create combo box.
 		 * @return Combo box.
@@ -24,66 +27,66 @@ class SFGUI_API ComboBox : public Bin {
 		
 		virtual const std::string& GetName() const;
 		
-		/** Get active item.
-		 * @return Active item index.
+		/** Get selected item.
+		 * @return Active item or NONE if none selected.
 		 */
-		int GetActive() const;
+		IndexType GetSelectedItem() const;
 		
 		/** Get highlighted item.
-		 * @return The highlighted item.
+		 * @return Highlighted item or NONE if none highlighted.
 		 */
-		int GetHighlighted() const;
+		IndexType GetHighlightedItem() const;
 		
-		/** Set active item.
-		 * @param index The new active item's index.
+		/** Select item.
+		 * @param index Item index.
 		 */
-		void SetActive( int index );
+		void SelectItem( IndexType index );
 		
-		/** Append a new entry.
-		 * @param text The text to append.
+		/** Append item.
+		 * @param text Item text.
 		 */
-		void AppendText( const sf::String& text );
+		void AppendItem( const sf::String& text );
 		
-		/** Insert a new entry.
-		 * @param position The position to insert the text at.
-		 * @param text The text to insert.
+		/** Insert item.
+		 * @param index Item index.
+		 * @param text Item text.
 		 */
-		void InsertText( int position, const sf::String& text );
+		void InsertItem( IndexType index, const sf::String& text );
 
-		/** Prepend a new entry.
-		 * @param text The text to insert.
+		/** Prepend item.
+		 * @param text Item text.
 		 */
-		void PrependText( const sf::String& text );
+		void PrependItem( const sf::String& text );
 		
-		/** Change an entry.
-		 * @param index The index to change.
-		 * @param text The new text.
+		/** Change item.
+		 * @param index Item index.
+		 * @param text Item text.
 		 */
-		void ChangeText( int index, const sf::String& text );
+		void ChangeItem( IndexType index, const sf::String& text );
 		
-		/** Remove an entry.
-		 * @param position The index of the entry to remove.
+		/** Remove item.
+		 * @param index Item index.
 		 */
-		void RemoveText( int index );
+		void RemoveItem( IndexType index );
 		
-		/** Get the text of the active entry.
-		 * @return The text of the active entry.
+		/** Get text of selected item.
+		 * @return Text of selected item or empty if none selected.
 		 */
-		const sf::String& GetActiveText() const;
+		const sf::String& GetSelectedText() const;
 		
-		/** Get the number of entries.
-		 * @return The number of entries.
+		/** Get item count.
+		 * @return Item count.
 		 */
-		std::size_t GetNumberEntries() const;
+		IndexType GetItemCount() const;
 		
-		/** Get the text of a specific entry.
-		 * @param index The index of the entry to get the text of.
-		 * @return The text of the specified entry.
+		/** Get text of specific item.
+		 * @param index Item index.
+		 * @return Item text or empty if index is invalid.
 		 */
-		const sf::String& GetEntryText( const int index ) const;
+		const sf::String& GetItem( IndexType index ) const;
 		
 		/** Is the popup being shown?
-		 * @return True if the popup is being shown.
+		 * @return true if the popup is being shown.
 		 */
 		bool IsPoppedUp() const;
 		
@@ -104,10 +107,10 @@ class SFGUI_API ComboBox : public Bin {
 		virtual void HandleMouseMoveEvent( int x, int y );
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		
-		std::vector<sf::String> m_entries;
-		int m_active_index;
-		int m_highlighted;
 		bool m_active;
+		IndexType m_active_item;
+		IndexType m_highlighted_item;
+		std::vector<sf::String> m_entries;
 };
 
 }

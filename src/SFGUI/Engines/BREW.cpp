@@ -203,7 +203,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		);
 
 		// Find out visible text, count in "...".
-		float avail_width( window->GetAllocation().Width - 2.f * border_width  - 2.f * title_padding );
+		float avail_width( window->GetAllocation().Width - 2.f * border_width - 2.f * title_padding );
 
 		sf::Text* title_text(
 			new sf::Text(
@@ -218,7 +218,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			const sf::String& title_string( window->GetTitle() );
 			sf::String visible_title;
 
-			avail_width = window->GetAllocation().Width - 2.f * border_width  - 2.f * title_padding - dots.GetRect().Width;
+			avail_width = window->GetAllocation().Width - 2.f * border_width - 2.f * title_padding - dots.GetRect().Width;
 
 			for( std::size_t ch_index = 0; ch_index < title_string.GetSize(); ++ch_index ) {
 				avail_width -= static_cast<float>( title_font.GetGlyph( title_string[ch_index], title_font_size, false ).Advance );
@@ -1249,10 +1249,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
-	RenderQueue*  queue( new RenderQueue );
-	
-	float expanded_height = 2 * combo_box->GetBorderWidth() + 2 * padding + static_cast<float>( combo_box->GetNumberEntries() ) * GetLineHeight( font, font_size );
-
+	RenderQueue* queue( new RenderQueue );
 	queue->Add(
 		new sf::Shape(
 			sf::Shape::Rectangle(
@@ -1265,6 +1262,8 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		)
 	);
 	
+	float expanded_height = 2 * combo_box->GetBorderWidth() + 2 * padding + static_cast<float>( combo_box->GetItemCount() ) * GetLineHeight( font, font_size );
+
 	if( combo_box->IsPoppedUp() ) {
 		queue->Add(
 			new sf::Shape(
@@ -1292,12 +1291,12 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 	// Labels.
 	if( combo_box->IsPoppedUp() ) {
-		for ( int i = 0; i < combo_box->GetNumberEntries(); ++i ) {
-			if( combo_box->GetEntryText( i ).GetSize() > 0 ) {
-				sf::Vector2f metrics = GetTextMetrics( combo_box->GetEntryText( i ), font, font_size );
+		for ( ComboBox::IndexType i = 0; i < combo_box->GetItemCount(); ++i ) {
+			if( combo_box->GetItem( i ).GetSize() > 0 ) {
+				sf::Vector2f metrics = GetTextMetrics( combo_box->GetItem( i ), font, font_size );
 				metrics.y = GetLineHeight( font, font_size );
 				
-				if( i == combo_box->GetHighlighted() ) {
+				if( i == combo_box->GetHighlightedItem() ) {
 					queue->Add(
 						new sf::Shape(
 							sf::Shape::Rectangle(
@@ -1311,7 +1310,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 					);
 				}
 				
-				sf::Text* text( new sf::Text( combo_box->GetEntryText( i ), font, font_size ) );
+				sf::Text* text( new sf::Text( combo_box->GetItem( i ), font, font_size ) );
 				text->SetPosition(
 					std::floor( combo_box->GetBorderWidth() + padding + .5f ),
 					std::floor( combo_box->GetAllocation().Height + combo_box->GetBorderWidth() + padding + static_cast<float>( i ) * metrics.y + .5f )
@@ -1321,8 +1320,8 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			}
 		}
 	}
-	if( combo_box->GetActiveText().GetSize() > 0 ) {
-		sf::Text* text( new sf::Text( combo_box->GetActiveText(), font, font_size ) );
+	if( combo_box->GetSelectedText().GetSize() > 0 ) {
+		sf::Text* text( new sf::Text( combo_box->GetSelectedText(), font, font_size ) );
 		text->SetPosition(
 			std::floor( combo_box->GetBorderWidth() + padding + .5f ),
 			std::floor( combo_box->GetBorderWidth() + padding + .5f )

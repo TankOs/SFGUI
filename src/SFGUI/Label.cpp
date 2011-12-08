@@ -19,6 +19,7 @@ Label::~Label() {
 
 Label::Ptr Label::Create( const sf::String& text ) {
 	Ptr label( new Label( text ) );
+	label->RequestResize();
 	return label;
 }
 

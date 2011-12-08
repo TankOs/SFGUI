@@ -28,3 +28,4 @@
 #include <SFGUI/Alignment.hpp>
 #include <SFGUI/Notebook.hpp>
 #include <SFGUI/Spinner.hpp>
+#include <SFGUI/ComboBox.hpp>

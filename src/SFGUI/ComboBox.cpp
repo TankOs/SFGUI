@@ -2,13 +2,18 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <limits>
+
 namespace sfg {
+
+const ComboBox::IndexType ComboBox::NONE = std::numeric_limits<ComboBox::IndexType>::max();
+static const sf::String EMPTY = "";
 
 ComboBox::ComboBox() :
 	Bin(),
 	m_active( false ),
-	m_active_index( -1 ),
-	m_highlighted( -1 )
+	m_active_item( NONE ),
+	m_highlighted_item( NONE )
 {
 }
 
@@ -16,8 +21,7 @@ ComboBox::~ComboBox() {
 }
 
 ComboBox::Ptr ComboBox::Create() {
-	ComboBox::Ptr  ptr( new ComboBox );
-
+	ComboBox::Ptr ptr( new ComboBox );
 	return ptr;
 }
 
@@ -25,74 +29,95 @@ RenderQueue* ComboBox::InvalidateImpl() const {
 	return Context::Get().GetEngine().CreateComboBoxDrawable( DynamicPointerCast<const ComboBox>( shared_from_this() ) );
 }
 
-int ComboBox::GetActive() const {
-	return m_active_index;
+ComboBox::IndexType ComboBox::GetSelectedItem() const {
+	return m_active_item;
 }
 
-int ComboBox::GetHighlighted() const {
-	return m_highlighted;
+ComboBox::IndexType ComboBox::GetHighlightedItem() const {
+	return m_highlighted_item;
 }
 
-void ComboBox::SetActive( int index ) {
-	m_active_index = index;
-	if( index >= GetNumberEntries() || index < 0 ) {
-		m_active_index = -1;
+void ComboBox::SelectItem( IndexType index ) {
+	if( index >= m_entries.size() ) {
+		return;
 	}
+
+	m_active_item = index;
+	Invalidate();
 }
 
-void ComboBox::AppendText( const sf::String& text ) {
+void ComboBox::AppendItem( const sf::String& text ) {
 	m_entries.push_back( text );
 	RequestResize();
 }
 
-void ComboBox::InsertText( int position, const sf::String& text ) {
-	m_entries.insert( m_entries.begin() + position, text );
-	if( m_active_index >= position ) {
-		++m_active_index;
+void ComboBox::InsertItem( IndexType index, const sf::String& text ) {
+	m_entries.insert( m_entries.begin() + index, text );
+
+	if( m_active_item != NONE && m_active_item >= index ) {
+		++m_active_item;
 	}
+
 	RequestResize();
 }
 
-void ComboBox::PrependText( const sf::String& text ) {
+void ComboBox::PrependItem( const sf::String& text ) {
 	m_entries.insert( m_entries.begin(), text );
-	m_active_index += 1;
+
+	if( m_active_item != NONE ) {
+		++m_active_item;
+	}
+
 	RequestResize();
 }
 
-void ComboBox::ChangeText( int index, const sf::String& text ) {
-	if( index < 0 || index >= static_cast<int>( m_entries.size() ) ) {
+void ComboBox::ChangeItem( IndexType index, const sf::String& text ) {
+	if( index >= m_entries.size() ) {
 		return;
 	}
-	m_entries[ index ] = text;
+
+	m_entries[index] = text;
 	RequestResize();
 }
 
-void ComboBox::RemoveText( int index ) {
+void ComboBox::RemoveItem( IndexType index ) {
+	if( index >= m_entries.size() ) {
+		return;
+	}
+
 	m_entries.erase( m_entries.begin() + index );
-	if( m_active_index >= index ) {
-		--m_active_index;
+
+	// Make sure active item index keeps valid.
+	if( m_active_item != NONE ) {
+		if( m_active_item == index ) {
+			m_active_item = NONE;
+		}
+		else if( m_active_item > index ) {
+			m_active_item = m_entries.size() == 0 ? NONE : m_active_item - 1;
+		}
 	}
+
 	RequestResize();
 }
 
-const sf::String& ComboBox::GetActiveText() const {
-	if( m_active_index >= 0 && m_active_index < static_cast<int>( m_entries.size() ) ) {
-		return m_entries.at( m_active_index );
+const sf::String& ComboBox::GetSelectedText() const {
+	if( m_active_item == NONE ) {
+		return EMPTY;
 	}
-	static sf::String empty( "" );
-	return empty;
+
+	return m_entries[m_active_item];
 }
 
-std::size_t ComboBox::GetNumberEntries() const {
-	return static_cast<int>( m_entries.size() );
+ComboBox::IndexType ComboBox::GetItemCount() const {
+	return m_entries.size();
 }
 
-const sf::String& ComboBox::GetEntryText( const int index ) const {
-	static sf::String empty( "" );
-	if( index == -1 ) {
-		return empty;
+const sf::String& ComboBox::GetItem( IndexType index ) const {
+	if( index >= m_entries.size() ) {
+		return EMPTY;
 	}
-	return m_entries.at( index );
+
+	return m_entries[index];
 }
 
 bool ComboBox::IsPoppedUp() const {
@@ -118,15 +143,15 @@ void ComboBox::HandleMouseMoveEvent( int /*x*/, int y ) {
 		unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 		const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 		
-		int line_y = y;
+		IndexType line_y = y;
 		line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + GetBorderWidth() + padding );
 		line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) );
 		
-		if( line_y >= 0 && line_y < GetNumberEntries() ) {
-			if( line_y != m_highlighted ) {
+		if( line_y < GetItemCount() ) {
+			if( line_y != m_highlighted_item ) {
 				Invalidate();
 			}
-			m_highlighted = line_y;
+			m_highlighted_item = line_y;
 		}
 	}
 }
@@ -143,17 +168,18 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 	
 	if( button == sf::Mouse::Left ) {
 		if( m_active && !press ) {
-			if( m_highlighted != -1 ) {
-				m_active_index = m_highlighted;
+			if( m_highlighted_item != NONE ) {
+				m_active_item = m_highlighted_item;
 				m_active = false;
+				m_highlighted_item = NONE;
+
 				OnSelect();
 				Invalidate();
-				m_highlighted = -1;
 			}
 			else {
 				m_active = false;
 				Invalidate();
-				m_highlighted = -1;
+				m_highlighted_item = -1;
 			}
 		}
 		else if( !m_active && press ) {
@@ -166,7 +192,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 	if( !IsMouseInWidget() ) {
 		SetState( NORMAL );
 		m_active = false;
-		m_highlighted = -1;
+		m_highlighted_item = -1;
 		Invalidate();
 		return;
 	}
@@ -179,9 +205,9 @@ sf::Vector2f ComboBox::CalculateRequisition() {
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 	sf::Vector2f metrics( 0.f, 0.f );
-	for ( int i = 0; i < GetNumberEntries(); ++i ) {
-		if( Context::Get().GetEngine().GetTextMetrics( m_entries.at( i ), font, font_size ).x > metrics.x ) {
-			metrics = Context::Get().GetEngine().GetTextMetrics( m_entries.at( i ), font, font_size );
+	for ( IndexType item = 0; item < GetItemCount(); ++item ) {
+		if( Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size ).x > metrics.x ) {
+			metrics = Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size );
 		}
 	}
 	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
