@@ -26,3 +26,4 @@
 #include <SFGUI/Frame.hpp>
 #include <SFGUI/Image.hpp>
 #include <SFGUI/Alignment.hpp>
+#include <SFGUI/Notebook.hpp>

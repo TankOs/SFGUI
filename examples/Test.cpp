@@ -277,7 +277,30 @@ void SampleApp::Run() {
 	boxmain->Pack( m_table, true );
 	boxmain->Pack( m_scrolled_window );
 
-	m_wndmain->Add( boxmain );
+	sfg::Notebook::Ptr notebook1( sfg::Notebook::Create() );
+	sfg::Notebook::Ptr notebook2( sfg::Notebook::Create() );
+	sfg::Notebook::Ptr notebook3( sfg::Notebook::Create() );
+	sfg::Notebook::Ptr notebook4( sfg::Notebook::Create() );
+
+	notebook1->SetTabPosition( sfg::Notebook::TOP );
+	notebook2->SetTabPosition( sfg::Notebook::RIGHT );
+	notebook3->SetTabPosition( sfg::Notebook::BOTTOM );
+	notebook4->SetTabPosition( sfg::Notebook::LEFT );
+
+	sfg::Box::Ptr vertigo_box( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
+	sfg::Button::Ptr vertigo_button( sfg::Button::Create( L"Vertigo" ) );
+	vertigo_box->Pack( vertigo_button, true, true );
+
+	notebook1->AppendPage( boxmain, sfg::Label::Create( "Page Name Here" ) );
+	notebook1->AppendPage( notebook2, sfg::Label::Create( "Another Page" ) );
+	notebook2->AppendPage( notebook3, sfg::Label::Create( "Yet Another Page" ) );
+	notebook2->AppendPage( sfg::Label::Create( L"" ), sfg::Label::Create( "Dummy Page" ) );
+	notebook3->AppendPage( notebook4, sfg::Label::Create( "And Another Page" ) );
+	notebook3->AppendPage( sfg::Label::Create( L"" ), sfg::Label::Create( "Dummy Page" ) );
+	notebook4->AppendPage( vertigo_box, sfg::Label::Create( "And The Last Page" ) );
+	notebook4->AppendPage( sfg::Label::Create( L"" ), sfg::Label::Create( "Dummy Page" ) );
+
+	m_wndmain->Add( notebook1 );
 
 	// Signals.
 	btnaddbuttonh->OnClick.Connect( &SampleApp::OnAddButtonHClick, this );
