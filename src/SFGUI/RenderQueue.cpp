@@ -104,6 +104,10 @@ void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& renderer ) con
 		}
 	}
 	else if( !m_display_list_compiled ) {
+		// Make sure SFML binds the right texture if it uses one, or leaves it at 0 if not.
+		glBindTexture( GL_TEXTURE_2D, 0 );
+		renderer.SetTexture( 0 );
+
 		glNewList( m_display_list, GL_COMPILE_AND_EXECUTE );
 
 		std::size_t children_size = m_children.size();
