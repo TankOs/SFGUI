@@ -60,45 +60,40 @@ void Box::HandleRemove( const Widget::Ptr& child ) {
 }
 
 sf::Vector2f Box::CalculateRequisition() {
-	sf::Vector2f requisition( 0, 0 );
+	sf::Vector2f requisition( 2 * GetBorderWidth(), 2 * GetBorderWidth() );
+	unsigned int num_visible( 0 );
 	ChildrenCont::const_iterator iter( m_children.begin() );
 	ChildrenCont::const_iterator iterend( m_children.end() );
-	unsigned int num_visible( 0 );
 
 	for( ; iter != iterend; ++iter ) {
-		if( iter->widget->IsVisible() ) {
-			++num_visible;
-		}
-		else {
+		if( !IsChildInteresting( iter->widget ) ) {
 			continue;
 		}
+
+		++num_visible;
 
 		sf::Vector2f child_requisition( iter->widget->GetRequisition() );
 
 		if( m_orientation == HORIZONTAL ) {
-			requisition.x += child_requisition.x + GetSpacing();
-			requisition.y = std::max( requisition.y, child_requisition.y );
+			requisition.x += child_requisition.x;
+			requisition.y = std::max( requisition.y, child_requisition.y + 2 * GetBorderWidth() );
 		}
 		else {
-			requisition.x = std::max( requisition.x, child_requisition.x );
-			requisition.y += child_requisition.y + GetSpacing();
+			requisition.x = std::max( requisition.x, child_requisition.x + 2 * GetBorderWidth() );
+			requisition.y += child_requisition.y;
 		}
 	}
 
-	if( num_visible > 0 ) {
-		requisition.x += GetBorderWidth() * 2;
-		requisition.y += GetBorderWidth() * 2;
-
+	if( num_visible > 1 ) {
 		if( m_orientation == HORIZONTAL ) {
-			requisition.x -= GetSpacing();
+			requisition.x += static_cast<float>( num_visible - 1 ) * GetSpacing();
 		}
 		else {
-			requisition.y -= GetSpacing();
+			requisition.y += static_cast<float>( num_visible - 1 ) * GetSpacing();
 		}
 	}
 
 	AllocateChildren();
-
 	return requisition;
 }
 
@@ -130,18 +125,12 @@ float Box::GetSpacing() const {
 void Box::AllocateChildren() const {
 	ChildrenCont::const_iterator iter( m_children.begin() );
 	ChildrenCont::const_iterator iterend( m_children.end() );
-	sf::Vector2f allocation( 0.f, 0.f );
-	sf::Vector2f position( GetBorderWidth(), GetBorderWidth() );
 	unsigned int num_expand( 0 );
 	unsigned int num_visible( 0 );
-	float extra( 0.f );
-	sf::Vector2f requisition(
-		m_orientation == HORIZONTAL ? 2 * GetBorderWidth() : GetAllocation().Width,
-		m_orientation == VERTICAL ? 2 * GetBorderWidth() : GetAllocation().Height
-	);
 
+	// Count number of visible and expanded children.
 	for( ; iter != iterend; ++iter ) {
-		if( !iter->widget->IsVisible() ) {
+		if( !IsChildInteresting( iter->widget ) ) {
 			continue;
 		}
 
@@ -150,60 +139,54 @@ void Box::AllocateChildren() const {
 		if( iter->expand ) {
 			++num_expand;
 		}
-
-		sf::Vector2f child_requisition( iter->widget->GetRequisition() );
-
-		if( m_orientation == HORIZONTAL ) {
-			requisition.x += child_requisition.x;
-			requisition.y = std::max( requisition.y, child_requisition.y + 2 * GetBorderWidth() );
-		}
-		else {
-			requisition.x = std::max( requisition.x, child_requisition.x + 2 * GetBorderWidth() );
-			requisition.y += child_requisition.y;
-		}
 	}
 
-	// Add spacings.
-	if( num_visible > 1 ) {
-		if( m_orientation == HORIZONTAL ) {
-			requisition.x += static_cast<float>( num_visible - 1 ) * GetSpacing();
-		}
-		else {
-			requisition.y += static_cast<float>( num_visible - 1 ) * GetSpacing();
-		}
-	}
+	// Calculate extra width pre expanded widget.
+	float extra( 0.f );
 
 	if( num_expand > 0 ) {
 		if( m_orientation == HORIZONTAL ) {
-			extra = std::max( 0.f, GetAllocation().Width - requisition.x ) / static_cast<float>( num_expand );
+			extra = std::max( 0.f, GetAllocation().Width - GetRequisition().x ) / static_cast<float>( num_expand );
 		}
 		else {
-			extra = std::max( 0.f, GetAllocation().Height - requisition.y ) / static_cast<float>( num_expand );
+			extra = std::max( 0.f, GetAllocation().Height - GetRequisition().y ) / static_cast<float>( num_expand );
 		}
 	}
 
+	// Allocate children.
+	sf::Vector2f allocation( 0.f, 0.f );
+	sf::Vector2f position( GetBorderWidth(), GetBorderWidth() );
+
 	for( iter = m_children.begin(); iter != iterend; ++iter ) {
-		if( !iter->widget->IsVisible() ) {
+		if( !IsChildInteresting( iter->widget ) ) {
 			continue;
 		}
 
 		if( m_orientation == HORIZONTAL ) {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
-			allocation.y = requisition.y - 2 * GetBorderWidth();
+			allocation.y = GetAllocation().Height - 2 * GetBorderWidth();
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
-			position.x += allocation.x + (num_visible > 1 ? GetSpacing() : 0.f);
+			position.x += allocation.x + GetSpacing();
 		}
 		else {
-			allocation.x = requisition.x - 2 * GetBorderWidth();
+			allocation.x = GetAllocation().Width - 2 * GetBorderWidth();
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
-			position.y += allocation.y + (num_visible > 1 ? GetSpacing() : 0.f);
+			position.y += allocation.y + GetSpacing();
 		}
 
 		--num_visible;
 	}
+}
+
+bool Box::IsChildInteresting( const sfg::Widget::PtrConst& child ) const {
+	return
+		child->IsVisible() &&
+		(child->GetRequisition().x > 0.f || child->GetAllocation().Width > 0.0f) &&
+		(child->GetRequisition().y > 0.f || child->GetAllocation().Height > 0.0f)
+	;
 }
 
 }

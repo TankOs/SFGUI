@@ -71,6 +71,7 @@ class SFGUI_API Box : public Container {
 		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		void AllocateChildren() const;
+		bool IsChildInteresting( const sfg::Widget::PtrConst& child ) const;
 
 		ChildrenCont m_children;
 		float m_spacing;
