@@ -87,6 +87,11 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		 */
 		void SetCullPass( bool result );
 
+		/** Get the drawables and their AABBs in this queue.
+		 * @return Drawables and AABBs in this queue.
+		 */
+		const DrawablesVector& GetDrawables() const;
+
 	protected:
 		/** Render.
 		 * @param target SFML render target.

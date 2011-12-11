@@ -100,6 +100,7 @@ set(
 	${INC_DIR}/SFGUI/SharedPtr.inl
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
+	${INC_DIR}/SFGUI/Spinner.hpp
 	${INC_DIR}/SFGUI/Table.hpp
 	${INC_DIR}/SFGUI/TableCell.hpp
 	${INC_DIR}/SFGUI/TableOptions.hpp
@@ -147,6 +148,7 @@ set(
 	${SRC_DIR}/SFGUI/Selector.cpp
 	${SRC_DIR}/SFGUI/Separator.cpp
 	${SRC_DIR}/SFGUI/Signal.cpp
+	${SRC_DIR}/SFGUI/Spinner.cpp
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp
 	${SRC_DIR}/SFGUI/TableOptions.cpp

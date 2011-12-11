@@ -20,6 +20,7 @@ class SampleApp {
 		void OnLoadThemeClick();
 		void OnToggleCullingClick();
 		void OnAdjustmentChange();
+		void OnToggleSpinner();
 
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
@@ -33,6 +34,7 @@ class SampleApp {
 		sfg::Scale::Ptr m_scale;
 		sfg::ProgressBar::Ptr m_progress;
 		sfg::ProgressBar::Ptr m_progress_vert;
+		sfg::Spinner::Ptr m_spinner;
 
 		sfg::Desktop m_desktop;
 
@@ -143,9 +145,6 @@ void SampleApp::Run() {
 	m_limit_check = sfg::CheckButton::Create( L"Limit to 4 chars" );
 	m_limit_check->SetId( "limit_check" );
 
-	sfg::Label::Ptr test_label( sfg::Label::Create( L"Foobar?" ) );
-	sfg::Label::Ptr another_label( sfg::Label::Create( L"Meow?" ) );
-
 	sfg::Entry::Ptr password( sfg::Entry::Create() );
 	password->HideText( '*' );
 
@@ -230,6 +229,7 @@ void SampleApp::Run() {
 	sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
 
 	sfg::Box::Ptr box_image( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
+	box_image->SetSpacing( 5.f );
 
 	sfg::Fixed::Ptr fixed_container( sfg::Fixed::Create() );
 	sfg::Button::Ptr fixed_button( sfg::Button::Create( L"I'm at (34,61)" ) );
@@ -255,6 +255,19 @@ void SampleApp::Run() {
 		box_button_image->Pack( image_button, false );
 		box_image->Pack( box_button_image, false );
 	}
+
+	sfg::Box::Ptr spinner_box( sfg::Box::Create( sfg::Box::VERTICAL ) );
+
+	m_spinner = sfg::Spinner::Create();
+	m_spinner->SetRequisition( sf::Vector2f( 40.f, 40.f ) );
+	m_spinner->Start();
+	sfg::ToggleButton::Ptr spinner_toggle( sfg::ToggleButton::Create( L"Spin") );
+	spinner_toggle->SetActive( true );
+	spinner_box->SetSpacing( 5.f );
+	spinner_box->Pack( m_spinner, false );
+	spinner_box->Pack( spinner_toggle, false );
+
+	box_image->Pack( spinner_box, false );
 
 	sfg::Button::Ptr aligned_button( sfg::Button::Create( L"I'm way over here" ) );
 
@@ -312,6 +325,7 @@ void SampleApp::Run() {
 	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadThemeClick, this );
 	btntoggleculling->OnClick.Connect( &SampleApp::OnToggleCullingClick, this );
 	m_scale->GetAdjustment()->OnChange.Connect( &SampleApp::OnAdjustmentChange, this );
+	spinner_toggle->OnClick.Connect( &SampleApp::OnToggleSpinner, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -449,6 +463,15 @@ void SampleApp::OnToggleCullingClick() {
 void SampleApp::OnAdjustmentChange() {
 	m_progress->SetFraction( m_scale->GetValue() / 100.f );
 	m_progress_vert->SetFraction( m_scale->GetValue() / 100.f );
+}
+
+void SampleApp::OnToggleSpinner() {
+	if( !m_spinner->Started() ) {
+		m_spinner->Start();
+	}
+	else {
+		m_spinner->Stop();
+	}
 }
 
 int main() {

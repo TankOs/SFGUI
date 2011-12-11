@@ -14,6 +14,7 @@
 #include <SFGUI/Frame.hpp>
 #include <SFGUI/Image.hpp>
 #include <SFGUI/Notebook.hpp>
+#include <SFGUI/Spinner.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -117,6 +118,12 @@ BREW::BREW() :
 	SetProperty( "Notebook", "BackgroundColor", sf::Color( 0x4C, 0x4C, 0x4C ) );
 	SetProperty( "Notebook", "BackgroundColorDark", sf::Color( 0x42, 0x42, 0x42 ) );
 	SetProperty( "Notebook", "BackgroundColorPrelight", sf::Color( 0x48, 0x48, 0x48 ) );
+
+	// Spinner-specific.
+	SetProperty( "Spinner", "CycleDuration", 2000.f );
+	SetProperty( "Spinner", "Steps", 12.f );
+	SetProperty( "Spinner", "Fade", 2.f );
+	SetProperty( "Spinner", "StoppedAlpha", 47 );
 }
 
 RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
@@ -1727,6 +1734,60 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			}
 		}
 	}
+
+	return queue;
+}
+
+RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const {
+	sf::Color color( GetProperty<sf::Color>( "Color", spinner ) );
+	float steps( GetProperty<float>( "Steps", spinner ) );
+	float fade( GetProperty<float>( "Fade", spinner ) );
+	unsigned int stopped_alpha( GetProperty<unsigned int>( "StoppedAlpha", spinner ) );
+	float radius = std::min( spinner->GetAllocation().Width, spinner->GetAllocation().Height ) / 2.f;
+
+	// Make sure steps is sane.
+	steps = std::max( steps, 4.f );
+
+	sf::Shape* shape = new sf::Shape;
+
+	for( float index = 0.f; index < steps; index += 1.f ) {
+		sf::Color rod_color( color );
+
+		if( spinner->Started() ) {
+			rod_color.a = static_cast<sf::Uint8>( 255.f * pow( index / ( steps - 1.f ), fade ) );
+		}
+		else {
+			rod_color.a = static_cast<sf::Uint8>( stopped_alpha );
+		}
+
+		// Time for some hardcore trigonometry...
+
+		// SFML does this too, for compatibility reasons, so lay off the flame :P
+		float two_pi = 3.141592654f * 2.f;
+
+		sf::Vector2f point1(
+			static_cast<float>( cos( two_pi * index / steps ) ) * radius,
+			static_cast<float>( sin( two_pi * index / steps ) ) * radius
+		);
+
+		sf::Vector2f point2(
+			static_cast<float>( cos( two_pi * ( index + .5f ) / steps ) ) * radius,
+			static_cast<float>( sin( two_pi * ( index + .5f ) / steps ) ) * radius
+		);
+
+		shape->AddPoint( sf::Vector2f( 0.f, 0.f ), rod_color );
+		shape->AddPoint( point1, rod_color );
+		shape->AddPoint( point2, rod_color );
+	}
+
+	shape->SetPosition( spinner->GetAllocation().Width / 2.f, spinner->GetAllocation().Height / 2.f );
+
+	shape->EnableOutline( false );
+	shape->EnableFill( true );
+
+	RenderQueue* queue( new RenderQueue );
+
+	queue->Add( shape );
 
 	return queue;
 }

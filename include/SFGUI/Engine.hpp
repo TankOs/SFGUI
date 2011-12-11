@@ -36,6 +36,7 @@ class Separator;
 class Frame;
 class Image;
 class Notebook;
+class Spinner;
 
 /** Abstract base class for widget rendering.
  */
@@ -130,6 +131,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual RenderQueue* CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) const = 0;
+
+		/** Create drawable for spinner widgets.
+		 * @param spinner Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const = 0;
 
 		/** Get line height of a font.
 		 * @param font Font.

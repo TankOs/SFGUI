@@ -90,6 +90,8 @@ void RenderQueue::Compile() {
 		                                         static_cast<int>( m_children[ index ].second.Left + m_children[ index ].second.Width + .5f ),
 		                                         static_cast<int>( m_children[ index ].second.Top + m_children[ index ].second.Height + .5f ) );
 	}
+
+	m_display_list_compiled = false;
 }
 
 void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& renderer ) const {
@@ -152,6 +154,10 @@ bool RenderQueue::GetCullPass() {
 
 void RenderQueue::SetCullPass( bool result ) {
 	m_last_cull_passed = result;
+}
+
+const RenderQueue::DrawablesVector& RenderQueue::GetDrawables() const {
+	return m_children;
 }
 
 }

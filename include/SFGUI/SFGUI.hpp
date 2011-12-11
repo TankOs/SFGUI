@@ -27,3 +27,4 @@
 #include <SFGUI/Image.hpp>
 #include <SFGUI/Alignment.hpp>
 #include <SFGUI/Notebook.hpp>
+#include <SFGUI/Spinner.hpp>
