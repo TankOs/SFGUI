@@ -79,7 +79,7 @@ void Application::Run() {
 	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::VERTICAL );
 
 	window->Add( box );
-	window->SetBorderWidth( 10.f );
+	window->SetMargin( 10.f );
 
 	// Possibility 1, normal function
 	sfg::Button::Ptr button1 = sfg::Button::Create();

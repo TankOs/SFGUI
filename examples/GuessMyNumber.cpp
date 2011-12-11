@@ -134,7 +134,7 @@ void GuessMyNumber::Run() {
 	buttons_box->Pack( m_guess_button );
 
 	sfg::Box::Ptr content_vbox( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
-	content_vbox->SetBorderWidth( 10.f );
+	content_vbox->SetMargin( 10.f );
 	content_vbox->Pack( sfg::Label::Create( "Guess my number, it's from 1 to 100!" ) );
 	content_vbox->Pack( table );
 	content_vbox->Pack( buttons_box );

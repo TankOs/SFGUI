@@ -43,12 +43,12 @@ class SFGUI_API Container : public Widget {
 		/** Set border width.
 		 * @param width Border width.
 		 */
-		void SetBorderWidth( float width );
+		void SetMargin( float width );
 
 		/** Get border width.
 		 * @return Border width.
 		 */
-		float GetBorderWidth() const;
+		float GetMargin() const;
 
 		void Refresh();
 
@@ -81,7 +81,7 @@ class SFGUI_API Container : public Widget {
 		virtual void HandleExpose( CullingTarget& target ) const;
 
 	private:
-		float m_border_width;
+		float m_margin;
 
 		WidgetsList m_children;
 };

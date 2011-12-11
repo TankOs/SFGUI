@@ -127,7 +127,6 @@ void SampleApp::Run() {
 	// Create widgets.
 	m_wndmain = sfg::Window::Create();
 	m_wndmain->SetTitle( L"Example application" );
-	m_wndmain->SetBorderWidth( 10.f );
 
 	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
 	sfg::Button::Ptr btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
@@ -304,6 +303,7 @@ void SampleApp::Run() {
 	sfg::Notebook::Ptr notebook4( sfg::Notebook::Create() );
 
 	notebook1->SetTabPosition( sfg::Notebook::TOP );
+	notebook1->SetMargin( 10.f );
 	notebook2->SetTabPosition( sfg::Notebook::RIGHT );
 	notebook3->SetTabPosition( sfg::Notebook::BOTTOM );
 	notebook4->SetTabPosition( sfg::Notebook::LEFT );
@@ -340,7 +340,7 @@ void SampleApp::Run() {
 	// Another window
 	sfg::Window::Ptr second_window( sfg::Window::Create() );
 	second_window->SetId( "second_window" );
-	second_window->SetBorderWidth( 10.f );
+	second_window->SetMargin( 10.f );
 	second_window->SetTitle( "Another window" );
 	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	box->Pack( sfg::Label::Create( "Aliquam sed pretium lacus." ), false );
@@ -443,11 +443,11 @@ void SampleApp::OnHideWindowClicked() {
 void SampleApp::OnToggleSpaceClick() {
 	if( m_scrolled_window_box->GetSpacing() > .0f ) {
 		m_scrolled_window_box->SetSpacing( .0f );
-		m_scrolled_window_box->SetBorderWidth( .0f );
+		m_scrolled_window_box->SetMargin( .0f );
 	}
 	else {
 		m_scrolled_window_box->SetSpacing( 40.f );
-		m_scrolled_window_box->SetBorderWidth( 40.f );
+		m_scrolled_window_box->SetMargin( 40.f );
 	}
 }
 

@@ -87,12 +87,12 @@ sf::Vector2f Button::CalculateRequisition() {
 	sf::Vector2f requisition = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
 	requisition.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
-	requisition.x += 2 * GetBorderWidth() + 2 * padding;
-	requisition.y += 2 * GetBorderWidth() + 2 * padding;
+	requisition.x += 2 * GetMargin() + 2 * padding;
+	requisition.y += 2 * GetMargin() + 2 * padding;
 
 	if( GetChild() ) {
 		requisition.x += GetChild()->GetRequisition().x;
-		requisition.y = std::max( requisition.y, GetChild()->GetRequisition().y + 2 * GetBorderWidth() + 2 * padding );
+		requisition.y = std::max( requisition.y, GetChild()->GetRequisition().y + 2 * GetMargin() + 2 * padding );
 
 		if( GetLabel().GetSize() > 0 ) {
 			requisition.x += spacing;

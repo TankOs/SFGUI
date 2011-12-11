@@ -4,7 +4,7 @@ namespace sfg {
 
 Container::Container() :
 	Widget(),
-	m_border_width( 0.f )
+	m_margin( 0.f )
 {
 }
 
@@ -61,14 +61,14 @@ void Container::HandleExpose( CullingTarget& target ) const {
 	}
 }
 
-void Container::SetBorderWidth( float width ) {
-	m_border_width = width;
+void Container::SetMargin( float width ) {
+	m_margin = width;
 	RequestResize();
 	Invalidate();
 }
 
-float Container::GetBorderWidth() const {
-	return m_border_width;
+float Container::GetMargin() const {
+	return m_margin;
 }
 
 void Container::Refresh() {

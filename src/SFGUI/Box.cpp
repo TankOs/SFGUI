@@ -60,7 +60,7 @@ void Box::HandleRemove( const Widget::Ptr& child ) {
 }
 
 sf::Vector2f Box::CalculateRequisition() {
-	sf::Vector2f requisition( 2 * GetBorderWidth(), 2 * GetBorderWidth() );
+	sf::Vector2f requisition( 2 * GetMargin(), 2 * GetMargin() );
 	unsigned int num_visible( 0 );
 	ChildrenCont::const_iterator iter( m_children.begin() );
 	ChildrenCont::const_iterator iterend( m_children.end() );
@@ -76,10 +76,10 @@ sf::Vector2f Box::CalculateRequisition() {
 
 		if( m_orientation == HORIZONTAL ) {
 			requisition.x += child_requisition.x;
-			requisition.y = std::max( requisition.y, child_requisition.y + 2 * GetBorderWidth() );
+			requisition.y = std::max( requisition.y, child_requisition.y + 2 * GetMargin() );
 		}
 		else {
-			requisition.x = std::max( requisition.x, child_requisition.x + 2 * GetBorderWidth() );
+			requisition.x = std::max( requisition.x, child_requisition.x + 2 * GetMargin() );
 			requisition.y += child_requisition.y;
 		}
 	}
@@ -155,7 +155,7 @@ void Box::AllocateChildren() const {
 
 	// Allocate children.
 	sf::Vector2f allocation( 0.f, 0.f );
-	sf::Vector2f position( GetBorderWidth(), GetBorderWidth() );
+	sf::Vector2f position( GetMargin(), GetMargin() );
 
 	for( iter = m_children.begin(); iter != iterend; ++iter ) {
 		if( !IsChildInteresting( iter->widget ) ) {
@@ -164,13 +164,13 @@ void Box::AllocateChildren() const {
 
 		if( m_orientation == HORIZONTAL ) {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
-			allocation.y = GetAllocation().Height - 2 * GetBorderWidth();
+			allocation.y = GetAllocation().Height - 2 * GetMargin();
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
 			position.x += allocation.x + GetSpacing();
 		}
 		else {
-			allocation.x = GetAllocation().Width - 2 * GetBorderWidth();
+			allocation.x = GetAllocation().Width - 2 * GetMargin();
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
