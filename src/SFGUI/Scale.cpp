@@ -53,7 +53,7 @@ RenderQueue* Scale::InvalidateImpl() const {
 
 sf::Vector2f Scale::CalculateRequisition() {
 	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
-	float slider_width( ( GetOrientation() == HORIZONTAL ) ? GetAllocation().Height : GetAllocation().Width );
+	float slider_width( std::max( 3.f, ( GetOrientation() == HORIZONTAL ) ? GetAllocation().Height : GetAllocation().Width ) );
 
 	if( GetOrientation() == HORIZONTAL ) {
 		return sf::Vector2f( slider_length * 2.f, slider_width );
