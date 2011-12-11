@@ -132,8 +132,28 @@ void SampleApp::Run() {
 	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
 	sfg::Button::Ptr btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
 	m_titlebar_toggle = sfg::ToggleButton::Create( "Toggle titlebar" );
+
+	{
+		sf::Image add_image;
+		if( add_image.LoadFromFile( "data/add.png" ) ) {
+			sfg::Image::Ptr image( sfg::Image::Create( add_image ) );
+			btnaddbuttonh->SetImage( image );
+
+			image = sfg::Image::Create( add_image );
+			btnaddbuttonv->SetImage( image );
+		}
+	}
+
 	sfg::Button::Ptr btnhidewindow( sfg::Button::Create( L"Close window" ) );
 	btnhidewindow->SetId( "close" );
+
+	{
+		sf::Image close_image;
+		if( close_image.LoadFromFile( "data/delete.png" ) ) {
+			sfg::Image::Ptr image( sfg::Image::Create( close_image ) );
+			btnhidewindow->SetImage( image );
+		}
+	}
 
 	sfg::Button::Ptr btntogglespace( sfg::Button::Create( L"Box Spacing") );
 	sfg::Button::Ptr btnloadstyle( sfg::Button::Create( L"Load theme") );
@@ -242,18 +262,6 @@ void SampleApp::Run() {
 	if( sfgui_logo.LoadFromFile("sfgui.png") ) {
 		image->SetImage( sfgui_logo );
 		box_image->Pack( image, false );
-	}
-
-	sf::Image sfgui_logo2;
-	sfg::Image::Ptr image2 = sfg::Image::Create();
-	sfg::Button::Ptr image_button = sfg::Button::Create();
-
-	if( sfgui_logo2.LoadFromFile("button.png") ) {
-		image2->SetImage( sfgui_logo2 );
-		image_button->SetImage( image2 );
-		sfg::Box::Ptr box_button_image( sfg::Box::Create( sfg::Box::VERTICAL ) );
-		box_button_image->Pack( image_button, false );
-		box_image->Pack( box_button_image, false );
 	}
 
 	sfg::Box::Ptr spinner_box( sfg::Box::Create( sfg::Box::VERTICAL ) );

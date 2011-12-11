@@ -71,6 +71,7 @@ class SFGUI_API Button : public Bin {
 		void HandleMouseEnter( int x, int y );
 		void HandleMouseLeave( int x, int y );
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		void AllocateChild();
 
 		sf::String m_label;
 };

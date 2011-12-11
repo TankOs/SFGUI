@@ -137,7 +137,7 @@ Notebook::IndexType Notebook::GetPageOf( const Widget::Ptr& widget ) const {
 		return -1;
 	}
 
-	return iter - m_children.begin();
+	return static_cast<IndexType>( iter - m_children.begin() );
 }
 
 void Notebook::NextPage() {

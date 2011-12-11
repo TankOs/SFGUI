@@ -26,7 +26,6 @@ RenderQueue* Button::InvalidateImpl() const {
 
 void Button::SetLabel( const sf::String& label ) {
 	m_label = label;
-	ClearImage();
 	RequestResize();
 	Invalidate();
 }
@@ -36,7 +35,7 @@ const sf::String& Button::GetLabel() const {
 }
 
 void Button::SetImage( const Image::Ptr& image ) {
-	SetLabel( L" " );
+	ClearImage();
 	Add( image );
 }
 
@@ -80,26 +79,25 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 
 sf::Vector2f Button::CalculateRequisition() {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+	float spacing( Context::Get().GetEngine().GetProperty<float>( "Spacing", shared_from_this() ) );
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
+	sf::Vector2f requisition = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
+	requisition.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
+
+	requisition.x += 2 * GetBorderWidth() + 2 * padding;
+	requisition.y += 2 * GetBorderWidth() + 2 * padding;
+
 	if( GetChild() ) {
-		sf::Vector2f requisition(
-			GetChild()->GetRequisition().x + 2 * GetBorderWidth() + 2 * padding,
-			GetChild()->GetRequisition().y + 2 * GetBorderWidth() + 2 * padding
-		);
+		requisition.x += GetChild()->GetRequisition().x;
+		requisition.y = std::max( requisition.y, GetChild()->GetRequisition().y + 2 * GetBorderWidth() + 2 * padding );
 
-		return requisition;
+		if( GetLabel().GetSize() > 0 ) {
+			requisition.x += spacing;
+		}
 	}
-
-	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
-	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
-
-	sf::Vector2f requisition(
-		metrics.x + 2 * GetBorderWidth() + 2 * padding,
-		metrics.y + 2 * GetBorderWidth() + 2 * padding
-	);
 
 	return requisition;
 }
@@ -130,6 +128,10 @@ void Button::HandleAdd( const Widget::Ptr& child ) {
 }
 
 void Button::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+	AllocateChild();
+}
+
+void Button::AllocateChild() {
 	Widget::Ptr child = GetChild();
 
 	if( !child ) {
@@ -143,36 +145,19 @@ void Button::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 
 	allocation.Left = padding + border_width;
 	allocation.Top = padding + border_width;
-	allocation.Width -= 2 * ( padding + border_width );
-	allocation.Height -= 2 * ( padding + border_width );
+	allocation.Width = child->GetRequisition().x;
+	allocation.Height -= border_width * 2.f + padding * 2.f;
+
+	if( GetState() == ACTIVE ) {
+		allocation.Left += border_width;
+		allocation.Top += border_width;
+	}
 
 	child->SetAllocation( allocation );
 }
 
 void Button::HandleStateChange( State old_state ) {
-	Widget::Ptr child = GetChild();
-
-	if( child ) {
-		float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
-		float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
-
-		sf::FloatRect allocation( GetAllocation() );
-
-		allocation.Width -= 2 * ( padding + border_width );
-		allocation.Height -= 2 * ( padding + border_width );
-
-		if( GetState() == ACTIVE ) {
-			allocation.Left = padding + 2 * border_width;
-			allocation.Top = padding + 2 * border_width;
-		}
-		else {
-			allocation.Left = padding + border_width;
-			allocation.Top = padding + border_width;
-		}
-
-		child->SetAllocation( allocation );
-	}
-
+	AllocateChild();
 	Bin::HandleStateChange( old_state );
 }
 

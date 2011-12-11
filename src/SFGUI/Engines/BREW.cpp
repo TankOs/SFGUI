@@ -48,7 +48,7 @@ BREW::BREW() :
 	// Button-specific.
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
-	SetProperty( "Button", "Padding", 5.f );
+	SetProperty( "Button", "Spacing", 5.f );
 	SetProperty( "Button:PRELIGHT", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
 	SetProperty( "Button:PRELIGHT", "Color", sf::Color::White );
 	SetProperty( "Button:ACTIVE", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
@@ -120,9 +120,9 @@ BREW::BREW() :
 	SetProperty( "Notebook", "BackgroundColorPrelight", sf::Color( 0x48, 0x48, 0x48 ) );
 
 	// Spinner-specific.
-	SetProperty( "Spinner", "CycleDuration", 2000.f );
-	SetProperty( "Spinner", "Steps", 12.f );
-	SetProperty( "Spinner", "Fade", 2.f );
+	SetProperty( "Spinner", "CycleDuration", 800.f );
+	SetProperty( "Spinner", "Steps", 13 );
+	SetProperty( "Spinner", "Fade", 5.f );
 	SetProperty( "Spinner", "StoppedAlpha", 47 );
 }
 
@@ -302,6 +302,7 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
 	sf::Color color( GetProperty<sf::Color>( "Color", button ) );
 	float border_width( GetProperty<float>( "BorderWidth", button ) );
+	float spacing( GetProperty<float>( "Spacing", button ) );
 	const std::string& font_name( GetProperty<std::string>( "FontName", button ) );
 	unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
@@ -335,13 +336,24 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 		metrics.y = GetLineHeight( font, font_size );
 
 		sf::Text* text( new sf::Text( button->GetLabel(), font, font_size ) );
-
 		float offset = ( button->GetState() == Button::ACTIVE ) ? border_width : 0.f;
+		sfg::Widget::PtrConst child( button->GetChild() );
 
-		text->SetPosition(
-			std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f + offset ),
-			std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f + offset )
-		);
+		if( !child ) {
+			text->SetPosition(
+				std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f + offset ),
+				std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f + offset )
+			);
+		}
+		else {
+			float width( button->GetAllocation().Width - spacing - child->GetAllocation().Width );
+
+			text->SetPosition(
+				std::floor( child->GetAllocation().Width + spacing + (width / 2.f - metrics.x / 2.f) + .5f + offset ),
+				std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f + offset )
+			);
+		}
+
 		text->SetColor( color );
 		queue->Add( text );
 	}
@@ -1746,9 +1758,12 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 	float radius = std::min( spinner->GetAllocation().Width, spinner->GetAllocation().Height ) / 2.f;
 
 	// Make sure steps is sane.
-	steps = std::max( steps, 4.f );
+	steps = std::max( steps, 3.f );
 
 	sf::Shape* shape = new sf::Shape;
+
+	// SFML does this too, for compatibility reasons, so lay off the flame :P
+	static const float two_pi = 3.141592654f * 2.f;
 
 	for( float index = 0.f; index < steps; index += 1.f ) {
 		sf::Color rod_color( color );
@@ -1761,10 +1776,6 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 		}
 
 		// Time for some hardcore trigonometry...
-
-		// SFML does this too, for compatibility reasons, so lay off the flame :P
-		float two_pi = 3.141592654f * 2.f;
-
 		sf::Vector2f point1(
 			static_cast<float>( cos( two_pi * index / steps ) ) * radius,
 			static_cast<float>( sin( two_pi * index / steps ) ) * radius
