@@ -33,12 +33,12 @@ int main() {
 	hbox->Pack( button, false );
 
 	sfg::Box::Ptr vbox( sfg::Box::Create( sfg::Box::VERTICAL, 5 ) );
+	vbox->SetMargin( 10.f );
 	vbox->Pack( hbox, false );
 	vbox->Pack( sel_label, true );
 
 	// Add the combo box to the window
 	window->Add( vbox );
-	window->SetBorderWidth( 10.f );
 
 	// So that our combo box has a meaningful purpose (besides just looking
 	// awesome :P) we need to tell it to connect to a callback of our choosing to

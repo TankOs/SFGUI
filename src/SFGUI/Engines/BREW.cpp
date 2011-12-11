@@ -1262,7 +1262,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		)
 	);
 	
-	float expanded_height = 2 * combo_box->GetBorderWidth() + 2 * padding + static_cast<float>( combo_box->GetItemCount() ) * GetLineHeight( font, font_size );
+	float expanded_height = 2 * combo_box->GetMargin() + 2 * padding + static_cast<float>( combo_box->GetItemCount() ) * GetLineHeight( font, font_size );
 
 	if( combo_box->IsPoppedUp() ) {
 		queue->Add(
@@ -1301,7 +1301,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 						new sf::Shape(
 							sf::Shape::Rectangle(
 								0.f,
-								std::floor( combo_box->GetAllocation().Height + combo_box->GetBorderWidth() + padding + static_cast<float>( i ) * metrics.y + .5f ),
+								std::floor( combo_box->GetAllocation().Height + combo_box->GetMargin() + padding + static_cast<float>( i ) * metrics.y + .5f ),
 								combo_box->GetAllocation().Width,
 								metrics.y,
 								highlighted_color
@@ -1312,8 +1312,8 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 				
 				sf::Text* text( new sf::Text( combo_box->GetItem( i ), font, font_size ) );
 				text->SetPosition(
-					std::floor( combo_box->GetBorderWidth() + padding + .5f ),
-					std::floor( combo_box->GetAllocation().Height + combo_box->GetBorderWidth() + padding + static_cast<float>( i ) * metrics.y + .5f )
+					std::floor( combo_box->GetMargin() + padding + .5f ),
+					std::floor( combo_box->GetAllocation().Height + combo_box->GetMargin() + padding + static_cast<float>( i ) * metrics.y + .5f )
 				);
 				text->SetColor( color );
 				queue->Add( text );
@@ -1323,8 +1323,8 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	if( combo_box->GetSelectedText().GetSize() > 0 ) {
 		sf::Text* text( new sf::Text( combo_box->GetSelectedText(), font, font_size ) );
 		text->SetPosition(
-			std::floor( combo_box->GetBorderWidth() + padding + .5f ),
-			std::floor( combo_box->GetBorderWidth() + padding + .5f )
+			std::floor( combo_box->GetMargin() + padding + .5f ),
+			std::floor( combo_box->GetMargin() + padding + .5f )
 		);
 		text->SetColor( color );
 		queue->Add( text );
@@ -1336,7 +1336,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	shape->AddPoint( GetLineHeight( font, font_size ) / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
 	shape->AddPoint( GetLineHeight( font, font_size ) * 3.f / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
 	shape->AddPoint( GetLineHeight( font, font_size ) / 2.f, GetLineHeight( font, font_size ) * 3.f / 4.f, arrow_color );
-	shape->SetPosition( combo_box->GetAllocation().Width - combo_box->GetBorderWidth() - padding - GetLineHeight( font, font_size ), combo_box->GetBorderWidth() + padding );
+	shape->SetPosition( combo_box->GetAllocation().Width - combo_box->GetMargin() - padding - GetLineHeight( font, font_size ), combo_box->GetMargin() + padding );
 	queue->Add( shape );
 
 	return queue;
