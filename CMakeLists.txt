@@ -122,6 +122,22 @@ set(
 	${SRC_DIR}/SFGUI/Desktop.cpp
 	${SRC_DIR}/SFGUI/Engine.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Button.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/CheckButton.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/ComboBox.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Entry.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Frame.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Image.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Label.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Notebook.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/ProgressBar.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Scale.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Scrollbar.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/ScrolledWindow.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Separator.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Spinner.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/ToggleButton.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/Window.cpp
 	${SRC_DIR}/SFGUI/Entry.cpp
 	${SRC_DIR}/SFGUI/FileResourceLoader.cpp
 	${SRC_DIR}/SFGUI/Fixed.cpp
