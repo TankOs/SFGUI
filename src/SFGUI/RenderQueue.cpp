@@ -7,7 +7,9 @@ RenderQueue::RenderQueue() :
 	m_display_list( 0 ),
 	m_compiled_aabbs( 0 ),
 	m_compiled_aabbs_size( 0 ),
+	m_z_order( 0 ),
 	m_checked_view_id( 0 ),
+	m_associated_view_id( 0 ),
 	m_last_cull_passed( false ),
 	m_display_list_compiled( false )
 {
@@ -144,15 +146,24 @@ void RenderQueue::SetPosition( const sf::Vector2f& position ) {
 	sf::Drawable::SetPosition( position );
 }
 
-unsigned int RenderQueue::GetCheckedViewID() {
+unsigned int RenderQueue::GetCheckedViewID() const {
 	return m_checked_view_id;
 }
 
 void RenderQueue::SetCheckedViewID( unsigned int id ) {
 	m_checked_view_id = id;
+	m_associated_view_id = id;
 }
 
-bool RenderQueue::GetCullPass() {
+void RenderQueue::SetAssociatedViewID( unsigned int id ) {
+	m_associated_view_id = id;
+}
+
+unsigned int RenderQueue::GetAssociatedViewID() const {
+	return m_associated_view_id;
+}
+
+bool RenderQueue::GetCullPass() const {
 	return m_last_cull_passed;
 }
 
@@ -162,6 +173,14 @@ void RenderQueue::SetCullPass( bool result ) {
 
 const RenderQueue::DrawablesVector& RenderQueue::GetDrawables() const {
 	return m_children;
+}
+
+int RenderQueue::GetZOrder() const {
+	return m_z_order;
+}
+
+void RenderQueue::SetZOrder( int z_order ) {
+	m_z_order = z_order;
 }
 
 }

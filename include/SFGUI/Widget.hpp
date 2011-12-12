@@ -18,6 +18,10 @@ class Container;
 /** Base class for widgets.
  */
 class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
+	protected:
+		struct NoFlushTag {};
+		static NoFlushTag m_no_flush_tag;
+
 	public:
 		typedef SharedPtr<Widget> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Widget> PtrConst; //!< Shared pointer.
@@ -103,13 +107,19 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 * Render widget to given target.
 		 * @param target SFML render target.
 		 */
-		virtual void Expose( sf::RenderTarget& target ) const;
+		void Expose( sf::RenderTarget& target ) const;
 
 		/** Expose.
 		 * Render widget to given target.
 		 * @param target culling target.
 		 */
-		virtual void Expose( CullingTarget& target ) const;
+		void Expose( CullingTarget& target ) const;
+
+		/** Expose without flush. Meant for internal use only.
+		 * Render widget to given target without flushing buffer.
+		 * @param target culling target.
+		 */
+		virtual void Expose( CullingTarget& target, const struct NoFlushTag& ) const;
 
 		/** Invalidate widget (prepare internal sf::Drawable).
 		 * Implement InvalidateImpl() for your own code.

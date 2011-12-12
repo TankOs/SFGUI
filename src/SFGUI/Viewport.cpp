@@ -27,7 +27,7 @@ sf::Vector2f Viewport::CalculateRequisition() {
 void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 }
 
-void Viewport::Expose( CullingTarget& target ) const {
+void Viewport::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
 	if( IsVisible() ) {
 		if( GetChild() ) {
 			unsigned int target_width = target.GetWidth();
@@ -67,7 +67,7 @@ void Viewport::Expose( CullingTarget& target ) const {
 
 			target.PushView( view );
 
-			GetChild()->Expose( target );
+			GetChild()->Expose( target, m_no_flush_tag );
 
 			target.PopView();
 		}

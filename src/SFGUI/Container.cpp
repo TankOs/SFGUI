@@ -57,7 +57,7 @@ void Container::HandleExpose( CullingTarget& target ) const {
 	std::size_t children_size = m_children.size();
 
 	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->Expose( target );
+		m_children[index]->Expose( target, m_no_flush_tag );
 	}
 }
 

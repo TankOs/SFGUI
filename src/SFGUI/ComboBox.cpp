@@ -26,7 +26,12 @@ ComboBox::Ptr ComboBox::Create() {
 }
 
 RenderQueue* ComboBox::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateComboBoxDrawable( DynamicPointerCast<const ComboBox>( shared_from_this() ) );
+	RenderQueue* queue = Context::Get().GetEngine().CreateComboBoxDrawable( DynamicPointerCast<const ComboBox>( shared_from_this() ) );
+
+	// Set Z Layer to 1, above all "normal" widgets.
+	queue->SetZOrder( 1 );
+
+	return queue;
 }
 
 ComboBox::IndexType ComboBox::GetSelectedItem() const {

@@ -1,6 +1,12 @@
 #include <SFGUI/CullingTarget.hpp>
 
+#include <algorithm>
+
 namespace sfg {
+
+bool ZSort( RenderQueue* left, RenderQueue* right ) {
+	return ( left->GetZOrder() < right->GetZOrder() );
+}
 
 CullingTarget::CullingTarget( sf::RenderTarget& target ) :
 	m_cull_count( std::pair<std::size_t, std::size_t>( 0, 0 ) ),
@@ -70,18 +76,26 @@ void CullingTarget::UpdateView() {
 				m_view_aabb.Width == cache_pair.aabb.Width &&
 				m_view_aabb.Height == cache_pair.aabb.Height  ) {
 				m_current_view_id = cache_pair.id;
+
+				m_view_map[m_current_view_id] = view;
+
 				return;
 		}
 	}
 
 	// Kick out an old view AABB and add new view AABB to cache
 	if( view_cache_size >= 8 ) {
+		m_view_map.erase( m_view_cache.front().id );
 		m_view_cache.erase( m_view_cache.begin() );
 	}
 
 	ViewCachePair view_cache_pair = { ++m_last_view_id, m_view_aabb };
 
 	m_view_cache.push_back( view_cache_pair );
+
+	m_current_view_id = m_last_view_id;
+
+	m_view_map[m_current_view_id] = view;
 }
 
 const sf::View& CullingTarget::GetView() const {
@@ -111,7 +125,8 @@ void CullingTarget::Cull( bool enable ) {
 
 void CullingTarget::Draw( RenderQueue* queue ) {
 	if( !m_cull ) {
-		m_real_target.Draw( *queue );
+		queue->SetAssociatedViewID( m_current_view_id );
+		m_frame_buffer.push_back( queue );
 		return;
 	}
 
@@ -122,7 +137,7 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 
 	if( queue->GetCheckedViewID() == m_current_view_id ) {
 		if( queue->GetCullPass() ) {
-			m_real_target.Draw( *queue );
+			m_frame_buffer.push_back( queue );
 			m_cull_count.first++;
 			return;
 		}
@@ -165,13 +180,31 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 	queue->SetCheckedViewID( m_current_view_id );
 
 	if( !discard ) {
-		m_real_target.Draw( *queue );
+		m_frame_buffer.push_back( queue );
 		m_cull_count.first++;
 		queue->SetCullPass( true );
 	}
 	else {
 		m_cull_count.second++;
 		queue->SetCullPass( false );
+	}
+}
+
+void CullingTarget::Display() {
+	unsigned int current_view_id = 0;
+
+	std::stable_sort( m_frame_buffer.begin(), m_frame_buffer.end(), ZSort );
+
+	while( !m_frame_buffer.empty() ) {
+		unsigned int associated_view_id = m_frame_buffer.front()->GetAssociatedViewID();
+
+		if( associated_view_id != current_view_id ) {
+			current_view_id = associated_view_id;
+			m_real_target.SetView( m_view_map[current_view_id] );
+		}
+
+		m_real_target.Draw( *m_frame_buffer.front() );
+		m_frame_buffer.pop_front();
 	}
 }
 

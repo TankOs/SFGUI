@@ -4,6 +4,8 @@
 
 namespace sfg {
 
+Widget::NoFlushTag Widget::m_no_flush_tag;
+
 Widget::Widget() :
 	Object(),
 	m_allocation( 0, 0, 0, 0 ),
@@ -132,10 +134,17 @@ const sf::FloatRect& Widget::GetAllocation() const {
 void Widget::Expose( sf::RenderTarget& target ) const {
 	CullingTarget culling_target( target );
 	culling_target.Cull( false );
+
 	Expose( culling_target );
 }
 
 void Widget::Expose( CullingTarget& target ) const {
+	Expose( target, m_no_flush_tag );
+
+	target.Display();
+}
+
+void Widget::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
 	if( m_invalidated ) {
 		m_invalidated = false;
 

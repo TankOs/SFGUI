@@ -6,7 +6,8 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <vector>
-#include <list>
+#include <deque>
+#include <map>
 
 namespace sfg {
 
@@ -65,6 +66,10 @@ class SFGUI_API CullingTarget {
 		 */
 		void Cull( bool enable = true );
 
+		/** Display buffered queues to the final target.
+		 */
+		void Display();
+
 	private:
 		struct ViewCachePair {
 			unsigned int id;
@@ -72,6 +77,9 @@ class SFGUI_API CullingTarget {
 		};
 
 		void UpdateView();
+
+		std::deque<RenderQueue*> m_frame_buffer;
+		std::map<unsigned int, sf::View> m_view_map;
 
 		std::vector<sf::View> m_view_stack;
 		std::vector<ViewCachePair> m_view_cache;

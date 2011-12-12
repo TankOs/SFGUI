@@ -70,17 +70,28 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		/** Get the last View ID this queue was checked against.
 		 * @return ID of the last view checked against.
 		 */
-		unsigned int GetCheckedViewID();
+		unsigned int GetCheckedViewID() const;
 
 		/** Set the last View ID this queue was checked against.
 		 * @param id ID of the last view checked against.
 		 */
 		void SetCheckedViewID( unsigned int id );
 
+		/** Set the View ID used while rendering this queue.
+		 * Used to set proper view while flushing the target buffer.
+		 * @param id ID of view used while rendering this queue.
+		 */
+		void SetAssociatedViewID( unsigned int id );
+
+		/** Get the View ID used while rendering this queue.
+		 * @return ID of view used while rendering this queue.
+		 */
+		unsigned int GetAssociatedViewID() const;
+
 		/** Check whether this queue passed culling stage the last check.
 		 * @return true if this widget passed culling stage the last check.
 		 */
-		bool GetCullPass();
+		bool GetCullPass() const;
 
 		/** Set whether this queue passed culling stage the last check.
 		 * @param result true if this widget passed culling stage the last check.
@@ -91,6 +102,18 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		 * @return Drawables and AABBs in this queue.
 		 */
 		const DrawablesVector& GetDrawables() const;
+
+		/** Get the Z layer this object should be rendered in.
+		 * Larger values are rendered later. Default: 0.
+		 * @return Z layer this object should be rendered in.
+		 */
+		int GetZOrder() const;
+
+		/** Set the Z layer this object should be rendered in.
+		 * Larger values are rendered later. Default: 0.
+		 * @param z_order Z layer this object should be rendered in.
+		 */
+		void SetZOrder( int z_order );
 
 	protected:
 		/** Render.
@@ -108,7 +131,10 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		sf::IntRect* m_compiled_aabbs;
 		std::size_t m_compiled_aabbs_size;
 
+		int m_z_order;
+
 		unsigned int m_checked_view_id;
+		unsigned int m_associated_view_id;
 		bool m_last_cull_passed;
 
 		mutable bool m_display_list_compiled;
