@@ -155,8 +155,14 @@ void ComboBox::HandleMouseMoveEvent( int /*x*/, int y ) {
 		if( line_y < GetItemCount() ) {
 			if( line_y != m_highlighted_item ) {
 				Invalidate();
+				m_highlighted_item = line_y;
 			}
-			m_highlighted_item = line_y;
+		}
+		else {
+			if( m_highlighted_item != NONE ) {
+				m_highlighted_item = NONE;
+				Invalidate();
+			}
 		}
 	}
 }
@@ -184,7 +190,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 			else {
 				m_active = false;
 				Invalidate();
-				m_highlighted_item = -1;
+				m_highlighted_item = NONE;
 			}
 		}
 		else if( !m_active && press ) {
@@ -197,7 +203,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 	if( !IsMouseInWidget() ) {
 		SetState( NORMAL );
 		m_active = false;
-		m_highlighted_item = -1;
+		m_highlighted_item = NONE;
 		Invalidate();
 		return;
 	}
