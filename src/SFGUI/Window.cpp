@@ -38,13 +38,18 @@ const sf::String& Window::GetTitle() const {
 
 sf::FloatRect Window::GetClientRect() const {
 	sf::FloatRect clientrect( 0, 0, GetAllocation().Width, GetAllocation().Height );
-	float title_height( HasStyle( Titlebar ) ? Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() ) : 0.f );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
 	clientrect.Left += border_width;
-	clientrect.Top += title_height + border_width;
+	clientrect.Top += border_width;
 	clientrect.Width -= 2 * border_width;
-	clientrect.Height -= title_height + 2 * border_width;
+	clientrect.Height -= 2 * border_width;
+
+	if( HasStyle( Titlebar ) ) {
+		float title_height( Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() ) );
+		clientrect.Top += title_height;
+		clientrect.Height -= title_height;
+	}
 
 	return clientrect;
 }

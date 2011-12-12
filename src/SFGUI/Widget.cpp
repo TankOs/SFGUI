@@ -106,6 +106,8 @@ void Widget::RequestResize() {
 		}
 	}
 
+	HandleRequisitionChange();
+
 	Container::Ptr parent = m_parent.lock();
 
 	// Notify observers.
@@ -485,6 +487,9 @@ void Widget::Refresh() {
 	}
 
 	Invalidate();
+}
+
+void Widget::HandleRequisitionChange() {
 }
 
 }

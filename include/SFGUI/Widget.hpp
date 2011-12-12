@@ -263,10 +263,15 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
 
-		/** Handle size allocations.
+		/** Handle allocation changes.
 		 * @param old_allocation Previous allocation.
 		 */
 		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
+
+		/** Handle requisition changes.
+		 * Called after new requisition is set.
+		 */
+		virtual void HandleRequisitionChange();
 
 		/** Handle expose.
 		 * Called every frame usually.

@@ -211,14 +211,13 @@ sf::Vector2f ComboBox::CalculateRequisition() {
 
 	sf::Vector2f metrics( 0.f, 0.f );
 	for ( IndexType item = 0; item < GetItemCount(); ++item ) {
-		if( Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size ).x > metrics.x ) {
-			metrics = Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size );
-		}
+		metrics.x = std::max( metrics.x, Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size ).x );
 	}
+
 	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
 	sf::Vector2f requisition(
-		metrics.x + 2 * GetMargin() + 2 * padding + metrics.y,
+		metrics.x + 2 * GetMargin() + 2 * padding,
 		metrics.y + 2 * GetMargin() + 2 * padding
 	);
 

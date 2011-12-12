@@ -77,7 +77,7 @@ void Table::Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect,
 
 
 void Table::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
-	AllocateChildrenSizes();
+	AllocateChildren();
 }
 
 void Table::UpdateRequisitions() {
@@ -233,7 +233,7 @@ void Table::UpdateRequisitions() {
 	}
 }
 
-void Table::AllocateChildrenSizes() {
+void Table::AllocateChildren() {
 	// Process columns.
 	float width( 0.f );
 	std::size_t num_expand( 0 );
@@ -421,6 +421,10 @@ void Table::SetRowSpacing( std::size_t index, float spacing ) {
 const std::string& Table::GetName() const {
 	static const std::string name( "Table" );
 	return name;
+}
+
+void Table::HandleRequisitionChange() {
+	AllocateChildren();
 }
 
 }

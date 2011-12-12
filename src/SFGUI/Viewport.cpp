@@ -5,7 +5,7 @@ namespace sfg {
 Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) :
 	Bin()
 {
-	OnSizeRequest.Connect( &Viewport::HandleSizeRequest, this );
+	OnSizeRequest.Connect( &Viewport::HandleRequisitionChange, this );
 
 	SetHorizontalAdjustment( horizontal_adjustment );
 	SetVerticalAdjustment( vertical_adjustment );
@@ -156,7 +156,7 @@ void Viewport::SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment
 	m_vertical_adjustment = vertical_adjustment;
 }
 
-void Viewport::HandleSizeRequest() {
+void Viewport::HandleRequisitionChange() {
 	// A child just requested it's size. Because we are a viewport
 	// and have a virtual screen we give it everything it wants.
 	if( GetChild() ) {

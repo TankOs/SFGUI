@@ -60,7 +60,7 @@ void Box::HandleRemove( const Widget::Ptr& child ) {
 }
 
 sf::Vector2f Box::CalculateRequisition() {
-	sf::Vector2f requisition( 2 * GetMargin(), 2 * GetMargin() );
+	sf::Vector2f requisition( 0.f, 0.f );
 	unsigned int num_visible( 0 );
 	ChildrenCont::const_iterator iter( m_children.begin() );
 	ChildrenCont::const_iterator iterend( m_children.end() );
@@ -76,10 +76,10 @@ sf::Vector2f Box::CalculateRequisition() {
 
 		if( m_orientation == HORIZONTAL ) {
 			requisition.x += child_requisition.x;
-			requisition.y = std::max( requisition.y, child_requisition.y + 2 * GetMargin() );
+			requisition.y = std::max( requisition.y, child_requisition.y );
 		}
 		else {
-			requisition.x = std::max( requisition.x, child_requisition.x + 2 * GetMargin() );
+			requisition.x = std::max( requisition.x, child_requisition.x );
 			requisition.y += child_requisition.y;
 		}
 	}
@@ -93,7 +93,9 @@ sf::Vector2f Box::CalculateRequisition() {
 		}
 	}
 
-	AllocateChildren();
+	requisition.x += 2 * GetMargin();
+	requisition.y += 2 * GetMargin();
+
 	return requisition;
 }
 
@@ -187,6 +189,10 @@ bool Box::IsChildInteresting( const sfg::Widget::PtrConst& child ) const {
 		(child->GetRequisition().x > 0.f || child->GetAllocation().Width > 0.0f) &&
 		(child->GetRequisition().y > 0.f || child->GetAllocation().Height > 0.0f)
 	;
+}
+
+void Box::HandleRequisitionChange() {
+	AllocateChildren();
 }
 
 }

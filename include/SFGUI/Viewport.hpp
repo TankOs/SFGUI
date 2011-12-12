@@ -72,7 +72,7 @@ class SFGUI_API Viewport : public Bin {
 	private:
 		Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
 
-		void HandleSizeRequest();
+		void HandleRequisitionChange();
 
 		Adjustment::Ptr m_horizontal_adjustment;
 		Adjustment::Ptr m_vertical_adjustment;
