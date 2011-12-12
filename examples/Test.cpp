@@ -32,6 +32,7 @@ class SampleApp {
 		sfg::ToggleButton::Ptr m_titlebar_toggle;
 		sfg::CheckButton::Ptr m_limit_check;
 		sfg::Scale::Ptr m_scale;
+		sfg::ComboBox::Ptr m_combo_box;
 		sfg::ProgressBar::Ptr m_progress;
 		sfg::ProgressBar::Ptr m_progress_vert;
 		sfg::Spinner::Ptr m_spinner;
@@ -240,6 +241,13 @@ void SampleApp::Run() {
 	m_scale->SetAdjustment( scrollbar->GetAdjustment() );
 	m_scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 	boxtoolbar2->Pack( m_scale, false );
+
+	m_combo_box = sfg::ComboBox::Create();
+	m_combo_box->AppendItem( "Item 0" );
+	m_combo_box->AppendItem( "Item 1" );
+	m_combo_box->AppendItem( "Item 2" );
+	m_combo_box->AppendItem( "Item 3" );
+	boxtoolbar2->Pack( m_combo_box, true );
 
 	sfg::Frame::Ptr frame2( sfg::Frame::Create( L"Toolbar 2" ) );
 	frame2->Add( boxtoolbar2 );

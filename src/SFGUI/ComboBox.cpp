@@ -143,14 +143,14 @@ void ComboBox::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 
 void ComboBox::HandleMouseMoveEvent( int /*x*/, int y ) {
 	if( m_active ) {
-		float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+		float padding( Context::Get().GetEngine().GetProperty<float>( "ItemPadding", shared_from_this() ) );
 		const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 		unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 		const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 		
 		IndexType line_y = y;
 		line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + GetMargin() + padding );
-		line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) );
+		line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) + 2 * padding );
 		
 		if( line_y < GetItemCount() ) {
 			if( line_y != m_highlighted_item ) {
@@ -210,11 +210,12 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 }
 
 sf::Vector2f ComboBox::CalculateRequisition() {
-	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+	float padding( Context::Get().GetEngine().GetProperty<float>( "ItemPadding", shared_from_this() ) );
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
+	// Determine highest needed width of all items.
 	sf::Vector2f metrics( 0.f, 0.f );
 	for ( IndexType item = 0; item < GetItemCount(); ++item ) {
 		metrics.x = std::max( metrics.x, Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size ).x );

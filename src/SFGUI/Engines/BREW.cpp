@@ -127,8 +127,13 @@ BREW::BREW() :
 	SetProperty( "Spinner", "StoppedAlpha", 47 );
 	
 	// ComboBox-specific.
-	SetProperty( "ComboBox", "HighlightedColor", sf::Color( 0x8c, 0x8c, 0x8c ) );
+	SetProperty( "ComboBox", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "ComboBox", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "ComboBox", "HighlightedColor", sf::Color( 0x65, 0x67, 0x62 ) );
 	SetProperty( "ComboBox", "ArrowColor", sf::Color( 0xc6, 0xcb, 0xc4 ) );
+	SetProperty( "ComboBox", "ItemPadding", 4.f );
+	SetProperty( "ComboBox:PRELIGHT", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "ComboBox:ACTIVE", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
 }
 
 RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
@@ -1244,8 +1249,9 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	float border_width( GetProperty<float>( "BorderWidth", combo_box ) );
 	const std::string& font_name( GetProperty<std::string>( "FontName", combo_box ) );
 	unsigned int font_size( GetProperty<unsigned int>( "FontSize", combo_box ) );
-	float padding( GetProperty<float>( "Padding", combo_box ) );
+	float padding( GetProperty<float>( "ItemPadding", combo_box ) );
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
+	const float line_height( GetLineHeight( font, font_size ) );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
@@ -1262,9 +1268,26 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		)
 	);
 	
-	float expanded_height = 2 * combo_box->GetMargin() + 2 * padding + static_cast<float>( combo_box->GetItemCount() ) * GetLineHeight( font, font_size );
-
+	if( combo_box->GetState() != ComboBox::ACTIVE ) {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
+	}
+	else {
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
+	}
+	
+	// Labels.
 	if( combo_box->IsPoppedUp() ) {
+		const sf::Vector2f item_size(
+			combo_box->GetAllocation().Width - 2 * border_width - 2 * combo_box->GetMargin(),
+			line_height + 2 * padding
+		);
+		sf::Vector2f item_position(
+			combo_box->GetMargin() + border_width,
+			combo_box->GetMargin() + border_width + combo_box->GetAllocation().Height
+		);
+
+		float expanded_height = static_cast<float>( combo_box->GetItemCount() ) * item_size.y;
+
 		queue->Add(
 			new sf::Shape(
 				sf::Shape::Rectangle(
@@ -1276,55 +1299,42 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 				)
 			)
 		);
-	}
-	
-	if( combo_box->GetState() != ComboBox::ACTIVE ) {
-		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
-	}
-	else {
-		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
-	}
-	
-	if( combo_box->IsPoppedUp() ) {
-		queue->Add( CreateBorder( sf::FloatRect( 0.f, combo_box->GetAllocation().Height, combo_box->GetAllocation().Width, expanded_height ), border_width, border_color_light, border_color_dark ) );
+
+		for( ComboBox::IndexType item_index = 0; item_index < combo_box->GetItemCount(); ++item_index ) {
+			if( combo_box->GetItem( item_index ).GetSize() == 0 ) {
+				continue;
+			}
+
+			if( item_index == combo_box->GetHighlightedItem() ) {
+				queue->Add(
+					new sf::Shape(
+						sf::Shape::Rectangle(
+							std::floor( item_position.x ),
+							std::floor( item_position.y ),
+							std::floor( item_size.x ),
+							std::floor( item_size.y ),
+							highlighted_color
+						)
+					)
+				);
+			}
+			
+			sf::Text* text( new sf::Text( combo_box->GetItem( item_index ), font, font_size ) );
+			text->SetPosition( std::floor( item_position.x + padding ), std::floor( item_position.y + padding ) );
+			text->SetColor( color );
+			queue->Add( text );
+
+			item_position.y += item_size.y;
+		}
+
+		queue->Add( CreateBorder( sf::FloatRect( 0.f, combo_box->GetAllocation().Height, combo_box->GetAllocation().Width, expanded_height + .5f ), border_width, border_color_light, border_color_dark ) );
 	}
 
-	// Labels.
-	if( combo_box->IsPoppedUp() ) {
-		for ( ComboBox::IndexType i = 0; i < combo_box->GetItemCount(); ++i ) {
-			if( combo_box->GetItem( i ).GetSize() > 0 ) {
-				sf::Vector2f metrics = GetTextMetrics( combo_box->GetItem( i ), font, font_size );
-				metrics.y = GetLineHeight( font, font_size );
-				
-				if( i == combo_box->GetHighlightedItem() ) {
-					queue->Add(
-						new sf::Shape(
-							sf::Shape::Rectangle(
-								0.f,
-								std::floor( combo_box->GetAllocation().Height + combo_box->GetMargin() + padding + static_cast<float>( i ) * metrics.y + .5f ),
-								combo_box->GetAllocation().Width,
-								metrics.y,
-								highlighted_color
-							)
-						)
-					);
-				}
-				
-				sf::Text* text( new sf::Text( combo_box->GetItem( i ), font, font_size ) );
-				text->SetPosition(
-					std::floor( combo_box->GetMargin() + padding + .5f ),
-					std::floor( combo_box->GetAllocation().Height + combo_box->GetMargin() + padding + static_cast<float>( i ) * metrics.y + .5f )
-				);
-				text->SetColor( color );
-				queue->Add( text );
-			}
-		}
-	}
-	if( combo_box->GetSelectedText().GetSize() > 0 ) {
+	if( combo_box->GetSelectedItem() != ComboBox::NONE ) {
 		sf::Text* text( new sf::Text( combo_box->GetSelectedText(), font, font_size ) );
 		text->SetPosition(
-			std::floor( combo_box->GetMargin() + padding + .5f ),
-			std::floor( combo_box->GetMargin() + padding + .5f )
+			std::floor( combo_box->GetMargin() + border_width + padding + .5f ),
+			std::floor( combo_box->GetMargin() + combo_box->GetAllocation().Height / 2.f - line_height / 2.f + 0.5f )
 		);
 		text->SetColor( color );
 		queue->Add( text );
