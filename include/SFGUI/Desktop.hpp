@@ -88,6 +88,10 @@ class SFGUI_API Desktop {
 		 */
 		void Remove( SharedPtr<Widget> widget );
 
+		/** Remove all widgets.
+		 */
+		void RemoveAll();
+
 		/** Refresh all widgets.
 		 * All widgets will invalidate and re-request size. This is done
 		 * automagically in SetProperty().

@@ -154,6 +154,15 @@ void Desktop::Remove( SharedPtr<Widget> widget ) {
 	widget->Show( false );
 }
 
+void Desktop::RemoveAll() {
+	WidgetsList::iterator child_iter( m_children.begin() );
+	WidgetsList::iterator child_iter_end( m_children.end() );
+
+	for( ; child_iter != child_iter_end; ++child_iter ) {
+		Remove( *child_iter );
+	}
+}
+
 void Desktop::RemoveObsoleteChildren() {
 	WidgetsList::iterator obs_iter( m_obsolete_children.begin() );
 	WidgetsList::iterator obs_iter_end( m_obsolete_children.end() );
