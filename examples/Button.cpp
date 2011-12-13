@@ -27,7 +27,6 @@ int main() {
 
 	// Add the button to the window
 	window->Add( button );
-	window->SetMargin( 10.f );
 
 	// So that our button has a meaningful purpose
 	// (besides just looking awesome :P) we need to tell it to connect

@@ -33,7 +33,6 @@ int main() {
 	hbox->Pack( button, false );
 
 	sfg::Box::Ptr vbox( sfg::Box::Create( sfg::Box::VERTICAL, 5 ) );
-	vbox->SetMargin( 10.f );
 	vbox->Pack( hbox, false );
 	vbox->Pack( sel_label, true );
 

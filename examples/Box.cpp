@@ -28,7 +28,6 @@ int main() {
 	// For layout purposes we must specify in what direction new widgets
 	// should be added, horizontally or vertically.
 	box = sfg::Box::Create( sfg::Box::HORIZONTAL );
-	box->SetMargin( 10.f );
 
 	sfg::Button::Ptr button1 = sfg::Button::Create();
 	sfg::Button::Ptr button2 = sfg::Button::Create();

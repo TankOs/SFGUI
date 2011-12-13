@@ -38,6 +38,7 @@ BREW::BREW() :
 	SetProperty( "*", "Thickness", 2.f );
 
 	// Window-specific.
+	SetProperty( "Window", "Gap", 10.f );
 	SetProperty( "Window", "TitleHeight", 25.f );
 	SetProperty( "Window", "TitleBackgroundColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
 	SetProperty( "Window", "TitlePadding", 5.f );

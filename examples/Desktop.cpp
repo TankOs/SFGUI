@@ -48,7 +48,6 @@ void DesktopExample::Run() {
 	// Widgets.
 	sfg::Window::Ptr main_window( sfg::Window::Create() );
 	main_window->SetTitle( "SFGUI Desktop Example" );
-	main_window->SetMargin( 10.f );
 
 	sfg::Label::Ptr intro_label( sfg::Label::Create( "Click on \"Create window\" to create any number of new windows." ) );
 	sfg::Button::Ptr create_window_button( sfg::Button::Create( "Create window" ) );
@@ -92,7 +91,6 @@ void DesktopExample::OnCreateWindowClick() {
 
 	// Create a new window.
 	sfg::Window::Ptr window( sfg::Window::Create() );
-	window->SetMargin( 10.f );
 
 	std::stringstream sstr;
 	sstr << "A new window (" << m_count << ")";

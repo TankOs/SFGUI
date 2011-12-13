@@ -40,16 +40,6 @@ class SFGUI_API Container : public Widget {
 		 */
 		const WidgetsList& GetChildren() const;
 
-		/** Set border width.
-		 * @param width Border width.
-		 */
-		void SetMargin( float width );
-
-		/** Get border width.
-		 * @return Border width.
-		 */
-		float GetMargin() const;
-
 		void Refresh();
 
 		virtual void HandleEvent( const sf::Event& event );
@@ -81,8 +71,6 @@ class SFGUI_API Container : public Widget {
 		virtual void HandleExpose( CullingTarget& target ) const;
 
 	private:
-		float m_margin;
-
 		WidgetsList m_children;
 };
 

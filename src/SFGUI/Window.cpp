@@ -39,11 +39,12 @@ const sf::String& Window::GetTitle() const {
 sf::FloatRect Window::GetClientRect() const {
 	sf::FloatRect clientrect( 0, 0, GetAllocation().Width, GetAllocation().Height );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
 
-	clientrect.Left += border_width;
-	clientrect.Top += border_width;
-	clientrect.Width -= 2 * border_width;
-	clientrect.Height -= 2 * border_width;
+	clientrect.Left += border_width + gap;
+	clientrect.Top += border_width + gap;
+	clientrect.Width -= 2 * border_width + 2 * gap;
+	clientrect.Height -= 2 * border_width + 2 * gap;
 
 	if( HasStyle( Titlebar ) ) {
 		float title_height( Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() ) );
@@ -87,7 +88,8 @@ bool Window::HasStyle( Style style ) const {
 
 sf::Vector2f Window::CalculateRequisition() {
 	float visual_border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
-	sf::Vector2f requisition( 2 * visual_border_width, 2 * visual_border_width );
+	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
+	sf::Vector2f requisition( 2 * visual_border_width + 2 * gap, 2 * visual_border_width + 2 * gap );
 
 	if( HasStyle( Titlebar ) ) {
 		requisition.y += Context::Get().GetEngine().GetProperty<float>( "TitleHeight", shared_from_this() );

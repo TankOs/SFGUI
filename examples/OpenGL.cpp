@@ -31,7 +31,6 @@ int main() {
 
 	sfg::Window::Ptr window( sfg::Window::Create() );
 	window->SetTitle( "SFGUI with OpenGL" );
-	window->SetMargin( 10.f );
 	window->Add( table );
 
 	sfg::Desktop desktop( render_window );

@@ -1,4 +1,6 @@
 #include <SFGUI/Table.hpp>
+#include <SFGUI/Context.hpp>
+#include <SFGUI/Engine.hpp>
 
 #include <set>
 #include <cassert>
@@ -16,7 +18,8 @@ Table::Ptr Table::Create() {
 }
 
 sf::Vector2f Table::CalculateRequisition() {
-	sf::Vector2f size( 0.f, 0.f );
+	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
+	sf::Vector2f size( 2 * gap, 2 * gap );
 
 	UpdateRequisitions();
 
@@ -235,6 +238,7 @@ void Table::UpdateRequisitions() {
 
 void Table::AllocateChildren() {
 	// Process columns.
+	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
 	float width( 0.f );
 	std::size_t num_expand( 0 );
 
@@ -261,7 +265,7 @@ void Table::AllocateChildren() {
 
 	// If there're expanded columns, we need to set the proper allocation for them.
 	if( num_expand > 0 ) {
-		float extra( (GetAllocation().Width - width) / static_cast<float>( num_expand ) );
+		float extra( (GetAllocation().Width - 2 * gap - width) / static_cast<float>( num_expand ) );
 
 		for( std::size_t column_index = 0; column_index < m_columns.size(); ++column_index ) {
 			if( !m_columns[column_index].expand ) {
@@ -304,7 +308,7 @@ void Table::AllocateChildren() {
 
 	// If there're expanded rows, we need to set the proper allocation for them.
 	if( num_expand > 0 ) {
-		float extra( (GetAllocation().Height - height) / static_cast<float>( num_expand ) );
+		float extra( (GetAllocation().Height - 2 * gap - height) / static_cast<float>( num_expand ) );
 
 		for( std::size_t row_index = 0; row_index < m_rows.size(); ++row_index ) {
 			if( !m_rows[row_index].expand ) {
@@ -365,8 +369,8 @@ void Table::AllocateChildren() {
 		// Check for FILL flag.
 		cell_iter->child->SetAllocation(
 			sf::FloatRect(
-				column.position + cell_iter->padding.x,
-				row.position + cell_iter->padding.y,
+				gap + column.position + cell_iter->padding.x,
+				gap + row.position + cell_iter->padding.y,
 				allocation.x,
 				allocation.y
 			)

@@ -32,10 +32,6 @@ int main() {
 	// widget hierarchy refer to the documentation.
 	window->Add( label );
 
-	// Setting the border width of a window keeps it's child widget away
-	// from the edges of the window.
-	window->SetMargin( 10.f );
-
 	// Start the game loop
 	while ( app_window.IsOpened() ) {
 		// Process events

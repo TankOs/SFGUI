@@ -3,8 +3,7 @@
 namespace sfg {
 
 Container::Container() :
-	Widget(),
-	m_margin( 0.f )
+	Widget()
 {
 }
 
@@ -59,16 +58,6 @@ void Container::HandleExpose( CullingTarget& target ) const {
 	for( std::size_t index = 0; index < children_size; ++index ) {
 		m_children[index]->Expose( target, m_no_flush_tag );
 	}
-}
-
-void Container::SetMargin( float width ) {
-	m_margin = width;
-	RequestResize();
-	Invalidate();
-}
-
-float Container::GetMargin() const {
-	return m_margin;
 }
 
 void Container::Refresh() {

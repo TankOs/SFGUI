@@ -1,5 +1,6 @@
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Engine.hpp>
 
 namespace sfg {
 
@@ -93,8 +94,9 @@ sf::Vector2f Box::CalculateRequisition() {
 		}
 	}
 
-	requisition.x += 2 * GetMargin();
-	requisition.y += 2 * GetMargin();
+	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
+	requisition.x += 2 * gap;
+	requisition.y += 2 * gap;
 
 	return requisition;
 }
@@ -156,8 +158,9 @@ void Box::AllocateChildren() const {
 	}
 
 	// Allocate children.
+	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
 	sf::Vector2f allocation( 0.f, 0.f );
-	sf::Vector2f position( GetMargin(), GetMargin() );
+	sf::Vector2f position( gap, gap );
 
 	for( iter = m_children.begin(); iter != iterend; ++iter ) {
 		if( !IsChildInteresting( iter->widget ) ) {
@@ -166,13 +169,13 @@ void Box::AllocateChildren() const {
 
 		if( m_orientation == HORIZONTAL ) {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
-			allocation.y = GetAllocation().Height - 2 * GetMargin();
+			allocation.y = GetAllocation().Height - 2 * gap;
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
 			position.x += allocation.x + GetSpacing();
 		}
 		else {
-			allocation.x = GetAllocation().Width - 2 * GetMargin();
+			allocation.x = GetAllocation().Width - 2 * gap;
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );

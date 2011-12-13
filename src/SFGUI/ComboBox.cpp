@@ -149,7 +149,7 @@ void ComboBox::HandleMouseMoveEvent( int /*x*/, int y ) {
 		const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 		
 		IndexType line_y = y;
-		line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + GetMargin() + padding );
+		line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + padding );
 		line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) + 2 * padding );
 		
 		if( line_y < GetItemCount() ) {
@@ -224,8 +224,8 @@ sf::Vector2f ComboBox::CalculateRequisition() {
 	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
 	sf::Vector2f requisition(
-		metrics.x + 2 * GetMargin() + 2 * padding,
-		metrics.y + 2 * GetMargin() + 2 * padding
+		metrics.x + 2 * padding,
+		metrics.y + 2 * padding
 	);
 
 	return requisition;

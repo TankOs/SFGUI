@@ -65,7 +65,6 @@ int main() {
 
 	// Add our box to the window
 	window->Add( box );
-	window->SetMargin( 10.f );
 
 	// Start the game loop
 	while ( app_window.IsOpened() ) {

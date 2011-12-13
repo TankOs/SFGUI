@@ -44,12 +44,12 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	// Labels.
 	if( combo_box->IsPoppedUp() ) {
 		const sf::Vector2f item_size(
-			combo_box->GetAllocation().Width - 2 * border_width - 2 * combo_box->GetMargin(),
+			combo_box->GetAllocation().Width - 2 * border_width,
 			line_height + 2 * padding
 		);
 		sf::Vector2f item_position(
-			combo_box->GetMargin() + border_width,
-			combo_box->GetMargin() + border_width + combo_box->GetAllocation().Height
+			border_width,
+			border_width + combo_box->GetAllocation().Height
 		);
 
 		float expanded_height = static_cast<float>( combo_box->GetItemCount() ) * item_size.y;
@@ -99,8 +99,8 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	if( combo_box->GetSelectedItem() != ComboBox::NONE ) {
 		sf::Text* text( new sf::Text( combo_box->GetSelectedText(), font, font_size ) );
 		text->SetPosition(
-			std::floor( combo_box->GetMargin() + border_width + padding + .5f ),
-			std::floor( combo_box->GetMargin() + combo_box->GetAllocation().Height / 2.f - line_height / 2.f + 0.5f )
+			std::floor( border_width + padding + .5f ),
+			std::floor( combo_box->GetAllocation().Height / 2.f - line_height / 2.f + 0.5f )
 		);
 		text->SetColor( color );
 		queue->Add( text );
@@ -112,7 +112,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	shape->AddPoint( GetLineHeight( font, font_size ) / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
 	shape->AddPoint( GetLineHeight( font, font_size ) * 3.f / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
 	shape->AddPoint( GetLineHeight( font, font_size ) / 2.f, GetLineHeight( font, font_size ) * 3.f / 4.f, arrow_color );
-	shape->SetPosition( combo_box->GetAllocation().Width - combo_box->GetMargin() - padding - GetLineHeight( font, font_size ), combo_box->GetMargin() + padding );
+	shape->SetPosition( combo_box->GetAllocation().Width - padding - GetLineHeight( font, font_size ), padding );
 	queue->Add( shape );
 
 	return queue;
