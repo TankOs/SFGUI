@@ -34,9 +34,10 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 
 	queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().Width, entry->GetAllocation().Height ), border_width, border_color_dark, border_color_light) );
 
+	float line_height = GetLineHeight( font, font_size );
 	sf::Text* vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
-	vis_label->SetPosition( text_padding, text_padding );
+	vis_label->SetPosition( std::floor( text_padding + .5f ), std::floor( entry->GetAllocation().Height / 2.f - line_height / 2.f + .5f ) );
 
 	queue->Add( vis_label );
 
@@ -49,10 +50,9 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 
 		// Get metrics.
 		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
-		float line_height = GetLineHeight( font, font_size );
 
 		sf::Sprite* vis_cursor( new sf::Sprite() );
-		vis_cursor->SetPosition( metrics.x + text_padding, border_width + text_padding );
+		vis_cursor->SetPosition( metrics.x + text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
 		vis_cursor->Resize( cursor_thickness, line_height );
 		vis_cursor->SetColor( cursor_color );
 		queue->Add( vis_cursor );
