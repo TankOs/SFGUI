@@ -11,14 +11,17 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", window ) );
 	sf::Color title_background_color( GetProperty<sf::Color>( "TitleBackgroundColor", window ) );
 	sf::Color title_text_color( GetProperty<sf::Color>( "Color", window ) );
+	int border_color_shift( GetProperty<int>( "BorderColorShift", window ) );
 	float border_width( GetProperty<float>( "BorderWidth", window ) );
-	float title_size( GetProperty<float>( "TitleHeight", window ) );
 	float title_padding( GetProperty<float>( "TitlePadding", window ) );
 	float shadow_distance( GetProperty<float>( "ShadowDistance", window ) );
 	float handle_size( GetProperty<float>( "HandleSize", window ) );
 	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
 	unsigned int title_font_size( GetProperty<unsigned int>( "FontSize", window ) );
 	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
+	float title_size( GetLineHeight( title_font, title_font_size ) + 2 * title_padding );
+
+	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
 	if( window->HasStyle( Window::Background ) ) {
 		// Shadow.

@@ -112,7 +112,10 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	shape->AddPoint( GetLineHeight( font, font_size ) / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
 	shape->AddPoint( GetLineHeight( font, font_size ) * 3.f / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
 	shape->AddPoint( GetLineHeight( font, font_size ) / 2.f, GetLineHeight( font, font_size ) * 3.f / 4.f, arrow_color );
-	shape->SetPosition( combo_box->GetAllocation().Width - padding - GetLineHeight( font, font_size ), padding );
+	shape->SetPosition(
+		(combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f) + combo_box->GetAllocation().Width - padding - GetLineHeight( font, font_size ),
+		(combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f) + padding
+	);
 	queue->Add( shape );
 
 	return queue;

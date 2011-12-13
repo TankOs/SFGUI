@@ -132,6 +132,7 @@ void SampleApp::Run() {
 	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
 	sfg::Button::Ptr btnaddbuttonv( sfg::Button::Create( L"Add button vertically" ) );
 	m_titlebar_toggle = sfg::ToggleButton::Create( "Toggle titlebar" );
+	m_titlebar_toggle->SetActive( true );
 
 	{
 		sf::Image add_image;
