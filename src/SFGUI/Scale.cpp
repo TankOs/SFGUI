@@ -7,8 +7,13 @@ namespace sfg {
 
 Scale::Scale( Orientation orientation ) :
 	Range( orientation ),
+	m_drag_start( 0 ),
 	m_dragging( false )
 {
+}
+
+Scale::~Scale() {
+	delete m_drag_start;
 }
 
 Scale::Ptr Scale::Create( Orientation orientation ) {
@@ -68,6 +73,11 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		return;
 	}
 
+	if( m_drag_start ) {
+		delete m_drag_start;
+		m_drag_start = 0;
+	}
+
 	if( press ) {
 		sf::FloatRect slider_rect = GetSliderRect();
 		slider_rect.Left += GetAllocation().Left;
@@ -79,6 +89,7 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		}
 
 		m_dragging = true;
+		m_drag_start = new sf::Vector2f( static_cast<float>( x ), static_cast<float>( y ) );
 	}
 	else {
 		m_dragging = false;
@@ -90,6 +101,8 @@ void Scale::HandleMouseMoveEvent( int x, int y ) {
 		return;
 	}
 
+	assert( m_drag_start );
+
 	Adjustment::Ptr adjustment( GetAdjustment() );
 	sf::FloatRect slider_rect = GetSliderRect();
 
@@ -97,35 +110,35 @@ void Scale::HandleMouseMoveEvent( int x, int y ) {
 	float steps = value_range / adjustment->GetMinorStep();
 
 	if( GetOrientation() == HORIZONTAL ) {
-		float slider_center_x = GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f;
 		float step_distance = ( GetAllocation().Width - slider_rect.Width ) / steps;
-
-		float delta = static_cast<float>( x ) - slider_center_x;
+		float delta = static_cast<float>( x ) - m_drag_start->x;
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Decrement();
 			delta += step_distance;
+			m_drag_start->x -= step_distance;
 		}
 
 		while( delta > ( step_distance / 2 ) ) {
 			adjustment->Increment();
 			delta -= step_distance;
+			m_drag_start->x += step_distance;
 		}
 	}
 	else {
-		float slider_center_y = GetAllocation().Top + slider_rect.Top + slider_rect.Height / 2.0f;
 		float step_distance = ( GetAllocation().Height - slider_rect.Height ) / steps;
-
-		float delta = static_cast<float>( y ) - slider_center_y;
+		float delta = static_cast<float>( y ) - m_drag_start->y;
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Increment();
 			delta += step_distance;
+			m_drag_start->y += step_distance;
 		}
 
 		while( delta > ( step_distance / 2 ) ) {
 			adjustment->Decrement();
 			delta -= step_distance;
+			m_drag_start->y -= step_distance;
 		}
 	}
 }

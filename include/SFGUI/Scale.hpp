@@ -12,6 +12,10 @@ class SFGUI_API Scale : public Range {
 		typedef SharedPtr<Scale> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Scale> PtrConst; //!< Shared pointer.
 
+		/** Dtor.
+		 */
+		virtual ~Scale();
+
 		/** Create scale widget.
 		 * @param orientation Orientation.
 		 * @return Scale widget.
@@ -46,6 +50,7 @@ class SFGUI_API Scale : public Range {
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );
 
+		sf::Vector2f* m_drag_start;
 		bool m_dragging;
 };
 
