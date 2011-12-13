@@ -104,7 +104,7 @@ void GuessMyNumber::OnGuessClick() {
 }
 
 void GuessMyNumber::Run() {
-	sf::RenderWindow render_window( sf::VideoMode( 1024, 768, 32 ), TITLE );
+	sf::RenderWindow render_window( sf::VideoMode( 1024, 768, 32 ), TITLE, sf::Style::Titlebar | sf::Style::Close );
 	sf::Event event;
 
 	// Create widgets.

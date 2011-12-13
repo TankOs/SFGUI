@@ -71,7 +71,7 @@ void BazClass::Baz() {
 }
 
 void Application::Run() {
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example" );
+	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
 
 	window = sfg::Window::Create();
 	window->SetTitle( "Title" );

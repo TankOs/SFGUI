@@ -7,7 +7,7 @@
 
 int main() {
 	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Label Example" );
+	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Label Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// Create our main SFGUI window
 	sfg::Window::Ptr window;
