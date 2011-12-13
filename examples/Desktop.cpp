@@ -20,8 +20,10 @@ class DesktopExample {
 
 		void OnCreateWindowClick();
 		void OnDestroyWindowClick();
+		void OnFrontClick();
 
 		sfg::Desktop m_desktop;
+		sfg::Window::Ptr m_window;
 		unsigned int m_count;
 };
 
@@ -36,6 +38,7 @@ int main() {
 
 DesktopExample::DesktopExample() :
 	m_desktop( sf::FloatRect( 0, 0, static_cast<float>( SCREEN_WIDTH ), static_cast<float>( SCREEN_HEIGHT ) ) ),
+	m_window( sfg::Window::Create() ),
 	m_count( 0 )
 {
 }
@@ -46,8 +49,7 @@ void DesktopExample::Run() {
 
 	//// Main window ////
 	// Widgets.
-	sfg::Window::Ptr main_window( sfg::Window::Create() );
-	main_window->SetTitle( "SFGUI Desktop Example" );
+	m_window->SetTitle( "SFGUI Desktop Example" );
 
 	sfg::Label::Ptr intro_label( sfg::Label::Create( "Click on \"Create window\" to create any number of new windows." ) );
 	sfg::Button::Ptr create_window_button( sfg::Button::Create( "Create window" ) );
@@ -58,8 +60,8 @@ void DesktopExample::Run() {
 	main_box->Pack( intro_label, false );
 	main_box->Pack( create_window_button, false );
 
-	main_window->Add( main_box );
-	m_desktop.Add( main_window );
+	m_window->Add( main_box );
+	m_desktop.Add( m_window );
 
 	// Signals.
 	create_window_button->OnClick.Connect( &DesktopExample::OnCreateWindowClick, this );
@@ -108,6 +110,7 @@ void DesktopExample::OnCreateWindowClick() {
 
 	// Widgets.
 	sfg::Button::Ptr destroy_button( sfg::Button::Create( "Destroy" ) );
+	sfg::Button::Ptr front_button( sfg::Button::Create( "Main window to front" ) );
 
 	// Layout.
 	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
@@ -115,12 +118,14 @@ void DesktopExample::OnCreateWindowClick() {
 	box->Pack( sfg::Label::Create( "You can move me around, try it!" ), false );
 	box->Pack( sfg::Label::Create( "Or click the button below to destroy me. :-(" ), false );
 	box->Pack( destroy_button, false );
+	box->Pack( front_button, false );
 
 	window->Add( box );
 	m_desktop.Add( window );
 
 	// Signals.
 	destroy_button->OnClick.Connect( &DesktopExample::OnDestroyWindowClick, this );
+	front_button->OnClick.Connect( &DesktopExample::OnFrontClick, this );
 }
 
 void DesktopExample::OnDestroyWindowClick() {
@@ -133,4 +138,8 @@ void DesktopExample::OnDestroyWindowClick() {
 
 	// Remove window from desktop.
 	m_desktop.Remove( widget );
+}
+
+void DesktopExample::OnFrontClick() {
+	m_desktop.BringToFront( m_window );
 }

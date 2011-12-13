@@ -7,13 +7,15 @@ namespace sfg {
 
 Desktop::Desktop( const sf::FloatRect& viewport ) :
 	m_view( viewport ),
-	m_engine( 0 )
+	m_engine( 0 ),
+	m_last_mouse_pos( 0, 0 )
 {
 }
 
 Desktop::Desktop( const sf::Window& window ) :
 	m_view( sf::FloatRect( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) ) ),
-	m_engine( 0 )
+	m_engine( 0 ),
+	m_last_mouse_pos( 0, 0 )
 {
 }
 
@@ -68,10 +70,14 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 
 	// If we've got a mouse event, get local mouse position and mark event for being checked against widget's allocation.
 	if( event.Type == sf::Event::MouseMoved ) {
+		m_last_mouse_pos.x = event.MouseMove.X;
+		m_last_mouse_pos.y = event.MouseMove.Y;
 		local_pos = TransformToLocal( sf::Vector2f( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) );
 		check_inside = true;
 	}
 	else if( event.Type == sf::Event::MouseButtonPressed || event.Type == sf::Event::MouseButtonReleased ) {
+		m_last_mouse_pos.x = event.MouseButton.X;
+		m_last_mouse_pos.y = event.MouseButton.Y;
 		local_pos = TransformToLocal( sf::Vector2f( static_cast<float>( event.MouseButton.X ), static_cast<float>( event.MouseButton.Y ) ) );
 		check_inside = true;
 	}
@@ -108,12 +114,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		// The fake event is also sent when the last mouse move event receiver
 		// isn't the current and top one.
 		if( event.Type == sf::Event::MouseMoved && last_receiver && last_receiver != widget && last_receiver != m_children.front() ) {
-			sf::Event fake_event;
-			fake_event.Type = sf::Event::MouseMoved;
-			fake_event.MouseMove.X = -1337;
-			fake_event.MouseMove.Y = -1337;
-			last_receiver->HandleEvent( fake_event );
-
+			SendFakeMouseMoveEvent( last_receiver );
 			m_last_receiver = widget;
 			last_receiver = widget;
 		}
@@ -133,8 +134,22 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 }
 
 void Desktop::Add( SharedPtr<Widget> widget ) {
+	if( std::find( m_children.begin(), m_children.end(), widget ) != m_children.end() ) {
+		return;
+	}
+
+	// Get old focused widget out of PRELIGHT state if mouse is inside the new
+	// widget.
+	if( m_children.size() ) {
+		if( widget->GetAllocation().Contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+			SendFakeMouseMoveEvent( m_children.front() );
+		}
+	}
+
 	m_children.push_front( widget );
+
 	widget->Refresh();
+	ResendMouseMoveEvent();
 }
 
 void Desktop::Remove( SharedPtr<Widget> widget ) {
@@ -146,6 +161,10 @@ void Desktop::Remove( SharedPtr<Widget> widget ) {
 
 	if( m_last_receiver.lock() == widget ) {
 		m_last_receiver.reset();
+	}
+
+	if( m_children.size() ) {
+		ResendMouseMoveEvent();
 	}
 }
 
@@ -178,6 +197,48 @@ bool Desktop::LoadThemeFromFile( const std::string& filename ) {
 
 Engine& Desktop::GetEngine() {
 	return m_context.GetEngine();
+}
+
+void Desktop::BringToFront( SharedPtr<const Widget> child ) {
+	WidgetsList::iterator iter( std::find( m_children.begin(), m_children.end(), child ) );
+
+	if( iter == m_children.end() || iter == m_children.begin() ) {
+		return;
+	}
+
+	if( child->GetAllocation().Contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+		SendFakeMouseMoveEvent( m_children.front() );
+	}
+
+	Widget::Ptr ptr( *iter );
+	m_children.erase( iter );
+	m_children.push_front( ptr );
+
+	ResendMouseMoveEvent();
+}
+
+void Desktop::SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x, int y ) const {
+	sf::Event fake_event;
+	fake_event.Type = sf::Event::MouseMoved;
+	fake_event.MouseMove.X = x;
+	fake_event.MouseMove.Y = y;
+	widget->HandleEvent( fake_event );
+}
+
+void Desktop::ResendMouseMoveEvent() {
+	sf::Event event;
+	event.Type = sf::Event::MouseMoved;
+	event.MouseMove.X = m_last_mouse_pos.x;
+	event.MouseMove.Y = m_last_mouse_pos.y;
+
+	sf::Vector2f mouse_pos( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) );
+
+	for( std::size_t index = 0; index < m_children.size(); ++index ) {
+		if( m_children[index]->GetAllocation().Contains( mouse_pos ) ) {
+			m_children[index]->HandleEvent( event );
+			break;
+		}
+	}
 }
 
 }

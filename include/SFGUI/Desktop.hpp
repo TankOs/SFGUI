@@ -114,11 +114,17 @@ class SFGUI_API Desktop {
 		 */
 		void UpdateViewRect( const sf::FloatRect& rect );
 
+		/** Bring child to front.
+		 * @param child Child.
+		 */
+		void BringToFront( SharedPtr<const Widget> child );
+
 	private:
 		typedef std::deque<SharedPtr<Widget> > WidgetsList;
 
 		sf::Vector2f TransformToLocal( const sf::Vector2f& global ) const;
-		void RemoveObsoleteChildren();
+		void SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x = -1337, int y = -1337 ) const;
+		void ResendMouseMoveEvent();
 
 		sf::View m_view;
 
@@ -127,6 +133,8 @@ class SFGUI_API Desktop {
 
 		WidgetsList m_children;
 		WeakPtr<Widget> m_last_receiver;
+
+		sf::Vector2i m_last_mouse_pos;
 };
 
 }
