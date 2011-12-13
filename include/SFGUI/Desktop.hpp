@@ -126,10 +126,7 @@ class SFGUI_API Desktop {
 		Engine* m_engine;
 
 		WidgetsList m_children;
-		WidgetsList m_obsolete_children;
 		WeakPtr<Widget> m_last_receiver;
-
-		bool m_skip_refresh;
 };
 
 }

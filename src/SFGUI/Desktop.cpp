@@ -7,14 +7,13 @@ namespace sfg {
 
 Desktop::Desktop( const sf::FloatRect& viewport ) :
 	m_view( viewport ),
-	m_engine( 0 ),
-	m_skip_refresh( false ){
+	m_engine( 0 )
+{
 }
 
 Desktop::Desktop( const sf::Window& window ) :
 	m_view( sf::FloatRect( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) ) ),
-	m_engine( 0 ),
-	m_skip_refresh( false )
+	m_engine( 0 )
 {
 }
 
@@ -63,13 +62,8 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 	// Activate context.
 	Context::Activate( m_context );
 
-	RemoveObsoleteChildren();
-
 	sf::Vector2f local_pos;
-	WidgetsList::iterator w_iter( m_children.begin() );
-	WidgetsList::iterator w_iter_end( m_children.end() );
 	bool check_inside( false );
-	WidgetsList::iterator new_top_iter( m_children.end() );
 	Widget::Ptr last_receiver( m_last_receiver.lock() );
 
 	// If we've got a mouse event, get local mouse position and mark event for being checked against widget's allocation.
@@ -82,60 +76,56 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		check_inside = true;
 	}
 
-	for( ; w_iter != w_iter_end; ++w_iter ) {
+	for( std::size_t index = 0; index < m_children.size(); ++index ) {
+		Widget::Ptr widget( m_children[index] );
+
 		// Skip widget if not visible.
-		if( !(*w_iter)->IsVisible() ) {
+		if( !widget->IsVisible() ) {
 			continue;
 		}
 
+		bool is_inside( widget->GetAllocation().Contains( local_pos ) );
+
 		// If the event is a mouse button press, check if we need to focus another widget.
 		if(
-			new_top_iter == w_iter_end &&
+			index > 0 &&
 			event.Type == sf::Event::MouseButtonPressed &&
-			w_iter != m_children.begin()
+			is_inside
 		) {
-			if( (*w_iter)->GetAllocation().Contains( local_pos ) ) {
-				// Mark this widget as new top widget.
-				new_top_iter = w_iter;
-			}
+			m_children.erase( m_children.begin() + index );
+			m_children.push_front( widget );
 		}
-
-		bool is_inside( (*w_iter)->GetAllocation().Contains( local_pos ) );
 
 		// If inside check is needed, do so for all widgets except the top window.
 		// Else it would run into trouble when moving the window, for example,
 		// where the mouse may be outside the widget's allocation.
-		if( check_inside && !is_inside && w_iter != m_children.begin() ) {
+		if( check_inside && !is_inside && index > 0 ) {
 			continue;
 		}
 
-		// If last receiver is different from current, fake a out-of-scope mouse
-		// move event so that states are reset correctly. Warning, this is a hack,
-		// but it works™.
+		// If last receiver is different from current, fake a mouse move event so
+		// that states are reset correctly. Warning, this is a hack, but it works™.
 		// The fake event is also sent when the last mouse move event receiver
 		// isn't the current and top one.
-		if( event.Type == sf::Event::MouseMoved && last_receiver && last_receiver != *w_iter && last_receiver != m_children.front() ) {
+		if( event.Type == sf::Event::MouseMoved && last_receiver && last_receiver != widget && last_receiver != m_children.front() ) {
 			sf::Event fake_event;
 			fake_event.Type = sf::Event::MouseMoved;
 			fake_event.MouseMove.X = -1337;
 			fake_event.MouseMove.Y = -1337;
 			last_receiver->HandleEvent( fake_event );
 
-			m_last_receiver = *w_iter;
+			m_last_receiver = widget;
+			last_receiver = widget;
 		}
 
-		(*w_iter)->HandleEvent( event );
+		widget->HandleEvent( event );
 
 		if( check_inside && is_inside ) {
-			m_last_receiver = *w_iter;
+			if( index < m_children.size() && widget == m_children[index] ) {
+				m_last_receiver = widget;
+			}
 			break;
 		}
-	}
-
-	if( new_top_iter != w_iter_end ) {
-		sfg::Widget::Ptr widget( *new_top_iter );
-		m_children.erase( new_top_iter );
-		m_children.insert( m_children.begin(), widget );
 	}
 
 	// Restore previous context.
@@ -148,50 +138,23 @@ void Desktop::Add( SharedPtr<Widget> widget ) {
 }
 
 void Desktop::Remove( SharedPtr<Widget> widget ) {
-	// We do this in an isolated method to keep iterators valid.
-	m_obsolete_children.push_back( widget );
+	WidgetsList::iterator iter( std::find( m_children.begin(), m_children.end(), widget ));
 
-	widget->Show( false );
+	if( iter != m_children.end() ) {
+		m_children.erase( iter );
+	}
+
+	if( m_last_receiver.lock() == widget ) {
+		m_last_receiver.reset();
+	}
 }
 
 void Desktop::RemoveAll() {
-	WidgetsList::iterator child_iter( m_children.begin() );
-	WidgetsList::iterator child_iter_end( m_children.end() );
-
-	for( ; child_iter != child_iter_end; ++child_iter ) {
-		Remove( *child_iter );
-	}
+	m_children.clear();
+	m_last_receiver.reset();
 }
-
-void Desktop::RemoveObsoleteChildren() {
-	WidgetsList::iterator obs_iter( m_obsolete_children.begin() );
-	WidgetsList::iterator obs_iter_end( m_obsolete_children.end() );
-	Widget::Ptr last_receiver( m_last_receiver.lock() );
-
-	for( ; obs_iter != obs_iter_end; ++obs_iter ) {
-		WidgetsList::iterator w_iter( std::find( m_children.begin(), m_children.end(), *obs_iter ) );
-
-		if( w_iter == m_children.end() ) {
-			continue;
-		}
-
-		// Reset last receiver if it's the widget to be removed.
-		if( last_receiver && last_receiver == *w_iter ) {
-			m_last_receiver.reset();
-		}
-
-		m_children.erase( w_iter );
-	}
-
-	m_obsolete_children.clear();
-}
-
 
 void Desktop::Refresh() {
-	if( m_skip_refresh ) {
-		return;
-	}
-
 	// Activate context.
 	Context::Activate( m_context );
 
@@ -204,10 +167,7 @@ void Desktop::Refresh() {
 }
 
 bool Desktop::LoadThemeFromFile( const std::string& filename ) {
-	m_skip_refresh = true;
 	bool result( m_context.GetEngine().LoadThemeFromFile( filename ) );
-	m_skip_refresh = false;
-
 	if( !result ) {
 		return false;
 	}
