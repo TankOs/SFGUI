@@ -50,7 +50,7 @@ class SFGUI_API Scale : public Range {
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );
 
-		sf::Vector2f* m_drag_start;
+		sf::Vector2f* m_drag_offset;
 		bool m_dragging;
 };
 
