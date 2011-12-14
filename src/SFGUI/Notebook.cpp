@@ -8,6 +8,7 @@ Notebook::Notebook() :
 	Container(),
 	m_tab_requisition( 0.f, 0.f ),
 	m_child_requisition( 0.f, 0.f ),
+	m_current_page( 0 ),
 	m_prelight_tab( -1 ),
 	m_tab_position( TOP )
 {

@@ -4,18 +4,27 @@
 
 namespace sfg {
 
-bool ZSort( RenderQueue* left, RenderQueue* right ) {
-	return ( left->GetZOrder() < right->GetZOrder() );
-}
-
 CullingTarget::CullingTarget( sf::RenderTarget& target ) :
 	m_cull_count( std::pair<std::size_t, std::size_t>( 0, 0 ) ),
 	m_real_target( target ),
 	m_last_view_id( 0 ),
+	m_current_layer( 0 ),
 	m_cull( true ),
 	m_out_of_view( false )
 {
 	PushView( m_real_target.GetView() );
+
+	m_current_frame_buffer = new FrameBuffer;
+	m_layer_buffer[m_current_layer] = m_current_frame_buffer;
+}
+
+CullingTarget::~CullingTarget() {
+	LayerBuffer::const_iterator layer_iter( m_layer_buffer.begin() );
+	LayerBuffer::const_iterator layer_end( m_layer_buffer.end() );
+
+	for( ; layer_iter != layer_end; ++layer_iter ) {
+		delete layer_iter->second;
+	}
 }
 
 void CullingTarget::PushView( const sf::View& view ) {
@@ -85,7 +94,6 @@ void CullingTarget::UpdateView() {
 
 	// Kick out an old view AABB and add new view AABB to cache
 	if( view_cache_size >= 8 ) {
-		m_view_map.erase( m_view_cache.front().id );
 		m_view_cache.erase( m_view_cache.begin() );
 	}
 
@@ -126,7 +134,7 @@ void CullingTarget::Cull( bool enable ) {
 void CullingTarget::Draw( RenderQueue* queue ) {
 	if( !m_cull ) {
 		queue->SetAssociatedViewID( m_current_view_id );
-		m_frame_buffer.push_back( queue );
+		AddToFrame( queue );
 		return;
 	}
 
@@ -137,7 +145,7 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 
 	if( queue->GetCheckedViewID() == m_current_view_id ) {
 		if( queue->GetCullPass() ) {
-			m_frame_buffer.push_back( queue );
+		AddToFrame( queue );
 			m_cull_count.first++;
 			return;
 		}
@@ -180,7 +188,7 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 	queue->SetCheckedViewID( m_current_view_id );
 
 	if( !discard ) {
-		m_frame_buffer.push_back( queue );
+		AddToFrame( queue );
 		m_cull_count.first++;
 		queue->SetCullPass( true );
 	}
@@ -190,22 +198,50 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 	}
 }
 
+void CullingTarget::AddToFrame( RenderQueue* queue ) {
+	int layer = queue->GetZOrder();
+
+	if( layer != m_current_layer ) {
+		m_current_layer = layer;
+
+		m_current_frame_buffer = m_layer_buffer[m_current_layer];
+
+		if( !m_current_frame_buffer ) {
+			m_current_frame_buffer = new FrameBuffer;
+			m_layer_buffer[m_current_layer] = m_current_frame_buffer;
+		}
+	}
+
+	m_current_frame_buffer->push_back( queue );
+}
+
 void CullingTarget::Display() {
 	unsigned int current_view_id = 0;
 
-	std::stable_sort( m_frame_buffer.begin(), m_frame_buffer.end(), ZSort );
+	LayerBuffer::const_iterator layer_iter( m_layer_buffer.begin() );
+	LayerBuffer::const_iterator layer_end( m_layer_buffer.end() );
 
-	while( !m_frame_buffer.empty() ) {
-		unsigned int associated_view_id = m_frame_buffer.front()->GetAssociatedViewID();
+	for( ; layer_iter != layer_end; ++layer_iter ) {
+		FrameBuffer* frame_buffer = layer_iter->second;
 
-		if( associated_view_id != current_view_id ) {
-			current_view_id = associated_view_id;
-			m_real_target.SetView( m_view_map[current_view_id] );
+		std::size_t frame_buffer_size = frame_buffer->size();
+
+		for( std::size_t index = 0; index < frame_buffer_size; ++index ) {
+			unsigned int associated_view_id = (*frame_buffer)[index]->GetAssociatedViewID();
+
+			if( associated_view_id != current_view_id ) {
+				current_view_id = associated_view_id;
+				m_real_target.SetView( m_view_map[current_view_id] );
+			}
+
+			m_real_target.Draw( *( (*frame_buffer)[index] ) );
 		}
 
-		m_real_target.Draw( *m_frame_buffer.front() );
-		m_frame_buffer.pop_front();
+		frame_buffer->clear();
 	}
+
+	m_view_map.clear();
+	m_view_map.insert( m_view_map.begin(), std::pair<unsigned int, sf::View>( m_current_view_id, m_view_stack[ m_view_stack.size() - 1 ] ) );
 }
 
 }

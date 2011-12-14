@@ -6,7 +6,6 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <vector>
-#include <deque>
 #include <map>
 
 namespace sfg {
@@ -21,6 +20,10 @@ class SFGUI_API CullingTarget {
 		 * @param target SFML RenderTarget.
 		 */
 		CullingTarget( sf::RenderTarget& target );
+
+		/** Dtor
+		 */
+		~CullingTarget();
 
 		/** Push a new viewport onto this target.
 		 * @param view Viewport.
@@ -76,9 +79,16 @@ class SFGUI_API CullingTarget {
 			sf::IntRect aabb;
 		};
 
-		void UpdateView();
+		typedef std::vector<RenderQueue*> FrameBuffer;
+		typedef std::map<int, FrameBuffer*> LayerBuffer;
 
-		std::deque<RenderQueue*> m_frame_buffer;
+		void UpdateView();
+		void AddToFrame( RenderQueue* queue );
+
+		LayerBuffer m_layer_buffer;
+		FrameBuffer m_frame_buffer;
+		FrameBuffer* m_current_frame_buffer;
+
 		std::map<unsigned int, sf::View> m_view_map;
 
 		std::vector<sf::View> m_view_stack;
@@ -95,6 +105,8 @@ class SFGUI_API CullingTarget {
 
 		unsigned int m_current_view_id;
 		unsigned int m_last_view_id;
+
+		int m_current_layer;
 
 		bool m_cull;
 
