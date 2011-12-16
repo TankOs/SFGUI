@@ -70,6 +70,10 @@ class SFGUI_API Container : public Widget {
 
 		virtual void HandleExpose( CullingTarget& target ) const;
 
+		/** Handle visibility change.
+		 */
+		virtual void HandleVisibilityChange();
+
 	private:
 		WidgetsList m_children;
 };

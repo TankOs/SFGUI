@@ -371,6 +371,9 @@ void Widget::Show( bool show ) {
 	}
 
 	m_visible = show;
+
+	HandleVisibilityChange();
+
 	RequestResize();
 }
 
@@ -464,6 +467,14 @@ void Widget::HandleMouseClick( sf::Mouse::Button /*button*/, int /*x*/, int /*y*
 void Widget::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 	if( focused_widget != shared_from_this() ) {
 		SetState( NORMAL );
+	}
+}
+
+void Widget::HandleVisibilityChange() {
+	if( m_visible ) {
+		if( ( m_state == PRELIGHT ) || ( m_state == ACTIVE ) ) {
+			SetState( NORMAL );
+		}
 	}
 }
 

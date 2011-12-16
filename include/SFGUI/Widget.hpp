@@ -315,6 +315,10 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
 
+		/** Handle visibility change.
+		 */
+		virtual void HandleVisibilityChange();
+
 	private:
 		void GrabFocus( Ptr widget );
 		bool HasFocus( Ptr widget );

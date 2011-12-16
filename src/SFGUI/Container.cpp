@@ -130,4 +130,15 @@ void Container::HandleAbsolutePositionChange() {
 	UpdateDrawablePosition();
 }
 
+void Container::HandleVisibilityChange() {
+	std::size_t children_size = m_children.size();
+
+	// Update children's visibility.
+	for( std::size_t index = 0; index < children_size; ++index ) {
+		m_children[index]->Show( IsVisible() );
+	}
+
+	Widget::HandleVisibilityChange();
+}
+
 }
