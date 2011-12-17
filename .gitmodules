@@ -1,0 +1,3 @@
+[submodule "extlibs/SFML"]
+	path = extlibs/SFML
+	url = git://github.com/LaurentGomila/SFML.git
