@@ -99,13 +99,16 @@ void RenderQueue::Compile() {
 }
 
 void RenderQueue::Draw( sf::RenderTarget& target, sf::RenderStates states ) const {
+	/*
 	if( !m_display_list ) {
+	*/
 		// Display list couldn't be created, render normally.
 		std::size_t children_size = m_children.size();
 
 		for( DrawablesVector::size_type index = 0; index < children_size; ++index ) {
 			target.Draw( *( m_children[index].first ), states );
 		}
+		/*
 	}
 	else if( !m_display_list_compiled ) {
 		// Make sure SFML binds the right texture if it uses one, or leaves it at 0 if not.
@@ -138,6 +141,7 @@ void RenderQueue::Draw( sf::RenderTarget& target, sf::RenderStates states ) cons
 			states.Texture = NULL;
 		}
 	}
+	*/
 }
 
 void RenderQueue::SetPosition( const sf::Vector2f& /*position*/ ) { // TODO Remove.

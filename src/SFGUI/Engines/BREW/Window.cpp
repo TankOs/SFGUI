@@ -31,9 +31,12 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		if( shadow_distance > 0.f ) {
 			sf::Color shadow_color( 0, 0, 0, shadow_alpha );
 
-			sf::FloatRect shadow_rect( window->GetAllocation() );
-			shadow_rect.Left += shadow_distance;
-			shadow_rect.Top += shadow_distance;
+			sf::FloatRect shadow_rect(
+				shadow_distance,
+				shadow_distance,
+				window->GetAllocation().Width,
+				window->GetAllocation().Height
+			);
 
 			queue->Add(
 				CreateBackground(
