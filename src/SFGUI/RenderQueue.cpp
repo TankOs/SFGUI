@@ -1,5 +1,9 @@
 #include <SFGUI/RenderQueue.hpp>
+
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Shape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 namespace sfg {
 
@@ -34,10 +38,10 @@ RenderQueue::~RenderQueue() {
 void RenderQueue::Add( sf::Shape* shape ) {
 	sf::FloatRect aabb( .0f, .0f, .0f, .0f );
 
-	unsigned int points_count = shape->GetPointsCount();
+	unsigned int points_count = shape->GetPointCount();
 
 	for( unsigned int point_index = 0; point_index < points_count; ++point_index ) {
-		sf::Vector2f point = shape->GetPointPosition( point_index );
+		const sf::Vector2f& point = shape->GetPoint( point_index );
 
 		aabb.Left = std::min( point.x, aabb.Left );
 		aabb.Top = std::min( point.y, aabb.Top );
@@ -49,13 +53,11 @@ void RenderQueue::Add( sf::Shape* shape ) {
 }
 
 void RenderQueue::Add( sf::Sprite* sprite ) {
-	sf::FloatRect aabb( sprite->GetPosition(), sprite->GetSize() );
-	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( sprite, aabb ) );
+	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( sprite, sprite->GetGlobalBounds() ) );
 }
 
 void RenderQueue::Add( sf::Text* text ) {
-	sf::FloatRect aabb( text->GetRect() );
-	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( text, aabb ) );
+	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( text, text->GetGlobalBounds() ) );
 }
 
 void RenderQueue::Add( RenderQueue* queue ) {
@@ -96,26 +98,26 @@ void RenderQueue::Compile() {
 	m_display_list_compiled = false;
 }
 
-void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& renderer ) const {
+void RenderQueue::Draw( sf::RenderTarget& target, sf::RenderStates states ) const {
 	if( !m_display_list ) {
 		// Display list couldn't be created, render normally.
 		std::size_t children_size = m_children.size();
 
 		for( DrawablesVector::size_type index = 0; index < children_size; ++index ) {
-			target.Draw( *( m_children[index].first ) );
+			target.Draw( *( m_children[index].first ), states );
 		}
 	}
 	else if( !m_display_list_compiled ) {
 		// Make sure SFML binds the right texture if it uses one, or leaves it at 0 if not.
 		glBindTexture( GL_TEXTURE_2D, 0 );
-		renderer.SetTexture( 0 );
+		states.Texture = NULL;
 
 		glNewList( m_display_list, GL_COMPILE_AND_EXECUTE );
 
 		std::size_t children_size = m_children.size();
 
 		for( DrawablesVector::size_type index = 0; index < children_size; ++index ) {
-			target.Draw( *( m_children[index].first ) );
+			target.Draw( *( m_children[index].first ), states );
 		}
 
 		glEndList();
@@ -133,17 +135,17 @@ void RenderQueue::Render( sf::RenderTarget& target, sf::Renderer& renderer ) con
 
 		// Unbind if we bound something...
 		if( m_texture_id ) {
-			renderer.SetTexture( 0 );
+			states.Texture = NULL;
 		}
 	}
 }
 
-void RenderQueue::SetPosition( const sf::Vector2f& position ) {
+void RenderQueue::SetPosition( const sf::Vector2f& /*position*/ ) { // TODO Remove.
 	m_display_list_compiled = false;
 
 	m_checked_view_id = 0;
 
-	sf::Drawable::SetPosition( position );
+	//sf::Drawable::SetPosition( position ); TODO
 }
 
 unsigned int RenderQueue::GetCheckedViewID() const {

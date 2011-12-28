@@ -1,6 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/ToggleButton.hpp>
 
+#include <SFML/Graphics/Text.hpp>
+
 namespace sfg {
 namespace eng {
 
@@ -20,14 +22,14 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 	RenderQueue* queue( new RenderQueue );
 
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Rectangle(
+		CreateBackground(
+			sf::FloatRect(
 				0.f,
 				0.f,
 				button->GetAllocation().Width,
-				button->GetAllocation().Height,
-				background_color
-			)
+				button->GetAllocation().Height
+			),
+			background_color
 		)
 	);
 

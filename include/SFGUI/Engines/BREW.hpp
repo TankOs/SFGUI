@@ -3,6 +3,10 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Engine.hpp>
 
+namespace sf {
+class ConvexShape;
+}
+
 namespace sfg {
 class RenderQueue;
 
@@ -33,36 +37,21 @@ class SFGUI_API BREW : public Engine {
 		RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const;
 		RenderQueue* CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const;
 
-		/** Utility function to create borders.
-		 * @param rect Rectangle.
-		 * @param border_width Border width.
-		 * @param light_color Color of lightened edges.
-		 * @param dark_color Color of darkened edges.
-		 * @return RenderQueue containing border (unmanaged memory!).
-		 */
-		static RenderQueue* CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
-
-		/** Utility function to create sliders.
-		 * @param rect Rectangle with absolute position.
-		 * @param background Background color
-		 * @param border_width Border width.
-		 * @param light_color Color of lightened edges.
-		 * @param dark_color Color of darkened edges.
-		 * @return RenderQueue containing border (unmanaged memory!).
-		 */
-		static RenderQueue* CreateSlider( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
-
-		/** Utility function to create steppers.
-		 * @param rect Rectangle with absolute position.
-		 * @param background Background color
-		 * @param border_width Border width.
-		 * @param light_color Color of lightened edges.
-		 * @param dark_color Color of darkened edges.
-		 * @param pressed Optional parameter to indicate stepper is pressed
-		 * @return RenderQueue containing border (unmanaged memory!).
-		 */
-		static RenderQueue* CreateStepper( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color, bool pressed = false );
 	private:
+		enum Edge {
+			TOP = 0,
+			RIGHT,
+			BOTTOM,
+			LEFT
+		};
+
+		static sf::Shape* CreateBackground( const sf::FloatRect& rect, const sf::Color& color );
+		static sf::Shape* CreateLine( const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness = 1.f );
+		static sf::Shape* CreateEdgedLine( Edge where, const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness = 1.f );
+
+		static RenderQueue* CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
+		static RenderQueue* CreateSlider( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
+		static RenderQueue* CreateStepper( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color, bool pressed = false );
 };
 
 }

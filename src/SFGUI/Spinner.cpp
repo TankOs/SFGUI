@@ -2,6 +2,8 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <SFML/Graphics/ConvexShape.hpp>
+
 namespace sfg {
 
 Spinner::Spinner() :
@@ -14,7 +16,7 @@ Spinner::~Spinner() {
 }
 
 Spinner::Ptr Spinner::Create() {
-	Spinner::Ptr ptr( new Spinner() );
+	Spinner::Ptr ptr( new Spinner );
 
 	return ptr;
 }
@@ -58,7 +60,15 @@ void Spinner::HandleExpose( CullingTarget& /*target*/ ) const {
 	if( m_started && ( static_cast<float>( m_clock.GetElapsedTime() ) > ( duration / steps ) ) ) {
 		m_clock.Reset();
 
-		m_renderqueue->GetDrawables()[0].first->Rotate( 360.f / steps );
+		// Since sf::Drawable does not force its derivates to implement anything
+		// useful, we have to reinterpret_cast here. Thank god we know we only have
+		// ConvexShape objects.
+		std::size_t count( m_renderqueue->GetDrawables().size() );
+
+		for( std::size_t index = 0; index < count; ++index ) {
+			reinterpret_cast<sf::ConvexShape*>( m_renderqueue->GetDrawables()[index].first )->Rotate( 360.f / steps );
+		}
+
 		m_renderqueue->Compile();
 	}
 }

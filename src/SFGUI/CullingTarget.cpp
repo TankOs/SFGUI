@@ -131,10 +131,10 @@ void CullingTarget::Cull( bool enable ) {
 	m_cull = enable;
 }
 
-void CullingTarget::Draw( RenderQueue* queue ) {
+void CullingTarget::Draw( RenderQueue* queue, const sf::RenderStates& states ) {
 	if( !m_cull ) {
 		queue->SetAssociatedViewID( m_current_view_id );
-		AddToFrame( queue );
+		AddToFrame( queue, states );
 		return;
 	}
 
@@ -145,7 +145,7 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 
 	if( queue->GetCheckedViewID() == m_current_view_id ) {
 		if( queue->GetCullPass() ) {
-		AddToFrame( queue );
+		AddToFrame( queue, states );
 			m_cull_count.first++;
 			return;
 		}
@@ -155,7 +155,7 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 		}
 	}
 
-	sf::Vector2f position = queue->GetPosition();
+	sf::Vector2f position; // TODO: = queue->GetPosition();
 
 	m_view_aabb.Left -= static_cast<int>( position.x + .5f );
 	m_view_aabb.Top -= static_cast<int>( position.y + .5f );
@@ -188,7 +188,7 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 	queue->SetCheckedViewID( m_current_view_id );
 
 	if( !discard ) {
-		AddToFrame( queue );
+		AddToFrame( queue, states );
 		m_cull_count.first++;
 		queue->SetCullPass( true );
 	}
@@ -198,7 +198,7 @@ void CullingTarget::Draw( RenderQueue* queue ) {
 	}
 }
 
-void CullingTarget::AddToFrame( RenderQueue* queue ) {
+void CullingTarget::AddToFrame( RenderQueue* queue, const sf::RenderStates& states ) {
 	int layer = queue->GetZOrder();
 
 	if( layer != m_current_layer ) {
@@ -212,7 +212,7 @@ void CullingTarget::AddToFrame( RenderQueue* queue ) {
 		}
 	}
 
-	m_current_frame_buffer->push_back( queue );
+	m_current_frame_buffer->push_back( FrameBufferEntry( queue, states ) );
 }
 
 void CullingTarget::Display() {
@@ -227,14 +227,14 @@ void CullingTarget::Display() {
 		std::size_t frame_buffer_size = frame_buffer->size();
 
 		for( std::size_t index = 0; index < frame_buffer_size; ++index ) {
-			unsigned int associated_view_id = (*frame_buffer)[index]->GetAssociatedViewID();
+			unsigned int associated_view_id = (*frame_buffer)[index].first->GetAssociatedViewID();
 
 			if( associated_view_id != current_view_id ) {
 				current_view_id = associated_view_id;
 				m_real_target.SetView( m_view_map[current_view_id] );
 			}
 
-			m_real_target.Draw( *( (*frame_buffer)[index] ) );
+			m_real_target.Draw( *( (*frame_buffer)[index].first ), (*frame_buffer)[index].second );
 		}
 
 		frame_buffer->clear();

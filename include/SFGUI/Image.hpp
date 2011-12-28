@@ -4,7 +4,8 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Misc.hpp>
 #include <SFGUI/SharedPtr.hpp>
-#include <SFML/Graphics/Image.hpp>
+
+#include <SFML/Graphics/Texture.hpp>
 
 namespace sfg {
 

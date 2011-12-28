@@ -76,9 +76,6 @@ int main() {
 
 		render_window.Clear();
 
-		render_window.RestoreGLStates();
-		render_window.SetActive();
-
 		glMatrixMode( GL_MODELVIEW );
 
 		glLoadIdentity();
@@ -93,12 +90,10 @@ int main() {
 		glVertex3f( 1.f, 1.f, 0.f );
 		glEnd();
 
-
-
 		// SFML rendering.
-		render_window.SaveGLStates();
-
+		render_window.PushGLStates();
 		desktop.Expose( render_window );
+		render_window.PopGLStates();
 
 		render_window.Display();
 	}

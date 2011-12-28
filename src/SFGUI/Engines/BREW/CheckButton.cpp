@@ -1,6 +1,9 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/CheckButton.hpp>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 namespace sfg {
 namespace eng {
 
@@ -22,32 +25,23 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Rectangle(
-				0.f,
-				check->GetAllocation().Height / 2.f - box_size / 2.f,
-				box_size,
-				box_size,
-				background_color
-			)
-		)
-	);
+	// Background.
+	sf::RectangleShape* bg_shape = new sf::RectangleShape( sf::Vector2f( box_size, box_size ) );
+	bg_shape->SetOutlineColor( sf::Color::Transparent );
+	bg_shape->SetFillColor( background_color );
+	bg_shape->SetPosition( 0.f, check->GetAllocation().Height / 2.f - box_size / 2.f );
+	queue->Add( bg_shape );
 
 	if( check->IsActive() ) {
 		float diff( box_size - check_size );
 
-		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					diff / 2.f,
-					check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f,
-					box_size - diff,
-					box_size - diff,
-					check_color
-				)
-			)
+		sf::RectangleShape* check_bg_shape = new sf::RectangleShape(
+			sf::Vector2f( box_size, box_size )
 		);
+		bg_shape->SetOutlineColor( sf::Color::Transparent );
+		bg_shape->SetFillColor( check_color );
+		bg_shape->SetPosition( diff / 2.f, check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f );
+		queue->Add( check_bg_shape );
 	}
 
 	queue->Add(

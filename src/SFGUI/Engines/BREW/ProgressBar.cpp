@@ -23,14 +23,14 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 
 	// Background.
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Rectangle(
+		CreateBackground(
+			sf::FloatRect(
 				0.f,
 				0.f,
 				progress_bar->GetAllocation().Width,
-				progress_bar->GetAllocation().Height,
-				background_color
-			)
+				progress_bar->GetAllocation().Height
+			),
+			background_color
 		)
 	);
 
@@ -60,11 +60,9 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 
 		// Bar.
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					bar_rect,
-					progress_color
-				)
+			CreateBackground(
+				bar_rect,
+				progress_color
 			)
 		);
 

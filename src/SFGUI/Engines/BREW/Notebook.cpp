@@ -38,14 +38,14 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane background
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
+			CreateBackground(
+				sf::FloatRect(
 					0.f,
 					tab_size.y + 2.f * ( border_width + padding ),
 					child_size.x + 2.f * ( border_width + padding ),
-					child_size.y + 2.f * ( border_width + padding ),
-					background_color
-				)
+					child_size.y + 2.f * ( border_width + padding )
+				),
+				background_color
 			)
 		);
 
@@ -66,15 +66,11 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label left border
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					.5f,
-					.5f,
-					.5f,
-					std::floor( tab_size.y + 3.f * border_width + 2.f * padding ) - .5f,
-					border_width,
-					border_color_light
-				)
+			CreateLine(
+				sf::Vector2f( .5f, .5f ),
+				sf::Vector2f( .5f, std::floor( tab_size.y + 3.f * border_width + 2.f * padding ) - .5f ),
+				border_color_light,
+				border_width
 			)
 		);
 
@@ -85,71 +81,59 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Top border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left - border_width - padding ) + .5f,
-						std::floor( label_allocation.Top - border_width - padding ) + .5f,
-						std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-						std::floor( label_allocation.Top - border_width - padding ) + .5f,
-						border_width,
-						border_color_light
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					border_color_light,
+					border_width
 				)
 			);
 
 			// Right border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-						std::floor( label_allocation.Top - border_width - padding ) + .5f,
-						std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + 2.f * border_width + padding ) - .5f,
-						border_width,
-						border_color_dark
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + 2.f * border_width + padding ) - .5f ),
+					border_color_dark,
+					border_width
 				)
 			);
 
 			if( index == current_page ) {
 				// Active left border
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Line(
-							std::floor( label_allocation.Left - border_width - padding ) + .5f,
-							std::floor( label_allocation.Top - border_width - padding ) + .5f,
-							std::floor( label_allocation.Left - border_width - padding ) + .5f,
-							std::floor( label_allocation.Top + label_allocation.Height + 2.f * border_width + padding ) - .5f,
-							border_width,
-							border_color_light
-						)
+					CreateLine(
+						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + 2.f * border_width + padding ) - .5f ),
+						border_color_light,
+						border_width
 					)
 				);
 
 				// Active background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + 2.f * ( border_width + padding ),
-							background_color
-						)
+							label_allocation.Height + 2.f * ( border_width + padding )
+						),
+						background_color
 					)
 				);
 			}
 			else {
 				// Inactive background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + border_width + 2.f * padding,
-							( index == prelight_tab ) ? background_color_prelight : background_color_dark
-						)
+							label_allocation.Height + border_width + 2.f * padding
+						),
+						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
 				);
 			}
@@ -160,14 +144,14 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane background
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
+			CreateBackground(
+				sf::FloatRect(
 					0.f,
 					0.f,
 					child_size.x + 2.f * ( border_width + padding ),
-					child_size.y + 2.f * ( border_width + padding ),
-					background_color
-				)
+					child_size.y + 2.f * ( border_width + padding )
+				),
+				background_color
 			)
 		);
 
@@ -188,15 +172,11 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label left border
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					.5f,
-					std::floor( child_size.y + 2.f * ( border_width + padding ) ) - .5f,
-					.5f,
-					std::floor( child_size.y + 2.f * ( border_width + padding ) + tab_size.y + 2.f * ( border_width + padding ) ) - .5f,
-					border_width,
-					border_color_light
-				)
+			CreateLine(
+				sf::Vector2f( .5f, std::floor( child_size.y + 2.f * ( border_width + padding ) ) - .5f ),
+				sf::Vector2f( .5f, std::floor( child_size.y + 2.f * ( border_width + padding ) + tab_size.y + 2.f * ( border_width + padding ) ) - .5f ),
+				border_color_light,
+				border_width
 			)
 		);
 
@@ -207,71 +187,59 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Bottom border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left - border_width - padding ) + .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						border_width,
-						border_color_dark
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					border_color_dark,
+					border_width
 				)
 			);
 
 			// Right border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-						std::floor( label_allocation.Top - border_width - padding ) + .5f,
-						std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						border_width,
-						border_color_dark
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					border_color_dark,
+					border_width
 				)
 			);
 
 			if( index == current_page ) {
 				// Active left border
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Line(
-							std::floor( label_allocation.Left - border_width - padding ) + .5f,
-							std::floor( label_allocation.Top - border_width - padding ) + .5f,
-							std::floor( label_allocation.Left - border_width - padding ) + .5f,
-							std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-							border_width,
-							border_color_light
-						)
+					CreateLine(
+						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+						border_color_light,
+						border_width
 					)
 				);
 
 				// Active background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding - 2.f * border_width,
 							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + 2.f * ( border_width + padding ),
-							background_color
-						)
+							label_allocation.Height + 2.f * ( border_width + padding )
+						),
+						background_color
 					)
 				);
 			}
 			else {
 				// Inactive background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + 2.f * padding,
-							( index == prelight_tab ) ? background_color_prelight : background_color_dark
-						)
+							label_allocation.Height + 2.f * padding
+						),
+						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
 				);
 			}
@@ -282,14 +250,14 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane background
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
+			CreateBackground(
+				sf::FloatRect(
 					tab_size.x + 2.f * ( border_width + padding ),
 					0.f,
 					child_size.x + 2.f * ( border_width + padding ),
-					child_size.y + 2.f * ( border_width + padding ),
-					background_color
-				)
+					child_size.y + 2.f * ( border_width + padding )
+				),
+				background_color
 			)
 		);
 
@@ -310,15 +278,11 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label top border
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					.5f,
-					.5f,
-					std::floor( tab_size.x + 2.f * padding + 3.f * border_width ) - .5f,
-					.5f,
-					border_width,
-					border_color_light
-				)
+			CreateLine(
+				sf::Vector2f( .5f, .5f ),
+				sf::Vector2f( std::floor( tab_size.x + 2.f * padding + 3.f * border_width ) - .5f, .5f ),
+				border_color_light,
+				border_width
 			)
 		);
 
@@ -329,71 +293,59 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Left border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left - border_width - padding ) + .5f,
-						std::floor( label_allocation.Top - border_width - padding ) + .5f,
-						std::floor( label_allocation.Left - border_width - padding ) + .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						border_width,
-						border_color_light
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					border_color_light,
+					border_width
 				)
 			);
 
 			// Bottom border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left - border_width - padding ) + .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						border_width,
-						border_color_dark
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					border_color_dark,
+					border_width
 				)
 			);
 
 			if( index == current_page ) {
 				// Active top border
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Line(
-							std::floor( label_allocation.Left - border_width - padding ) + .5f,
-							std::floor( label_allocation.Top - border_width - padding ) + .5f,
-							std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f,
-							std::floor( label_allocation.Top - border_width - padding ) + .5f,
-							border_width,
-							border_color_light
-						)
+					CreateLine(
+						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+						sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+						border_color_light,
+						border_width
 					)
 				);
 
 				// Active background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + 2.f * ( border_width + padding ),
-							label_allocation.Height + 2.f * padding,
-							background_color
-						)
+							label_allocation.Height + 2.f * padding
+						),
+						background_color
 					)
 				);
 			}
 			else {
 				// Inactive background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + border_width + 2.f * padding,
-							label_allocation.Height + 2.f * padding,
-							( index == prelight_tab ) ? background_color_prelight : background_color_dark
-						)
+							label_allocation.Height + 2.f * padding
+						),
+						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
 				);
 			}
@@ -404,14 +356,14 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane background
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
+			CreateBackground(
+				sf::FloatRect(
 					0.f,
 					0.f,
 					child_size.x + 2.f * ( border_width + padding ),
-					child_size.y + 2.f * ( border_width + padding ),
-					background_color
-				)
+					child_size.y + 2.f * ( border_width + padding )
+				),
+				background_color
 			)
 		);
 
@@ -432,15 +384,11 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label top border
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					std::floor( child_size.x + 2.f * ( border_width + padding ) ) - .5f,
-					.5f,
-					std::floor( child_size.x + 4.f * padding + 3.f * border_width + tab_size.x ) - .5f,
-					.5f,
-					border_width,
-					border_color_light
-				)
+			CreateLine(
+				sf::Vector2f( std::floor( child_size.x + 2.f * ( border_width + padding ) ) - .5f, .5f ),
+				sf::Vector2f( std::floor( child_size.x + 4.f * padding + 3.f * border_width + tab_size.x ) - .5f, .5f ),
+				border_color_light,
+				border_width
 			)
 		);
 
@@ -451,71 +399,59 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Right border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-						std::floor( label_allocation.Top - border_width - padding ) + .5f,
-						std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						border_width,
-						border_color_dark
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					border_color_dark,
+					border_width
 				)
 			);
 
 			// Bottom border
 			queue->Add(
-				new sf::Shape(
-					sf::Shape::Line(
-						std::floor( label_allocation.Left - border_width - padding ) + .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f,
-						std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f,
-						border_width,
-						border_color_dark
-					)
+				CreateLine(
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					border_color_dark,
+					border_width
 				)
 			);
 
 			if( index == current_page ) {
 				// Active top border
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Line(
-							std::floor( label_allocation.Left - border_width - padding ) + .5f,
-							std::floor( label_allocation.Top - border_width - padding ) + .5f,
-							std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f,
-							std::floor( label_allocation.Top - border_width - padding ) + .5f,
-							border_width,
-							border_color_light
-						)
+					CreateLine(
+						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+						sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+						border_color_light,
+						border_width
 					)
 				);
 
 				// Active background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - 2.f * border_width - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + 2.f * ( border_width + padding ),
-							label_allocation.Height + 2.f * padding,
-							background_color
-						)
+							label_allocation.Height + 2.f * padding
+						),
+						background_color
 					)
 				);
 			}
 			else {
 				// Inactive background
 				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
+					CreateBackground(
+						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + 2.f * padding,
-							( index == prelight_tab ) ? background_color_prelight : background_color_dark
-						)
+							label_allocation.Height + 2.f * padding
+						),
+						(index == prelight_tab) ? background_color_prelight : background_color_dark
 					)
 				);
 			}

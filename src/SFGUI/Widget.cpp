@@ -156,6 +156,7 @@ void Widget::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
 			m_drawable->Compile();
 		}
 
+		// TODO Useless.
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
 		}
@@ -163,7 +164,10 @@ void Widget::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
 
 	if( IsVisible() ) {
 		if( m_drawable ) {
-			target.Draw( m_drawable );
+			// TODO Cache.
+			sf::Transform transform;
+			transform.Translate( GetAbsolutePosition() );
+			target.Draw( m_drawable, transform );
 		}
 
 		HandleExpose( target );

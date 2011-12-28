@@ -1,6 +1,10 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/ComboBox.hpp>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 namespace sfg {
 namespace eng {
 
@@ -22,25 +26,21 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
 	RenderQueue* queue( new RenderQueue );
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Rectangle(
-				0.f,
-				0.f,
-				combo_box->GetAllocation().Width,
-				combo_box->GetAllocation().Height,
-				background_color
-			)
-		)
+
+	sf::RectangleShape* bg_shape = new sf::RectangleShape(
+		sf::Vector2f( combo_box->GetAllocation().Width, combo_box->GetAllocation().Height )
 	);
-	
+	bg_shape->SetFillColor( background_color );
+	bg_shape->SetOutlineColor( sf::Color::Transparent );
+	queue->Add( bg_shape );
+
 	if( combo_box->GetState() != ComboBox::ACTIVE ) {
 		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
 	}
 	else {
 		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
 	}
-	
+
 	// Labels.
 	if( combo_box->IsPoppedUp() ) {
 		const sf::Vector2f item_size(
@@ -54,17 +54,14 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 		float expanded_height = static_cast<float>( combo_box->GetItemCount() ) * item_size.y;
 
-		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
-					0.f,
-					combo_box->GetAllocation().Height,
-					combo_box->GetAllocation().Width,
-					expanded_height,
-					background_color
-				)
-			)
+		// Popup background.
+		sf::RectangleShape* popup_bg_shape = new sf::RectangleShape(
+			sf::Vector2f( combo_box->GetAllocation().Width, expanded_height )
 		);
+		popup_bg_shape->SetOutlineColor( sf::Color::Transparent );
+		popup_bg_shape->SetFillColor( background_color );
+		popup_bg_shape->SetPosition( 0.f, combo_box->GetAllocation().Height );
+		queue->Add( popup_bg_shape );
 
 		for( ComboBox::IndexType item_index = 0; item_index < combo_box->GetItemCount(); ++item_index ) {
 			if( combo_box->GetItem( item_index ).GetSize() == 0 ) {
@@ -72,17 +69,13 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			}
 
 			if( item_index == combo_box->GetHighlightedItem() ) {
-				queue->Add(
-					new sf::Shape(
-						sf::Shape::Rectangle(
-							std::floor( item_position.x ),
-							std::floor( item_position.y ),
-							std::floor( item_size.x ),
-							std::floor( item_size.y ),
-							highlighted_color
-						)
-					)
+				// Highlighted item background.
+				sf::RectangleShape* hi_bg_shape = new sf::RectangleShape(
+					sf::Vector2f( std::floor( item_size.x ), std::floor( item_size.y ) )
 				);
+				hi_bg_shape->SetOutlineColor( sf::Color::Transparent );
+				hi_bg_shape->SetFillColor( highlighted_color );
+				queue->Add( hi_bg_shape );
 			}
 			
 			sf::Text* text( new sf::Text( combo_box->GetItem( item_index ), font, font_size ) );
@@ -106,17 +99,18 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		queue->Add( text );
 	}
 		
-	sf::Shape* shape( new sf::Shape() );
-	shape->EnableFill( true );
-	shape->EnableOutline( false );
-	shape->AddPoint( GetLineHeight( font, font_size ) / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
-	shape->AddPoint( GetLineHeight( font, font_size ) * 3.f / 4.f, GetLineHeight( font, font_size ) / 4.f, arrow_color );
-	shape->AddPoint( GetLineHeight( font, font_size ) / 2.f, GetLineHeight( font, font_size ) * 3.f / 4.f, arrow_color );
-	shape->SetPosition(
+	// Arrow.
+	sf::ConvexShape* arrow_shape = new sf::ConvexShape( 3 );
+	arrow_shape->SetFillColor( arrow_color );
+	arrow_shape->SetOutlineColor( sf::Color::Transparent );
+	arrow_shape->SetPoint( 0, sf::Vector2f( GetLineHeight( font, font_size ) / 4.f, GetLineHeight( font, font_size ) / 4.f ) );
+	arrow_shape->SetPoint( 1, sf::Vector2f( GetLineHeight( font, font_size ) * 3.f / 4.f, GetLineHeight( font, font_size ) / 4.f ) );
+	arrow_shape->SetPoint( 2, sf::Vector2f( GetLineHeight( font, font_size ) / 2.f, GetLineHeight( font, font_size ) * 3.f / 4.f ) );
+	arrow_shape->SetPosition(
 		(combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f) + combo_box->GetAllocation().Width - padding - GetLineHeight( font, font_size ),
 		(combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f) + padding
 	);
-	queue->Add( shape );
+	queue->Add( arrow_shape );
 
 	return queue;
 }

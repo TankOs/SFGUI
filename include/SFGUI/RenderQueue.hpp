@@ -1,12 +1,17 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFML/Graphics/Shape.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Text.hpp>
+
+#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/OpenGL.hpp>
 #include <vector>
 #include <SFGUI/SharedPtr.hpp>
+
+namespace sf {
+class Shape;
+class Sprite;
+class Text;
+}
 
 namespace sfg {
 
@@ -61,7 +66,7 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		/** Set position of the drawable.
 		 * @param position Position.
 		 */
-		void SetPosition( const sf::Vector2f& position );
+		void SetPosition( const sf::Vector2f& position ); // TODO Remove.
 
 		/** Compiles AABBs.
 		 */
@@ -118,9 +123,9 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 	protected:
 		/** Render.
 		 * @param target SFML render target.
-		 * @param renderer SFML renderer object.
+		 * @param states SFML rendering states.
 		 */
-		void Render( sf::RenderTarget& target, sf::Renderer& renderer ) const;
+		void Draw( sf::RenderTarget& target, sf::RenderStates states ) const;
 
 	private:
 		DrawablesVector m_children;

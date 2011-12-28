@@ -24,28 +24,28 @@ RenderQueue* BREW::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	if( orientation == Scale::HORIZONTAL ) {
 		// Trough
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
+			CreateBackground(
+				sf::FloatRect(
 					slider_rect.Width / 2.f,
 					( scale->GetAllocation().Height - trough_thickness ) / 2.f,
 					scale->GetAllocation().Width - slider_rect.Width,
-					trough_thickness,
-					trough_color
-				)
+					trough_thickness
+				),
+				trough_color
 			)
 		);
 	}
 	else {
 		// Trough
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Rectangle(
+			CreateBackground(
+				sf::FloatRect(
 					( scale->GetAllocation().Width - trough_thickness ) / 2.f,
 					slider_rect.Height / 2.f,
 					trough_thickness,
-					scale->GetAllocation().Height - slider_rect.Height,
-					trough_color
-				)
+					scale->GetAllocation().Height - slider_rect.Height
+				),
+				trough_color
 			)
 		);
 	}

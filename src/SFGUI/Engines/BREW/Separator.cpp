@@ -15,55 +15,39 @@ RenderQueue* BREW::CreateSeparatorDrawable( SharedPtr<const Separator> separator
 
 	if( separator->GetOrientation() == Separator::HORIZONTAL ) {
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					.5f,
-					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + .5f,
-					std::floor( separator->GetAllocation().Width - .5f ) + .5f,
-					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + .5f,
-					1.f,
-					color_dark
-				)
+			CreateLine(
+				sf::Vector2f( .5f, std::floor( separator->GetAllocation().Height / 2.f - .5f ) + .5f ),
+				sf::Vector2f( std::floor( separator->GetAllocation().Width - .5f ) + .5f, std::floor( separator->GetAllocation().Height / 2.f - .5f ) + .5f ),
+				color_dark,
+				1.f
 			)
 		);
 
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					.5f,
-					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + 1.5f,
-					std::floor( separator->GetAllocation().Width - .5f ) + .5f,
-					std::floor( separator->GetAllocation().Height / 2.f - .5f ) + 1.5f,
-					1.f,
-					color_light
-				)
+			CreateLine(
+				sf::Vector2f( .5f, std::floor( separator->GetAllocation().Height / 2.f - .5f ) + 1.5f ),
+				sf::Vector2f( std::floor( separator->GetAllocation().Width - .5f ) + .5f, std::floor( separator->GetAllocation().Height / 2.f - .5f ) + 1.5f ),
+				color_light,
+				1.f
 			)
 		);
 	}
 	else {
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + .5f,
-					.5f,
-					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + .5f,
-					std::floor( separator->GetAllocation().Height - .5f ) + .5f,
-					1.f,
-					color_dark
-				)
+			CreateLine(
+				sf::Vector2f( std::floor( separator->GetAllocation().Width / 2.f - .5f ) + .5f, .5f ),
+				sf::Vector2f( std::floor( separator->GetAllocation().Width / 2.f - .5f ) + .5f, std::floor( separator->GetAllocation().Height - .5f ) + .5f ),
+				color_dark,
+				1.f
 			)
 		);
 
 		queue->Add(
-			new sf::Shape(
-				sf::Shape::Line(
-					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + 1.5f,
-					.5f,
-					std::floor( separator->GetAllocation().Width / 2.f - .5f ) + 1.5f,
-					std::floor( separator->GetAllocation().Height - .5f ) + .5f,
-					1.f,
-					color_light
-				)
+			CreateLine(
+				sf::Vector2f( std::floor( separator->GetAllocation().Width / 2.f - .5f ) + 1.5f, .5f ),
+				sf::Vector2f( std::floor( separator->GetAllocation().Width / 2.f - .5f ) + 1.5f, std::floor( separator->GetAllocation().Height - .5f ) + .5f ),
+				color_light,
+				1.f
 			)
 		);
 	}

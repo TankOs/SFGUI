@@ -1,6 +1,9 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Entry.hpp>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 namespace sfg {
 namespace eng {
 
@@ -21,16 +24,13 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 
 	RenderQueue* queue( new RenderQueue );
 
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Rectangle(
-				0.f, 0.f,
-				entry->GetAllocation().Width,
-				entry->GetAllocation().Height,
-				background_color
-			)
-		)
+	// Background.
+	sf::RectangleShape* bg_shape = new sf::RectangleShape(
+		sf::Vector2f( entry->GetAllocation().Width, entry->GetAllocation().Height )
 	);
+	bg_shape->SetOutlineColor( sf::Color::Transparent );
+	bg_shape->SetFillColor( background_color );
+	queue->Add( bg_shape );
 
 	queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().Width, entry->GetAllocation().Height ), border_width, border_color_dark, border_color_light) );
 
@@ -51,11 +51,13 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 		// Get metrics.
 		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
 
-		sf::Sprite* vis_cursor( new sf::Sprite() );
-		vis_cursor->SetPosition( metrics.x + text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
-		vis_cursor->Resize( cursor_thickness, line_height );
-		vis_cursor->SetColor( cursor_color );
-		queue->Add( vis_cursor );
+		sf::RectangleShape* cursor_shape = new sf::RectangleShape(
+			sf::Vector2f( cursor_thickness, line_height )
+		);
+		cursor_shape->SetPosition( metrics.x + text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
+		cursor_shape->SetOutlineColor( sf::Color::Transparent );
+		cursor_shape->SetFillColor( cursor_color );
+		queue->Add( cursor_shape );
 	}
 
 	return queue;

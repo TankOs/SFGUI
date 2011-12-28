@@ -1,6 +1,9 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Button.hpp>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Text.hpp>
+
 namespace sfg {
 namespace eng {
 
@@ -20,18 +23,16 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 
 	RenderQueue* queue( new RenderQueue );
 
-	queue->Add(
-		new sf::Shape(
-			sf::Shape::Rectangle(
-				0.f,
-				0.f,
-				button->GetAllocation().Width,
-				button->GetAllocation().Height,
-				background_color
-			)
-		)
+	// Background.
+	sf::RectangleShape* rect_shape = new sf::RectangleShape(
+		sf::Vector2f( button->GetAllocation().Width, button->GetAllocation().Height )
 	);
+	rect_shape->SetOutlineColor( sf::Color::Transparent );
+	rect_shape->SetFillColor( background_color );
 
+	queue->Add( rect_shape );
+
+	// Border.
 	if( button->GetState() != Button::ACTIVE ) {
 		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
 	}

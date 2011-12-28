@@ -1,6 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Image.hpp>
 
+#include <SFML/Graphics/Sprite.hpp>
+
 namespace sfg {
 namespace eng {
 

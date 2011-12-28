@@ -1,6 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Label.hpp>
 
+#include <SFML/Graphics/Text.hpp>
+
 namespace sfg {
 namespace eng {
 

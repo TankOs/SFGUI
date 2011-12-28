@@ -61,8 +61,9 @@ class SFGUI_API CullingTarget {
 
 		/** Draw a RenderQueue
 		 * @param queue RenderQueue.
+		 * @param states SFML rendering states.
 		 */
-		void Draw( RenderQueue* queue );
+		void Draw( RenderQueue* queue, const sf::RenderStates& states = sf::RenderStates() );
 
 		/** Enable/Disable culling.
 		 * @param enable true to enable culling, false to disable (default: true);
@@ -79,11 +80,12 @@ class SFGUI_API CullingTarget {
 			sf::IntRect aabb;
 		};
 
-		typedef std::vector<RenderQueue*> FrameBuffer;
+		typedef std::pair<RenderQueue*, sf::RenderStates> FrameBufferEntry;
+		typedef std::vector<FrameBufferEntry> FrameBuffer;
 		typedef std::map<int, FrameBuffer*> LayerBuffer;
 
 		void UpdateView();
-		void AddToFrame( RenderQueue* queue );
+		void AddToFrame( RenderQueue* queue, const sf::RenderStates& states );
 
 		LayerBuffer m_layer_buffer;
 		FrameBuffer m_frame_buffer;

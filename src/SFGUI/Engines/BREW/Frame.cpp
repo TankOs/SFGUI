@@ -1,6 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Frame.hpp>
 
+#include <SFML/Graphics/Text.hpp>
+
 namespace sfg {
 namespace eng {
 
@@ -23,82 +25,58 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Bottom
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				0.f + .5f,
-				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
-				frame->GetAllocation().Width + .5f,
-				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
-				border_width,
-				border_color_light
-			)
+		CreateLine(
+			sf::Vector2f( 0.f + .5f, std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f ),
+			sf::Vector2f( frame->GetAllocation().Width + .5f, std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f ),
+			border_color_light,
+			border_width
 		)
 	);
 
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				0.f + .5f,
-				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
-				frame->GetAllocation().Width - border_width + .5f,
-				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
-				border_width,
-				border_color_dark
-			)
+		CreateLine(
+			sf::Vector2f( 0.f + .5f, std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f ),
+			sf::Vector2f( frame->GetAllocation().Width - border_width + .5f, std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f ),
+			border_color_dark,
+			border_width
 		)
 	);
 
 	// Left
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				0.f + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				0.f + .5f,
-				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
-				border_width,
-				border_color_dark
-			)
+		CreateLine(
+			sf::Vector2f( 0.f + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			sf::Vector2f( 0.f + .5f, std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f ),
+			border_color_dark,
+			border_width
 		)
 	);
 
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				border_width + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				border_width + .5f,
-				std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f,
-				border_width,
-				border_color_light
-			)
+		CreateLine(
+			sf::Vector2f( border_width + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			sf::Vector2f( border_width + .5f, std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f ),
+			border_color_light,
+			border_width
 		)
 	);
 
 	// Right
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
-				border_width,
-				border_color_light
-			)
+		CreateLine(
+			sf::Vector2f( std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			sf::Vector2f( std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f, std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f ),
+			border_color_light,
+			border_width
 		)
 	);
 
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( frame->GetAllocation().Width - 2.f * border_width + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Width - 2.f * border_width + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f,
-				border_width,
-				border_color_dark
-			)
+		CreateLine(
+			sf::Vector2f( std::floor( frame->GetAllocation().Width - 2.f * border_width + .5f ) + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			sf::Vector2f( std::floor( frame->GetAllocation().Width - 2.f * border_width + .5f ) + .5f, std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f ),
+			border_color_dark,
+			border_width
 		)
 	);
 
@@ -122,55 +100,39 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Top Left
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				0.f + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( label_start_x + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				border_width,
-				border_color_dark
-			)
+		CreateLine(
+			sf::Vector2f( 0.f + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			sf::Vector2f( std::floor( label_start_x + .5f ) + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			border_color_dark,
+			border_width
 		)
 	);
 
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				border_width + .5f,
-				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
-				std::floor( label_start_x + .5f ) + .5f,
-				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
-				border_width,
-				border_color_light
-			)
+		CreateLine(
+			sf::Vector2f( border_width + .5f, std::floor( line_height / 2.f + border_width + .5f ) + .5f ),
+			sf::Vector2f( std::floor( label_start_x + .5f ) + .5f, std::floor( line_height / 2.f + border_width + .5f ) + .5f ),
+			border_color_light,
+			border_width
 		)
 	);
 
 	// Top Right
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( label_end_x + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Width + .5f ) + .5f,
-				std::floor( line_height / 2.f + .5f ) + .5f,
-				border_width,
-				border_color_dark
-			)
+		CreateLine(
+			sf::Vector2f( std::floor( label_end_x + .5f ) + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			sf::Vector2f( std::floor( frame->GetAllocation().Width + .5f ) + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+			border_color_dark,
+			border_width
 		)
 	);
 
 	queue->Add(
-		new sf::Shape(
-			sf::Shape::Line(
-				std::floor( label_end_x + .5f ) + .5f,
-				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
-				std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f,
-				std::floor( line_height / 2.f + border_width + .5f ) + .5f,
-				border_width,
-				border_color_light
-			)
+		CreateLine(
+			sf::Vector2f( std::floor( label_end_x + .5f ) + .5f, std::floor( line_height / 2.f + border_width + .5f ) + .5f ),
+			sf::Vector2f( std::floor( frame->GetAllocation().Width - border_width + .5f ) + .5f, std::floor( line_height / 2.f + border_width + .5f ) + .5f ),
+			border_color_light,
+			border_width
 		)
 	);
 
