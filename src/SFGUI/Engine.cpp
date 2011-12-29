@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <sstream>
+#include <cmath>
 
 namespace sf {
 std::ostream& operator<<( std::ostream& stream, const Color& color ) {

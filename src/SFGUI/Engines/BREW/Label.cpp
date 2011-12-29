@@ -2,6 +2,7 @@
 #include <SFGUI/Label.hpp>
 
 #include <SFML/Graphics/Text.hpp>
+#include <cmath>
 
 namespace sfg {
 namespace eng {

@@ -1,4 +1,5 @@
 #include <SFGUI/Viewport.hpp>
+#include <cmath>
 
 namespace sfg {
 

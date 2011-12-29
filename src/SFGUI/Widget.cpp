@@ -1,6 +1,7 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Container.hpp>
 #include <SFGUI/Context.hpp>
+#include <cmath>
 
 namespace sfg {
 
@@ -156,7 +157,6 @@ void Widget::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
 			m_drawable->Compile();
 		}
 
-		// TODO Useless.
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
 		}
@@ -164,10 +164,7 @@ void Widget::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
 
 	if( IsVisible() ) {
 		if( m_drawable ) {
-			// TODO Cache.
-			sf::Transform transform;
-			transform.Translate( GetAbsolutePosition() );
-			target.Draw( m_drawable, transform );
+			target.Draw( m_drawable );
 		}
 
 		HandleExpose( target );

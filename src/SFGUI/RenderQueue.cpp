@@ -60,6 +60,23 @@ void RenderQueue::Add( sf::Text* text ) {
 	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( text, text->GetGlobalBounds() ) );
 }
 
+void RenderQueue::Add( sf::VertexArray* array ) {
+	sf::FloatRect aabb( .0f, .0f, .0f, .0f );
+
+	unsigned int points_count = array->GetVertexCount();
+
+	for( unsigned int point_index = 0; point_index < points_count; ++point_index ) {
+		const sf::Vector2f& point = (*array)[point_index].Position;
+
+		aabb.Left = std::min( point.x, aabb.Left );
+		aabb.Top = std::min( point.y, aabb.Top );
+		aabb.Width = std::max( point.x - aabb.Left, aabb.Width );
+		aabb.Height = std::max( point.y - aabb.Top, aabb.Height );
+	}
+
+	m_children.push_back( std::pair<sf::Drawable*, sf::FloatRect>( array, aabb ) );
+}
+
 void RenderQueue::Add( RenderQueue* queue ) {
 	DrawablesVector::iterator iter( queue->m_children.begin() );
 	DrawablesVector::iterator iter_end( queue->m_children.end() );
@@ -144,12 +161,16 @@ void RenderQueue::Draw( sf::RenderTarget& target, sf::RenderStates states ) cons
 	*/
 }
 
-void RenderQueue::SetPosition( const sf::Vector2f& /*position*/ ) { // TODO Remove.
+const sf::Vector2f& RenderQueue::GetPosition() const {
+	return m_position;
+}
+
+void RenderQueue::SetPosition( const sf::Vector2f& position ) {
 	m_display_list_compiled = false;
 
 	m_checked_view_id = 0;
 
-	//sf::Drawable::SetPosition( position ); TODO
+	m_position = position;
 }
 
 unsigned int RenderQueue::GetCheckedViewID() const {

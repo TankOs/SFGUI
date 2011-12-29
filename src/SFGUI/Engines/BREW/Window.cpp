@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <cmath>
 
 namespace sfg {
 namespace eng {

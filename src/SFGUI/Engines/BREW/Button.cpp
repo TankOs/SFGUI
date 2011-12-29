@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <cmath>
 
 namespace sfg {
 namespace eng {

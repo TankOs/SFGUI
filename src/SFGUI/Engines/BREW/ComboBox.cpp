@@ -4,6 +4,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -58,6 +59,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		sf::RectangleShape* popup_bg_shape = new sf::RectangleShape(
 			sf::Vector2f( combo_box->GetAllocation().Width, expanded_height )
 		);
+
 		popup_bg_shape->SetOutlineColor( sf::Color::Transparent );
 		popup_bg_shape->SetFillColor( background_color );
 		popup_bg_shape->SetPosition( 0.f, combo_box->GetAllocation().Height );
@@ -71,13 +73,15 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			if( item_index == combo_box->GetHighlightedItem() ) {
 				// Highlighted item background.
 				sf::RectangleShape* hi_bg_shape = new sf::RectangleShape(
-					sf::Vector2f( std::floor( item_size.x ), std::floor( item_size.y ) )
+					sf::Vector2f( std::floor( item_size.x ), std::floor( item_size.y ) - .5f )
 				);
+
+				hi_bg_shape->SetPosition( item_position );
 				hi_bg_shape->SetOutlineColor( sf::Color::Transparent );
 				hi_bg_shape->SetFillColor( highlighted_color );
 				queue->Add( hi_bg_shape );
 			}
-			
+
 			sf::Text* text( new sf::Text( combo_box->GetItem( item_index ), font, font_size ) );
 			text->SetPosition( std::floor( item_position.x + padding ), std::floor( item_position.y + padding ) );
 			text->SetColor( color );
@@ -98,7 +102,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		text->SetColor( color );
 		queue->Add( text );
 	}
-		
+
 	// Arrow.
 	sf::ConvexShape* arrow_shape = new sf::ConvexShape( 3 );
 	arrow_shape->SetFillColor( arrow_color );

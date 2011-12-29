@@ -1,7 +1,5 @@
 #include <SFGUI/CullingTarget.hpp>
 
-#include <algorithm>
-
 namespace sfg {
 
 CullingTarget::CullingTarget( sf::RenderTarget& target ) :
@@ -131,10 +129,10 @@ void CullingTarget::Cull( bool enable ) {
 	m_cull = enable;
 }
 
-void CullingTarget::Draw( RenderQueue* queue, const sf::RenderStates& states ) {
+void CullingTarget::Draw( RenderQueue* queue ) {
 	if( !m_cull ) {
 		queue->SetAssociatedViewID( m_current_view_id );
-		AddToFrame( queue, states );
+		AddToFrame( queue );
 		return;
 	}
 
@@ -145,7 +143,7 @@ void CullingTarget::Draw( RenderQueue* queue, const sf::RenderStates& states ) {
 
 	if( queue->GetCheckedViewID() == m_current_view_id ) {
 		if( queue->GetCullPass() ) {
-		AddToFrame( queue, states );
+		AddToFrame( queue );
 			m_cull_count.first++;
 			return;
 		}
@@ -155,7 +153,7 @@ void CullingTarget::Draw( RenderQueue* queue, const sf::RenderStates& states ) {
 		}
 	}
 
-	sf::Vector2f position; // TODO: = queue->GetPosition();
+	sf::Vector2f position = queue->GetPosition();
 
 	m_view_aabb.Left -= static_cast<int>( position.x + .5f );
 	m_view_aabb.Top -= static_cast<int>( position.y + .5f );
@@ -188,7 +186,7 @@ void CullingTarget::Draw( RenderQueue* queue, const sf::RenderStates& states ) {
 	queue->SetCheckedViewID( m_current_view_id );
 
 	if( !discard ) {
-		AddToFrame( queue, states );
+		AddToFrame( queue );
 		m_cull_count.first++;
 		queue->SetCullPass( true );
 	}
@@ -198,7 +196,7 @@ void CullingTarget::Draw( RenderQueue* queue, const sf::RenderStates& states ) {
 	}
 }
 
-void CullingTarget::AddToFrame( RenderQueue* queue, const sf::RenderStates& states ) {
+void CullingTarget::AddToFrame( RenderQueue* queue ) {
 	int layer = queue->GetZOrder();
 
 	if( layer != m_current_layer ) {
@@ -212,7 +210,7 @@ void CullingTarget::AddToFrame( RenderQueue* queue, const sf::RenderStates& stat
 		}
 	}
 
-	m_current_frame_buffer->push_back( FrameBufferEntry( queue, states ) );
+	m_current_frame_buffer->push_back( queue );
 }
 
 void CullingTarget::Display() {
@@ -221,20 +219,26 @@ void CullingTarget::Display() {
 	LayerBuffer::const_iterator layer_iter( m_layer_buffer.begin() );
 	LayerBuffer::const_iterator layer_end( m_layer_buffer.end() );
 
+	sf::Transform transform;
+
 	for( ; layer_iter != layer_end; ++layer_iter ) {
 		FrameBuffer* frame_buffer = layer_iter->second;
 
 		std::size_t frame_buffer_size = frame_buffer->size();
 
 		for( std::size_t index = 0; index < frame_buffer_size; ++index ) {
-			unsigned int associated_view_id = (*frame_buffer)[index].first->GetAssociatedViewID();
+			unsigned int associated_view_id = (*frame_buffer)[index]->GetAssociatedViewID();
 
 			if( associated_view_id != current_view_id ) {
 				current_view_id = associated_view_id;
 				m_real_target.SetView( m_view_map[current_view_id] );
 			}
 
-			m_real_target.Draw( *( (*frame_buffer)[index].first ), (*frame_buffer)[index].second );
+			// TODO: Cache somewhere around here...
+			transform = sf::Transform::Identity;
+			transform.Translate( (*frame_buffer)[index]->GetPosition() );
+
+			m_real_target.Draw( *( (*frame_buffer)[index] ), transform );
 		}
 
 		frame_buffer->clear();

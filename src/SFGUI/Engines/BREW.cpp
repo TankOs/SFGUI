@@ -19,6 +19,7 @@
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -108,10 +109,10 @@ BREW::BREW() :
 	SetProperty( "ProgressBar", "BarBorderWidth", 1.f );
 
 	// Separator-specific.
-	SetProperty( "Separator", "Color", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "Separator", "Color", sf::Color( 0x75, 0x77, 0x72 ) );
 
 	// Frame-specific.
-	SetProperty( "Frame", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "Frame", "BorderColor", sf::Color( 0x75, 0x77, 0x72 ) );
 	SetProperty( "Frame", "Padding", 7.f );
 	SetProperty( "Frame", "LabelPadding", 5.f );
 
@@ -124,9 +125,8 @@ BREW::BREW() :
 	// Spinner-specific.
 	SetProperty( "Spinner", "CycleDuration", 800.f );
 	SetProperty( "Spinner", "Steps", 13 );
-	SetProperty( "Spinner", "Fade", 5.f );
 	SetProperty( "Spinner", "StoppedAlpha", 47 );
-	
+
 	// ComboBox-specific.
 	SetProperty( "ComboBox", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "ComboBox", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
@@ -148,10 +148,10 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	border_width = std::floor( border_width + .5f );
 
 	RenderQueue* queue( new RenderQueue );
-	queue->Add( CreateEdgedLine( TOP, sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top ), light_color, border_width ) );
-	queue->Add( CreateEdgedLine( RIGHT, sf::Vector2f( rect.Left + rect.Width, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), dark_color, border_width ) );
-	queue->Add( CreateEdgedLine( BOTTOM, sf::Vector2f( rect.Left, rect.Top + rect.Height ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), dark_color, border_width ) );
-	queue->Add( CreateEdgedLine( LEFT, sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left, rect.Top + rect.Height ), light_color, border_width ) );
+	queue->Add( CreateLine( TOP, sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top ), light_color, border_width ) );
+	queue->Add( CreateLine( RIGHT, sf::Vector2f( rect.Left + rect.Width, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), dark_color, border_width ) );
+	queue->Add( CreateLine( BOTTOM, sf::Vector2f( rect.Left, rect.Top + rect.Height ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), dark_color, border_width ) );
+	queue->Add( CreateLine( LEFT, sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left, rect.Top + rect.Height ), light_color, border_width ) );
 
 	return queue;
 }
@@ -206,18 +206,7 @@ sf::Shape* BREW::CreateBackground( const sf::FloatRect& rect, const sf::Color& c
 	return shape;
 }
 
-sf::Shape* BREW::CreateLine( const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness ) {
-	sf::ConvexShape* shape = new sf::ConvexShape( 2 );
-	shape->SetPoint( 0, from );
-	shape->SetPoint( 1, to );
-	shape->SetOutlineColor( color );
-	shape->SetOutlineThickness( thickness );
-	shape->SetFillColor( sf::Color::Transparent );
-
-	return shape;
-}
-
-sf::Shape* BREW::CreateEdgedLine( Edge where, const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness ) {
+sf::Shape* BREW::CreateLine( Edge where, const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness ) {
 	if( where == RIGHT ) {
 		sf::ConvexShape* right( new sf::ConvexShape( 4 ) );
 		right->SetFillColor( color );

@@ -46,8 +46,7 @@ class SFGUI_API BREW : public Engine {
 		};
 
 		static sf::Shape* CreateBackground( const sf::FloatRect& rect, const sf::Color& color );
-		static sf::Shape* CreateLine( const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness = 1.f );
-		static sf::Shape* CreateEdgedLine( Edge where, const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness = 1.f );
+		static sf::Shape* CreateLine( Edge where, const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness = 1.f );
 
 		static RenderQueue* CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );
 		static RenderQueue* CreateSlider( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color );

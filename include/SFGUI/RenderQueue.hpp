@@ -11,6 +11,7 @@ namespace sf {
 class Shape;
 class Sprite;
 class Text;
+class VertexArray;
 }
 
 namespace sfg {
@@ -47,6 +48,12 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		 */
 		void Add( sf::Text* text );
 
+		/** Add VertexArray to the queue.
+		 * Keep in mind that the queue takes ownership of the VertexArray.
+		 * @param array VertexArray to add and manage.
+		 */
+		void Add( sf::VertexArray* array );
+
 		/** Add queue to this queue.
 		 * Keep in mind that this queue takes ownership of the queue.
 		 * @param queue Queue to add and manage.
@@ -63,10 +70,15 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 		 */
 		std::size_t GetAABBSize() const;
 
+		/** Get position of the drawable.
+		 * @return Position of the drawable.
+		 */
+		 const sf::Vector2f& GetPosition() const;
+
 		/** Set position of the drawable.
 		 * @param position Position.
 		 */
-		void SetPosition( const sf::Vector2f& position ); // TODO Remove.
+		void SetPosition( const sf::Vector2f& position );
 
 		/** Compiles AABBs.
 		 */
@@ -135,6 +147,8 @@ class SFGUI_API RenderQueue : public sf::Drawable {
 
 		sf::IntRect* m_compiled_aabbs;
 		std::size_t m_compiled_aabbs_size;
+
+		sf::Vector2f m_position;
 
 		int m_z_order;
 

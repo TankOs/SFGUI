@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/ProgressBar.hpp>
+#include <cmath>
 
 namespace sfg {
 namespace eng {

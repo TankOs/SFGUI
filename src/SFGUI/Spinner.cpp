@@ -2,7 +2,7 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
-#include <SFML/Graphics/ConvexShape.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
 
 namespace sfg {
 
@@ -60,13 +60,15 @@ void Spinner::HandleExpose( CullingTarget& /*target*/ ) const {
 	if( m_started && ( static_cast<float>( m_clock.GetElapsedTime() ) > ( duration / steps ) ) ) {
 		m_clock.Reset();
 
-		// Since sf::Drawable does not force its derivates to implement anything
-		// useful, we have to reinterpret_cast here. Thank god we know we only have
-		// ConvexShape objects.
-		std::size_t count( m_renderqueue->GetDrawables().size() );
+		// We built it... so we can make some useful assumptions.
+		sf::VertexArray* array = static_cast<sf::VertexArray*>( m_renderqueue->GetDrawables()[0].first );
 
-		for( std::size_t index = 0; index < count; ++index ) {
-			reinterpret_cast<sf::ConvexShape*>( m_renderqueue->GetDrawables()[index].first )->Rotate( 360.f / steps );
+		// Epic variable name
+		int alpha_delta = static_cast<int>( 255.f / ( steps - 1.f ) );
+
+		for( std::size_t index = 0; index < array->GetVertexCount(); ++index ) {
+			// We exploit integer wraparound here ;)
+			(*array)[index].Color.a = static_cast<sf::Uint8>( (*array)[index].Color.a - alpha_delta );
 		}
 
 		m_renderqueue->Compile();

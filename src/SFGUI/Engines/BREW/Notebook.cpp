@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Notebook.hpp>
+#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -67,6 +68,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		// First tab label left border
 		queue->Add(
 			CreateLine(
+				LEFT,
 				sf::Vector2f( .5f, .5f ),
 				sf::Vector2f( .5f, std::floor( tab_size.y + 3.f * border_width + 2.f * padding ) - .5f ),
 				border_color_light,
@@ -82,6 +84,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Top border
 			queue->Add(
 				CreateLine(
+					TOP,
 					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 					border_color_light,
@@ -92,6 +95,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Right border
 			queue->Add(
 				CreateLine(
+					RIGHT,
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + 2.f * border_width + padding ) - .5f ),
 					border_color_dark,
@@ -103,6 +107,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 				// Active left border
 				queue->Add(
 					CreateLine(
+						LEFT,
 						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + 2.f * border_width + padding ) - .5f ),
 						border_color_light,
@@ -116,7 +121,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
-							label_allocation.Width + 2.f * padding,
+							label_allocation.Width + 2.f * padding - border_width,
 							label_allocation.Height + 2.f * ( border_width + padding )
 						),
 						background_color
@@ -130,8 +135,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
-							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + border_width + 2.f * padding
+							label_allocation.Width + 2.f * padding - border_width,
+							label_allocation.Height + border_width + 2.f * padding - border_width
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -173,8 +178,9 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		// First tab label left border
 		queue->Add(
 			CreateLine(
-				sf::Vector2f( .5f, std::floor( child_size.y + 2.f * ( border_width + padding ) ) - .5f ),
-				sf::Vector2f( .5f, std::floor( child_size.y + 2.f * ( border_width + padding ) + tab_size.y + 2.f * ( border_width + padding ) ) - .5f ),
+				LEFT,
+				sf::Vector2f( .5f, std::floor( child_size.y + 2.f * ( border_width + padding ) ) - .5f - border_width ),
+				sf::Vector2f( .5f, std::floor( child_size.y + 2.f * ( border_width + padding ) + tab_size.y + 2.f * ( border_width + padding ) ) - .5f - border_width ),
 				border_color_light,
 				border_width
 			)
@@ -188,7 +194,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Bottom border
 			queue->Add(
 				CreateLine(
-					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+					BOTTOM,
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					border_color_dark,
 					border_width
@@ -198,6 +205,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Right border
 			queue->Add(
 				CreateLine(
+					RIGHT,
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					border_color_dark,
@@ -209,8 +217,9 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 				// Active left border
 				queue->Add(
 					CreateLine(
+						LEFT,
 						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
-						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
+						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + padding ) - .5f ),
 						border_color_light,
 						border_width
 					)
@@ -221,8 +230,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 					CreateBackground(
 						sf::FloatRect(
 							label_allocation.Left - padding,
-							label_allocation.Top - padding - 2.f * border_width,
-							label_allocation.Width + 2.f * padding,
+							label_allocation.Top - padding - 3.f * border_width,
+							label_allocation.Width + 2.f * padding - border_width,
 							label_allocation.Height + 2.f * ( border_width + padding )
 						),
 						background_color
@@ -236,8 +245,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
-							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + 2.f * padding
+							label_allocation.Width + 2.f * padding - border_width,
+							label_allocation.Height + 2.f * padding - border_width
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -279,6 +288,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		// First tab label top border
 		queue->Add(
 			CreateLine(
+				TOP,
 				sf::Vector2f( .5f, .5f ),
 				sf::Vector2f( std::floor( tab_size.x + 2.f * padding + 3.f * border_width ) - .5f, .5f ),
 				border_color_light,
@@ -294,7 +304,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Left border
 			queue->Add(
 				CreateLine(
-					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					LEFT,
+					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - 2.f * border_width - padding ) + .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					border_color_light,
 					border_width
@@ -304,6 +315,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Bottom border
 			queue->Add(
 				CreateLine(
+					BOTTOM,
 					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					border_color_dark,
@@ -315,6 +327,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 				// Active top border
 				queue->Add(
 					CreateLine(
+						TOP,
 						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 						sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 						border_color_light,
@@ -329,7 +342,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
 							label_allocation.Width + 2.f * ( border_width + padding ),
-							label_allocation.Height + 2.f * padding
+							label_allocation.Height + 2.f * padding - border_width
 						),
 						background_color
 					)
@@ -342,8 +355,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
-							label_allocation.Width + border_width + 2.f * padding,
-							label_allocation.Height + 2.f * padding
+							label_allocation.Width + 2.f * padding,
+							label_allocation.Height + 2.f * padding - border_width
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -385,6 +398,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		// First tab label top border
 		queue->Add(
 			CreateLine(
+				TOP,
 				sf::Vector2f( std::floor( child_size.x + 2.f * ( border_width + padding ) ) - .5f, .5f ),
 				sf::Vector2f( std::floor( child_size.x + 4.f * padding + 3.f * border_width + tab_size.x ) - .5f, .5f ),
 				border_color_light,
@@ -400,7 +414,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Right border
 			queue->Add(
 				CreateLine(
-					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+					RIGHT,
+					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - 2.f * border_width - padding ) + .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					border_color_dark,
 					border_width
@@ -410,6 +425,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			// Bottom border
 			queue->Add(
 				CreateLine(
+					BOTTOM,
 					sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding ) - .5f, std::floor( label_allocation.Top + label_allocation.Height + border_width + padding ) - .5f ),
 					border_color_dark,
@@ -421,8 +437,9 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 				// Active top border
 				queue->Add(
 					CreateLine(
+						TOP,
 						sf::Vector2f( std::floor( label_allocation.Left - border_width - padding ) + .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
-						sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + border_width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
+						sf::Vector2f( std::floor( label_allocation.Left + label_allocation.Width + padding ) - .5f, std::floor( label_allocation.Top - border_width - padding ) + .5f ),
 						border_color_light,
 						border_width
 					)
@@ -434,8 +451,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 						sf::FloatRect(
 							label_allocation.Left - 2.f * border_width - padding,
 							label_allocation.Top - padding,
-							label_allocation.Width + 2.f * ( border_width + padding ),
-							label_allocation.Height + 2.f * padding
+							label_allocation.Width + 2.f * padding + border_width,
+							label_allocation.Height + 2.f * padding - border_width
 						),
 						background_color
 					)
@@ -448,8 +465,8 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
-							label_allocation.Width + 2.f * padding,
-							label_allocation.Height + 2.f * padding
+							label_allocation.Width + 2.f * padding - border_width,
+							label_allocation.Height + 2.f * padding - border_width
 						),
 						(index == prelight_tab) ? background_color_prelight : background_color_dark
 					)
