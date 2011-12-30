@@ -37,11 +37,11 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 		float diff( box_size - check_size );
 
 		sf::RectangleShape* check_bg_shape = new sf::RectangleShape(
-			sf::Vector2f( box_size, box_size )
+			sf::Vector2f( check_size - 1.f, check_size - 1.f )
 		);
-		bg_shape->SetOutlineColor( sf::Color::Transparent );
-		bg_shape->SetFillColor( check_color );
-		bg_shape->SetPosition( diff / 2.f, check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f );
+		check_bg_shape->SetOutlineColor( sf::Color::Transparent );
+		check_bg_shape->SetFillColor( check_color );
+		check_bg_shape->SetPosition( box_size / 2 - check_size / 2, check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f );
 		queue->Add( check_bg_shape );
 	}
 
