@@ -169,6 +169,10 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleAbsolutePositionChange();
 
+		/** Handle parent visibility change.
+		 */
+		virtual void HandleParentVisibilityChange();
+
 		/** Update position of drawable.
 		 */
 		virtual void UpdateDrawablePosition() const;

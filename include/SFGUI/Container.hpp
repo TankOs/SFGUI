@@ -74,6 +74,10 @@ class SFGUI_API Container : public Widget {
 		 */
 		virtual void HandleVisibilityChange();
 
+		/** Handle parent visibility change.
+		 */
+		virtual void HandleParentVisibilityChange();
+
 	private:
 		WidgetsList m_children;
 };

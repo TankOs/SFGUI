@@ -479,6 +479,12 @@ void Widget::HandleVisibilityChange() {
 	}
 }
 
+void Widget::HandleParentVisibilityChange() {
+	if( m_state == PRELIGHT ) {
+		SetState( NORMAL );
+	}
+}
+
 void Widget::HandleAbsolutePositionChange() {
 	UpdateDrawablePosition();
 }
