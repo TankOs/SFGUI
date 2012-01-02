@@ -2,6 +2,8 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <iostream>
+
 namespace sfg {
 
 ScrolledWindow::ScrolledWindow( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) :
@@ -159,6 +161,8 @@ void ScrolledWindow::RecalculateAdjustments() const {
 		v_adjustment->SetPageSize( GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 	}
 
+	RecalculateContentAllocation();
+
 	m_horizontal_scrollbar->Show( IsHorizontalScrollbarVisible() );
 	m_vertical_scrollbar->Show( IsVerticalScrollbarVisible() );
 }
@@ -183,10 +187,10 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	}
 
 	if( IsHorizontalScrollbarVisible() ) {
-		m_content_allocation.Height -= ( m_horizontal_scrollbar->GetRequisition().x + scrollbar_spacing );
+		m_content_allocation.Height -= ( m_horizontal_scrollbar->GetRequisition().y + scrollbar_spacing );
 
 		if( m_placement & BOTTOM ) { // Content placed at Bottom
-			m_content_allocation.Top += ( m_horizontal_scrollbar->GetRequisition().x + scrollbar_spacing );
+			m_content_allocation.Top += ( m_horizontal_scrollbar->GetRequisition().y + scrollbar_spacing );
 		}
 	}
 
@@ -242,14 +246,16 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 
 		GetViewport()->SetAllocation( m_content_allocation );
 	}
+
+	Invalidate();
 }
 
 void ScrolledWindow::HandleAllocationChange( const sf::FloatRect& old_allocation ) {
 	Container::HandleAllocationChange( old_allocation );
 
 	// A parent caused us to move/resize, have to recalculate everything.
-	RecalculateContentAllocation();
 	RecalculateAdjustments();
+	RecalculateContentAllocation();
 
 	Invalidate();
 }
@@ -306,8 +312,9 @@ Viewport::Ptr ScrolledWindow::GetViewport() const {
 void ScrolledWindow::HandleChildInvalidate( const Widget::PtrConst& child ) const {
 	// A child has been invalidated. Update Scrollbars.
 	RecalculateAdjustments();
-	Invalidate();
+	RecalculateContentAllocation();
 	Container::HandleChildInvalidate( child );
+	Invalidate();
 }
 
 const std::string& ScrolledWindow::GetName() const {
