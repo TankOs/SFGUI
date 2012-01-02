@@ -66,7 +66,7 @@ void Spinner::HandleExpose( CullingTarget& /*target*/ ) const {
 		// Epic variable name
 		int alpha_delta = static_cast<int>( 255.f / ( steps - 1.f ) );
 
-		for( std::size_t index = 0; index < array->GetVertexCount(); ++index ) {
+		for( unsigned int index = 0; index < array->GetVertexCount(); ++index ) {
 			// We exploit integer wraparound here ;)
 			(*array)[index].Color.a = static_cast<sf::Uint8>( (*array)[index].Color.a - alpha_delta );
 		}

@@ -10,9 +10,7 @@ ScrolledWindow::ScrolledWindow( const Adjustment::Ptr& horizontal_adjustment, co
 	m_horizontal_scrollbar(),
 	m_vertical_scrollbar(),
 	m_policy( DEFAULT_POLICY ),
-	m_placement( DEFAULT_PLACEMENT ),
-	m_recalc_adjustments( false ),
-	m_recalc_content_allocation( false )
+	m_placement( DEFAULT_PLACEMENT )
 {
 	m_horizontal_scrollbar = Scrollbar::Create( horizontal_adjustment, Scrollbar::HORIZONTAL );
 	m_vertical_scrollbar = Scrollbar::Create( vertical_adjustment, Scrollbar::VERTICAL );
@@ -38,7 +36,7 @@ const Adjustment::Ptr& ScrolledWindow::GetHorizontalAdjustment() const {
 void ScrolledWindow::SetHorizontalAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_horizontal_scrollbar->SetAdjustment( adjustment );
 
-	m_recalc_content_allocation = true;
+	RecalculateContentAllocation();
 	Invalidate();
 }
 
@@ -49,7 +47,7 @@ const Adjustment::Ptr& ScrolledWindow::GetVerticalAdjustment() const {
 void ScrolledWindow::SetVerticalAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_vertical_scrollbar->SetAdjustment( adjustment );
 
-	m_recalc_content_allocation = true;
+	RecalculateContentAllocation();
 	Invalidate();
 }
 
@@ -60,7 +58,7 @@ unsigned char ScrolledWindow::GetScrollbarPolicy() const {
 void ScrolledWindow::SetScrollbarPolicy( unsigned char policy ) {
 	m_policy = policy;
 
-	m_recalc_content_allocation = true;
+	RecalculateContentAllocation();
 	Invalidate();
 }
 
@@ -71,7 +69,7 @@ void ScrolledWindow::SetPlacement( Placement placement ) {
 	) {
 		m_placement = placement;
 
-		m_recalc_content_allocation = true;
+		RecalculateContentAllocation();
 		Invalidate();
 	}
 }
@@ -125,14 +123,6 @@ const sf::FloatRect& ScrolledWindow::GetContentAllocation() const {
 }
 
 RenderQueue* ScrolledWindow::InvalidateImpl() const {
-	if( m_recalc_adjustments ) {
-		RecalculateAdjustments();
-	}
-
-	if( m_recalc_content_allocation ) {
-		RecalculateContentAllocation();
-	}
-
 	return Context::Get().GetEngine().CreateScrolledWindowDrawable( DynamicPointerCast<const ScrolledWindow>( shared_from_this() ) );
 }
 
@@ -168,9 +158,6 @@ void ScrolledWindow::RecalculateAdjustments() const {
 		v_adjustment->SetMajorStep( GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 		v_adjustment->SetPageSize( GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 	}
-
-	m_recalc_adjustments = false;
-	m_recalc_content_allocation = true;
 
 	m_horizontal_scrollbar->Show( IsHorizontalScrollbarVisible() );
 	m_vertical_scrollbar->Show( IsVerticalScrollbarVisible() );
@@ -255,17 +242,15 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 
 		GetViewport()->SetAllocation( m_content_allocation );
 	}
-
-	m_recalc_adjustments = false;
-	m_recalc_content_allocation = false;
 }
 
 void ScrolledWindow::HandleAllocationChange( const sf::FloatRect& old_allocation ) {
 	Container::HandleAllocationChange( old_allocation );
 
 	// A parent caused us to move/resize, have to recalculate everything.
-	m_recalc_adjustments = true;
-	m_recalc_content_allocation = true;
+	RecalculateContentAllocation();
+	RecalculateAdjustments();
+
 	Invalidate();
 }
 
@@ -280,7 +265,7 @@ void ScrolledWindow::HandleAdd( const Widget::Ptr& child ) {
 		return;
 	}
 
-	m_recalc_content_allocation = true;
+	RecalculateContentAllocation();
 	Invalidate();
 }
 
@@ -320,7 +305,7 @@ Viewport::Ptr ScrolledWindow::GetViewport() const {
 
 void ScrolledWindow::HandleChildInvalidate( const Widget::PtrConst& child ) const {
 	// A child has been invalidated. Update Scrollbars.
-	m_recalc_adjustments = true;
+	RecalculateAdjustments();
 	Invalidate();
 	Container::HandleChildInvalidate( child );
 }

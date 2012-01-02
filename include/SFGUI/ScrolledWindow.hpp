@@ -147,10 +147,6 @@ class SFGUI_API ScrolledWindow : public Container {
 
 		unsigned char m_policy;
 		unsigned char m_placement;
-
-		mutable bool m_recalc_adjustments;
-
-		mutable bool m_recalc_content_allocation;
 };
 
 }
