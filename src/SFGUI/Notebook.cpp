@@ -96,13 +96,13 @@ Notebook::IndexType Notebook::PrependPage( const Widget::Ptr& child, const Widge
 }
 
 Notebook::IndexType Notebook::InsertPage( const Widget::Ptr& child, const Widget::Ptr& tab_label, IndexType position ) {
-	child->Show( false );
-
 	if( ( position >= GetPageCount() ) || ( position < 0 ) ) {
 		m_children.push_back( ChildLabelPair( child, tab_label ) );
 
-		Container::Add( child );
-		Container::Add( tab_label );
+		Add( child );
+		Add( tab_label );
+
+		child->Show( false );
 
 		SetCurrentPage( GetCurrentPage() );
 
@@ -111,8 +111,10 @@ Notebook::IndexType Notebook::InsertPage( const Widget::Ptr& child, const Widget
 
 	m_children.insert( m_children.begin() + position, ChildLabelPair( child, tab_label ) );
 
-	Container::Add( child );
-	Container::Add( tab_label );
+	Add( child );
+	Add( tab_label );
+
+	child->Show( false );
 
 	// If the current page was after or at the position of the insertion,
 	// make sure it stays active.

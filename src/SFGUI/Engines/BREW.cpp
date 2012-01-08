@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/RenderQueue.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Entry.hpp>
@@ -126,6 +127,8 @@ BREW::BREW() :
 	SetProperty( "Spinner", "CycleDuration", 800.f );
 	SetProperty( "Spinner", "Steps", 13 );
 	SetProperty( "Spinner", "StoppedAlpha", 47 );
+	SetProperty( "Spinner", "InnerRadius", 8.f );
+	SetProperty( "Spinner", "RodThickness", 3.f );
 
 	// ComboBox-specific.
 	SetProperty( "ComboBox", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
@@ -138,20 +141,49 @@ BREW::BREW() :
 }
 
 RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
-	sf::FloatRect rounded_rect(
-		std::floor( rect.Left + .5f ),
-		std::floor( rect.Top + .5f ),
-		std::floor( rect.Width + .5f ),
-		std::floor( rect.Height + .5f )
-	);
-
 	border_width = std::floor( border_width + .5f );
 
 	RenderQueue* queue( new RenderQueue );
-	queue->Add( CreateLine( TOP, sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top ), light_color, border_width ) );
-	queue->Add( CreateLine( RIGHT, sf::Vector2f( rect.Left + rect.Width, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), dark_color, border_width ) );
-	queue->Add( CreateLine( BOTTOM, sf::Vector2f( rect.Left, rect.Top + rect.Height ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), dark_color, border_width ) );
-	queue->Add( CreateLine( LEFT, sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left, rect.Top + rect.Height ), light_color, border_width ) );
+
+	// Top
+	queue->Add(
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( rect.Left, rect.Top ),
+			sf::Vector2f( rect.Left + rect.Width, rect.Top ),
+			light_color,
+			border_width
+		)
+	);
+
+	// Right
+	queue->Add(
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( rect.Left + rect.Width, rect.Top ),
+			sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height + border_width ),
+			dark_color,
+			border_width
+		)
+	);
+
+	// Bottom
+	queue->Add(
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ),
+			sf::Vector2f( rect.Left, rect.Top + rect.Height ),
+			dark_color,
+			border_width
+		)
+	);
+
+	// Left
+	queue->Add(
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( rect.Left, rect.Top + rect.Height ),
+			sf::Vector2f( rect.Left, rect.Top ),
+			light_color,
+			border_width
+		)
+	);
 
 	return queue;
 }
@@ -166,7 +198,7 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	aligned_rect.Width = std::floor( rect.Width + .5f );
 	aligned_rect.Height = std::floor( rect.Height + .5f );
 
-	queue->Add( CreateBackground( aligned_rect, background ) );
+	queue->Add( Context::Get().GetProjectO().CreateRect( aligned_rect, background ) );
 	queue->Add( CreateBorder( aligned_rect, border_width, light_color, dark_color ) ); // Border
 
 	return queue;
@@ -182,7 +214,7 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	aligned_rect.Width = std::floor( rect.Width + .5f );
 	aligned_rect.Height = std::floor( rect.Height + .5f );
 
-	queue->Add( CreateBackground( aligned_rect, background ) );
+	queue->Add( Context::Get().GetProjectO().CreateRect( aligned_rect, background ) );
 
 	if( pressed ) {
 		queue->Add( CreateBorder( aligned_rect, border_width, dark_color, light_color ) );
@@ -192,63 +224,6 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	}
 
 	return queue;
-}
-
-sf::Shape* BREW::CreateBackground( const sf::FloatRect& rect, const sf::Color& color ) {
-	sf::ConvexShape* shape = new sf::ConvexShape( 4 );
-	shape->SetPoint( 0, sf::Vector2f( rect.Left, rect.Top ) );
-	shape->SetPoint( 1, sf::Vector2f( rect.Left, rect.Top + rect.Height ) );
-	shape->SetPoint( 2, sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ) );
-	shape->SetPoint( 3, sf::Vector2f( rect.Left + rect.Width, rect.Top ) );
-	shape->SetFillColor( color );
-	shape->SetOutlineColor( sf::Color::Transparent );
-
-	return shape;
-}
-
-sf::Shape* BREW::CreateLine( Edge where, const sf::Vector2f& from, const sf::Vector2f& to, const sf::Color& color, float thickness ) {
-	if( where == RIGHT ) {
-		sf::ConvexShape* right( new sf::ConvexShape( 4 ) );
-		right->SetFillColor( color );
-		right->SetOutlineColor( sf::Color::Transparent );
-		right->SetPoint( 0, from );
-		right->SetPoint( 1, sf::Vector2f( from.x - thickness, from.y + thickness ) );
-		right->SetPoint( 2, sf::Vector2f( to.x - thickness, to.y - thickness ) );
-		right->SetPoint( 3, to );
-		return right;
-	}
-	else if( where == BOTTOM ) {
-		sf::ConvexShape* bottom( new sf::ConvexShape( 4 ) );
-		bottom->SetFillColor( color );
-		bottom->SetOutlineColor( sf::Color::Transparent );
-		bottom->SetPoint( 0, from );
-		bottom->SetPoint( 1, to );
-		bottom->SetPoint( 2, sf::Vector2f( to.x - thickness, to.y - thickness ) );
-		bottom->SetPoint( 3, sf::Vector2f( from.x + thickness, from.y - thickness ) );
-		return bottom;
-	}
-	else if( where == LEFT ) {
-		sf::ConvexShape* left( new sf::ConvexShape( 4 ) );
-		left->SetFillColor( color );
-		left->SetOutlineColor( sf::Color::Transparent );
-		left->SetPoint( 0, from );
-		left->SetPoint( 1, to );
-		left->SetPoint( 2, sf::Vector2f( to.x + thickness, to.y - thickness ) );
-		left->SetPoint( 3, sf::Vector2f( from.x + thickness, from.y + thickness ) );
-		return left;
-	}
-	else if( where == TOP ) {
-		sf::ConvexShape* top( new sf::ConvexShape( 4 ) );
-		top->SetFillColor( color );
-		top->SetOutlineColor( sf::Color::Transparent );
-		top->SetPoint( 0, to );
-		top->SetPoint( 1, from );
-		top->SetPoint( 2, sf::Vector2f( from.x + thickness, from.y + thickness ) );
-		top->SetPoint( 3, sf::Vector2f( to.x - thickness, to.y + thickness ) );
-		return top;
-	}
-
-	return NULL;
 }
 
 }

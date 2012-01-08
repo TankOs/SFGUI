@@ -23,6 +23,7 @@ if( NOT SKIP_ADDT_EXAMPLES )
 	build_example( "Signals" "Signals.cpp" )
 	build_example( "OpenGL" "OpenGL.cpp" )
 	build_example( "ComboBox" "ComboBox.cpp" )
+	build_example( "Notebook" "Notebook.cpp" )
 	build_example( "GuessMyNumber" "GuessMyNumber.cpp" )
 endif()
 

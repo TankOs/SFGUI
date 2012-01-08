@@ -6,7 +6,8 @@ namespace sfg {
 
 Scrollbar::Scrollbar( const Adjustment::Ptr& adjustment, Orientation orientation ) :
 	Range( orientation ),
-	m_slider_click_offset( 0 ),
+	m_elapsed_time( 0.f ),
+	m_slider_click_offset( 0.f ),
 	m_page_decreasing( 0 ),
 	m_page_increasing( 0 ),
 	m_dragging( false ),
@@ -130,7 +131,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				m_decrease_pressed = true;
 				GetAdjustment()->Decrement();
-				m_change_timer.Reset();
+				m_elapsed_time = 0.f;
 				m_repeat_wait = true;
 				Invalidate();
 				return;
@@ -139,7 +140,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				m_increase_pressed = true;
 				GetAdjustment()->Increment();
-				m_change_timer.Reset();
+				m_elapsed_time = 0.f;
 				m_repeat_wait = true;
 				Invalidate();
 				return;
@@ -154,7 +155,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			if( decrease_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				m_decrease_pressed = true;
 				GetAdjustment()->Decrement();
-				m_change_timer.Reset();
+				m_elapsed_time = 0.f;
 				m_repeat_wait = true;
 				Invalidate();
 				return;
@@ -163,7 +164,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			if( increase_stepper_rect.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				m_increase_pressed = true;
 				GetAdjustment()->Increment();
-				m_change_timer.Reset();
+				m_elapsed_time = 0.f;
 				m_repeat_wait = true;
 				Invalidate();
 				return;
@@ -178,7 +179,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				if( static_cast<float>( x ) < slider_center_x ) {
 					m_page_decreasing = x;
 					GetAdjustment()->DecrementPage();
-					m_change_timer.Reset();
+					m_elapsed_time = 0.f;
 					m_repeat_wait = true;
 					Invalidate();
 					return;
@@ -186,7 +187,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				else {
 					m_page_increasing = x;
 					GetAdjustment()->IncrementPage();
-					m_change_timer.Reset();
+					m_elapsed_time = 0.f;
 					m_repeat_wait = true;
 					Invalidate();
 					return;
@@ -198,7 +199,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				if( static_cast<float>( y ) < slider_center_y ) {
 					m_page_decreasing = y;
 					GetAdjustment()->DecrementPage();
-					m_change_timer.Reset();
+					m_elapsed_time = 0.f;
 					m_repeat_wait = true;
 					Invalidate();
 					return;
@@ -206,7 +207,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				else {
 					m_page_increasing = y;
 					GetAdjustment()->IncrementPage();
-					m_change_timer.Reset();
+					m_elapsed_time = 0.f;
 					m_repeat_wait = true;
 					Invalidate();
 					return;
@@ -277,24 +278,26 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	}
 }
 
-void Scrollbar::HandleExpose( CullingTarget& /*target*/ ) const {
+void Scrollbar::HandleUpdate( float seconds ) {
 	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "StepperSpeed", shared_from_this() ) );
 
-	if( m_change_timer.GetElapsedTime() < static_cast<sf::Uint32>( 1000.f / stepper_speed ) ) {
+	m_elapsed_time += seconds;
+
+	if( m_elapsed_time < ( 1.f / stepper_speed ) ) {
 		return;
 	}
 
 	if( m_repeat_wait ) {
 		sf::Uint32 stepper_repeat_delay( Context::Get().GetEngine().GetProperty<sf::Uint32>( "StepperRepeatDelay", shared_from_this() ) );
 
-		if( m_change_timer.GetElapsedTime() < stepper_repeat_delay ) {
+		if( m_elapsed_time < ( static_cast<float>( stepper_repeat_delay ) / 1000.f ) ) {
 			return;
 		}
 
 		m_repeat_wait = false;
 	}
 
-	m_change_timer.Reset();
+	m_elapsed_time = 0.f;
 
 	// Increment / Decrement value while one of the steppers is pressed
 	if( m_decrease_pressed ) {

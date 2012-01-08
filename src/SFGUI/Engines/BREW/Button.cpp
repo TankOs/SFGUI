@@ -1,9 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/Button.hpp>
 
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -20,26 +19,42 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 	unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 
-	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
+	if( button->GetState() != Button::ACTIVE ) {
+		ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
+	}
+	else {
+		ShiftBorderColors( border_color_dark, border_color_light, border_color_shift );
+	}
 
 	RenderQueue* queue( new RenderQueue );
 
-	// Background.
-	sf::RectangleShape* rect_shape = new sf::RectangleShape(
-		sf::Vector2f( button->GetAllocation().Width, button->GetAllocation().Height )
+	// Background
+	queue->Add(
+		Context::Get().GetProjectO().CreateRect(
+			sf::FloatRect(
+				0.f,
+				0.f,
+				button->GetAllocation().Width,
+				button->GetAllocation().Height
+			),
+			background_color
+		)
 	);
-	rect_shape->SetOutlineColor( sf::Color::Transparent );
-	rect_shape->SetFillColor( background_color );
-
-	queue->Add( rect_shape );
 
 	// Border.
-	if( button->GetState() != Button::ACTIVE ) {
-		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
-	}
-	else {
-		queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, button->GetAllocation().Width, button->GetAllocation().Height ), border_width, border_color_dark, border_color_light ) );
-	}
+	queue->Add(
+		CreateBorder(
+			sf::FloatRect(
+				0.f,
+				0.f,
+				button->GetAllocation().Width,
+				button->GetAllocation().Height
+			),
+			border_width,
+			border_color_light,
+			border_color_dark
+		)
+	);
 
 	// Label.
 	if( button->GetLabel().GetSize() > 0 ) {
@@ -52,21 +67,23 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 
 		if( !child ) {
 			text->SetPosition(
-				std::floor( button->GetAllocation().Width / 2.f - metrics.x / 2.f + .5f + offset ),
-				std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f + offset )
+				button->GetAllocation().Width / 2.f - metrics.x / 2.f + offset,
+				button->GetAllocation().Height / 2.f - metrics.y / 2.f + offset
 			);
 		}
 		else {
 			float width( button->GetAllocation().Width - spacing - child->GetAllocation().Width );
 
 			text->SetPosition(
-				std::floor( child->GetAllocation().Width + spacing + (width / 2.f - metrics.x / 2.f) + .5f + offset ),
-				std::floor( button->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f + offset )
+				child->GetAllocation().Width + spacing + (width / 2.f - metrics.x / 2.f) + offset,
+				button->GetAllocation().Height / 2.f - metrics.y / 2.f + offset
 			);
 		}
 
 		text->SetColor( color );
-		queue->Add( text );
+		queue->Add( Context::Get().GetProjectO().CreateText( *text ) );
+
+		delete text;
 	}
 
 	return queue;

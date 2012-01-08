@@ -1,4 +1,5 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/Scale.hpp>
 
 namespace sfg {
@@ -24,7 +25,7 @@ RenderQueue* BREW::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	if( orientation == Scale::HORIZONTAL ) {
 		// Trough
 		queue->Add(
-			CreateBackground(
+			Context::Get().GetProjectO().CreateRect(
 				sf::FloatRect(
 					slider_rect.Width / 2.f,
 					( scale->GetAllocation().Height - trough_thickness ) / 2.f,
@@ -38,7 +39,7 @@ RenderQueue* BREW::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	else {
 		// Trough
 		queue->Add(
-			CreateBackground(
+			Context::Get().GetProjectO().CreateRect(
 				sf::FloatRect(
 					( scale->GetAllocation().Width - trough_thickness ) / 2.f,
 					slider_rect.Height / 2.f,

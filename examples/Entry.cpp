@@ -1,12 +1,9 @@
 #include <SFML/Graphics.hpp>
 
 // Always include the necessary header files.
-// These mostly have the form SFGUI/<Widget name>.hpp
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Label.hpp>
-#include <SFGUI/Button.hpp>
-#include <SFGUI/Box.hpp>
-#include <SFGUI/Entry.hpp>
+// Including SFGUI/SFGUI.hpp includes everything
+// you can possibly need automatically.
+#include <SFGUI/SFGUI.hpp>
 
 // Create our entry smart pointer.
 sfg::Entry::Ptr entry;
@@ -81,11 +78,15 @@ int main() {
 			}
 		}
 
+		// Update the GUI, note that you shouldn't normally
+		// pass 0 seconds to the update method.
+		window->Update( 0.f );
+
 		// Clear screen
 		app_window.Clear();
 
-		// Draw the window
-		window->Expose( app_window );
+		// Draw the GUI
+		sfg::Context::Get().GetProjectO().Display( app_window );
 
 		// Update the window
 		app_window.Display();

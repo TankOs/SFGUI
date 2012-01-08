@@ -1,4 +1,5 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/ProgressBar.hpp>
 #include <cmath>
 
@@ -24,7 +25,7 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 
 	// Background.
 	queue->Add(
-		CreateBackground(
+		Context::Get().GetProjectO().CreateRect(
 			sf::FloatRect(
 				0.f,
 				0.f,
@@ -42,26 +43,26 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 			float frac_width( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().Width * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				std::floor( border_width + .5f ),
-				std::floor( border_width + .5f ),
-				std::floor( std::max( 0.f, frac_width - 2.f * border_width ) + .5f ),
-				std::floor( std::max( 0.f, progress_bar->GetAllocation().Height - 2.f * border_width ) + .5f )
+				border_width,
+				border_width,
+				std::max( 0.f, frac_width - 2.f * border_width ),
+				std::max( 0.f, progress_bar->GetAllocation().Height - 2.f * border_width )
 			);
 		}
 		else {
 			float frac_height( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().Height * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				std::floor( border_width + .5f ),
-				std::floor( std::max( 0.f, progress_bar->GetAllocation().Height - frac_height + border_width ) + .5f ),
-				std::floor( std::max( 0.f, progress_bar->GetAllocation().Width - 2.f * border_width ) + .5f ),
-				std::floor( std::max( 0.f, frac_height - 2.f * border_width ) + .5f )
+				border_width,
+				std::max( 0.f, progress_bar->GetAllocation().Height - frac_height + border_width ),
+				std::max( 0.f, progress_bar->GetAllocation().Width - 2.f * border_width ),
+				std::max( 0.f, frac_height - 2.f * border_width )
 			);
 		}
 
 		// Bar.
 		queue->Add(
-			CreateBackground(
+			Context::Get().GetProjectO().CreateRect(
 				bar_rect,
 				progress_color
 			)

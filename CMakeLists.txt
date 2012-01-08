@@ -40,7 +40,7 @@ if( SFGUI_STATIC )
 endif()
 
 if( SFML_STATIC )
-	add_definitions( -D SFML_STATIC )
+	add_definitions( -D SFML_STATIC -D GLEW_STATIC )
 endif()
 
 if( COMPILER_GCC )
@@ -67,7 +67,6 @@ set(
 	${INC_DIR}/SFGUI/Config.hpp
 	${INC_DIR}/SFGUI/Container.hpp
 	${INC_DIR}/SFGUI/Context.hpp
-	${INC_DIR}/SFGUI/CullingTarget.hpp
 	${INC_DIR}/SFGUI/Desktop.hpp
 	${INC_DIR}/SFGUI/Desktop.inl
 	${INC_DIR}/SFGUI/Engine.hpp
@@ -87,6 +86,7 @@ set(
 	${INC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.hpp
 	${INC_DIR}/SFGUI/Parsers/ThemeParser/Parse.hpp
 	${INC_DIR}/SFGUI/ProgressBar.hpp
+	${INC_DIR}/SFGUI/ProjectO.hpp
 	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
 	${INC_DIR}/SFGUI/ResourceLoader.hpp
@@ -118,7 +118,6 @@ set(
 	${SRC_DIR}/SFGUI/ComboBox.cpp
 	${SRC_DIR}/SFGUI/Container.cpp
 	${SRC_DIR}/SFGUI/Context.cpp
-	${SRC_DIR}/SFGUI/CullingTarget.cpp
 	${SRC_DIR}/SFGUI/Desktop.cpp
 	${SRC_DIR}/SFGUI/Engine.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW.cpp
@@ -156,6 +155,7 @@ set(
 	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarToken.cpp
 	${SRC_DIR}/SFGUI/Parsers/ThemeParser/Parse.cpp
 	${SRC_DIR}/SFGUI/ProgressBar.cpp
+	${SRC_DIR}/SFGUI/ProjectO.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
 	${SRC_DIR}/SFGUI/ResourceLoader.cpp

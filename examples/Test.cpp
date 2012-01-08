@@ -1,5 +1,6 @@
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/ProjectO.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -223,7 +224,7 @@ void SampleApp::Run() {
 		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
 
 		for( int j = 0; j < 20; j++ ) {
-			box->Pack( sfg::Button::Create( L"One button among many" ), true );
+			//box->Pack( sfg::Button::Create( L"One button among many" ), true );
 		}
 
 		m_scrolled_window_box->Pack( box, false );
@@ -378,7 +379,7 @@ void SampleApp::Run() {
 	m_fps_counter = 0;
 	m_fps_clock.Reset();
 
-	sfg::CullingTarget culling_target( m_window );
+	sf::Clock clock;
 
 	while( m_window.IsOpen() ) {
 		while( m_window.PollEvent( event ) ) {
@@ -392,10 +393,18 @@ void SampleApp::Run() {
 			m_desktop.HandleEvent( event );
 		}
 
-		m_window.Clear( sf::Color( 80, 80, 80 ) );
-		culling_target.Cull( m_cull );
 		m_window.Draw( m_background_sprite );
-		m_desktop.Expose( culling_target );
+
+		sf::Uint32 milliseconds = clock.GetElapsedTime();
+
+		// Only update every 5ms to reduce the time lost due to rounding
+		if( milliseconds > 5 ) {
+			m_desktop.Update( static_cast<float>( milliseconds ) / 1000.f );
+			clock.Reset();
+		}
+
+		sfg::Context::Get().GetProjectO().Display( m_window );
+
 		m_window.Display();
 
 		if( m_fps_clock.GetElapsedTime() >= 1000 ) {
@@ -403,14 +412,10 @@ void SampleApp::Run() {
 
 			std::stringstream sstr;
 			sstr << "SFGUI test -- FPS: " << m_fps_counter;
-			if( m_cull ) {
-				sstr << " -- Cull K/D: " << culling_target.GetCount().first
-				 << "/" << culling_target.GetCount().second;
-			}
+
 			m_window.SetTitle( sstr.str() );
 
 			m_fps_counter = 0;
-			culling_target.ResetCount();
 		}
 
 		++m_fps_counter;

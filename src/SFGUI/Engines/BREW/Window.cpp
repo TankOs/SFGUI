@@ -1,9 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Window.hpp>
+#include <SFGUI/Context.hpp>
 
-#include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -40,7 +39,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			);
 
 			queue->Add(
-				CreateBackground(
+				Context::Get().GetProjectO().CreateRect(
 					shadow_rect,
 					shadow_color
 				)
@@ -48,16 +47,28 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		}
 
 		if( border_width > 0 ) {
-			queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, window->GetAllocation().Width, window->GetAllocation().Height ), border_width, border_color_light, border_color_dark ) );
+			queue->Add(
+				CreateBorder(
+					sf::FloatRect(
+						0.f,
+						0.f,
+						window->GetAllocation().Width - border_width,
+						window->GetAllocation().Height - border_width
+					),
+					border_width,
+					border_color_light,
+					border_color_dark
+				)
+			);
 		}
 
 		queue->Add(
-			CreateBackground(
+			Context::Get().GetProjectO().CreateRect(
 				sf::FloatRect(
-					border_width + .1f,
-					border_width + .1f,
-					window->GetAllocation().Width - 2 * border_width,
-					window->GetAllocation().Height - 2 * border_width
+					border_width,
+					border_width,
+					window->GetAllocation().Width - 2.f * border_width,
+					window->GetAllocation().Height - 2.f * border_width
 				),
 				background_color
 			)
@@ -65,16 +76,14 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	}
 
 	if( window->HasStyle( Window::Resize ) ) {
-		sf::ConvexShape* handle_shape( new sf::ConvexShape( 3 ) );
-
-		handle_shape->SetPoint( 0, sf::Vector2f( window->GetAllocation().Width - 1.f, window->GetAllocation().Height - 1.f - handle_size ) );
-		handle_shape->SetPoint( 0, sf::Vector2f( window->GetAllocation().Width - 1.f - handle_size, window->GetAllocation().Height - 1.f ) );
-		handle_shape->SetPoint( 0, sf::Vector2f( window->GetAllocation().Width - 1.f, window->GetAllocation().Height - 1.f ) );
-
-		handle_shape->SetOutlineColor( sf::Color::Transparent );
-		handle_shape->SetFillColor( title_background_color );
-
-		queue->Add( handle_shape );
+		queue->Add(
+			Context::Get().GetProjectO().CreateTriangle(
+				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height - handle_size ),
+				sf::Vector2f( window->GetAllocation().Width - handle_size, window->GetAllocation().Height ),
+				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height ),
+				title_background_color
+			)
+		);
 	}
 
 
@@ -84,7 +93,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 
 	if( title_size > 0 ) {
 		queue->Add(
-			CreateBackground(
+			Context::Get().GetProjectO().CreateRect(
 				sf::FloatRect(
 					border_width + .1f,
 					border_width + .1f,
@@ -129,14 +138,16 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 
 		// Calculate title text position.
 		sf::Vector2f title_position(
-			std::floor( border_width + title_padding + .5f ),
-			std::floor( border_width + ((title_size / 2.f) - (static_cast<float>( title_font_size ) / 2.f)) + .5f )
+			border_width + title_padding,
+			border_width + title_size / 2.f - static_cast<float>( title_font_size ) / 2.f
 		);
 
 		title_text->SetPosition( title_position );
 		title_text->SetColor( title_text_color );
 
-		queue->Add( title_text );
+		queue->Add( Context::Get().GetProjectO().CreateText( *title_text ) );
+
+		delete title_text;
 	}
 
 	return queue;

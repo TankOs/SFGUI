@@ -1,8 +1,7 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/Spinner.hpp>
 
-#include <SFML/Graphics/ConvexShape.hpp>
-#include <SFML/Graphics/VertexArray.hpp>
 #include <cmath>
 
 namespace sfg {
@@ -11,6 +10,8 @@ namespace eng {
 RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const {
 	sf::Color color( GetProperty<sf::Color>( "Color", spinner ) );
 	float steps( GetProperty<float>( "Steps", spinner ) );
+	float inner_radius( GetProperty<float>( "InnerRadius", spinner ) );
+	float rod_thickness( GetProperty<float>( "RodThickness", spinner ) );
 	unsigned int stopped_alpha( GetProperty<unsigned int>( "StoppedAlpha", spinner ) );
 	float radius = std::min( spinner->GetAllocation().Width, spinner->GetAllocation().Height ) / 2.f;
 
@@ -21,8 +22,6 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 	static const float two_pi = 3.141592654f * 2.f;
 
 	RenderQueue* queue( new RenderQueue );
-
-	sf::VertexArray* array = new sf::VertexArray( sf::Triangles, static_cast<unsigned int>( steps ) * 3 );
 
 	sf::Vector2f center_offset( spinner->GetAllocation().Width / 2.f, spinner->GetAllocation().Height / 2.f );
 
@@ -37,26 +36,25 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 		}
 
 		// Time for some hardcore trigonometry...
-		sf::Vector2f point1(
+		sf::Vector2f inner_point(
+			static_cast<float>( cos( two_pi * index / steps ) ) * inner_radius,
+			static_cast<float>( sin( two_pi * index / steps ) ) * inner_radius
+		);
+
+		sf::Vector2f outer_point(
 			static_cast<float>( cos( two_pi * index / steps ) ) * radius,
 			static_cast<float>( sin( two_pi * index / steps ) ) * radius
 		);
 
-		sf::Vector2f point2(
-			static_cast<float>( cos( two_pi * ( index + .5f ) / steps ) ) * radius,
-			static_cast<float>( sin( two_pi * ( index + .5f ) / steps ) ) * radius
+		queue->Add(
+			Context::Get().GetProjectO().CreateLine(
+				inner_point + center_offset,
+				outer_point + center_offset,
+				rod_color,
+				rod_thickness
+			)
 		);
-
-		(*array)[static_cast<unsigned int>( index ) * 3 + 0].Position = sf::Vector2f( 0.f, 0.f ) + center_offset;
-		(*array)[static_cast<unsigned int>( index ) * 3 + 1].Position = point1 + center_offset;
-		(*array)[static_cast<unsigned int>( index ) * 3 + 2].Position = point2 + center_offset;
-
-		(*array)[static_cast<unsigned int>( index ) * 3 + 0].Color = rod_color;
-		(*array)[static_cast<unsigned int>( index ) * 3 + 1].Color = rod_color;
-		(*array)[static_cast<unsigned int>( index ) * 3 + 2].Color = rod_color;
 	}
-
-	queue->Add( array );
 
 	return queue;
 }

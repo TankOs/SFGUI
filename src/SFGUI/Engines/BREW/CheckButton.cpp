@@ -1,9 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/CheckButton.hpp>
 
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -27,22 +26,32 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
 	// Background.
-	sf::RectangleShape* bg_shape = new sf::RectangleShape( sf::Vector2f( box_size, box_size ) );
-	bg_shape->SetOutlineColor( sf::Color::Transparent );
-	bg_shape->SetFillColor( background_color );
-	bg_shape->SetPosition( 0.f, check->GetAllocation().Height / 2.f - box_size / 2.f );
-	queue->Add( bg_shape );
+	queue->Add(
+		Context::Get().GetProjectO().CreateRect(
+			sf::FloatRect(
+				0.f,
+				check->GetAllocation().Height / 2.f - box_size / 2.f,
+				box_size,
+				box_size
+			),
+			background_color
+		)
+	);
 
 	if( check->IsActive() ) {
 		float diff( box_size - check_size );
 
-		sf::RectangleShape* check_bg_shape = new sf::RectangleShape(
-			sf::Vector2f( check_size - 1.f, check_size - 1.f )
+		queue->Add(
+			Context::Get().GetProjectO().CreateRect(
+				sf::FloatRect(
+					box_size / 2 - check_size / 2,
+					check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f,
+					check_size - 1.f,
+					check_size - 1.f
+				),
+				check_color
+			)
 		);
-		check_bg_shape->SetOutlineColor( sf::Color::Transparent );
-		check_bg_shape->SetFillColor( check_color );
-		check_bg_shape->SetPosition( box_size / 2 - check_size / 2, check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f );
-		queue->Add( check_bg_shape );
 	}
 
 	queue->Add(
@@ -66,11 +75,13 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 
 		sf::Text* text( new sf::Text( check->GetLabel(), font, font_size ) );
 		text->SetPosition(
-			std::floor( box_size + spacing ),
-			std::floor( check->GetAllocation().Height / 2.f - metrics.y / 2.f + .5f )
+			box_size + spacing,
+			check->GetAllocation().Height / 2.f - metrics.y / 2.f
 		);
 		text->SetColor( color );
-		queue->Add( text );
+		queue->Add( Context::Get().GetProjectO().CreateText( *text ) );
+
+		delete text;
 	}
 
 	return queue;

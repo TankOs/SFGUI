@@ -90,9 +90,11 @@ int main() {
 		glVertex3f( 1.f, 1.f, 0.f );
 		glEnd();
 
+		desktop.Update( 0.f );
+
 		// SFML rendering.
 		render_window.PushGLStates();
-		desktop.Expose( render_window );
+		sfg::Context::Get().GetProjectO().Display( render_window );
 		render_window.PopGLStates();
 
 		render_window.Display();

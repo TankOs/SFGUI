@@ -25,12 +25,6 @@ class SFGUI_API Viewport : public Bin {
 		 */
 		static Ptr Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
 
-		/** Expose.
-		 * Render widget to given target.
-		 * @param target SFML render target.
-		 */
-		virtual void Expose( CullingTarget& target, const struct NoFlushTag& ) const;
-
 		/** Get absolute position on virtual screen: always (0,0)
 		 * @return Absolute position on virtual screen: always (0,0).
 		 */

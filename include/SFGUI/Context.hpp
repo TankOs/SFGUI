@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-
+#include <SFGUI/ProjectO.hpp>
 #include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
@@ -18,6 +18,10 @@ class SFGUI_API Context {
 		/** Ctor.
 		 */
 		Context();
+
+		/** Dtor.
+		 */
+		~Context();
 
 		/** Get the active context.
 		 * If no custom context has been activated, the default context is returned.
@@ -65,11 +69,15 @@ class SFGUI_API Context {
 		 */
 		SharedPtr<Widget> GetActiveWidget() const;
 
+		ProjectO& GetProjectO();
+
 	private:
 		static Context* m_active_context;
 
 		Engine* m_engine;
 		WeakPtr<Widget> m_active_widget;
+
+		ProjectO* m_projecto;
 };
 
 }

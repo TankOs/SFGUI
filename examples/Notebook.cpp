@@ -5,39 +5,35 @@
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
 
-// Create our button smart pointer.
-sfg::Button::Ptr button;
-
-void ButtonClick();
-
 int main() {
 	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Notebook Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// Create our main SFGUI window
 	sfg::Window::Ptr window;
 	window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
-	// Create the button itself.
-	button = sfg::Button::Create();
+	// Create our notebook smart pointer.
+	sfg::Notebook::Ptr notebook;
 
-	// Set the label of the button.
-	button->SetLabel( "Foo" );
+	// Create the notebook itself.
+	notebook = sfg::Notebook::Create();
 
-	// Add the button to the window
-	window->Add( button );
+	// Create a couple of buttons to populate the notebook.
+	sfg::Button::Ptr button1( sfg::Button::Create("Hello") );
+	sfg::Button::Ptr button2( sfg::Button::Create("World") );
 
-	// So that our button has a meaningful purpose
-	// (besides just looking awesome :P) we need to tell it to connect
-	// to a callback of our choosing to notify us when it is clicked.
-	button->OnClick.Connect( &ButtonClick );
+	// Add new pages to the notebook with respective tab labels
+	// containing solely the buttons as their children.
+	notebook->AppendPage( button1, sfg::Label::Create( "Page 1" ) );
+	notebook->AppendPage( button2, sfg::Label::Create( "Page 2" ) );
 
-	// If attempting to connect to a class method you need to provide
-	// a pointer to it as the second parameter after the function address.
+	// Add the notebook to the window.
+	window->Add( notebook );
 
 	// Start the game loop
-	while ( app_window.IsOpen() ) {
+	while ( app_window.IsOpened() ) {
 		// Process events
 		sf::Event event;
 
@@ -66,9 +62,4 @@ int main() {
 	}
 
 	return EXIT_SUCCESS;
-}
-
-void ButtonClick() {
-	// When the button is clicked it's label should change.
-	button->SetLabel( "Bar" );
 }

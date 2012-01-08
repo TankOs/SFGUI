@@ -35,8 +35,13 @@ bool Context::Deactivate() {
 }
 
 Context::Context() :
-	m_engine( NULL )
+	m_engine( NULL ),
+	m_projecto( NULL )
 {
+}
+
+Context::~Context() {
+	delete m_projecto;
 }
 
 Engine& Context::GetDefaultEngine() {
@@ -58,6 +63,14 @@ void Context::SetActiveWidget( SharedPtr<Widget> widget ) {
 
 SharedPtr<Widget> Context::GetActiveWidget() const {
 	return m_active_widget.lock();
+}
+
+ProjectO& Context::GetProjectO() {
+	if( !m_projecto ) {
+		m_projecto = new ProjectO;
+	}
+
+	return *m_projecto;
 }
 
 }

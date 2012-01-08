@@ -1,9 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/Entry.hpp>
 
-#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -26,21 +25,40 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	RenderQueue* queue( new RenderQueue );
 
 	// Background.
-	sf::RectangleShape* bg_shape = new sf::RectangleShape(
-		sf::Vector2f( entry->GetAllocation().Width, entry->GetAllocation().Height )
+	queue->Add(
+		Context::Get().GetProjectO().CreateRect(
+			sf::FloatRect(
+				0.f,
+				0.f,
+				entry->GetAllocation().Width,
+				entry->GetAllocation().Height
+			),
+			background_color
+		)
 	);
-	bg_shape->SetOutlineColor( sf::Color::Transparent );
-	bg_shape->SetFillColor( background_color );
-	queue->Add( bg_shape );
 
-	queue->Add( CreateBorder( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().Width, entry->GetAllocation().Height ), border_width, border_color_dark, border_color_light) );
+	queue->Add(
+		CreateBorder(
+			sf::FloatRect(
+				0.f,
+				0.f,
+				entry->GetAllocation().Width,
+				entry->GetAllocation().Height
+			),
+			border_width,
+			border_color_dark,
+			border_color_light
+		)
+	);
 
 	float line_height = GetLineHeight( font, font_size );
 	sf::Text* vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
 	vis_label->SetColor( text_color );
-	vis_label->SetPosition( std::floor( text_padding + .5f ), std::floor( entry->GetAllocation().Height / 2.f - line_height / 2.f + .5f ) );
+	vis_label->SetPosition( text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
 
-	queue->Add( vis_label );
+	queue->Add( Context::Get().GetProjectO().CreateText( *vis_label ) );
+
+	delete vis_label;
 
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->GetState() == Widget::ACTIVE && entry->IsCursorVisible() ) {
@@ -52,13 +70,17 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 		// Get metrics.
 		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
 
-		sf::RectangleShape* cursor_shape = new sf::RectangleShape(
-			sf::Vector2f( cursor_thickness, line_height )
+		queue->Add(
+			Context::Get().GetProjectO().CreateRect(
+				sf::FloatRect(
+					metrics.x + text_padding,
+					entry->GetAllocation().Height / 2.f - line_height / 2.f,
+					cursor_thickness,
+					line_height
+				),
+				cursor_color
+			)
 		);
-		cursor_shape->SetPosition( metrics.x + text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
-		cursor_shape->SetOutlineColor( sf::Color::Transparent );
-		cursor_shape->SetFillColor( cursor_color );
-		queue->Add( cursor_shape );
 	}
 
 	return queue;

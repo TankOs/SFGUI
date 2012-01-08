@@ -28,53 +28,6 @@ sf::Vector2f Viewport::CalculateRequisition() {
 void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 }
 
-void Viewport::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
-	if( IsVisible() ) {
-		if( GetChild() ) {
-			unsigned int target_width = target.GetWidth();
-			unsigned int target_height = target.GetHeight();
-
-			sf::View view(
-				sf::FloatRect(
-					std::floor( m_horizontal_adjustment->GetValue() + .5f ),
-					std::floor( m_vertical_adjustment->GetValue() + .5f ),
-					GetAllocation().Width,
-					GetAllocation().Height
-				)
-			);
-
-			float viewport_left = std::floor( Widget::GetAbsolutePosition().x + .5f ) / static_cast<float>( target_width );
-			float viewport_top = std::floor( Widget::GetAbsolutePosition().y + .5f ) / static_cast<float>( target_height );
-			float viewport_width = GetAllocation().Width / static_cast<float>( target_width );
-			float viewport_height = GetAllocation().Height / static_cast<float>( target_height );
-
-			// Make sure float to int rounding errors can't lead to streching effects.
-			if( static_cast<int>( viewport_width * static_cast<float>( target_width ) ) < static_cast<int>( GetAllocation().Width ) ) {
-				viewport_width += 1.f / static_cast<float>( target_width );
-			}
-
-			if( static_cast<int>( viewport_height * static_cast<float>( target_height ) ) < static_cast<int>( GetAllocation().Height ) ) {
-				viewport_height += 1.f / static_cast<float>( target_height );
-			}
-
-			view.SetViewport(
-				sf::FloatRect(
-					viewport_left,
-					viewport_top,
-					viewport_width,
-					viewport_height
-				)
-			);
-
-			target.PushView( view );
-
-			GetChild()->Expose( target, m_no_flush_tag );
-
-			target.PopView();
-		}
-	}
-}
-
 void Viewport::HandleEvent( const sf::Event& event ) {
 	// Ignore event when widget is not visible.
 	if( !IsVisible() ) {

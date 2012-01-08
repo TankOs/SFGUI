@@ -45,9 +45,9 @@ class SFGUI_API Spinner : public Widget {
 		sf::Vector2f CalculateRequisition();
 
 	private:
-		void HandleExpose( CullingTarget& target ) const;
+		void HandleUpdate( float seconds );
 
-		mutable sf::Clock m_clock;
+		float m_elapsed_time;
 
 		mutable RenderQueue* m_renderqueue;
 

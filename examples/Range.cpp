@@ -3,12 +3,9 @@
 #include <SFML/Graphics.hpp>
 
 // Always include the necessary header files.
-// These mostly have the form SFGUI/<Widget name>.hpp
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Label.hpp>
-#include <SFGUI/Box.hpp>
-#include <SFGUI/Scale.hpp>
-#include <SFGUI/Scrollbar.hpp>
+// Including SFGUI/SFGUI.hpp includes everything
+// you can possibly need automatically.
+#include <SFGUI/SFGUI.hpp>
 
 // Create our label smart pointer.
 sfg::Label::Ptr label;
@@ -105,6 +102,8 @@ int main() {
 	// Add our box to the window
 	window->Add( box );
 
+	sf::Clock clock;
+
 	// Start the game loop
 	while ( app_window.IsOpen() ) {
 		// Process events
@@ -120,11 +119,19 @@ int main() {
 			}
 		}
 
+		// Update the GUI every 5ms
+		if( clock.GetElapsedTime() >= 5 ) {
+			// Update() takes the elapsed time in seconds.
+			window->Update( static_cast<float>( clock.GetElapsedTime() ) / 1000.f );
+
+			clock.Reset();
+		}
+
 		// Clear screen
 		app_window.Clear();
 
-		// Draw the window
-		window->Expose( app_window );
+		// Draw the GUI
+		sfg::Context::Get().GetProjectO().Display( app_window );
 
 		// Update the window
 		app_window.Display();

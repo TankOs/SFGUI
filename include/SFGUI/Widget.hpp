@@ -3,8 +3,8 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Object.hpp>
 #include <SFGUI/Signal.hpp>
-#include <SFGUI/CullingTarget.hpp>
 #include <SFGUI/SharedPtr.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Window/Event.hpp>
@@ -103,23 +103,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		void SetPosition( const sf::Vector2f& position );
 
-		/** Expose.
-		 * Render widget to given target.
-		 * @param target SFML render target.
-		 */
-		void Expose( sf::RenderTarget& target ) const;
-
-		/** Expose.
-		 * Render widget to given target.
-		 * @param target culling target.
-		 */
-		void Expose( CullingTarget& target ) const;
-
-		/** Expose without flush. Meant for internal use only.
-		 * Render widget to given target without flushing buffer.
-		 * @param target culling target.
-		 */
-		virtual void Expose( CullingTarget& target, const struct NoFlushTag& ) const;
+		void Update( float seconds );
 
 		/** Invalidate widget (prepare internal sf::Drawable).
 		 * Implement InvalidateImpl() for your own code.
@@ -203,6 +187,14 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void Refresh();
 
+		bool IsDrawn() const;
+
+		virtual void Draw( bool draw = true );
+
+		void SetHierarchyLevel( int level );
+
+		int GetHierarchyLevel() const;
+
 		// Signals.
 		Signal OnStateChange; //!< Fired when state changed. (old state)
 		Signal OnGainFocus; //!< Fired when focus gained.
@@ -277,12 +269,6 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleRequisitionChange();
 
-		/** Handle expose.
-		 * Called every frame usually.
-		 * @param target Render target.
-		 */
-		virtual void HandleExpose( CullingTarget& target ) const;
-
 		/** Handle state changes.
 		 * The default behaviour is to accept any state change and invalidate the
 		 * widget.
@@ -323,6 +309,10 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleVisibilityChange();
 
+		virtual void HandleUpdate( float seconds );
+
+		virtual void HandleSetHierarchyLevel();
+
 	private:
 		void GrabFocus( Ptr widget );
 		bool HasFocus( Ptr widget );
@@ -338,10 +328,13 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		std::string m_id;
 		std::string m_class;
 
+		int m_hierarchy_level;
+
 		mutable RenderQueue* m_drawable;
 
 		bool m_sensitive;
 		bool m_visible;
+		bool m_drawn;
 
 		unsigned char m_state;
 		bool m_mouse_in;

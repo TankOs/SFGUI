@@ -92,8 +92,9 @@ void DesktopExample::Run() {
 			}
 		}
 
+		m_desktop.Update( 0.f );
 		render_window.Clear();
-		m_desktop.Expose( render_window );
+		sfg::Context::Get().GetProjectO().Display( render_window );
 		render_window.Display();
 	}
 }

@@ -52,14 +52,6 @@ const Container::WidgetsList& Container::GetChildren() const {
 	return m_children;
 }
 
-void Container::HandleExpose( CullingTarget& target ) const {
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->Expose( target, m_no_flush_tag );
-	}
-}
-
 void Container::Refresh() {
 	std::size_t children_size = m_children.size();
 
@@ -131,23 +123,54 @@ void Container::HandleAbsolutePositionChange() {
 }
 
 void Container::HandleVisibilityChange() {
+	Widget::HandleVisibilityChange();
+
 	std::size_t children_size = m_children.size();
 
 	for( std::size_t index = 0; index < children_size; ++index ) {
+		m_children[index]->Draw( IsDrawn() );
 		m_children[index]->HandleParentVisibilityChange();
 	}
-
-	Widget::HandleVisibilityChange();
 }
 
 void Container::HandleParentVisibilityChange() {
+	Widget::HandleParentVisibilityChange();
+
 	std::size_t children_size = m_children.size();
 
 	for( std::size_t index = 0; index < children_size; ++index ) {
 		m_children[index]->HandleParentVisibilityChange();
 	}
+}
 
-	Widget::HandleParentVisibilityChange();
+void Container::HandleUpdate( float seconds ) {
+	Widget::HandleUpdate( seconds );
+
+	std::size_t children_size = m_children.size();
+
+	for( std::size_t index = 0; index < children_size; ++index ) {
+		m_children[index]->Update( seconds );
+	}
+}
+
+void Container::HandleSetHierarchyLevel() {
+	Widget::HandleSetHierarchyLevel();
+
+	std::size_t children_size = m_children.size();
+
+	for( std::size_t index = 0; index < children_size; ++index ) {
+		m_children[index]->SetHierarchyLevel( GetHierarchyLevel() + 1 );
+	}
+}
+
+void Container::Draw( bool draw ) {
+	Widget::Draw( draw );
+
+	std::size_t children_size = m_children.size();
+
+	for( std::size_t index = 0; index < children_size; ++index ) {
+		m_children[index]->Draw( IsDrawn() && IsVisible() );
+	}
 }
 
 }

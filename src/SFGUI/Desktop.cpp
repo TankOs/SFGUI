@@ -2,6 +2,7 @@
 #include <SFGUI/Container.hpp>
 
 #include <SFML/Window.hpp>
+#include <limits>
 
 namespace sfg {
 
@@ -27,30 +28,10 @@ void Desktop::UpdateViewRect( const sf::FloatRect& rect ) {
 	m_view.Reset( rect );
 }
 
-void Desktop::Expose( sf::RenderTarget& target ) const {
-	CullingTarget culling_target( target );
-	culling_target.Cull( false );
-
-	Expose( culling_target );
-}
-
-void Desktop::Expose( CullingTarget& target ) const {
-	// Push our view.
-	target.PushView( m_view );
-
-	// Activate context.
-	Context::Activate( m_context );
-
-	// Expose children.
+void Desktop::Update( float seconds ) {
 	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
-		m_children[index]->Expose( target );
+		m_children[index]->Update( seconds );
 	}
-
-	// Restore previous context.
-	Context::Deactivate();
-
-	// Restore previous view.
-	target.PopView();
 }
 
 sf::Vector2f Desktop::TransformToLocal( const sf::Vector2f& global ) const {
@@ -100,6 +81,8 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		) {
 			m_children.erase( m_children.begin() + index );
 			m_children.push_front( widget );
+
+			RecalculateWidgetLevels();
 		}
 
 		// If inside check is needed, do so for all widgets except the top window.
@@ -148,6 +131,8 @@ void Desktop::Add( SharedPtr<Widget> widget ) {
 
 	m_children.push_front( widget );
 
+	RecalculateWidgetLevels();
+
 	widget->Refresh();
 	ResendMouseMoveEvent();
 }
@@ -163,6 +148,8 @@ void Desktop::Remove( SharedPtr<Widget> widget ) {
 		m_last_receiver.reset();
 	}
 
+	RecalculateWidgetLevels();
+
 	if( m_children.size() ) {
 		ResendMouseMoveEvent();
 	}
@@ -176,6 +163,8 @@ void Desktop::RemoveAll() {
 void Desktop::Refresh() {
 	// Activate context.
 	Context::Activate( m_context );
+
+	RecalculateWidgetLevels();
 
 	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
 		m_children[index]->Refresh();
@@ -214,6 +203,8 @@ void Desktop::BringToFront( SharedPtr<const Widget> child ) {
 	m_children.erase( iter );
 	m_children.push_front( ptr );
 
+	RecalculateWidgetLevels();
+
 	ResendMouseMoveEvent();
 }
 
@@ -238,6 +229,18 @@ void Desktop::ResendMouseMoveEvent() {
 			m_children[index]->HandleEvent( event );
 			break;
 		}
+	}
+}
+
+void Desktop::RecalculateWidgetLevels() {
+	std::size_t children_size = m_children.size();
+
+	int current_level = 0;
+
+	for( int index = static_cast<int>( children_size ) - 1; index >= 0; --index ) {
+		m_children[index]->SetHierarchyLevel( current_level );
+
+		current_level += std::numeric_limits<int>::max() / static_cast<int>( children_size );
 	}
 }
 

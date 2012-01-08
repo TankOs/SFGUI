@@ -1,8 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/Label.hpp>
 
 #include <SFML/Graphics/Text.hpp>
-#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -19,10 +19,12 @@ RenderQueue* BREW::CreateLabelDrawable( SharedPtr<const Label> label ) const {
 	sf::Vector2f avail_space( label->GetAllocation().Width - label->GetRequisition().x, label->GetAllocation().Height - label->GetRequisition().y );
 	sf::Vector2f position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
 
-	vis_label->SetPosition( std::floor( position.x + .5f ), std::floor( position.y + .5f ) );
+	vis_label->SetPosition( position.x, position.y );
 
 	RenderQueue* queue( new RenderQueue );
-	queue->Add( vis_label );
+	queue->Add( Context::Get().GetProjectO().CreateText( *vis_label ) );
+
+	delete vis_label;
 
 	return queue;
 }

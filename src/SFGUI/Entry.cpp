@@ -15,6 +15,7 @@ Entry::Entry() :
 	m_text_placeholder( 0 ),
 	m_max_length( 0 ),
 	m_cursor_position( 0 ),
+	m_elapsed_time( 0.f ),
 	m_cursor_status( false )
 {
 }
@@ -137,7 +138,7 @@ void Entry::MoveCursor( int delta ) {
 		}
 
 		// Make cursor visible.
-		m_cursor_timer.Reset();
+		m_elapsed_time = 0.f;
 		m_cursor_status = true;
 
 		RecalculateVisibleString();
@@ -176,7 +177,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			m_string.Erase( m_cursor_position );
 
 			RecalculateVisibleString();
-			m_cursor_timer.Reset();
+			m_elapsed_time = 0.f;
 			m_cursor_status = true;
 
 			OnTextChanged();
@@ -230,14 +231,16 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 	SetCursorPosition( GetPositionFromMouseX( x ) );
 }
 
-void Entry::HandleExpose( CullingTarget& /*target*/ ) const {
+void Entry::HandleUpdate( float seconds ) {
 	if( GetState() != ACTIVE ) {
 		return;
 	}
 
-	// Toggle cursor state every 500ms
-	if( m_cursor_timer.GetElapsedTime() > 500 ) {
-		m_cursor_timer.Reset();
+	m_elapsed_time += seconds;
+
+	// Toggle cursor state every 0.5 seconds
+	if( m_elapsed_time > .5f ) {
+		m_elapsed_time = 0.f;
 		m_cursor_status = !m_cursor_status;
 		Invalidate();
 	}
@@ -253,7 +256,7 @@ void Entry::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 
 void Entry::HandleStateChange( State old_state ) {
 	if( GetState() == ACTIVE ) {
-		m_cursor_timer.Reset();
+		m_elapsed_time = 0.f;
 		m_cursor_status = true;
 	}
 

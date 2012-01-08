@@ -107,7 +107,7 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		virtual void HandleTextEvent( sf::Uint32 character );
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
-		virtual void HandleExpose( CullingTarget& target ) const;
+		virtual void HandleUpdate( float seconds );
 		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
 		virtual void HandleStateChange( State old_state );
 		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
@@ -126,7 +126,9 @@ class SFGUI_API Entry : public Widget {
 		std::size_t m_max_length;
 
 		std::size_t m_cursor_position;
-		mutable sf::Clock m_cursor_timer;
+
+		float m_elapsed_time;
+
 		mutable bool m_cursor_status;
 };
 

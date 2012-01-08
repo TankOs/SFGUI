@@ -171,8 +171,9 @@ void GuessMyNumber::Run() {
 			window->HandleEvent( event );
 		}
 
+		window->Update( 0.f );
 		render_window.Clear();
-		window->Expose( render_window );
+		sfg::Context::Get().GetProjectO().Display( render_window );
 		render_window.Display();
 	}
 }

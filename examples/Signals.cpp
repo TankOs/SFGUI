@@ -1,9 +1,11 @@
 #include <SFML/Graphics.hpp>
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Button.hpp>
-#include <SFGUI/Box.hpp>
 
 #include <sstream>
+
+// Always include the necessary header files.
+// Including SFGUI/SFGUI.hpp includes everything
+// you can possibly need automatically.
+#include <SFGUI/SFGUI.hpp>
 
 sfg::Window::Ptr window;
 
@@ -127,8 +129,17 @@ void Application::Run() {
 			}
 		}
 
+		// Update the GUI, note that you shouldn't normally
+		// pass 0 seconds to the update method.
+		window->Update( 0.f );
+
+		// Clear screen
 		app_window.Clear();
-		window->Expose( app_window );
+
+		// Draw the GUI
+		sfg::Context::Get().GetProjectO().Display( app_window );
+
+		// Update the window
 		app_window.Display();
 	}
 }

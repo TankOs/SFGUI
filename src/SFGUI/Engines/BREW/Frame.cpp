@@ -1,4 +1,5 @@
 #include <SFGUI/Engines/BREW.hpp>
+#include <SFGUI/Context.hpp>
 #include <SFGUI/Frame.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -20,12 +21,21 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	RenderQueue* queue( new RenderQueue );
 
+	// Right
+	queue->Add(
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( frame->GetAllocation().Width - border_width, line_height / 2.f ),
+			sf::Vector2f( frame->GetAllocation().Width - border_width, frame->GetAllocation().Height - border_width ),
+			border_color,
+			border_width
+		)
+	);
+
 	// Bottom
 	queue->Add(
-		CreateLine(
-			BOTTOM,
-			sf::Vector2f( .5f, std::floor( frame->GetAllocation().Height - border_width + .5f ) - .5f ),
-			sf::Vector2f( frame->GetAllocation().Width - .5f, std::floor( frame->GetAllocation().Height - border_width + .5f ) - .5f ),
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( frame->GetAllocation().Width, frame->GetAllocation().Height - border_width ),
+			sf::Vector2f( 0.f, frame->GetAllocation().Height - border_width ),
 			border_color,
 			border_width
 		)
@@ -33,21 +43,9 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Left
 	queue->Add(
-		CreateLine(
-			LEFT,
-			sf::Vector2f( .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
-			sf::Vector2f( .5f, std::floor( frame->GetAllocation().Height - border_width + .5f ) + .5f ),
-			border_color,
-			border_width
-		)
-	);
-
-	// Right
-	queue->Add(
-		CreateLine(
-			LEFT,
-			sf::Vector2f( std::floor( frame->GetAllocation().Width - border_width + .5f ) - .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
-			sf::Vector2f( std::floor( frame->GetAllocation().Width - border_width + .5f ) - .5f, std::floor( frame->GetAllocation().Height - 2.f * border_width + .5f ) + .5f ),
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( 0.f, frame->GetAllocation().Height - border_width ),
+			sf::Vector2f( 0.f, line_height / 2.f ),
 			border_color,
 			border_width
 		)
@@ -66,17 +64,18 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 		label_end_x += ( metrics.x + alignment * ( frame->GetAllocation().Width - 2 * line_height - metrics.x ) );
 
 		sf::Text* text( new sf::Text( frame->GetLabel(), font, font_size ) );
-		text->SetPosition( std::floor( label_start_x + label_padding + .5f ), .0f );
+		text->SetPosition( label_start_x + label_padding, .0f );
 		text->SetColor( color );
-		queue->Add( text );
+		queue->Add( Context::Get().GetProjectO().CreateText( *text ) );
+
+		delete text;
 	}
 
 	// Top Left
 	queue->Add(
-		CreateLine(
-			TOP,
-			sf::Vector2f( .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
-			sf::Vector2f( std::floor( label_start_x + .5f ) - .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( 0.f, line_height / 2.f ),
+			sf::Vector2f( label_start_x, line_height / 2.f ),
 			border_color,
 			border_width
 		)
@@ -84,10 +83,9 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Top Right
 	queue->Add(
-		CreateLine(
-			TOP,
-			sf::Vector2f( std::floor( label_end_x + .5f ) + .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
-			sf::Vector2f( std::floor( frame->GetAllocation().Width + .5f ) - .5f, std::floor( line_height / 2.f + .5f ) + .5f ),
+		Context::Get().GetProjectO().CreateLine(
+			sf::Vector2f( label_end_x, line_height / 2.f ),
+			sf::Vector2f( frame->GetAllocation().Width - border_width, line_height / 2.f ),
 			border_color,
 			border_width
 		)

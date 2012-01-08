@@ -12,9 +12,11 @@ Widget::Widget() :
 	m_allocation( 0, 0, 0, 0 ),
 	m_requisition( 0, 0 ),
 	m_custom_requisition( 0 ),
+	m_hierarchy_level( 0 ),
 	m_drawable( 0 ),
 	m_sensitive( true ),
 	m_visible( true ),
+	m_drawn( true ),
 	m_state( NORMAL ),
 	m_mouse_in( false ),
 	m_mouse_button_down( -1 ),
@@ -134,41 +136,21 @@ const sf::FloatRect& Widget::GetAllocation() const {
 	return m_allocation;
 }
 
-void Widget::Expose( sf::RenderTarget& target ) const {
-	CullingTarget culling_target( target );
-	culling_target.Cull( false );
-
-	Expose( culling_target );
-}
-
-void Widget::Expose( CullingTarget& target ) const {
-	Expose( target, m_no_flush_tag );
-
-	target.Display();
-}
-
-void Widget::Expose( CullingTarget& target, const struct NoFlushTag& ) const {
+void Widget::Update( float seconds ) {
 	if( m_invalidated ) {
 		m_invalidated = false;
 
 		delete m_drawable;
 		m_drawable = InvalidateImpl();
-		if( m_drawable ) {
-			m_drawable->Compile();
-		}
 
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
+			m_drawable->SetLevel( m_hierarchy_level );
+			m_drawable->Show( IsDrawn() && IsVisible() );
 		}
 	}
 
-	if( IsVisible() ) {
-		if( m_drawable ) {
-			target.Draw( m_drawable );
-		}
-
-		HandleExpose( target );
-	}
+	HandleUpdate( seconds );
 }
 
 void Widget::Invalidate() const {
@@ -203,6 +185,10 @@ void Widget::SetParent( const Widget::Ptr& parent ) {
 	}
 
 	m_parent = cont;
+
+	SetHierarchyLevel( parent->GetHierarchyLevel() + 1 );
+
+	Draw( parent->IsDrawn() );
 }
 
 void Widget::SetPosition( const sf::Vector2f& position ) {
@@ -373,6 +359,8 @@ void Widget::Show( bool show ) {
 
 	m_visible = show;
 
+	Draw( m_visible );
+
 	HandleVisibilityChange();
 
 	RequestResize();
@@ -446,9 +434,6 @@ void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
 void Widget::HandleAllocationChange( const sf::FloatRect& /*new_allocation*/ ) {
 }
 
-void Widget::HandleExpose( CullingTarget& /*target*/ ) const {
-}
-
 void Widget::HandleStateChange( State /*old_state*/ ) {
 	Invalidate();
 }
@@ -472,10 +457,8 @@ void Widget::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 }
 
 void Widget::HandleVisibilityChange() {
-	if( m_visible ) {
-		if( ( m_state == PRELIGHT ) || ( m_state == ACTIVE ) ) {
-			SetState( NORMAL );
-		}
+	if( m_state == PRELIGHT ) {
+		SetState( NORMAL );
 	}
 }
 
@@ -508,6 +491,37 @@ void Widget::Refresh() {
 }
 
 void Widget::HandleRequisitionChange() {
+}
+
+void Widget::HandleUpdate( float /*seconds*/ ) {
+}
+
+void Widget::HandleSetHierarchyLevel() {
+	if( m_drawable ) {
+		m_drawable->SetLevel( m_hierarchy_level );
+	}
+}
+
+bool Widget::IsDrawn() const {
+	return m_drawn;
+}
+
+void Widget::Draw( bool draw ) {
+	m_drawn = draw;
+
+	if( m_drawable ) {
+		m_drawable->Show( draw && IsVisible() );
+	}
+}
+
+void Widget::SetHierarchyLevel( int level ) {
+	m_hierarchy_level = level;
+
+	HandleSetHierarchyLevel();
+}
+
+int Widget::GetHierarchyLevel() const {
+	return m_hierarchy_level;
 }
 
 }

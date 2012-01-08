@@ -58,6 +58,8 @@ class SFGUI_API Container : public Widget {
 		 */
 		Container();
 
+		virtual void Draw( bool draw = true );
+
 		/** Handle adding children.
 		 * @param child Child widget.
 		 */
@@ -68,8 +70,6 @@ class SFGUI_API Container : public Widget {
 		 */
 		virtual void HandleRemove( const Widget::Ptr& child );
 
-		virtual void HandleExpose( CullingTarget& target ) const;
-
 		/** Handle visibility change.
 		 */
 		virtual void HandleVisibilityChange();
@@ -77,6 +77,10 @@ class SFGUI_API Container : public Widget {
 		/** Handle parent visibility change.
 		 */
 		virtual void HandleParentVisibilityChange();
+
+		virtual void HandleUpdate( float seconds );
+
+		virtual void HandleSetHierarchyLevel();
 
 	private:
 		WidgetsList m_children;

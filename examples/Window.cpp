@@ -1,8 +1,9 @@
 #include <SFML/Graphics.hpp>
 
 // Always include the necessary header files.
-// These mostly have the form SFGUI/<Widget name>.hpp
-#include <SFGUI/Window.hpp>
+// Including SFGUI/SFGUI.hpp includes everything
+// you can possibly need automatically.
+#include <SFGUI/SFGUI.hpp>
 
 int main() {
 	// Create the main SFML window
@@ -42,13 +43,17 @@ int main() {
 			}
 		}
 
+		// Update the GUI, note that you shouldn't normally
+		// pass 0 seconds to the update method.
+		window->Update( 0.f );
+
 		// Clear screen
 		app_window.Clear();
 
 		// After drawing the rest of your game, you have to let the GUI
 		// render itself. If you don't do this you will never be able
 		// to see it ;)
-		window->Expose( app_window );
+		sfg::Context::Get().GetProjectO().Display( app_window );
 
 		// NOTICE
 		// Because the window doesn't have any children it will shrink to
