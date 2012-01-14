@@ -9,7 +9,8 @@ namespace sfg {
 
 RenderQueue::RenderQueue() :
 	m_z_order( 0 ),
-	m_level( 0 )
+	m_level( 0 ),
+	m_show( true )
 {
 }
 
@@ -30,6 +31,10 @@ void RenderQueue::Add( RenderQueue* queue ) {
 void RenderQueue::Add( ProjectO::PrimitivePtr primitive ) {
 	m_primitives.push_back( primitive );
 	primitive->level = m_level;
+	primitive->position = m_position;
+	primitive->viewport = m_viewport;
+	primitive->visible = m_show;
+	primitive->synced = false;
 }
 
 const sf::Vector2f& RenderQueue::GetPosition() const {
@@ -64,6 +69,8 @@ void RenderQueue::SetZOrder( int z_order ) {
 }
 
 void RenderQueue::Show( bool show ) {
+	m_show = show;
+
 	std::size_t primitive_count = m_primitives.size();
 
 	for( std::size_t index = 0; index < primitive_count; ++index ) {
@@ -81,6 +88,21 @@ void RenderQueue::SetLevel( int level ) {
 		m_primitives[index]->level = level;
 		m_primitives[index]->synced = false;
 	}
+}
+
+void RenderQueue::SetViewport( const ProjectO::ViewportWeakPtr& viewport ) {
+	m_viewport = viewport;
+
+	std::size_t primitive_count = m_primitives.size();
+
+	for( std::size_t index = 0; index < primitive_count; ++index ) {
+		m_primitives[index]->viewport = m_viewport;
+		m_primitives[index]->synced = false;
+	}
+}
+
+const ProjectO::ViewportWeakPtr& RenderQueue::GetViewport() const {
+	return m_viewport;
 }
 
 }

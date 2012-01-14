@@ -85,7 +85,7 @@ void Ouchy::DoOuch() {
 SampleApp::SampleApp() :
 	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) ),
 	m_cull( true ),
-	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test" )
+	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) )
 {
 	m_background_texture.Create( 1024, 768 );
 
@@ -127,7 +127,7 @@ void SampleApp::Run() {
 	//m_window.EnableVerticalSync( true );
 
 	// Create widgets.
-	m_wndmain = sfg::Window::Create();
+	m_wndmain = sfg::Window::Create( sfg::Window::Titlebar | sfg::Window::Background | sfg::Window::Resize );
 	m_wndmain->SetTitle( L"Example application" );
 
 	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
@@ -224,7 +224,7 @@ void SampleApp::Run() {
 		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
 
 		for( int j = 0; j < 20; j++ ) {
-			//box->Pack( sfg::Button::Create( L"One button among many" ), true );
+			box->Pack( sfg::Button::Create( L"One button among many" ), true );
 		}
 
 		m_scrolled_window_box->Pack( box, false );
@@ -347,7 +347,7 @@ void SampleApp::Run() {
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
 	// Another window
-	sfg::Window::Ptr second_window( sfg::Window::Create() );
+	sfg::Window::Ptr second_window( sfg::Window::Create( sfg::Window::Titlebar | sfg::Window::Background | sfg::Window::Resize ) );
 	second_window->SetId( "second_window" );
 	second_window->SetTitle( "Another window" );
 	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
@@ -380,6 +380,10 @@ void SampleApp::Run() {
 	m_fps_clock.Reset();
 
 	sf::Clock clock;
+
+	sfg::Context::Get().GetProjectO().TuneDepthTest( true );
+	sfg::Context::Get().GetProjectO().TuneAlphaThreshold( .2f );
+	sfg::Context::Get().GetProjectO().TunePrecomputeBlending( false );
 
 	while( m_window.IsOpen() ) {
 		while( m_window.PollEvent( event ) ) {

@@ -195,6 +195,10 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 
 		int GetHierarchyLevel() const;
 
+		void SetViewport( const ProjectO::ViewportWeakPtr& viewport );
+
+		const ProjectO::ViewportWeakPtr& GetViewport() const;
+
 		// Signals.
 		Signal OnStateChange; //!< Fired when state changed. (old state)
 		Signal OnGainFocus; //!< Fired when focus gained.
@@ -313,6 +317,8 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 
 		virtual void HandleSetHierarchyLevel();
 
+		virtual void HandleViewportUpdate();
+
 	private:
 		void GrabFocus( Ptr widget );
 		bool HasFocus( Ptr widget );
@@ -320,6 +326,8 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;
 		sf::Vector2f* m_custom_requisition;
+
+		ProjectO::ViewportWeakPtr m_viewport;
 
 		WeakPtr<Container> m_parent;
 

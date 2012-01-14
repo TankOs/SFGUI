@@ -9,6 +9,7 @@ namespace eng {
 
 RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const {
 	sf::Color color( GetProperty<sf::Color>( "Color", spinner ) );
+	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", spinner ) );
 	float steps( GetProperty<float>( "Steps", spinner ) );
 	float inner_radius( GetProperty<float>( "InnerRadius", spinner ) );
 	float rod_thickness( GetProperty<float>( "RodThickness", spinner ) );
@@ -25,16 +26,17 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 
 	sf::Vector2f center_offset( spinner->GetAllocation().Width / 2.f, spinner->GetAllocation().Height / 2.f );
 
+	// We just have to produce the spinner in stopped state.
+	// The class itself will take care of the started state.
+	float blend = ( 255.f - static_cast<float>( stopped_alpha ) ) / 255.f;
+
+	sf::Color rod_color(
+		static_cast<sf::Uint8>( static_cast<float>( color.r ) * ( 1.f - blend ) + static_cast<float>( background_color.r ) * blend ),
+		static_cast<sf::Uint8>( static_cast<float>( color.g ) * ( 1.f - blend ) + static_cast<float>( background_color.g ) * blend ),
+		static_cast<sf::Uint8>( static_cast<float>( color.b ) * ( 1.f - blend ) + static_cast<float>( background_color.b ) * blend )
+	);
+
 	for( float index = 0.f; index < steps; index += 1.f ) {
-		sf::Color rod_color( color );
-
-		if( spinner->Started() ) {
-			rod_color.a = static_cast<sf::Uint8>( 255.f * index / ( steps - 1.f ) );
-		}
-		else {
-			rod_color.a = static_cast<sf::Uint8>( stopped_alpha );
-		}
-
 		// Time for some hardcore trigonometry...
 		sf::Vector2f inner_point(
 			static_cast<float>( cos( two_pi * index / steps ) ) * inner_radius,

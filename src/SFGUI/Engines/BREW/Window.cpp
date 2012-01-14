@@ -10,8 +10,7 @@ namespace eng {
 RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 	RenderQueue* queue( new RenderQueue );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", window ) );
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", window ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", window ) );
+	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", window ) );
 	sf::Color title_background_color( GetProperty<sf::Color>( "TitleBackgroundColor", window ) );
 	sf::Color title_text_color( GetProperty<sf::Color>( "Color", window ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", window ) );
@@ -24,11 +23,9 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
 	float title_size( GetLineHeight( title_font, title_font_size ) + 2 * title_padding );
 
-	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
-
 	if( window->HasStyle( Window::Background ) ) {
 		// Shadow.
-		if( shadow_distance > 0.f ) {
+		if( window->HasStyle( Window::Shadow ) ) {
 			sf::Color shadow_color( 0, 0, 0, shadow_alpha );
 
 			sf::FloatRect shadow_rect(
@@ -46,31 +43,15 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			);
 		}
 
-		if( border_width > 0 ) {
-			queue->Add(
-				CreateBorder(
-					sf::FloatRect(
-						0.f,
-						0.f,
-						window->GetAllocation().Width - border_width,
-						window->GetAllocation().Height - border_width
-					),
-					border_width,
-					border_color_light,
-					border_color_dark
-				)
-			);
-		}
-
+		// Pane.
 		queue->Add(
-			Context::Get().GetProjectO().CreateRect(
-				sf::FloatRect(
-					border_width,
-					border_width,
-					window->GetAllocation().Width - 2.f * border_width,
-					window->GetAllocation().Height - 2.f * border_width
-				),
-				background_color
+			Context::Get().GetProjectO().CreatePane(
+				sf::Vector2f( 0.f, 0.f ),
+				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height ),
+				border_width,
+				background_color,
+				border_color,
+				border_color_shift
 			)
 		);
 	}

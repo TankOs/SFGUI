@@ -8,8 +8,7 @@ namespace sfg {
 namespace eng {
 
 RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", check ) );
-	sf::Color border_color_dark( border_color_light );
+	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", check ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", check ) );
 	sf::Color color( GetProperty<sf::Color>( "Color", check ) );
 	sf::Color check_color( GetProperty<sf::Color>( "CheckColor", check ) );
@@ -23,18 +22,15 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 	RenderQueue* queue( new RenderQueue );
 
-	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
-
-	// Background.
+	// Check Pane.
 	queue->Add(
-		Context::Get().GetProjectO().CreateRect(
-			sf::FloatRect(
-				0.f,
-				check->GetAllocation().Height / 2.f - box_size / 2.f,
-				box_size,
-				box_size
-			),
-			background_color
+		Context::Get().GetProjectO().CreatePane(
+			sf::Vector2f( 0.f, check->GetAllocation().Height / 2.f - box_size / 2.f ),
+			sf::Vector2f( box_size, box_size ),
+			border_width,
+			background_color,
+			border_color,
+			-border_color_shift
 		)
 	);
 
@@ -53,20 +49,6 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 			)
 		);
 	}
-
-	queue->Add(
-		CreateBorder(
-			sf::FloatRect(
-				0.f,
-				check->GetAllocation().Height / 2.f - box_size / 2.f,
-				box_size,
-				box_size
-			),
-			border_width,
-			border_color_dark,
-			border_color_light
-		)
-	);
 
 	// Label.
 	if( check->GetLabel().GetSize() > 0 ) {

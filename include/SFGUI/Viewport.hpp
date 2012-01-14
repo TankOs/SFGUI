@@ -58,18 +58,30 @@ class SFGUI_API Viewport : public Bin {
 
 		virtual const std::string& GetName() const;
 
+		/** Handle changing of absolute position
+		 */
+		virtual void HandleAbsolutePositionChange();
+
 	protected:
 		sf::Vector2f CalculateRequisition();
 
 		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
+
+		virtual void HandleAdd( const Widget::Ptr& child );
+
+		virtual RenderQueue* InvalidateImpl() const;
 
 	private:
 		Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
 
 		void HandleRequisitionChange();
 
+		void UpdateView();
+
 		Adjustment::Ptr m_horizontal_adjustment;
 		Adjustment::Ptr m_vertical_adjustment;
+
+		ProjectO::ViewportPtr m_viewport;
 };
 
 }

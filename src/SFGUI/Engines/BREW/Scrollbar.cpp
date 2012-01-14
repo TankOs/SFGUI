@@ -8,17 +8,12 @@ namespace eng {
 RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scrollbar ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scrollbar ) );
-	sf::Color slider_border_color_light( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
-	sf::Color slider_border_color_dark( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
+	sf::Color slider_border_color( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
 	sf::Color stepper_color( GetProperty<sf::Color>( "StepperBackgroundColor", scrollbar ) );
-	sf::Color stepper_border_color_light( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
-	sf::Color stepper_border_color_dark( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
+	sf::Color stepper_border_color( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
 	sf::Color stepper_arrow_color( GetProperty<sf::Color>( "StepperArrowColor", scrollbar ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", scrollbar ) );
 	float border_width( GetProperty<float>( "BorderWidth", scrollbar ) );
-
-	ShiftBorderColors( slider_border_color_light, slider_border_color_dark, border_color_shift );
-	ShiftBorderColors( stepper_border_color_light, stepper_border_color_dark, border_color_shift );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -51,8 +46,8 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 				),
 				stepper_color,
 				border_width,
-				stepper_border_color_light,
-				stepper_border_color_dark,
+				stepper_border_color,
+				border_color_shift,
 				scrollbar->IsDecreaseStepperPressed()
 			)
 		);
@@ -77,8 +72,8 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 				),
 				stepper_color,
 				border_width,
-				stepper_border_color_light,
-				stepper_border_color_dark,
+				stepper_border_color,
+				border_color_shift,
 				scrollbar->IsIncreaseStepperPressed()
 			)
 		);
@@ -119,8 +114,8 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 				),
 				stepper_color,
 				border_width,
-				stepper_border_color_light,
-				stepper_border_color_dark,
+				stepper_border_color,
+				border_color_shift,
 				scrollbar->IsDecreaseStepperPressed()
 			)
 		);
@@ -145,8 +140,8 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 				),
 				stepper_color,
 				border_width,
-				stepper_border_color_light,
-				stepper_border_color_dark,
+				stepper_border_color,
+				border_color_shift,
 				scrollbar->IsIncreaseStepperPressed()
 			)
 		);
@@ -162,7 +157,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 	}
 
 	// Slider
-	queue->Add( CreateSlider( scrollbar->GetSliderRect(), slider_color, border_width, slider_border_color_light, slider_border_color_dark ) );
+	queue->Add( CreateSlider( scrollbar->GetSliderRect(), slider_color, border_width, slider_border_color, border_color_shift ) );
 
 	return queue;
 }

@@ -7,10 +7,8 @@ namespace sfg {
 namespace eng {
 
 RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", progress_bar ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", progress_bar ) );
-	sf::Color bar_border_color_light( GetProperty<sf::Color>( "BarBorderColor", progress_bar ) );
-	sf::Color bar_border_color_dark( GetProperty<sf::Color>( "BarBorderColor", progress_bar ) );
+	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", progress_bar ) );
+	sf::Color bar_border_color( GetProperty<sf::Color>( "BarBorderColor", progress_bar ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", progress_bar ) );
 	sf::Color progress_color( GetProperty<sf::Color>( "BarColor", progress_bar ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", progress_bar ) );
@@ -18,21 +16,17 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 	float border_width( GetProperty<float>( "BorderWidth", progress_bar ) );
 	float bar_border_width( GetProperty<float>( "BarBorderWidth", progress_bar ) );
 
-	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
-	ShiftBorderColors( bar_border_color_light, bar_border_color_dark, bar_border_color_shift );
-
 	RenderQueue* queue( new RenderQueue );
 
-	// Background.
+	// Pane.
 	queue->Add(
-		Context::Get().GetProjectO().CreateRect(
-			sf::FloatRect(
-				0.f,
-				0.f,
-				progress_bar->GetAllocation().Width,
-				progress_bar->GetAllocation().Height
-			),
-			background_color
+		Context::Get().GetProjectO().CreatePane(
+			sf::Vector2f( 0.f, 0.f ),
+			sf::Vector2f( progress_bar->GetAllocation().Width, progress_bar->GetAllocation().Height ),
+			border_width,
+			background_color,
+			border_color,
+			-border_color_shift
 		)
 	);
 
@@ -60,39 +54,18 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 			);
 		}
 
-		// Bar.
+		// Bar Pane.
 		queue->Add(
-			Context::Get().GetProjectO().CreateRect(
-				bar_rect,
-				progress_color
-			)
-		);
-
-		// Bar border.
-		queue->Add(
-			CreateBorder(
-				bar_rect,
+			Context::Get().GetProjectO().CreatePane(
+				sf::Vector2f( bar_rect.Left, bar_rect.Top ),
+				sf::Vector2f( bar_rect.Width, bar_rect.Height ),
 				bar_border_width,
-				bar_border_color_light,
-				bar_border_color_dark
+				progress_color,
+				bar_border_color,
+				bar_border_color_shift
 			)
 		);
 	}
-
-	// Border.
-	queue->Add(
-		CreateBorder(
-			sf::FloatRect(
-				0.f,
-				0.f,
-				progress_bar->GetAllocation().Width,
-				progress_bar->GetAllocation().Height
-			),
-			border_width,
-			border_color_dark,
-			border_color_light
-		)
-	);
 
 	return queue;
 }

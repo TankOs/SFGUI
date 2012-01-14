@@ -8,8 +8,7 @@ namespace sfg {
 namespace eng {
 
 RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", entry ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", entry ) );
+	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", entry ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", entry ) );
 	sf::Color text_color( GetProperty<sf::Color>( "Color", entry ) );
 	sf::Color cursor_color( GetProperty<sf::Color>( "Color", entry ) );
@@ -20,34 +19,17 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", entry ) ) );
 	const unsigned int& font_size( GetProperty<unsigned int>( "FontSize", entry ) );
 
-	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
-
 	RenderQueue* queue( new RenderQueue );
 
-	// Background.
+	// Pane.
 	queue->Add(
-		Context::Get().GetProjectO().CreateRect(
-			sf::FloatRect(
-				0.f,
-				0.f,
-				entry->GetAllocation().Width,
-				entry->GetAllocation().Height
-			),
-			background_color
-		)
-	);
-
-	queue->Add(
-		CreateBorder(
-			sf::FloatRect(
-				0.f,
-				0.f,
-				entry->GetAllocation().Width,
-				entry->GetAllocation().Height
-			),
+		Context::Get().GetProjectO().CreatePane(
+			sf::Vector2f( 0.f, 0.f ),
+			sf::Vector2f( entry->GetAllocation().Width, entry->GetAllocation().Height ),
 			border_width,
-			border_color_dark,
-			border_color_light
+			background_color,
+			border_color,
+			-border_color_shift
 		)
 	);
 

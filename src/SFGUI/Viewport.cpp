@@ -1,4 +1,5 @@
 #include <SFGUI/Viewport.hpp>
+#include <SFGUI/Context.hpp>
 #include <cmath>
 
 namespace sfg {
@@ -10,6 +11,8 @@ Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustme
 
 	SetHorizontalAdjustment( horizontal_adjustment );
 	SetVerticalAdjustment( vertical_adjustment );
+
+	m_viewport = Context::Get().GetProjectO().CreateViewport();
 }
 
 Viewport::Ptr Viewport::Create() {
@@ -21,11 +24,29 @@ Viewport::Ptr Viewport::Create( const Adjustment::Ptr& horizontal_adjustment, co
 	return ptr;
 }
 
+RenderQueue* Viewport::InvalidateImpl() const {
+	m_viewport->source_origin.x = std::floor( m_horizontal_adjustment->GetValue() + .5f );
+	m_viewport->source_origin.y = std::floor( m_vertical_adjustment->GetValue() + .5f );
+
+	return 0;
+}
+
 sf::Vector2f Viewport::CalculateRequisition() {
 	return sf::Vector2f( 0.f, 0.f );
 }
 
 void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+	sf::FloatRect allocation = GetAllocation();
+
+	m_viewport->size.x = std::floor( allocation.Width + .5f );
+	m_viewport->size.y = std::floor( allocation.Height + .5f );
+}
+
+void Viewport::HandleAbsolutePositionChange() {
+	sf::Vector2f position = Widget::GetAbsolutePosition();
+
+	m_viewport->destination_origin.x = std::floor( position.x + .5f );
+	m_viewport->destination_origin.y = std::floor( position.y + .5f );
 }
 
 void Viewport::HandleEvent( const sf::Event& event ) {
@@ -100,6 +121,7 @@ const Adjustment::Ptr& Viewport::GetHorizontalAdjustment() const {
 
 void Viewport::SetHorizontalAdjustment( const Adjustment::Ptr& horizontal_adjustment ) {
 	m_horizontal_adjustment = horizontal_adjustment;
+	m_horizontal_adjustment->OnChange.Connect( &Viewport::UpdateView, this );
 }
 
 const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
@@ -108,6 +130,7 @@ const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
 
 void Viewport::SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment ) {
 	m_vertical_adjustment = vertical_adjustment;
+	m_vertical_adjustment->OnChange.Connect( &Viewport::UpdateView, this );
 }
 
 void Viewport::HandleRequisitionChange() {
@@ -124,6 +147,21 @@ void Viewport::HandleRequisitionChange() {
 const std::string& Viewport::GetName() const {
 	static const std::string name( "Viewport" );
 	return name;
+}
+
+void Viewport::HandleAdd( const Widget::Ptr& child ) {
+	Bin::HandleAdd( child );
+
+	if( !IsChild( child ) ) {
+		return;
+	}
+
+	child->SetViewport( ProjectO::ViewportWeakPtr( m_viewport ) );
+}
+
+void Viewport::UpdateView() {
+	m_viewport->source_origin.x = std::floor( m_horizontal_adjustment->GetValue() + .5f );
+	m_viewport->source_origin.y = std::floor( m_vertical_adjustment->GetValue() + .5f );
 }
 
 }

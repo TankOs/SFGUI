@@ -3,11 +3,13 @@
 #include <SFGUI/Engine.hpp>
 
 #include <SFML/Graphics/VertexArray.hpp>
+#include <cassert>
 
 namespace sfg {
 
 Spinner::Spinner() :
 	m_elapsed_time( 0.f ),
+	m_stage( 1 ),
 	m_renderqueue( 0 ),
 	m_started( false )
 {
@@ -25,6 +27,7 @@ Spinner::Ptr Spinner::Create() {
 void Spinner::Start() {
 	m_started = true;
 	m_elapsed_time = 0.f;
+	m_stage = 1;
 
 	Invalidate();
 }
@@ -57,6 +60,8 @@ const std::string& Spinner::GetName() const {
 void Spinner::HandleUpdate( float seconds ) {
 	float duration( Context::Get().GetEngine().GetProperty<float>( "CycleDuration", shared_from_this() ) );
 	float steps( Context::Get().GetEngine().GetProperty<float>( "Steps", shared_from_this() ) );
+	sf::Color color( Context::Get().GetEngine().GetProperty<sf::Color>( "Color", shared_from_this() ) );
+	sf::Color background_color( Context::Get().GetEngine().GetProperty<sf::Color>( "BackgroundColor", shared_from_this() ) );
 
 	m_elapsed_time += seconds;
 
@@ -67,19 +72,47 @@ void Spinner::HandleUpdate( float seconds ) {
 		const std::vector<ProjectO::PrimitivePtr>& primitives( m_renderqueue->GetPrimitives() );
 
 		// Epic variable name
-		int alpha_delta = static_cast<int>( 255.f / ( steps - 1.f ) );
+		int alpha_delta = static_cast<int>( static_cast<float>( background_color.a - color.a ) / ( steps - 1.f ) );
+		int red_delta = static_cast<int>( static_cast<float>( background_color.r - color.r ) / ( steps - 1.f ) );
+		int green_delta = static_cast<int>( static_cast<float>( background_color.g - color.g ) / ( steps - 1.f ) );
+		int blue_delta = static_cast<int>( static_cast<float>( background_color.b - color.b ) / ( steps - 1.f ) );
 
 		std::size_t primitives_size = primitives.size();
 
-		for( std::size_t index = 0; index < primitives_size; ++index ) {
+		// Make sure we don't bite ourselves in the tail.
+		assert( primitives_size == static_cast<std::size_t>( steps ) );
+
+		unsigned int current_stage = m_stage++;
+
+		m_stage %= primitives_size;
+
+		for( std::size_t index = primitives_size; index > 0; --index ) {
+			ProjectO::Primitive* primitive = primitives[index - 1].get();
+
 			// We exploit integer wraparound here ;)
-			primitives[index]->vertices[0].color.a = static_cast<sf::Uint8>( primitives[index]->vertices[0].color.a - alpha_delta );
-			primitives[index]->vertices[1].color.a = static_cast<sf::Uint8>( primitives[index]->vertices[1].color.a - alpha_delta );
-			primitives[index]->vertices[2].color.a = static_cast<sf::Uint8>( primitives[index]->vertices[2].color.a - alpha_delta );
-			primitives[index]->vertices[3].color.a = static_cast<sf::Uint8>( primitives[index]->vertices[3].color.a - alpha_delta );
-			primitives[index]->vertices[4].color.a = static_cast<sf::Uint8>( primitives[index]->vertices[4].color.a - alpha_delta );
-			primitives[index]->vertices[5].color.a = static_cast<sf::Uint8>( primitives[index]->vertices[5].color.a - alpha_delta );
-			primitives[index]->synced = false;
+			primitive->vertices[1].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
+			primitive->vertices[2].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
+			primitive->vertices[3].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
+			primitive->vertices[4].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
+
+			primitive->vertices[1].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
+			primitive->vertices[2].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
+			primitive->vertices[3].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
+			primitive->vertices[4].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
+
+			primitive->vertices[1].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
+			primitive->vertices[2].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
+			primitive->vertices[3].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
+			primitive->vertices[4].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
+
+			primitive->vertices[1].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
+			primitive->vertices[2].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
+			primitive->vertices[3].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
+			primitive->vertices[4].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
+
+			primitive->synced = false;
+
+			current_stage = ( current_stage + 1 ) % primitives_size;
 		}
 	}
 }

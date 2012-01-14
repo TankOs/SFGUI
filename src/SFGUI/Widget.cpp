@@ -147,6 +147,7 @@ void Widget::Update( float seconds ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
 			m_drawable->SetLevel( m_hierarchy_level );
 			m_drawable->Show( IsDrawn() && IsVisible() );
+			m_drawable->SetViewport( m_viewport );
 		}
 	}
 
@@ -522,6 +523,22 @@ void Widget::SetHierarchyLevel( int level ) {
 
 int Widget::GetHierarchyLevel() const {
 	return m_hierarchy_level;
+}
+
+void Widget::SetViewport( const ProjectO::ViewportWeakPtr& viewport ) {
+	m_viewport = viewport;
+
+	HandleViewportUpdate();
+}
+
+const ProjectO::ViewportWeakPtr& Widget::GetViewport() const {
+	return m_viewport;
+}
+
+void Widget::HandleViewportUpdate() {
+	if( m_drawable ) {
+		m_drawable->SetViewport( m_viewport );
+	}
 }
 
 }

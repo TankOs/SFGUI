@@ -8,8 +8,7 @@ namespace sfg {
 namespace eng {
 
 RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> button ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", button ) );
-	sf::Color border_color_dark( border_color_light );
+	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", button ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
 	sf::Color color( GetProperty<sf::Color>( "Color", button ) );
@@ -18,38 +17,21 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 	unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 
-	if( button->GetState() != Button::ACTIVE && !button->IsActive() ) {
-		ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
-	}
-	else {
-		ShiftBorderColors( border_color_dark, border_color_light, border_color_shift );
+	if( ( button->GetState() == Button::ACTIVE ) || button->IsActive() ) {
+		border_color_shift = -border_color_shift;
 	}
 
 	RenderQueue* queue( new RenderQueue );
 
+	// Pane.
 	queue->Add(
-		Context::Get().GetProjectO().CreateRect(
-			sf::FloatRect(
-				0.f,
-				0.f,
-				button->GetAllocation().Width,
-				button->GetAllocation().Height
-			),
-			background_color
-		)
-	);
-
-	queue->Add(
-		CreateBorder(
-			sf::FloatRect(
-				0.f,
-				0.f,
-				button->GetAllocation().Width,
-				button->GetAllocation().Height
-			),
+		Context::Get().GetProjectO().CreatePane(
+			sf::Vector2f( 0.f, 0.f ),
+			sf::Vector2f( button->GetAllocation().Width, button->GetAllocation().Height ),
 			border_width,
-			border_color_light,
-			border_color_dark
+			background_color,
+			border_color,
+			border_color_shift
 		)
 	);
 

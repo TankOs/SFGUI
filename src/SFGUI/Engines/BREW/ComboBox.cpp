@@ -9,8 +9,7 @@ namespace sfg {
 namespace eng {
 
 RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", combo_box ) );
-	sf::Color border_color_dark( border_color_light );
+	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", combo_box ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", combo_box ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", combo_box ) );
 	sf::Color highlighted_color( GetProperty<sf::Color>( "HighlightedColor", combo_box ) );
@@ -23,55 +22,24 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 	const float line_height( GetLineHeight( font, font_size ) );
 
-	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
-
 	RenderQueue* queue( new RenderQueue );
 
-	// Background.
+	if( combo_box->GetState() == ComboBox::ACTIVE ) {
+		border_color_shift = -border_color_shift;
+	}
+
+	// Pane
 	queue->Add(
-		Context::Get().GetProjectO().CreateRect(
-			sf::FloatRect(
-				0.f,
-				0.f,
-				combo_box->GetAllocation().Width,
-				combo_box->GetAllocation().Height
-			),
-			background_color
+		Context::Get().GetProjectO().CreatePane(
+			sf::Vector2f( 0.f, 0.f ),
+			sf::Vector2f( combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ),
+			border_width,
+			background_color,
+			border_color,
+			border_color_shift
 		)
 	);
 
-	if( combo_box->GetState() != ComboBox::ACTIVE ) {
-		queue->Add(
-			CreateBorder(
-				sf::FloatRect(
-					0.f,
-					0.f,
-					combo_box->GetAllocation().Width,
-					combo_box->GetAllocation().Height
-				),
-				border_width,
-				border_color_light,
-				border_color_dark
-			)
-		);
-	}
-	else {
-		queue->Add(
-			CreateBorder(
-				sf::FloatRect(
-					0.f,
-					0.f,
-					combo_box->GetAllocation().Width,
-					combo_box->GetAllocation().Height
-				),
-				border_width,
-				border_color_dark,
-				border_color_light
-			)
-		);
-	}
-
-	// Labels.
 	if( combo_box->IsPoppedUp() ) {
 		const sf::Vector2f item_size(
 			combo_box->GetAllocation().Width - 2 * border_width,
@@ -84,19 +52,19 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 		float expanded_height = static_cast<float>( combo_box->GetItemCount() ) * item_size.y;
 
-		// Popup background.
+		// Popup Pane
 		queue->Add(
-			Context::Get().GetProjectO().CreateRect(
-				sf::FloatRect(
-					0.f,
-					combo_box->GetAllocation().Height,
-					combo_box->GetAllocation().Width,
-					expanded_height
-				),
-				background_color
+			Context::Get().GetProjectO().CreatePane(
+				sf::Vector2f( 0.f, combo_box->GetAllocation().Height ),
+				sf::Vector2f( combo_box->GetAllocation().Width, expanded_height ),
+				border_width,
+				background_color,
+				border_color,
+				-border_color_shift
 			)
 		);
 
+		// Labels.
 		for( ComboBox::IndexType item_index = 0; item_index < combo_box->GetItemCount(); ++item_index ) {
 			if( combo_box->GetItem( item_index ).GetSize() == 0 ) {
 				continue;
@@ -108,9 +76,9 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 					Context::Get().GetProjectO().CreateRect(
 						sf::FloatRect(
 							item_position.x + border_width,
-							item_position.y,
-							item_size.x + border_width,
-							item_size.y
+							item_position.y + border_width,
+							item_size.x,
+							item_size.y - 2.f * border_width
 						),
 						highlighted_color
 					)
@@ -126,20 +94,6 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 			item_position.y += item_size.y;
 		}
-
-		queue->Add(
-			CreateBorder(
-				sf::FloatRect(
-					0.f,
-					combo_box->GetAllocation().Height,
-					combo_box->GetAllocation().Width,
-					expanded_height
-				),
-				border_width,
-				border_color_light,
-				border_color_dark
-			)
-		);
 	}
 
 	if( combo_box->GetSelectedItem() != ComboBox::NONE ) {

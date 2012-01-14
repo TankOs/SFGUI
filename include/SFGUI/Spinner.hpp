@@ -49,6 +49,8 @@ class SFGUI_API Spinner : public Widget {
 
 		float m_elapsed_time;
 
+		unsigned int m_stage;
+
 		mutable RenderQueue* m_renderqueue;
 
 		bool m_started;

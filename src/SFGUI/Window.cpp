@@ -4,9 +4,9 @@
 
 namespace sfg {
 
-Window::Window() :
+Window::Window( int style ) :
 	Bin(),
-	m_style( Toplevel ),
+	m_style( style ),
 	m_dragging( false ),
 	m_resizing( false )
 {
@@ -15,8 +15,8 @@ Window::Window() :
 Window::~Window() {
 }
 
-Window::Ptr Window::Create() {
-	Window::Ptr window( new Window );
+Window::Ptr Window::Create( int style ) {
+	Window::Ptr window( new Window( style ) );
 
 	window->RequestResize();
 

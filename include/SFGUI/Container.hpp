@@ -82,6 +82,8 @@ class SFGUI_API Container : public Widget {
 
 		virtual void HandleSetHierarchyLevel();
 
+		virtual void HandleViewportUpdate();
+
 	private:
 		WidgetsList m_children;
 };

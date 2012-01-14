@@ -8,13 +8,10 @@ namespace eng {
 RenderQueue* BREW::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scale ) );
 	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scale ) );
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", scale ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", scale ) );
+	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", scale ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", scale ) );
 	float trough_thickness( GetProperty<float>( "TroughWidth", scale ) );
 	float border_width( GetProperty<float>( "BorderWidth", scale ) );
-
-	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -52,7 +49,7 @@ RenderQueue* BREW::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	}
 
 	// Slider
-	queue->Add( CreateSlider( slider_rect, slider_color, border_width, border_color_light, border_color_dark ) );
+	queue->Add( CreateSlider( slider_rect, slider_color, border_width, border_color, border_color_shift ) );
 
 	return queue;
 }

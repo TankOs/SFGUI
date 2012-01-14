@@ -188,40 +188,52 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	return queue;
 }
 
-RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
+RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& background_color, float border_width, const sf::Color& border_color, int border_color_shift ) {
 	RenderQueue* queue( new RenderQueue );
 
 	// Align rect to pixels
-	sf::FloatRect aligned_rect;
-	aligned_rect.Left = std::floor( rect.Left + .5f );
-	aligned_rect.Top = std::floor( rect.Top + .5f );
-	aligned_rect.Width = std::floor( rect.Width + .5f );
-	aligned_rect.Height = std::floor( rect.Height + .5f );
+	float left = std::floor( rect.Left + .5f );
+	float top = std::floor( rect.Top + .5f );
+	float width = std::floor( rect.Width + .5f );
+	float height = std::floor( rect.Height + .5f );
 
-	queue->Add( Context::Get().GetProjectO().CreateRect( aligned_rect, background ) );
-	queue->Add( CreateBorder( aligned_rect, border_width, light_color, dark_color ) ); // Border
+	queue->Add(
+		Context::Get().GetProjectO().CreatePane(
+			sf::Vector2f( left, top ),
+			sf::Vector2f( width, height ),
+			border_width,
+			background_color,
+			border_color,
+			border_color_shift
+		)
+	);
 
 	return queue;
 }
 
-RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& background, float border_width, const sf::Color& light_color, const sf::Color& dark_color, bool pressed ) {
+RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& background_color, float border_width, const sf::Color& border_color, int border_color_shift, bool pressed ) {
 	RenderQueue* queue( new RenderQueue );
 
 	// Align rect to pixels
-	sf::FloatRect aligned_rect;
-	aligned_rect.Left = std::floor( rect.Left + .5f );
-	aligned_rect.Top = std::floor( rect.Top + .5f );
-	aligned_rect.Width = std::floor( rect.Width + .5f );
-	aligned_rect.Height = std::floor( rect.Height + .5f );
-
-	queue->Add( Context::Get().GetProjectO().CreateRect( aligned_rect, background ) );
+	float left = std::floor( rect.Left + .5f );
+	float top = std::floor( rect.Top + .5f );
+	float width = std::floor( rect.Width + .5f );
+	float height = std::floor( rect.Height + .5f );
 
 	if( pressed ) {
-		queue->Add( CreateBorder( aligned_rect, border_width, dark_color, light_color ) );
+		border_color_shift = -border_color_shift;
 	}
-	else {
-		queue->Add( CreateBorder( aligned_rect, border_width, light_color, dark_color ) );
-	}
+
+	queue->Add(
+		Context::Get().GetProjectO().CreatePane(
+			sf::Vector2f( left, top ),
+			sf::Vector2f( width, height ),
+			border_width,
+			background_color,
+			border_color,
+			border_color_shift
+		)
+	);
 
 	return queue;
 }

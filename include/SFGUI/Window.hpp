@@ -20,7 +20,8 @@ class SFGUI_API Window : public Bin {
 			Titlebar = 1 << 0, //!< Titlebar.
 			Background = 1 << 1, //!< Background.
 			Resize = 1 << 2, //!< Resizable.
-			Toplevel = Titlebar | Background | Resize //!< Toplevel window.
+			Shadow = 1 << 3, //!< Has shadow.
+			Toplevel = Titlebar | Background | Resize | Shadow //!< Toplevel window.
 		};
 
 		/** Dtor.
@@ -28,8 +29,9 @@ class SFGUI_API Window : public Bin {
 		virtual ~Window();
 
 		/** Create widget.
+		 * @param style Style the Window should have. Defaults to TopLevel.
 		 */
-		static Ptr Create();
+		static Ptr Create( int style = Window::Toplevel );
 
 		virtual const std::string& GetName() const;
 
@@ -67,8 +69,9 @@ class SFGUI_API Window : public Bin {
 
 	protected:
 		/** Constructor.
+		 * @param style Window style.
 		 */
-		Window();
+		Window( int style );
 
 		virtual RenderQueue* InvalidateImpl() const;
 

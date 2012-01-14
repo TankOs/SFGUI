@@ -68,13 +68,20 @@ class SFGUI_API RenderQueue {
 
 		void SetLevel( int level );
 
+		void SetViewport( const ProjectO::ViewportWeakPtr& viewport );
+
+		const ProjectO::ViewportWeakPtr& GetViewport() const;
+
 	private:
 		std::vector<ProjectO::PrimitivePtr> m_primitives;
 
 		sf::Vector2f m_position;
+		ProjectO::ViewportWeakPtr m_viewport;
 
 		int m_z_order;
 		int m_level;
+
+		bool m_show;
 };
 
 }
