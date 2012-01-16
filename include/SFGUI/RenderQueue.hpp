@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/SharedPtr.hpp>
-#include <SFGUI/ProjectO.hpp>
+#include <SFGUI/Renderer.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/OpenGL.hpp>
@@ -35,7 +35,7 @@ class SFGUI_API RenderQueue {
 		 */
 		void Add( RenderQueue* queue );
 
-		void Add( ProjectO::PrimitivePtr primitive );
+		void Add( Primitive::Ptr primitive );
 
 		/** Get position of the drawable.
 		 * @return Position of the drawable.
@@ -50,7 +50,7 @@ class SFGUI_API RenderQueue {
 		/** Get the primitives in this queue.
 		 * @return Primitives in this queue.
 		 */
-		const std::vector<ProjectO::PrimitivePtr>& GetPrimitives() const;
+		const std::vector<Primitive::Ptr>& GetPrimitives() const;
 
 		/** Get the Z layer this object should be rendered in.
 		 * Larger values are rendered later. Default: 0.
@@ -68,15 +68,15 @@ class SFGUI_API RenderQueue {
 
 		void SetLevel( int level );
 
-		void SetViewport( const ProjectO::ViewportWeakPtr& viewport );
+		void SetViewport( const RendererViewport::Ptr& viewport );
 
-		const ProjectO::ViewportWeakPtr& GetViewport() const;
+		const RendererViewport::Ptr& GetViewport() const;
 
 	private:
-		std::vector<ProjectO::PrimitivePtr> m_primitives;
+		std::vector<Primitive::Ptr> m_primitives;
 
 		sf::Vector2f m_position;
-		ProjectO::ViewportWeakPtr m_viewport;
+		RendererViewport::Ptr m_viewport;
 
 		int m_z_order;
 		int m_level;

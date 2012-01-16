@@ -10,6 +10,7 @@ namespace eng {
 RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const {
 	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", check ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", check ) );
+	sf::Color global_background_color( GetProperty<sf::Color>( "BackgroundColor", Widget::Ptr() ) );
 	sf::Color color( GetProperty<sf::Color>( "Color", check ) );
 	sf::Color check_color( GetProperty<sf::Color>( "CheckColor", check ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", check ) );
@@ -24,7 +25,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 
 	// Check Pane.
 	queue->Add(
-		Context::Get().GetProjectO().CreatePane(
+		Context::Get().GetRenderer().CreatePane(
 			sf::Vector2f( 0.f, check->GetAllocation().Height / 2.f - box_size / 2.f ),
 			sf::Vector2f( box_size, box_size ),
 			border_width,
@@ -38,7 +39,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 		float diff( box_size - check_size );
 
 		queue->Add(
-			Context::Get().GetProjectO().CreateRect(
+			Context::Get().GetRenderer().CreateRect(
 				sf::FloatRect(
 					box_size / 2 - check_size / 2,
 					check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f,
@@ -55,15 +56,13 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 		sf::Vector2f metrics = GetTextMetrics( check->GetLabel(), font, font_size );
 		metrics.y = GetLineHeight( font, font_size );
 
-		sf::Text* text( new sf::Text( check->GetLabel(), font, font_size ) );
-		text->SetPosition(
+		sf::Text text( check->GetLabel(), font, font_size );
+		text.SetPosition(
 			box_size + spacing,
 			check->GetAllocation().Height / 2.f - metrics.y / 2.f
 		);
-		text->SetColor( color );
-		queue->Add( Context::Get().GetProjectO().CreateText( *text ) );
-
-		delete text;
+		text.SetColor( color );
+		queue->Add( Context::Get().GetRenderer().CreateText( text, global_background_color ) );
 	}
 
 	return queue;

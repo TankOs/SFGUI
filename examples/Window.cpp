@@ -53,7 +53,7 @@ int main() {
 		// After drawing the rest of your game, you have to let the GUI
 		// render itself. If you don't do this you will never be able
 		// to see it ;)
-		sfg::Context::Get().GetProjectO().Display( app_window );
+		sfg::Context::Get().GetRenderer().Display( app_window );
 
 		// NOTICE
 		// Because the window doesn't have any children it will shrink to

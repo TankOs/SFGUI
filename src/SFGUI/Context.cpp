@@ -65,9 +65,9 @@ SharedPtr<Widget> Context::GetActiveWidget() const {
 	return m_active_widget.lock();
 }
 
-ProjectO& Context::GetProjectO() {
+Renderer& Context::GetRenderer() {
 	if( !m_projecto ) {
-		m_projecto = new ProjectO;
+		m_projecto = new Renderer;
 	}
 
 	return *m_projecto;

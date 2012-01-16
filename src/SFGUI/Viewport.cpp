@@ -12,7 +12,7 @@ Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustme
 	SetHorizontalAdjustment( horizontal_adjustment );
 	SetVerticalAdjustment( vertical_adjustment );
 
-	m_viewport = Context::Get().GetProjectO().CreateViewport();
+	m_viewport = Context::Get().GetRenderer().CreateViewport();
 }
 
 Viewport::Ptr Viewport::Create() {
@@ -156,7 +156,7 @@ void Viewport::HandleAdd( const Widget::Ptr& child ) {
 		return;
 	}
 
-	child->SetViewport( ProjectO::ViewportWeakPtr( m_viewport ) );
+	child->SetViewport( m_viewport );
 }
 
 void Viewport::UpdateView() {

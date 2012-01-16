@@ -69,7 +69,7 @@ void Spinner::HandleUpdate( float seconds ) {
 		m_elapsed_time = 0.f;
 
 		// We built it... so we can make some useful assumptions.
-		const std::vector<ProjectO::PrimitivePtr>& primitives( m_renderqueue->GetPrimitives() );
+		const std::vector<Primitive::Ptr>& primitives( m_renderqueue->GetPrimitives() );
 
 		// Epic variable name
 		int alpha_delta = static_cast<int>( static_cast<float>( background_color.a - color.a ) / ( steps - 1.f ) );
@@ -87,7 +87,7 @@ void Spinner::HandleUpdate( float seconds ) {
 		m_stage %= primitives_size;
 
 		for( std::size_t index = primitives_size; index > 0; --index ) {
-			ProjectO::Primitive* primitive = primitives[index - 1].get();
+			Primitive* primitive = primitives[index - 1].get();
 
 			// We exploit integer wraparound here ;)
 			primitive->vertices[1].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
@@ -114,6 +114,8 @@ void Spinner::HandleUpdate( float seconds ) {
 
 			current_stage = ( current_stage + 1 ) % primitives_size;
 		}
+
+		Context::Get().GetRenderer().InvalidateVBO();
 	}
 }
 

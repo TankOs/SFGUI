@@ -81,7 +81,7 @@ class SFGUI_API Viewport : public Bin {
 		Adjustment::Ptr m_horizontal_adjustment;
 		Adjustment::Ptr m_vertical_adjustment;
 
-		ProjectO::ViewportPtr m_viewport;
+		RendererViewport::Ptr m_viewport;
 };
 
 }

@@ -173,7 +173,7 @@ void GuessMyNumber::Run() {
 
 		window->Update( 0.f );
 		render_window.Clear();
-		sfg::Context::Get().GetProjectO().Display( render_window );
+		sfg::Context::Get().GetRenderer().Display( render_window );
 		render_window.Display();
 	}
 }

@@ -1,4 +1,5 @@
 #include <SFGUI/RenderQueue.hpp>
+#include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shape.hpp>
@@ -12,9 +13,14 @@ RenderQueue::RenderQueue() :
 	m_level( 0 ),
 	m_show( true )
 {
+	m_viewport = Context::Get().GetRenderer().GetDefaultViewport();
 }
 
 RenderQueue::~RenderQueue() {
+	while( !m_primitives.empty() ) {
+		Context::Get().GetRenderer().RemovePrimitive( m_primitives.back() );
+		m_primitives.pop_back();
+	}
 }
 
 void RenderQueue::Add( RenderQueue* queue ) {
@@ -28,13 +34,15 @@ void RenderQueue::Add( RenderQueue* queue ) {
 	delete queue;
 }
 
-void RenderQueue::Add( ProjectO::PrimitivePtr primitive ) {
+void RenderQueue::Add( Primitive::Ptr primitive ) {
 	m_primitives.push_back( primitive );
 	primitive->level = m_level;
 	primitive->position = m_position;
 	primitive->viewport = m_viewport;
 	primitive->visible = m_show;
 	primitive->synced = false;
+
+	Context::Get().GetRenderer().InvalidateVBO();
 }
 
 const sf::Vector2f& RenderQueue::GetPosition() const {
@@ -54,9 +62,11 @@ void RenderQueue::SetPosition( const sf::Vector2f& position ) {
 		m_primitives[index]->position = position;
 		m_primitives[index]->synced = false;
 	}
+
+	Context::Get().GetRenderer().InvalidateVBO();
 }
 
-const std::vector<ProjectO::PrimitivePtr>& RenderQueue::GetPrimitives() const {
+const std::vector<Primitive::Ptr>& RenderQueue::GetPrimitives() const {
 	return m_primitives;
 }
 
@@ -77,6 +87,8 @@ void RenderQueue::Show( bool show ) {
 		m_primitives[index]->visible = show;
 		m_primitives[index]->synced = false;
 	}
+
+	Context::Get().GetRenderer().InvalidateVBO();
 }
 
 void RenderQueue::SetLevel( int level ) {
@@ -88,9 +100,11 @@ void RenderQueue::SetLevel( int level ) {
 		m_primitives[index]->level = level;
 		m_primitives[index]->synced = false;
 	}
+
+	Context::Get().GetRenderer().InvalidateVBO();
 }
 
-void RenderQueue::SetViewport( const ProjectO::ViewportWeakPtr& viewport ) {
+void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
 	m_viewport = viewport;
 
 	std::size_t primitive_count = m_primitives.size();
@@ -99,9 +113,11 @@ void RenderQueue::SetViewport( const ProjectO::ViewportWeakPtr& viewport ) {
 		m_primitives[index]->viewport = m_viewport;
 		m_primitives[index]->synced = false;
 	}
+
+	Context::Get().GetRenderer().InvalidateVBO();
 }
 
-const ProjectO::ViewportWeakPtr& RenderQueue::GetViewport() const {
+const RendererViewport::Ptr& RenderQueue::GetViewport() const {
 	return m_viewport;
 }
 

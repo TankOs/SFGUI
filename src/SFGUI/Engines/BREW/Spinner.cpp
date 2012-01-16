@@ -49,7 +49,7 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 		);
 
 		queue->Add(
-			Context::Get().GetProjectO().CreateLine(
+			Context::Get().GetRenderer().CreateLine(
 				inner_point + center_offset,
 				outer_point + center_offset,
 				rod_color,

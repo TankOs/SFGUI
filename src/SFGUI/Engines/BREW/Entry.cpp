@@ -23,7 +23,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 
 	// Pane.
 	queue->Add(
-		Context::Get().GetProjectO().CreatePane(
+		Context::Get().GetRenderer().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
 			sf::Vector2f( entry->GetAllocation().Width, entry->GetAllocation().Height ),
 			border_width,
@@ -34,13 +34,11 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	);
 
 	float line_height = GetLineHeight( font, font_size );
-	sf::Text* vis_label( new sf::Text( entry->GetVisibleText(), font, font_size ) );
-	vis_label->SetColor( text_color );
-	vis_label->SetPosition( text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
+	sf::Text vis_label( entry->GetVisibleText(), font, font_size );
+	vis_label.SetColor( text_color );
+	vis_label.SetPosition( text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
 
-	queue->Add( Context::Get().GetProjectO().CreateText( *vis_label ) );
-
-	delete vis_label;
+	queue->Add( Context::Get().GetRenderer().CreateText( vis_label, background_color ) );
 
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->GetState() == Widget::ACTIVE && entry->IsCursorVisible() ) {
@@ -53,7 +51,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
 
 		queue->Add(
-			Context::Get().GetProjectO().CreateRect(
+			Context::Get().GetRenderer().CreateRect(
 				sf::FloatRect(
 					metrics.x + text_padding,
 					entry->GetAllocation().Height / 2.f - line_height / 2.f,

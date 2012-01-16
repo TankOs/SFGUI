@@ -151,17 +151,21 @@ const std::string* Engine::GetValue( const std::string& property, SharedPtr<cons
 	PropertyMap::const_iterator prop_iter( m_properties.find( property ) );
 
 	if( prop_iter != m_properties.end() ) {
-		// Find widget-specific properties, first.
-		WidgetNameMap::const_iterator name_iter( prop_iter->second.find( widget->GetName() ) );
+		WidgetNameMap::const_iterator name_iter;
 
-		if( name_iter != prop_iter->second.end() ) {
-			// Check against selectors.
-			std::size_t selector_value_list_size = name_iter->second.size();
+		if( widget ) {
+			// Find widget-specific properties, first.
+			name_iter = prop_iter->second.find( widget->GetName() );
 
-			for( std::size_t index = 0; index < selector_value_list_size; ++index ) {
-				if( name_iter->second[index].first->Matches( widget ) ) {
-					// Found, return value.
-					return &name_iter->second[index].second;
+			if( name_iter != prop_iter->second.end() ) {
+				// Check against selectors.
+				std::size_t selector_value_list_size = name_iter->second.size();
+
+				for( std::size_t index = 0; index < selector_value_list_size; ++index ) {
+					if( name_iter->second[index].first->Matches( widget ) ) {
+						// Found, return value.
+						return &name_iter->second[index].second;
+					}
 				}
 			}
 		}

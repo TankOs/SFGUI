@@ -1,5 +1,5 @@
 #include <GL/glew.h>
-#include <SFGUI/ProjectO.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
@@ -8,7 +8,9 @@
 
 namespace sfg {
 
-ProjectO::ProjectO() :
+std::size_t RendererViewport::last_id = 0;
+
+Renderer::Renderer() :
 	m_last_vertex_count( 0 ),
 	m_alpha_threshold( 0.f ),
 	m_vbo_synced( false ),
@@ -18,63 +20,42 @@ ProjectO::ProjectO() :
 	glGenBuffers( 1, &m_color_vbo );
 	glGenBuffers( 1, &m_texture_vbo );
 
+	m_default_viewport = CreateViewport();
+
 	// Load our "no texture" pseudo-texture.
 	sf::Image image;
 	image.Create( 2, 2, sf::Color::White );
-	LoadImage( image );
+	LoadImage( image, sf::Color::White );
 }
 
-ProjectO::~ProjectO() {
+Renderer::~Renderer() {
 	glDeleteBuffers( 1, &m_texture_vbo );
 	glDeleteBuffers( 1, &m_color_vbo );
 	glDeleteBuffers( 1, &m_vertex_vbo );
 }
 
-ProjectO::Primitive::Primitive() :
-	position( sf::Vector2f( 0.f, 0.f ) ),
-	layer( 0.f ),
-	level( 0 ),
-	synced( false ),
-	visible( true )
-{
+const RendererViewport::Ptr& Renderer::GetDefaultViewport() {
+	return m_default_viewport;
 }
 
-void ProjectO::Primitive::Add( const Primitive& primitive ) {
-	std::size_t vertice_count = primitive.vertices.size();
-
-	for( std::size_t index = 0; index < vertice_count; ++index ) {
-		vertices.push_back( primitive.vertices[index] );
-	}
-}
-
-ProjectO::Viewport::Viewport() :
-	source_origin( sf::Vector2f( 0.f, 0.f ) ),
-	destination_origin( sf::Vector2f( 0.f, 0.f ) ),
-	size( sf::Vector2f( 0.f, 0.f ) )
-{
-}
-
-void ProjectO::Viewport::Apply() {
-
-}
-
-ProjectO::ViewportPtr ProjectO::CreateViewport() {
-	ViewportPtr viewport( new Viewport );
-	ViewportWeakPtr weak_viewport( viewport );
-
-	m_viewports.push_back( weak_viewport );
+RendererViewport::Ptr Renderer::CreateViewport() {
+	RendererViewport::Ptr viewport( new RendererViewport );
 
 	return viewport;
 }
 
-ProjectO::PrimitivePtr ProjectO::CreateText( const sf::Text& text ) {
-	PrimitivePtr primitive( new Primitive );
+Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_color_hint ) {
+	Primitive::Ptr primitive( new Primitive );
 
 	const sf::Font& font = text.GetFont();
 	unsigned int character_size = text.GetCharacterSize();
-	const sf::Color& color = text.GetColor();
+	sf::Color color = text.GetColor();
 
-	sf::Vector2f atlas_offset = LoadFont( font, character_size );
+	if( m_preblend ) {
+		color = sf::Color::White;
+	}
+
+	sf::Vector2f atlas_offset = LoadFont( font, character_size, background_color_hint, text.GetColor() );
 
 	const sf::String& str = text.GetString();
 	std::size_t length = str.GetSize();
@@ -154,10 +135,10 @@ ProjectO::PrimitivePtr ProjectO::CreateText( const sf::Text& text ) {
 	return primitive;
 }
 
-ProjectO::PrimitivePtr ProjectO::CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
+Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
                                              const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
                                              const sf::Color& color ) {
-	PrimitivePtr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -193,13 +174,13 @@ ProjectO::PrimitivePtr ProjectO::CreateQuad( const sf::Vector2f& top_left, const
 	return primitive;
 }
 
-ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const sf::Vector2f& size, float border_width,
+Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vector2f& size, float border_width,
                                              const sf::Color& color, const sf::Color& border_color, int border_color_shift ) {
   if( border_width <= 0.f ) {
 		return CreateRect( position, position + size, color );
   }
 
-  PrimitivePtr primitive( new Primitive );
+  Primitive::Ptr primitive( new Primitive );
 
 	sf::Color dark_border( border_color );
 	sf::Color light_border( border_color );
@@ -211,7 +192,7 @@ ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const
 	float right = left + size.x;
 	float bottom = top + size.y;
 
-	PrimitivePtr rect(
+	Primitive::Ptr rect(
 		CreateQuad(
 			sf::Vector2f( left + border_width, top + border_width ),
 			sf::Vector2f( left + border_width, bottom - border_width ),
@@ -221,7 +202,7 @@ ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const
 		)
 	);
 
-	PrimitivePtr line_top(
+	Primitive::Ptr line_top(
 		CreateLine(
 			sf::Vector2f( left, top + border_width / 2.f ),
 			sf::Vector2f( right - border_width, top + border_width / 2.f ),
@@ -230,7 +211,7 @@ ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const
 		)
 	);
 
-	PrimitivePtr line_right(
+	Primitive::Ptr line_right(
 		CreateLine(
 			sf::Vector2f( right - border_width / 2.f, top ),
 			sf::Vector2f( right - border_width / 2.f, bottom - border_width ),
@@ -239,7 +220,7 @@ ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const
 		)
 	);
 
-	PrimitivePtr line_bottom(
+	Primitive::Ptr line_bottom(
 		CreateLine(
 			sf::Vector2f( right, bottom - border_width / 2.f ),
 			sf::Vector2f( left + border_width, bottom - border_width / 2.f ),
@@ -248,7 +229,7 @@ ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const
 		)
 	);
 
-	PrimitivePtr line_left(
+	Primitive::Ptr line_left(
 		CreateLine(
 			sf::Vector2f( left + border_width / 2.f, bottom ),
 			sf::Vector2f( left + border_width / 2.f, top + border_width ),
@@ -263,7 +244,7 @@ ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const
 	primitive->Add( *line_bottom.get() );
 	primitive->Add( *line_left.get() );
 
-	std::vector<PrimitivePtr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), rect ) );
+	std::vector<Primitive::Ptr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), rect ) );
 
 	assert( iter != m_primitives.end() );
 
@@ -278,7 +259,7 @@ ProjectO::PrimitivePtr ProjectO::CreatePane( const sf::Vector2f& position, const
 	return primitive;
 }
 
-ProjectO::PrimitivePtr ProjectO::CreateRect( const sf::Vector2f& top_left, const sf::Vector2f& bottom_right, const sf::Color& color ) {
+Primitive::Ptr Renderer::CreateRect( const sf::Vector2f& top_left, const sf::Vector2f& bottom_right, const sf::Color& color ) {
 	return CreateQuad(
 		sf::Vector2f( top_left.x, top_left.y ),
 		sf::Vector2f( top_left.x, bottom_right.y ),
@@ -288,12 +269,12 @@ ProjectO::PrimitivePtr ProjectO::CreateRect( const sf::Vector2f& top_left, const
 	);
 }
 
-ProjectO::PrimitivePtr ProjectO::CreateRect( const sf::FloatRect& rect, const sf::Color& color ) {
+Primitive::Ptr Renderer::CreateRect( const sf::FloatRect& rect, const sf::Color& color ) {
 	return CreateRect( sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), color );
 }
 
-ProjectO::PrimitivePtr ProjectO::CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color ) {
-	PrimitivePtr primitive( new Primitive );
+Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color ) {
+	Primitive::Ptr primitive( new Primitive );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -324,10 +305,10 @@ ProjectO::PrimitivePtr ProjectO::CreateTriangle( const sf::Vector2f& point0, con
 	return primitive;
 }
 
-ProjectO::PrimitivePtr ProjectO::CreateImage( const sf::FloatRect& rect, const sf::Image& image ) {
-	sf::Vector2f offset( LoadImage( image ) );
+Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image& image, sf::Color background_color_hint ) {
+	sf::Vector2f offset( LoadImage( image, background_color_hint ) );
 
-	PrimitivePtr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -363,7 +344,7 @@ ProjectO::PrimitivePtr ProjectO::CreateImage( const sf::FloatRect& rect, const s
 	return primitive;
 }
 
-ProjectO::PrimitivePtr ProjectO::CreateLine( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& color, float thickness ) {
+Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& color, float thickness ) {
 	// Get vector perpendicular to direction of the line vector.
 	// Vector is rotated CCW 90 degrees and normalized.
 	sf::Vector2f normal( end - begin );
@@ -380,150 +361,12 @@ ProjectO::PrimitivePtr ProjectO::CreateLine( const sf::Vector2f& begin, const sf
 	return CreateQuad( corner0, corner1, corner2, corner3, color );
 }
 
-void ProjectO::Display( sf::RenderWindow& window ) {
-	// Remove expired Viewports
-	std::size_t viewports_size = m_viewports.size();
-	std::vector<ViewportWeakPtr>::iterator viewports_begin( m_viewports.begin() );
-
-	for( std::size_t index = 0; index < viewports_size; ) {
-		const ViewportPtr& viewport_ptr( m_viewports[index].lock() );
-
-		if( !viewport_ptr ) {
-			m_viewports.erase( viewports_begin + index );
-			--viewports_size;
-
-			continue;
-		}
-
-		++index;
-	}
-
-	// Remove expired Primitives
-	std::size_t primitives_size = m_primitives.size();
-	std::vector<PrimitivePtr>::iterator primitives_begin( m_primitives.begin() );
-
-	for( std::size_t index = 0; index < primitives_size; ) {
-		const PrimitivePtr& primitive_ptr( m_primitives[index] );
-
-		Primitive* primitive = primitive_ptr.get();
-
-		if( primitive_ptr.use_count() < 2 ) {
-			m_primitives.erase( primitives_begin + index );
-			--primitives_size;
-
-			m_vbo_synced = false;
-
-			continue;
-		}
-		else if( !primitive->synced ) {
-			m_vbo_synced = false;
-			primitive->synced = true;
-		}
-
-		++index;
-	}
+void Renderer::Display( sf::RenderWindow& window ) {
+	//RemoveExpired();
 
 	// Refresh VBO data if out of sync
 	if( !m_vbo_synced ) {
-		SortPrimitives();
-
-		m_vertex_data.clear();
-		m_color_data.clear();
-		m_texture_data.clear();
-
-		m_viewport_pairs.clear();
-
-		m_last_vertex_count = 0;
-
-		// Rather notify and disable depth testing until requested again.
-		//m_depth_test = true;
-
-		// Check for alpha values in all primitives.
-		// Disable depth test if any found.
-		for( std::size_t primitive_index = 0; primitive_index < primitives_size; ++primitive_index ) {
-			std::size_t vertices_size = m_primitives[primitive_index]->vertices.size();
-
-			for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
-				Primitive::Vertex& vertex( m_primitives[primitive_index]->vertices[vertex_index] );
-
-				if( m_depth_test && ( vertex.color.a < 255 ) ) {
-#ifdef SFGUI_DEBUG
-					std::cerr << "Detected alpha value " << static_cast<int>( vertex.color.a ) << " disabling depth test.\n";
-#endif
-					m_depth_test = false;
-				}
-			}
-		}
-
-		// Used to normalize texture coordinates.
-		sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.GetWidth() ), 1.f / static_cast<float>( m_texture_atlas.GetHeight() ) );
-
-		// Depth test vars
-		float depth = -4.f;
-		float depth_delta = 4.f / static_cast<float>( primitives_size );
-		int direction = m_depth_test ? -1 : 1;
-		int start = m_depth_test ? primitives_size : 1;
-		std::size_t end = m_depth_test ? 0 : primitives_size + 1;
-
-		ViewportWeakPtr current_viewport;
-		m_viewport_pairs.push_back( ViewportPair( current_viewport, 0 ) );
-
-		for( std::size_t primitive_index = start; primitive_index != end; primitive_index += direction ) {
-			Primitive* primitive = m_primitives[primitive_index - 1].get();
-
-			if( !primitive->visible ) {
-				continue;
-			}
-
-			sf::Vector2f position_transform( primitive->position );
-
-			// Check if primitive needs to be rendered in a custom viewport.
-			ViewportPtr viewport = primitive->viewport.lock();
-
-			if( viewport != current_viewport.lock() ) {
-				current_viewport = viewport;
-
-				ViewportPair scissor_pair( viewport, m_last_vertex_count );
-
-				m_viewport_pairs.push_back( scissor_pair );
-			}
-
-			if( viewport ) {
-				position_transform += ( viewport->destination_origin - viewport->source_origin );
-			}
-
-			// Process primitive's vertices.
-			std::size_t vertices_size = primitive->vertices.size();
-
-			for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
-				Primitive::Vertex& vertex( primitive->vertices[vertex_index] );
-
-				sf::Vector2f position2d( vertex.position + position_transform );
-				sf::Vector3f position( position2d.x, position2d.y, depth );
-
-				m_vertex_data.push_back( position );
-				m_color_data.push_back( vertex.color );
-
-				// Normalize SFML's pixel texture coordinates.
-				m_texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
-
-				++m_last_vertex_count;
-			}
-
-			depth -= depth_delta;
-		}
-
-		// Sync vertex data
-		glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
-		glBufferData( GL_ARRAY_BUFFER, m_vertex_data.size() * sizeof( sf::Vector3f ), &m_vertex_data[0], GL_DYNAMIC_DRAW );
-
-		// Sync color data
-		glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
-		glBufferData( GL_ARRAY_BUFFER, m_color_data.size() * sizeof( sf::Color ), &m_color_data[0], GL_STATIC_DRAW );
-
-		// Sync texture coord data
-		glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
-		glBufferData( GL_ARRAY_BUFFER, m_texture_data.size() * sizeof( sf::Vector2f ), &m_texture_data[0], GL_STATIC_DRAW );
+		RefreshVBO();
 
 		m_vbo_synced = true;
 	}
@@ -554,19 +397,14 @@ void ProjectO::Display( sf::RenderWindow& window ) {
 
 	std::size_t scissor_pairs_size = m_viewport_pairs.size();
 
-	bool scissor = false;
+	glEnable( GL_SCISSOR_TEST );
 
 	for( std::size_t index = 0; index < scissor_pairs_size; ++index ) {
 		const ViewportPair& scissor_pair = m_viewport_pairs[index];
 
-		ViewportPtr viewport = scissor_pair.first.lock();
+		RendererViewport::Ptr viewport = scissor_pair.first;
 
-		if( viewport ) {
-			if( !scissor ) {
-				glEnable( GL_SCISSOR_TEST );
-				scissor = true;
-			}
-
+		if( viewport && ( viewport != m_default_viewport ) ) {
 			glScissor(
 				static_cast<int>( viewport->destination_origin.x ),
 				window.GetHeight() - static_cast<int>( viewport->destination_origin.y + viewport->size.y ),
@@ -575,8 +413,7 @@ void ProjectO::Display( sf::RenderWindow& window ) {
 			);
 		}
 		else {
-			glDisable( GL_SCISSOR_TEST );
-			scissor = false;
+			glScissor( 0, 0, window.GetWidth(), window.GetHeight() );
 		}
 
 		if( index < scissor_pairs_size - 1 ) {
@@ -587,9 +424,7 @@ void ProjectO::Display( sf::RenderWindow& window ) {
 		}
 	}
 
-	if( scissor ) {
-		glDisable( GL_SCISSOR_TEST );
-	}
+	glDisable( GL_SCISSOR_TEST );
 
 	//glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	//glDisableClientState( GL_COLOR_ARRAY );
@@ -601,12 +436,17 @@ void ProjectO::Display( sf::RenderWindow& window ) {
 	RestoreGL( window );
 }
 
-void ProjectO::SetupGL( sf::RenderWindow& window ) {
+void Renderer::SetupGL( sf::RenderWindow& window ) {
 	glMatrixMode( GL_PROJECTION );
 	glPushMatrix();
 	glLoadIdentity();
 
-	glOrtho( 0.0f, window.GetWidth(), window.GetHeight(), 0.0f, -1.0f, 64.0f );
+	// When SFML dies (closes) it sets these to 0 for some reason.
+	// That then causes glOrtho errors.
+	unsigned int width = window.GetWidth();
+	unsigned int height = window.GetHeight();
+
+	glOrtho( 0.0f, static_cast<GLdouble>( width ? width : 1 ), static_cast<GLdouble>( height ? height : 1 ), 0.0f, -1.0f, 64.0f );
 
 	glMatrixMode( GL_TEXTURE );
 	glPushMatrix();
@@ -632,7 +472,7 @@ void ProjectO::SetupGL( sf::RenderWindow& window ) {
 	}
 }
 
-void ProjectO::RestoreGL( sf::RenderWindow& window ) {
+void Renderer::RestoreGL( sf::RenderWindow& window ) {
 	if( m_alpha_threshold > 0.f ) {
 		glAlphaFunc( GL_GREATER, 0.f );
 	}
@@ -682,7 +522,7 @@ void ProjectO::RestoreGL( sf::RenderWindow& window ) {
 	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ), 0, sizeof( StatesCache ) );
 }
 
-sf::Vector2f ProjectO::LoadFont( const sf::Font& font, unsigned int size ) {
+sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Color background_color_hint, sf::Color foreground_color_hint ) {
 	// Make sure all the glyphs we need are loaded.
 	for( sf::Uint32 codepoint = 0; codepoint < 512; ++codepoint ) {
 		font.GetGlyph( codepoint, size, false );
@@ -690,12 +530,63 @@ sf::Vector2f ProjectO::LoadFont( const sf::Font& font, unsigned int size ) {
 
 	sf::Image image = font.GetTexture( size ).CopyToImage();
 
-	return LoadImage( image );
+	return LoadImage( image, background_color_hint, foreground_color_hint );
 }
 
-sf::Vector2f ProjectO::LoadImage( const sf::Image& image ) {
-	const sf::Uint8* bytes = image.GetPixelsPtr();
-	std::size_t byte_count = image.GetWidth() * image.GetHeight() * 4;
+sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint ) {
+	sf::Image preblended_image;
+
+	preblended_image.Create( image.GetWidth(), image.GetHeight(), image.GetPixelsPtr() );
+
+	// If we get a proper background color hint and preblend is enabled,
+	// precompute blended color with ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ).
+	if( m_preblend ) {
+		if( background_color_hint.a == 255 ) {
+			float foreground_r_factor = 1.f;
+			float foreground_g_factor = 1.f;
+			float foreground_b_factor = 1.f;
+
+			if( foreground_color_hint.a == 255 ) {
+				foreground_r_factor = static_cast<float>( foreground_color_hint.r ) / 255.f;
+				foreground_g_factor = static_cast<float>( foreground_color_hint.g ) / 255.f;
+				foreground_b_factor = static_cast<float>( foreground_color_hint.b ) / 255.f;
+			}
+
+			std::size_t pixel_count = preblended_image.GetWidth() * preblended_image.GetHeight();
+
+			sf::Uint8* bytes = new sf::Uint8[pixel_count * 4];
+
+			memcpy( bytes, preblended_image.GetPixelsPtr(), pixel_count * 4 );
+
+			for( std::size_t index = 0; index < pixel_count; ++index ) {
+				// Alpha
+				float alpha = static_cast<float>( bytes[index * 4 + 3] ) / 255.f;
+
+				// Red
+				bytes[index * 4 + 0] = static_cast<sf::Uint8>( static_cast<float>( bytes[index * 4 + 0] ) * foreground_r_factor * alpha + static_cast<float>( background_color_hint.r ) * ( 1.f - alpha ) );
+
+				// Green
+				bytes[index * 4 + 1] = static_cast<sf::Uint8>( static_cast<float>( bytes[index * 4 + 1] ) * foreground_g_factor * alpha + static_cast<float>( background_color_hint.g ) * ( 1.f - alpha ) );
+
+				// Blue
+				bytes[index * 4 + 2] = static_cast<sf::Uint8>( static_cast<float>( bytes[index * 4 + 2] ) * foreground_b_factor * alpha + static_cast<float>( background_color_hint.b ) * ( 1.f - alpha ) );
+			}
+
+			preblended_image.Create( preblended_image.GetWidth(), preblended_image.GetHeight(), bytes );
+
+			delete[] bytes;
+		}
+		else {
+			m_preblend = false;
+
+#ifdef SFGUI_DEBUG
+			std::cerr << "Detected alpha value " << static_cast<int>( background_color_hint.a ) << " in background color hint. Disabling preblend.\n";
+#endif
+		}
+	}
+
+	const sf::Uint8* bytes = preblended_image.GetPixelsPtr();
+	std::size_t byte_count = preblended_image.GetWidth() * preblended_image.GetHeight() * 4;
 
 	unsigned long hash = 2166136261UL;
 
@@ -706,8 +597,7 @@ sf::Vector2f ProjectO::LoadImage( const sf::Image& image ) {
 		hash ^= static_cast<unsigned long>( bytes[ byte_count - 1 ] );
 		hash *= 16777619UL;
 
-		// Check if the image makes intentional use
-		// of the alpha channel.
+		// Check if the image makes intentional use of the alpha channel.
 		if( m_depth_test && !( byte_count % 4 ) && ( bytes[ byte_count - 1 ] > alpha_threshold ) && ( bytes[ byte_count - 1 ] < 255 ) ) {
 #ifdef SFGUI_DEBUG
 			std::cerr << "Detected alpha value " << static_cast<int>( bytes[ byte_count - 1 ]  ) << " in texture, disabling depth test.\n";
@@ -726,22 +616,22 @@ sf::Vector2f ProjectO::LoadImage( const sf::Image& image ) {
 		// If 1 pixel isn't enough, increase.
 		const static unsigned int padding = 1;
 
-		new_image.Create( std::max( old_image.GetWidth(), image.GetWidth() ), old_image.GetHeight() + image.GetHeight() + padding, sf::Color::White );
+		new_image.Create( std::max( old_image.GetWidth(), preblended_image.GetWidth() ), old_image.GetHeight() + preblended_image.GetHeight() + padding, sf::Color::White );
 		new_image.Copy( old_image, 0, 0 );
 
-		new_image.Copy( image, 0, old_image.GetHeight() + padding );
+		new_image.Copy( preblended_image, 0, old_image.GetHeight() + padding );
 
 		m_texture_atlas.LoadFromImage( new_image );
 
 		m_atlas_offsets[hash] = sf::Vector2f( 0.f, static_cast<float>( old_image.GetHeight() + padding ) );
 
-		m_vbo_synced = false;
+		InvalidateVBO();
 	}
 
 	return m_atlas_offsets[hash];
 }
 
-void ProjectO::SortPrimitives() {
+void Renderer::SortPrimitives() {
 	std::size_t current_position = 1;
 	std::size_t sort_index;
 
@@ -758,15 +648,150 @@ void ProjectO::SortPrimitives() {
 	}
 }
 
-void ProjectO::TuneDepthTest( bool enable ) {
+void Renderer::RemoveExpired() {
+	// Remove expired Primitives
+	std::size_t primitives_size = m_primitives.size();
+	std::vector<Primitive::Ptr>::iterator primitives_begin( m_primitives.begin() );
+
+	for( std::size_t index = 0; index < primitives_size; ) {
+		const Primitive::Ptr& primitive_ptr( m_primitives[index] );
+
+		if( !primitive_ptr->synced ) {
+			InvalidateVBO();
+			primitive_ptr->synced = true;
+		}
+
+		++index;
+	}
+}
+
+void Renderer::RefreshVBO() {
+	SortPrimitives();
+
+	m_vertex_data.clear();
+	m_color_data.clear();
+	m_texture_data.clear();
+
+	m_viewport_pairs.clear();
+
+	m_last_vertex_count = 0;
+
+	std::size_t primitives_size = m_primitives.size();
+
+	// Rather notify and disable depth testing until requested again.
+	//m_depth_test = true;
+
+	// Check for alpha values in all primitives.
+	// Disable depth test if any found.
+	for( std::size_t primitive_index = 0; primitive_index < primitives_size; ++primitive_index ) {
+		std::size_t vertices_size = m_primitives[primitive_index]->vertices.size();
+
+		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
+			Primitive::Vertex& vertex( m_primitives[primitive_index]->vertices[vertex_index] );
+
+			if( m_depth_test && ( vertex.color.a < 255 ) ) {
+#ifdef SFGUI_DEBUG
+				std::cerr << "Detected alpha value " << static_cast<int>( vertex.color.a ) << " disabling depth test.\n";
+#endif
+				m_depth_test = false;
+			}
+		}
+	}
+
+	// Used to normalize texture coordinates.
+	sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.GetWidth() ), 1.f / static_cast<float>( m_texture_atlas.GetHeight() ) );
+
+	// Depth test vars
+	float depth = -4.f;
+	float depth_delta = 4.f / static_cast<float>( primitives_size );
+	int direction = m_depth_test ? -1 : 1;
+	int start = m_depth_test ? primitives_size : 1;
+	std::size_t end = m_depth_test ? 0 : primitives_size + 1;
+
+	RendererViewport::Ptr current_viewport = m_default_viewport;
+	m_viewport_pairs.push_back( ViewportPair( m_default_viewport, 0 ) );
+
+	for( std::size_t primitive_index = start; primitive_index != end; primitive_index += direction ) {
+		Primitive* primitive = m_primitives[primitive_index - 1].get();
+
+		primitive->synced = true;
+
+		if( !primitive->visible ) {
+			continue;
+		}
+
+		sf::Vector2f position_transform( primitive->position );
+
+		// Check if primitive needs to be rendered in a custom viewport.
+		RendererViewport::Ptr viewport = primitive->viewport;
+
+		if( viewport != current_viewport ) {
+			current_viewport = viewport;
+
+			ViewportPair scissor_pair( viewport, m_last_vertex_count );
+
+			m_viewport_pairs.push_back( scissor_pair );
+		}
+
+		if( viewport && ( viewport != m_default_viewport ) ) {
+			position_transform += ( viewport->destination_origin - viewport->source_origin );
+		}
+
+		// Process primitive's vertices.
+		std::size_t vertices_size = primitive->vertices.size();
+
+		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
+			Primitive::Vertex& vertex( primitive->vertices[vertex_index] );
+
+			sf::Vector2f position2d( vertex.position + position_transform );
+			sf::Vector3f position( position2d.x, position2d.y, depth );
+
+			m_vertex_data.push_back( position );
+			m_color_data.push_back( vertex.color );
+
+			// Normalize SFML's pixel texture coordinates.
+			m_texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
+
+			++m_last_vertex_count;
+		}
+
+		depth -= depth_delta;
+	}
+
+	// Sync vertex data
+	glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
+	glBufferData( GL_ARRAY_BUFFER, m_vertex_data.size() * sizeof( sf::Vector3f ), &m_vertex_data[0], GL_DYNAMIC_DRAW );
+
+	// Sync color data
+	glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
+	glBufferData( GL_ARRAY_BUFFER, m_color_data.size() * sizeof( sf::Color ), &m_color_data[0], GL_STATIC_DRAW );
+
+	// Sync texture coord data
+	glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
+	glBufferData( GL_ARRAY_BUFFER, m_texture_data.size() * sizeof( sf::Vector2f ), &m_texture_data[0], GL_STATIC_DRAW );
+}
+
+void Renderer::RemovePrimitive( const Primitive::Ptr& primitive ) {
+	std::vector<Primitive::Ptr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), primitive ) );
+
+	m_primitives.erase( iter );
+
+	InvalidateVBO();
+}
+
+void Renderer::InvalidateVBO() {
+	m_vbo_synced = false;
+}
+
+void Renderer::TuneDepthTest( bool enable ) {
 	m_depth_test = enable;
 }
 
-void ProjectO::TuneAlphaThreshold( float alpha_threshold ) {
+void Renderer::TuneAlphaThreshold( float alpha_threshold ) {
 	m_alpha_threshold = alpha_threshold;
 }
 
-void ProjectO::TunePrecomputeBlending( bool enable ) {
+void Renderer::TunePrecomputeBlending( bool enable ) {
 	m_preblend = enable;
 }
 

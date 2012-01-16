@@ -40,7 +40,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane.
 		queue->Add(
-			Context::Get().GetProjectO().CreatePane(
+			Context::Get().GetRenderer().CreatePane(
 				sf::Vector2f( 0.f, tab_size.y + 2.f * ( border_width + padding ) ),
 				sf::Vector2f( child_size.x + 2.f * ( border_width + padding ), child_size.y + 2.f * ( border_width + padding ) ),
 				border_width,
@@ -52,7 +52,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label left border
 		queue->Add(
-			Context::Get().GetProjectO().CreateLine(
+			Context::Get().GetRenderer().CreateLine(
 				sf::Vector2f( 0.f, 0.f ),
 				sf::Vector2f( 0.f, tab_size.y + 3.f * border_width + 2.f * padding ),
 				border_color_light,
@@ -67,7 +67,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Top border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top - border_width - padding ),
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + padding, label_allocation.Top - border_width - padding ),
 					border_color_light,
@@ -77,7 +77,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Right border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left + label_allocation.Width - border_width + padding, label_allocation.Top - border_width - padding ),
 					sf::Vector2f( label_allocation.Left + label_allocation.Width - border_width + padding, label_allocation.Top + label_allocation.Height + border_width + padding ),
 					border_color_dark,
@@ -88,7 +88,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			if( index == current_page ) {
 				// Active left border
 				queue->Add(
-					Context::Get().GetProjectO().CreateLine(
+					Context::Get().GetRenderer().CreateLine(
 						sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top - border_width - padding ),
 						sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top + label_allocation.Height + 2.f * border_width + padding ),
 						border_color_light,
@@ -98,7 +98,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 				// Active background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
@@ -112,7 +112,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			else {
 				// Inactive background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
@@ -130,7 +130,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane.
 		queue->Add(
-			Context::Get().GetProjectO().CreatePane(
+			Context::Get().GetRenderer().CreatePane(
 				sf::Vector2f( 0.f, 0.f ),
 				sf::Vector2f( child_size.x + 2.f * ( border_width + padding ), child_size.y + 2.f * ( border_width + padding ) ),
 				border_width,
@@ -142,7 +142,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label left border
 		queue->Add(
-			Context::Get().GetProjectO().CreateLine(
+			Context::Get().GetRenderer().CreateLine(
 				sf::Vector2f( 0.f, child_size.y + 2.f * ( border_width + padding ) - border_width ),
 				sf::Vector2f( 0.f, child_size.y + 2.f * ( border_width + padding ) + tab_size.y + 2.f * ( border_width + padding ) - border_width ),
 				border_color_light,
@@ -157,7 +157,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Bottom border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top + label_allocation.Height + border_width + padding ),
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + padding, label_allocation.Top + label_allocation.Height + border_width + padding ),
 					border_color_dark,
@@ -167,7 +167,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Right border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + padding - border_width, label_allocation.Top - padding ),
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + padding - border_width, label_allocation.Top + label_allocation.Height + border_width + padding ),
 					border_color_dark,
@@ -178,7 +178,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			if( index == current_page ) {
 				// Active left border
 				queue->Add(
-					Context::Get().GetProjectO().CreateLine(
+					Context::Get().GetRenderer().CreateLine(
 						sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top - padding ),
 						sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top + label_allocation.Height + border_width + padding ),
 						border_color_light,
@@ -188,7 +188,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 				// Active background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding - border_width,
@@ -202,7 +202,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			else {
 				// Inactive background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
@@ -220,7 +220,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane.
 		queue->Add(
-			Context::Get().GetProjectO().CreatePane(
+			Context::Get().GetRenderer().CreatePane(
 				sf::Vector2f( tab_size.x + 2.f * ( border_width + padding ), 0.f ),
 				sf::Vector2f( child_size.x + 2.f * ( border_width + padding ), child_size.y + 2.f * ( border_width + padding ) ),
 				border_width,
@@ -232,7 +232,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label top border
 		queue->Add(
-			Context::Get().GetProjectO().CreateLine(
+			Context::Get().GetRenderer().CreateLine(
 				sf::Vector2f( 0.f, 0.f ),
 				sf::Vector2f( tab_size.x + 2.f * padding + 3.f * border_width, 0.f ),
 				border_color_light,
@@ -247,7 +247,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Left border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top - border_width - padding ),
 					sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top + label_allocation.Height + border_width + padding ),
 					border_color_light,
@@ -257,7 +257,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Bottom border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top + label_allocation.Height + padding ),
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + border_width + padding, label_allocation.Top + label_allocation.Height + padding ),
 					border_color_dark,
@@ -268,7 +268,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			if( index == current_page ) {
 				// Active top border
 				queue->Add(
-					Context::Get().GetProjectO().CreateLine(
+					Context::Get().GetRenderer().CreateLine(
 						sf::Vector2f( label_allocation.Left - border_width - padding, label_allocation.Top - border_width - padding ),
 						sf::Vector2f( label_allocation.Left + label_allocation.Width + 2.f * border_width + padding, label_allocation.Top - border_width - padding ),
 						border_color_light,
@@ -278,7 +278,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 				// Active background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
@@ -292,7 +292,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			else {
 				// Inactive background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,
@@ -310,7 +310,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// Pane.
 		queue->Add(
-			Context::Get().GetProjectO().CreatePane(
+			Context::Get().GetRenderer().CreatePane(
 				sf::Vector2f( 0.f, 0.f ),
 				sf::Vector2f( child_size.x + 2.f * ( border_width + padding ), child_size.y + 2.f * ( border_width + padding ) ),
 				border_width,
@@ -322,7 +322,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 		// First tab label top border
 		queue->Add(
-			Context::Get().GetProjectO().CreateLine(
+			Context::Get().GetRenderer().CreateLine(
 				sf::Vector2f( child_size.x + 2.f * ( border_width + padding ), 0.f ),
 				sf::Vector2f( child_size.x + 4.f * padding + 3.f * border_width + tab_size.x, 0.f ),
 				border_color_light,
@@ -337,7 +337,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Right border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + border_width + padding, label_allocation.Top - border_width - padding ),
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + border_width + padding, label_allocation.Top + label_allocation.Height + border_width + padding ),
 					border_color_dark,
@@ -347,7 +347,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 			// Bottom border
 			queue->Add(
-				Context::Get().GetProjectO().CreateLine(
+				Context::Get().GetRenderer().CreateLine(
 					sf::Vector2f( label_allocation.Left - padding, label_allocation.Top + label_allocation.Height + padding ),
 					sf::Vector2f( label_allocation.Left + label_allocation.Width + border_width + padding, label_allocation.Top + label_allocation.Height + padding ),
 					border_color_dark,
@@ -358,7 +358,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			if( index == current_page ) {
 				// Active top border
 				queue->Add(
-					Context::Get().GetProjectO().CreateLine(
+					Context::Get().GetRenderer().CreateLine(
 						sf::Vector2f( label_allocation.Left - padding - border_width, label_allocation.Top - border_width - padding ),
 						sf::Vector2f( label_allocation.Left + label_allocation.Width + border_width + padding, label_allocation.Top - border_width - padding ),
 						border_color_light,
@@ -368,7 +368,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 
 				// Active background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding - border_width,
 							label_allocation.Top - padding,
@@ -382,7 +382,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			else {
 				// Inactive background
 				queue->Add(
-					Context::Get().GetProjectO().CreateRect(
+					Context::Get().GetRenderer().CreateRect(
 						sf::FloatRect(
 							label_allocation.Left - padding,
 							label_allocation.Top - padding,

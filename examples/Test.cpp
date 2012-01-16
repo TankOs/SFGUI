@@ -1,6 +1,6 @@
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/ProjectO.hpp>
+#include <SFGUI/Renderer.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -125,6 +125,11 @@ void SampleApp::Run() {
 
 	//m_window.SetFramerateLimit( 60 );
 	//m_window.EnableVerticalSync( true );
+
+	// Tune Renderer
+	sfg::Context::Get().GetRenderer().TuneDepthTest( true );
+	sfg::Context::Get().GetRenderer().TuneAlphaThreshold( .2f );
+	sfg::Context::Get().GetRenderer().TunePrecomputeBlending( true );
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create( sfg::Window::Titlebar | sfg::Window::Background | sfg::Window::Resize );
@@ -381,10 +386,6 @@ void SampleApp::Run() {
 
 	sf::Clock clock;
 
-	sfg::Context::Get().GetProjectO().TuneDepthTest( true );
-	sfg::Context::Get().GetProjectO().TuneAlphaThreshold( .2f );
-	sfg::Context::Get().GetProjectO().TunePrecomputeBlending( false );
-
 	while( m_window.IsOpen() ) {
 		while( m_window.PollEvent( event ) ) {
 			if( event.Type == sf::Event::Closed ) {
@@ -407,7 +408,7 @@ void SampleApp::Run() {
 			clock.Reset();
 		}
 
-		sfg::Context::Get().GetProjectO().Display( m_window );
+		sfg::Context::Get().GetRenderer().Display( m_window );
 
 		m_window.Display();
 

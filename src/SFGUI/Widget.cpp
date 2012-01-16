@@ -525,13 +525,13 @@ int Widget::GetHierarchyLevel() const {
 	return m_hierarchy_level;
 }
 
-void Widget::SetViewport( const ProjectO::ViewportWeakPtr& viewport ) {
+void Widget::SetViewport( const RendererViewport::Ptr& viewport ) {
 	m_viewport = viewport;
 
 	HandleViewportUpdate();
 }
 
-const ProjectO::ViewportWeakPtr& Widget::GetViewport() const {
+const RendererViewport::Ptr& Widget::GetViewport() const {
 	return m_viewport;
 }
 

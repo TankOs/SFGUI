@@ -147,7 +147,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 
 	// Top
 	queue->Add(
-		Context::Get().GetProjectO().CreateLine(
+		Context::Get().GetRenderer().CreateLine(
 			sf::Vector2f( rect.Left, rect.Top ),
 			sf::Vector2f( rect.Left + rect.Width, rect.Top ),
 			light_color,
@@ -157,7 +157,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 
 	// Right
 	queue->Add(
-		Context::Get().GetProjectO().CreateLine(
+		Context::Get().GetRenderer().CreateLine(
 			sf::Vector2f( rect.Left + rect.Width, rect.Top ),
 			sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height + border_width ),
 			dark_color,
@@ -167,7 +167,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 
 	// Bottom
 	queue->Add(
-		Context::Get().GetProjectO().CreateLine(
+		Context::Get().GetRenderer().CreateLine(
 			sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ),
 			sf::Vector2f( rect.Left, rect.Top + rect.Height ),
 			dark_color,
@@ -177,7 +177,7 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 
 	// Left
 	queue->Add(
-		Context::Get().GetProjectO().CreateLine(
+		Context::Get().GetRenderer().CreateLine(
 			sf::Vector2f( rect.Left, rect.Top + rect.Height ),
 			sf::Vector2f( rect.Left, rect.Top ),
 			light_color,
@@ -198,7 +198,7 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	float height = std::floor( rect.Height + .5f );
 
 	queue->Add(
-		Context::Get().GetProjectO().CreatePane(
+		Context::Get().GetRenderer().CreatePane(
 			sf::Vector2f( left, top ),
 			sf::Vector2f( width, height ),
 			border_width,
@@ -225,7 +225,7 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	}
 
 	queue->Add(
-		Context::Get().GetProjectO().CreatePane(
+		Context::Get().GetRenderer().CreatePane(
 			sf::Vector2f( left, top ),
 			sf::Vector2f( width, height ),
 			border_width,

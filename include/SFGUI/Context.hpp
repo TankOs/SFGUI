@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/ProjectO.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/SharedPtr.hpp>
 
 namespace sfg {
@@ -69,7 +69,7 @@ class SFGUI_API Context {
 		 */
 		SharedPtr<Widget> GetActiveWidget() const;
 
-		ProjectO& GetProjectO();
+		Renderer& GetRenderer();
 
 	private:
 		static Context* m_active_context;
@@ -77,7 +77,7 @@ class SFGUI_API Context {
 		Engine* m_engine;
 		WeakPtr<Widget> m_active_widget;
 
-		ProjectO* m_projecto;
+		Renderer* m_projecto;
 };
 
 }

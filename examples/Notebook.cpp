@@ -55,7 +55,7 @@ int main() {
 		app_window.Clear();
 
 		// Draw the GUI
-		sfg::Context::Get().GetProjectO().Display( app_window );
+		sfg::Context::Get().GetRenderer().Display( app_window );
 
 		// Update the window
 		app_window.Display();

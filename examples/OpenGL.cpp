@@ -94,7 +94,7 @@ int main() {
 
 		// SFML rendering.
 		render_window.PushGLStates();
-		sfg::Context::Get().GetProjectO().Display( render_window );
+		sfg::Context::Get().GetRenderer().Display( render_window );
 		render_window.PopGLStates();
 
 		render_window.Display();
