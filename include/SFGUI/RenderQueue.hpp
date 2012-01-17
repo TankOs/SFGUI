@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+#include <SFGUI/Primitive.hpp>
 #include <SFGUI/SharedPtr.hpp>
-#include <SFGUI/Renderer.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/OpenGL.hpp>
@@ -16,6 +16,8 @@ class VertexArray;
 }
 
 namespace sfg {
+
+class RendererViewport;
 
 /** Simple container for sf::Drawables.
  */
@@ -68,15 +70,15 @@ class SFGUI_API RenderQueue {
 
 		void SetLevel( int level );
 
-		void SetViewport( const RendererViewport::Ptr& viewport );
+		void SetViewport( const SharedPtr<RendererViewport>& viewport );
 
-		const RendererViewport::Ptr& GetViewport() const;
+		const SharedPtr<RendererViewport>& GetViewport() const;
 
 	private:
 		std::vector<Primitive::Ptr> m_primitives;
 
 		sf::Vector2f m_position;
-		RendererViewport::Ptr m_viewport;
+		SharedPtr<RendererViewport> m_viewport;
 
 		int m_z_order;
 		int m_level;

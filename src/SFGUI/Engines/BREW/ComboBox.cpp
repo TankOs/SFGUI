@@ -113,16 +113,16 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	queue->Add(
 		Context::Get().GetRenderer().CreateTriangle(
 			position + sf::Vector2f(
-				GetLineHeight( font, font_size ) / 4.f,
-				GetLineHeight( font, font_size ) / 4.f
+				GetLineHeight( font, font_size ) / 2.f,
+				GetLineHeight( font, font_size ) * 3.f / 4.f
 			),
 			position + sf::Vector2f(
 				GetLineHeight( font, font_size ) * 3.f / 4.f,
 				GetLineHeight( font, font_size ) / 4.f
 			),
 			position + sf::Vector2f(
-				GetLineHeight( font, font_size ) / 2.f,
-				GetLineHeight( font, font_size ) * 3.f / 4.f
+				GetLineHeight( font, font_size ) / 4.f,
+				GetLineHeight( font, font_size ) / 4.f
 			),
 			arrow_color
 		)

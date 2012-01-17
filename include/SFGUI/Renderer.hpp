@@ -11,15 +11,24 @@
 
 namespace sfg {
 
+class RendererViewport;
+
 class SFGUI_API Renderer {
 	public:
+		enum DepthClearStrategy {
+			NO_DEPTH = 0,
+			CLEAR_DEPTH = 1 << 0,
+			ALTERNATE_DEPTH = 1 << 1,
+			DEFAULT = NO_DEPTH
+		};
+
 		Renderer();
 
 		~Renderer();
 
-		const RendererViewport::Ptr& GetDefaultViewport();
+		const SharedPtr<RendererViewport>& GetDefaultViewport();
 
-		RendererViewport::Ptr CreateViewport();
+		SharedPtr<RendererViewport> CreateViewport();
 
 		Primitive::Ptr CreateText( const sf::Text& text, sf::Color background_color_hint );
 
@@ -49,33 +58,31 @@ class SFGUI_API Renderer {
 
 		void Display( sf::RenderWindow& window );
 
-		void TuneDepthTest( bool enable );
+		void TuneDepthTest( unsigned char strategy );
 
 		void TuneAlphaThreshold( float alpha_threshold );
 
 		void TunePrecomputeBlending( bool enable );
+
+		void TuneCull( bool enable );
 
 	private:
 		void SetupGL( sf::RenderWindow& window );
 
 		void RestoreGL( sf::RenderWindow& window );
 
-		void UpdateVBO();
-
 		void SortPrimitives();
 
-		void RemoveExpired();
-
-		void RefreshVBO();
+		void RefreshVBO( sf::RenderWindow& window );
 
 		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size, sf::Color background_color_hint, sf::Color foreground_color_hint );
 
 		sf::Vector2f LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint = sf::Color( 0, 0, 0, 0 ) );
 
-		typedef std::pair<RendererViewport::Ptr, unsigned int> ViewportPair;
+		typedef std::pair<SharedPtr<RendererViewport>, unsigned int> ViewportPair;
 
 		std::vector<Primitive::Ptr> m_primitives;
-		std::vector<RendererViewport::Ptr> m_viewports;
+		std::vector<SharedPtr<RendererViewport> > m_viewports;
 
 		std::vector<sf::Vector3f> m_vertex_data;
 		std::vector<sf::Color> m_color_data;
@@ -83,7 +90,7 @@ class SFGUI_API Renderer {
 
 		std::vector<ViewportPair> m_viewport_pairs;
 
-		RendererViewport::Ptr m_default_viewport;
+		SharedPtr<RendererViewport> m_default_viewport;
 
 		sf::Texture m_texture_atlas;
 
@@ -97,9 +104,12 @@ class SFGUI_API Renderer {
 
 		float m_alpha_threshold;
 
+		unsigned char m_depth_clear_strategy;
+		bool m_depth_alternate_flag;
+
 		bool m_vbo_synced;
-		bool m_depth_test;
 		bool m_preblend;
+		bool m_cull;
 };
 
 }

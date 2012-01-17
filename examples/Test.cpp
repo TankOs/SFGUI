@@ -127,9 +127,10 @@ void SampleApp::Run() {
 	//m_window.EnableVerticalSync( true );
 
 	// Tune Renderer
-	sfg::Context::Get().GetRenderer().TuneDepthTest( true );
+	sfg::Context::Get().GetRenderer().TuneDepthTest( sfg::Renderer::ALTERNATE_DEPTH );
 	sfg::Context::Get().GetRenderer().TuneAlphaThreshold( .2f );
 	sfg::Context::Get().GetRenderer().TunePrecomputeBlending( true );
+	sfg::Context::Get().GetRenderer().TuneCull( true );
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create( sfg::Window::Titlebar | sfg::Window::Background | sfg::Window::Resize );

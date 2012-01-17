@@ -77,7 +77,7 @@ class SFGUI_API Context {
 		Engine* m_engine;
 		WeakPtr<Widget> m_active_widget;
 
-		Renderer* m_projecto;
+		Renderer* m_renderer;
 };
 
 }

@@ -1,4 +1,5 @@
 #include <SFGUI/RenderQueue.hpp>
+#include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -36,11 +37,10 @@ void RenderQueue::Add( RenderQueue* queue ) {
 
 void RenderQueue::Add( Primitive::Ptr primitive ) {
 	m_primitives.push_back( primitive );
-	primitive->level = m_level;
-	primitive->position = m_position;
-	primitive->viewport = m_viewport;
-	primitive->visible = m_show;
-	primitive->synced = false;
+	primitive->SetLevel( m_level );
+	primitive->SetPosition( m_position );
+	primitive->SetViewport( m_viewport );
+	primitive->SetVisible( m_show );
 
 	Context::Get().GetRenderer().InvalidateVBO();
 }
@@ -59,8 +59,7 @@ void RenderQueue::SetPosition( const sf::Vector2f& position ) {
 	std::size_t primitive_count = m_primitives.size();
 
 	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->position = position;
-		m_primitives[index]->synced = false;
+		m_primitives[index]->SetPosition( position );
 	}
 
 	Context::Get().GetRenderer().InvalidateVBO();
@@ -84,8 +83,7 @@ void RenderQueue::Show( bool show ) {
 	std::size_t primitive_count = m_primitives.size();
 
 	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->visible = show;
-		m_primitives[index]->synced = false;
+		m_primitives[index]->SetVisible( show );
 	}
 
 	Context::Get().GetRenderer().InvalidateVBO();
@@ -97,8 +95,7 @@ void RenderQueue::SetLevel( int level ) {
 	std::size_t primitive_count = m_primitives.size();
 
 	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->level = level;
-		m_primitives[index]->synced = false;
+		m_primitives[index]->SetLevel( level );
 	}
 
 	Context::Get().GetRenderer().InvalidateVBO();
@@ -110,8 +107,7 @@ void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
 	std::size_t primitive_count = m_primitives.size();
 
 	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->viewport = m_viewport;
-		m_primitives[index]->synced = false;
+		m_primitives[index]->SetViewport( m_viewport );
 	}
 
 	Context::Get().GetRenderer().InvalidateVBO();

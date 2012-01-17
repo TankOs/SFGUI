@@ -1,5 +1,6 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Container.hpp>
+#include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Context.hpp>
 #include <cmath>
 

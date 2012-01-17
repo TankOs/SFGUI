@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Engine.hpp>
 
 #include <cmath>
@@ -8,14 +9,13 @@
 
 namespace sfg {
 
-std::size_t RendererViewport::last_id = 0;
-
 Renderer::Renderer() :
 	m_last_vertex_count( 0 ),
 	m_alpha_threshold( 0.f ),
+	m_depth_clear_strategy( NO_DEPTH ),
 	m_vbo_synced( false ),
-	m_depth_test( false ),
-	m_preblend( false ) {
+	m_preblend( false ),
+	m_cull( false ) {
 	glGenBuffers( 1, &m_vertex_vbo );
 	glGenBuffers( 1, &m_color_vbo );
 	glGenBuffers( 1, &m_texture_vbo );
@@ -116,14 +116,12 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_
 		vertex2.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.Left + texture_rect.Width, texture_rect.Top );
 		vertex3.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.Left + texture_rect.Width, texture_rect.Top + texture_rect.Height );
 
-		// Make sure we get a degenerate triangle after every primitive.
-		// Widely available alternative to primitive restart.
-		primitive->vertices.push_back( vertex0 );
-		primitive->vertices.push_back( vertex0 );
-		primitive->vertices.push_back( vertex1 );
-		primitive->vertices.push_back( vertex2 );
-		primitive->vertices.push_back( vertex3 );
-		primitive->vertices.push_back( vertex3 );
+		primitive->AddVertex( vertex0 );
+		primitive->AddVertex( vertex1 );
+		primitive->AddVertex( vertex2 );
+		primitive->AddVertex( vertex2 );
+		primitive->AddVertex( vertex1 );
+		primitive->AddVertex( vertex3 );
 
 		position.x += static_cast<float>( glyph.Advance );
 
@@ -160,14 +158,12 @@ Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vec
 	vertex2.texture_coordinate = sf::Vector2f( 1.f, 0.f );
 	vertex3.texture_coordinate = sf::Vector2f( 1.f, 1.f );
 
-	// Make sure we get a degenerate triangle after every primitive.
-	// Widely available alternative to primitive restart.
-	primitive->vertices.push_back( vertex0 );
-	primitive->vertices.push_back( vertex0 );
-	primitive->vertices.push_back( vertex1 );
-	primitive->vertices.push_back( vertex2 );
-	primitive->vertices.push_back( vertex3 );
-	primitive->vertices.push_back( vertex3 );
+	primitive->AddVertex( vertex0 );
+	primitive->AddVertex( vertex1 );
+	primitive->AddVertex( vertex2 );
+	primitive->AddVertex( vertex2 );
+	primitive->AddVertex( vertex1 );
+	primitive->AddVertex( vertex3 );
 
 	m_primitives.push_back( primitive );
 
@@ -292,13 +288,9 @@ Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::V
 	vertex1.texture_coordinate = sf::Vector2f( 0.f, 1.f );
 	vertex2.texture_coordinate = sf::Vector2f( 1.f, 0.f );
 
-	// Make sure we get a degenerate triangle after every primitive.
-	// Widely available alternative to primitive restart.
-	primitive->vertices.push_back( vertex0 );
-	primitive->vertices.push_back( vertex0 );
-	primitive->vertices.push_back( vertex1 );
-	primitive->vertices.push_back( vertex2 );
-	primitive->vertices.push_back( vertex2 );
+	primitive->AddVertex( vertex0 );
+	primitive->AddVertex( vertex1 );
+	primitive->AddVertex( vertex2 );
 
 	m_primitives.push_back( primitive );
 
@@ -330,14 +322,12 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	vertex2.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.GetWidth() ), 0.f );
 	vertex3.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.GetWidth() ), static_cast<float>( image.GetHeight() ) );
 
-	// Make sure we get a degenerate triangle after every primitive.
-	// Widely available alternative to primitive restart.
-	primitive->vertices.push_back( vertex0 );
-	primitive->vertices.push_back( vertex0 );
-	primitive->vertices.push_back( vertex1 );
-	primitive->vertices.push_back( vertex2 );
-	primitive->vertices.push_back( vertex3 );
-	primitive->vertices.push_back( vertex3 );
+	primitive->AddVertex( vertex0 );
+	primitive->AddVertex( vertex1 );
+	primitive->AddVertex( vertex2 );
+	primitive->AddVertex( vertex2 );
+	primitive->AddVertex( vertex1 );
+	primitive->AddVertex( vertex3 );
 
 	m_primitives.push_back( primitive );
 
@@ -358,15 +348,13 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	sf::Vector2f corner2( end - normal * ( thickness * .5f ) );
 	sf::Vector2f corner3( end + normal * ( thickness * .5f ) );
 
-	return CreateQuad( corner0, corner1, corner2, corner3, color );
+	return CreateQuad( corner3, corner2, corner1, corner0, color );
 }
 
 void Renderer::Display( sf::RenderWindow& window ) {
-	//RemoveExpired();
-
 	// Refresh VBO data if out of sync
 	if( !m_vbo_synced ) {
-		RefreshVBO();
+		RefreshVBO( window );
 
 		m_vbo_synced = true;
 	}
@@ -405,11 +393,14 @@ void Renderer::Display( sf::RenderWindow& window ) {
 		RendererViewport::Ptr viewport = scissor_pair.first;
 
 		if( viewport && ( viewport != m_default_viewport ) ) {
+			sf::Vector2f destination_origin = viewport->GetDestinationOrigin();
+			sf::Vector2f size = viewport->GetSize();
+
 			glScissor(
-				static_cast<int>( viewport->destination_origin.x ),
-				window.GetHeight() - static_cast<int>( viewport->destination_origin.y + viewport->size.y ),
-				static_cast<int>( viewport->size.x ),
-				static_cast<int>( viewport->size.y )
+				static_cast<int>( destination_origin.x ),
+				window.GetHeight() - static_cast<int>( destination_origin.y + size.y ),
+				static_cast<int>( size.x ),
+				static_cast<int>( size.y )
 			);
 		}
 		else {
@@ -417,10 +408,10 @@ void Renderer::Display( sf::RenderWindow& window ) {
 		}
 
 		if( index < scissor_pairs_size - 1 ) {
-			glDrawArrays( GL_TRIANGLE_STRIP, scissor_pair.second, m_viewport_pairs[index + 1].second - scissor_pair.second );
+			glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_viewport_pairs[index + 1].second - scissor_pair.second );
 		}
 		else {
-			glDrawArrays( GL_TRIANGLE_STRIP, scissor_pair.second, m_last_vertex_count - scissor_pair.second );
+			glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_last_vertex_count - scissor_pair.second );
 		}
 	}
 
@@ -456,30 +447,41 @@ void Renderer::SetupGL( sf::RenderWindow& window ) {
 		glDisable( GL_BLEND );
 	}
 
-	if( m_depth_test ) {
+	if( m_depth_clear_strategy ) {
 		glEnable( GL_DEPTH_TEST );
 
-		glClear( GL_DEPTH_BUFFER_BIT );
+		if( m_depth_clear_strategy & CLEAR_DEPTH ) {
+			glClear( GL_DEPTH_BUFFER_BIT );
+		}
+		else if( m_depth_clear_strategy & ALTERNATE_DEPTH ) {
+			if( m_depth_alternate_flag ) {
+				glDepthFunc( GL_LESS );
+				glDepthRange( 0.0, 0.5 );
+			}
+			else {
+				glDepthFunc( GL_GREATER );
+				glDepthRange( 1.0, 0.5 );
+			}
 
-		// Textures need to be sharper to be able to do this.
-		// But... you get +300 FPS
-		//glBlendFunc( GL_SRC_ALPHA, GL_ZERO );
+			m_depth_alternate_flag = !m_depth_alternate_flag;
+		}
 	}
 
 	if( m_alpha_threshold > 0.f ) {
-		// This setting needs to be tuned per application?
 		glAlphaFunc( GL_GREATER, m_alpha_threshold );
 	}
+
+	glEnable( GL_CULL_FACE );
 }
 
 void Renderer::RestoreGL( sf::RenderWindow& window ) {
+	glDisable( GL_CULL_FACE );
+
 	if( m_alpha_threshold > 0.f ) {
 		glAlphaFunc( GL_GREATER, 0.f );
 	}
 
-	if( m_depth_test ) {
-		//glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
+	if( m_depth_clear_strategy ) {
 		glDisable( GL_DEPTH_TEST );
 	}
 
@@ -598,11 +600,11 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 		hash *= 16777619UL;
 
 		// Check if the image makes intentional use of the alpha channel.
-		if( m_depth_test && !( byte_count % 4 ) && ( bytes[ byte_count - 1 ] > alpha_threshold ) && ( bytes[ byte_count - 1 ] < 255 ) ) {
+		if( m_depth_clear_strategy && !( byte_count % 4 ) && ( bytes[ byte_count - 1 ] > alpha_threshold ) && ( bytes[ byte_count - 1 ] < 255 ) ) {
 #ifdef SFGUI_DEBUG
 			std::cerr << "Detected alpha value " << static_cast<int>( bytes[ byte_count - 1 ]  ) << " in texture, disabling depth test.\n";
 #endif
-			m_depth_test = false;
+			m_depth_clear_strategy = false;
 		}
 	}
 
@@ -641,31 +643,14 @@ void Renderer::SortPrimitives() {
 	while( current_position < primitives_size ) {
 		sort_index = current_position++;
 
-		while( ( sort_index > 0 ) && ( m_primitives[sort_index - 1]->level > m_primitives[sort_index]->level ) ) {
+		while( ( sort_index > 0 ) && ( m_primitives[sort_index - 1]->GetLevel() > m_primitives[sort_index]->GetLevel() ) ) {
 			m_primitives[sort_index].swap( m_primitives[sort_index - 1] );
 			--sort_index;
 		}
 	}
 }
 
-void Renderer::RemoveExpired() {
-	// Remove expired Primitives
-	std::size_t primitives_size = m_primitives.size();
-	std::vector<Primitive::Ptr>::iterator primitives_begin( m_primitives.begin() );
-
-	for( std::size_t index = 0; index < primitives_size; ) {
-		const Primitive::Ptr& primitive_ptr( m_primitives[index] );
-
-		if( !primitive_ptr->synced ) {
-			InvalidateVBO();
-			primitive_ptr->synced = true;
-		}
-
-		++index;
-	}
-}
-
-void Renderer::RefreshVBO() {
+void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	SortPrimitives();
 
 	m_vertex_data.clear();
@@ -678,22 +663,21 @@ void Renderer::RefreshVBO() {
 
 	std::size_t primitives_size = m_primitives.size();
 
-	// Rather notify and disable depth testing until requested again.
-	//m_depth_test = true;
-
 	// Check for alpha values in all primitives.
 	// Disable depth test if any found.
 	for( std::size_t primitive_index = 0; primitive_index < primitives_size; ++primitive_index ) {
-		std::size_t vertices_size = m_primitives[primitive_index]->vertices.size();
+		const std::vector<Primitive::Vertex>& vertices( m_primitives[primitive_index]->GetVertices() );
+
+		std::size_t vertices_size = vertices.size();
 
 		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
-			Primitive::Vertex& vertex( m_primitives[primitive_index]->vertices[vertex_index] );
+			const Primitive::Vertex& vertex( vertices[vertex_index] );
 
-			if( m_depth_test && ( vertex.color.a < 255 ) ) {
+			if( m_depth_clear_strategy && ( vertex.color.a < 255 ) ) {
 #ifdef SFGUI_DEBUG
 				std::cerr << "Detected alpha value " << static_cast<int>( vertex.color.a ) << " disabling depth test.\n";
 #endif
-				m_depth_test = false;
+				m_depth_clear_strategy = false;
 			}
 		}
 	}
@@ -704,26 +688,28 @@ void Renderer::RefreshVBO() {
 	// Depth test vars
 	float depth = -4.f;
 	float depth_delta = 4.f / static_cast<float>( primitives_size );
-	int direction = m_depth_test ? -1 : 1;
-	int start = m_depth_test ? primitives_size : 1;
-	std::size_t end = m_depth_test ? 0 : primitives_size + 1;
+	int direction = m_depth_clear_strategy ? -1 : 1;
+	int start = m_depth_clear_strategy ? primitives_size : 1;
+	std::size_t end = m_depth_clear_strategy ? 0 : primitives_size + 1;
 
 	RendererViewport::Ptr current_viewport = m_default_viewport;
 	m_viewport_pairs.push_back( ViewportPair( m_default_viewport, 0 ) );
 
+	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) );
+
 	for( std::size_t primitive_index = start; primitive_index != end; primitive_index += direction ) {
 		Primitive* primitive = m_primitives[primitive_index - 1].get();
 
-		primitive->synced = true;
+		primitive->SetSynced();
 
-		if( !primitive->visible ) {
+		if( !primitive->IsVisible() ) {
 			continue;
 		}
 
-		sf::Vector2f position_transform( primitive->position );
+		sf::Vector2f position_transform( primitive->GetPosition() );
 
 		// Check if primitive needs to be rendered in a custom viewport.
-		RendererViewport::Ptr viewport = primitive->viewport;
+		RendererViewport::Ptr viewport = primitive->GetViewport();
 
 		if( viewport != current_viewport ) {
 			current_viewport = viewport;
@@ -733,18 +719,33 @@ void Renderer::RefreshVBO() {
 			m_viewport_pairs.push_back( scissor_pair );
 		}
 
+		bool cull = m_cull;
+
+		sf::FloatRect viewport_rect = window_viewport;
+
 		if( viewport && ( viewport != m_default_viewport ) ) {
-			position_transform += ( viewport->destination_origin - viewport->source_origin );
+			sf::Vector2f destination_origin( viewport->GetDestinationOrigin() );
+			sf::Vector2f size( viewport->GetSize() );
+
+			position_transform += ( destination_origin - viewport->GetSourceOrigin() );
+
+			if( m_cull ) {
+				viewport_rect.Left = destination_origin.x;
+				viewport_rect.Top = destination_origin.y;
+				viewport_rect.Width = size.x;
+				viewport_rect.Height = size.y;
+			}
 		}
 
 		// Process primitive's vertices.
-		std::size_t vertices_size = primitive->vertices.size();
+		const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+
+		std::size_t vertices_size = vertices.size();
 
 		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
-			Primitive::Vertex& vertex( primitive->vertices[vertex_index] );
+			const Primitive::Vertex& vertex( vertices[vertex_index] );
 
-			sf::Vector2f position2d( vertex.position + position_transform );
-			sf::Vector3f position( position2d.x, position2d.y, depth );
+			sf::Vector3f position( vertex.position.x + position_transform.x, vertex.position.y + position_transform.y, depth );
 
 			m_vertex_data.push_back( position );
 			m_color_data.push_back( vertex.color );
@@ -752,10 +753,20 @@ void Renderer::RefreshVBO() {
 			// Normalize SFML's pixel texture coordinates.
 			m_texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
 
-			++m_last_vertex_count;
+			if( m_cull && viewport_rect.Contains( position.x, position.y ) ) {
+				cull = false;
+			}
 		}
 
-		depth -= depth_delta;
+		if( cull ) {
+			m_vertex_data.resize( m_last_vertex_count );
+			m_color_data.resize( m_last_vertex_count );
+			m_texture_data.resize( m_last_vertex_count );
+		}
+		else {
+			m_last_vertex_count += vertices_size;
+			depth -= depth_delta;
+		}
 	}
 
 	// Sync vertex data
@@ -764,7 +775,7 @@ void Renderer::RefreshVBO() {
 
 	// Sync color data
 	glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
-	glBufferData( GL_ARRAY_BUFFER, m_color_data.size() * sizeof( sf::Color ), &m_color_data[0], GL_STATIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, m_color_data.size() * sizeof( sf::Color ), &m_color_data[0], GL_DYNAMIC_DRAW );
 
 	// Sync texture coord data
 	glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
@@ -783,8 +794,23 @@ void Renderer::InvalidateVBO() {
 	m_vbo_synced = false;
 }
 
-void Renderer::TuneDepthTest( bool enable ) {
-	m_depth_test = enable;
+void Renderer::TuneDepthTest( unsigned char strategy ) {
+	if( strategy & NO_DEPTH ) {
+		m_depth_clear_strategy = strategy;
+	}
+	else if( strategy & CLEAR_DEPTH ) {
+		m_depth_clear_strategy = strategy;
+	}
+	else if( strategy & ALTERNATE_DEPTH ) {
+		m_depth_clear_strategy = strategy;
+
+		m_depth_alternate_flag = true;
+
+		glClearDepth( 1.0 );
+		glClear( GL_DEPTH_BUFFER_BIT );
+		glDepthRange( 0.0, 0.5 );
+		glDepthFunc( GL_LESS );
+	}
 }
 
 void Renderer::TuneAlphaThreshold( float alpha_threshold ) {
@@ -792,7 +818,17 @@ void Renderer::TuneAlphaThreshold( float alpha_threshold ) {
 }
 
 void Renderer::TunePrecomputeBlending( bool enable ) {
+	if( !m_primitives.empty() ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "TunePrecomputeBlending() can only be called before any primitives are constructed.\n";
+#endif
+	}
+
 	m_preblend = enable;
+}
+
+void Renderer::TuneCull( bool enable ) {
+	m_cull = enable;
 }
 
 }

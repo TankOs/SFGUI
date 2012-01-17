@@ -36,12 +36,12 @@ bool Context::Deactivate() {
 
 Context::Context() :
 	m_engine( NULL ),
-	m_projecto( NULL )
+	m_renderer( NULL )
 {
 }
 
 Context::~Context() {
-	delete m_projecto;
+	delete m_renderer;
 }
 
 Engine& Context::GetDefaultEngine() {
@@ -66,11 +66,11 @@ SharedPtr<Widget> Context::GetActiveWidget() const {
 }
 
 Renderer& Context::GetRenderer() {
-	if( !m_projecto ) {
-		m_projecto = new Renderer;
+	if( !m_renderer ) {
+		m_renderer = new Renderer;
 	}
 
-	return *m_projecto;
+	return *m_renderer;
 }
 
 }

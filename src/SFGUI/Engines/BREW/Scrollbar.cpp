@@ -80,9 +80,9 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 
 		queue->Add(
 			Context::Get().GetRenderer().CreateTriangle(
-				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .66f, scrollbar->GetAllocation().Height * .33f ),
-				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .33f, scrollbar->GetAllocation().Height * .5f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .66f, scrollbar->GetAllocation().Height * .66f ),
+				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .33f, scrollbar->GetAllocation().Height * .5f ),
+				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .66f, scrollbar->GetAllocation().Height * .33f ),
 				stepper_arrow_color
 			)
 		);
@@ -149,8 +149,8 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 		queue->Add(
 			Context::Get().GetRenderer().CreateTriangle(
 				sf::Vector2f( scrollbar->GetAllocation().Width * .33f, scrollbar->GetAllocation().Height - stepper_length * .66f ),
-				sf::Vector2f( scrollbar->GetAllocation().Width * .66f, scrollbar->GetAllocation().Height - stepper_length * .66f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width * .5f, scrollbar->GetAllocation().Height - stepper_length * .33f ),
+				sf::Vector2f( scrollbar->GetAllocation().Width * .66f, scrollbar->GetAllocation().Height - stepper_length * .66f ),
 				stepper_arrow_color
 			)
 		);

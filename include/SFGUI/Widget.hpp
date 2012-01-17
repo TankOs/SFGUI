@@ -195,9 +195,9 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 
 		int GetHierarchyLevel() const;
 
-		void SetViewport( const RendererViewport::Ptr& viewport );
+		void SetViewport( const SharedPtr<RendererViewport>& viewport );
 
-		const RendererViewport::Ptr& GetViewport() const;
+		const SharedPtr<RendererViewport>& GetViewport() const;
 
 		// Signals.
 		Signal OnStateChange; //!< Fired when state changed. (old state)
@@ -327,7 +327,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		sf::Vector2f m_requisition;
 		sf::Vector2f* m_custom_requisition;
 
-		RendererViewport::Ptr m_viewport;
+		SharedPtr<RendererViewport> m_viewport;
 
 		WeakPtr<Container> m_parent;
 

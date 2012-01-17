@@ -13,13 +13,24 @@ class RendererViewport {
 
 		RendererViewport();
 
-		void Apply();
+		void SetSourceOrigin( const sf::Vector2f& origin );
 
-		sf::Vector2f source_origin;
-		sf::Vector2f destination_origin;
-		sf::Vector2f size;
+		const sf::Vector2f& GetSourceOrigin() const;
 
-		std::size_t id;
+		void SetDestinationOrigin( const sf::Vector2f& origin );
+
+		const sf::Vector2f& GetDestinationOrigin() const;
+
+		void SetSize( const sf::Vector2f& size );
+
+		const sf::Vector2f& GetSize() const;
+
+	private:
+		sf::Vector2f m_source_origin;
+		sf::Vector2f m_destination_origin;
+		sf::Vector2f m_size;
+
+		std::size_t m_id;
 
 		static std::size_t last_id;
 };

@@ -2,11 +2,12 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/SharedPtr.hpp>
-#include <SFGUI/RendererViewport.hpp>
 
 #include <SFML/Graphics.hpp>
 
 namespace sfg {
+
+class RendererViewport;
 
 class SFGUI_API Primitive {
 	public:
@@ -20,17 +21,46 @@ class SFGUI_API Primitive {
 
 		Primitive();
 
-		void Add( const Primitive& primitive );
+		void Add( Primitive& primitive );
 
-		sf::Vector2f position;
-		RendererViewport::Ptr viewport;
-		float layer;
-		int level;
+		void AddVertex( const Vertex& vertex );
 
-		std::vector<Vertex> vertices;
+		void SetPosition( const sf::Vector2f& position );
 
-		bool synced;
-		bool visible;
+		const sf::Vector2f& GetPosition() const;
+
+		void SetViewport( const SharedPtr<RendererViewport>& viewport );
+
+		const SharedPtr<RendererViewport>& GetViewport() const;
+
+		void SetLayer( float layer );
+
+		float GetLayer() const;
+
+		void SetLevel( int level );
+
+		int GetLevel() const;
+
+		std::vector<Vertex>& GetVertices();
+
+		void SetSynced( bool synced = true );
+
+		bool IsSynced() const;
+
+		void SetVisible( bool visible );
+
+		bool IsVisible() const;
+
+	private:
+		sf::Vector2f m_position;
+		SharedPtr<RendererViewport> m_viewport;
+		float m_layer;
+		int m_level;
+
+		std::vector<Vertex> m_vertices;
+
+		bool m_synced;
+		bool m_visible;
 };
 
 }

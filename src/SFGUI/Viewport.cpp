@@ -1,4 +1,5 @@
 #include <SFGUI/Viewport.hpp>
+#include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Context.hpp>
 #include <cmath>
 
@@ -25,8 +26,12 @@ Viewport::Ptr Viewport::Create( const Adjustment::Ptr& horizontal_adjustment, co
 }
 
 RenderQueue* Viewport::InvalidateImpl() const {
-	m_viewport->source_origin.x = std::floor( m_horizontal_adjustment->GetValue() + .5f );
-	m_viewport->source_origin.y = std::floor( m_vertical_adjustment->GetValue() + .5f );
+	m_viewport->SetSourceOrigin(
+		sf::Vector2f(
+			std::floor( m_horizontal_adjustment->GetValue() + .5f ),
+			std::floor( m_vertical_adjustment->GetValue() + .5f )
+		)
+	);
 
 	return 0;
 }
@@ -38,15 +43,23 @@ sf::Vector2f Viewport::CalculateRequisition() {
 void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	sf::FloatRect allocation = GetAllocation();
 
-	m_viewport->size.x = std::floor( allocation.Width + .5f );
-	m_viewport->size.y = std::floor( allocation.Height + .5f );
+	m_viewport->SetSize(
+		sf::Vector2f(
+			std::floor( allocation.Width + .5f ),
+			std::floor( allocation.Height + .5f )
+		)
+	);
 }
 
 void Viewport::HandleAbsolutePositionChange() {
 	sf::Vector2f position = Widget::GetAbsolutePosition();
 
-	m_viewport->destination_origin.x = std::floor( position.x + .5f );
-	m_viewport->destination_origin.y = std::floor( position.y + .5f );
+	m_viewport->SetDestinationOrigin(
+		sf::Vector2f(
+			std::floor( position.x + .5f ),
+			std::floor( position.y + .5f )
+		)
+	);
 }
 
 void Viewport::HandleEvent( const sf::Event& event ) {
@@ -160,8 +173,12 @@ void Viewport::HandleAdd( const Widget::Ptr& child ) {
 }
 
 void Viewport::UpdateView() {
-	m_viewport->source_origin.x = std::floor( m_horizontal_adjustment->GetValue() + .5f );
-	m_viewport->source_origin.y = std::floor( m_vertical_adjustment->GetValue() + .5f );
+	m_viewport->SetSourceOrigin(
+		sf::Vector2f(
+			std::floor( m_horizontal_adjustment->GetValue() + .5f ),
+			std::floor( m_vertical_adjustment->GetValue() + .5f )
+		)
+	);
 }
 
 }

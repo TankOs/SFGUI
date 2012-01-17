@@ -89,28 +89,23 @@ void Spinner::HandleUpdate( float seconds ) {
 		for( std::size_t index = primitives_size; index > 0; --index ) {
 			Primitive* primitive = primitives[index - 1].get();
 
-			// We exploit integer wraparound here ;)
-			primitive->vertices[1].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
-			primitive->vertices[2].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
-			primitive->vertices[3].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
-			primitive->vertices[4].color.a = static_cast<sf::Uint8>( color.a + alpha_delta * current_stage );
+			std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
 
-			primitive->vertices[1].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
-			primitive->vertices[2].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
-			primitive->vertices[3].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
-			primitive->vertices[4].color.r = static_cast<sf::Uint8>( color.r + red_delta * current_stage );
+			sf::Color new_color(
+				static_cast<sf::Uint8>( color.r + red_delta * current_stage ),
+				static_cast<sf::Uint8>( color.g + green_delta * current_stage ),
+				static_cast<sf::Uint8>( color.b + blue_delta * current_stage ),
+				static_cast<sf::Uint8>( color.a + alpha_delta * current_stage )
+			);
 
-			primitive->vertices[1].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
-			primitive->vertices[2].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
-			primitive->vertices[3].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
-			primitive->vertices[4].color.g = static_cast<sf::Uint8>( color.g + green_delta * current_stage );
+			vertices[0].color = new_color;
+			vertices[1].color = new_color;
+			vertices[2].color = new_color;
+			vertices[3].color = new_color;
+			vertices[4].color = new_color;
+			vertices[5].color = new_color;
 
-			primitive->vertices[1].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
-			primitive->vertices[2].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
-			primitive->vertices[3].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
-			primitive->vertices[4].color.b = static_cast<sf::Uint8>( color.b + blue_delta * current_stage );
-
-			primitive->synced = false;
+			primitive->SetSynced( false );
 
 			current_stage = ( current_stage + 1 ) % primitives_size;
 		}
