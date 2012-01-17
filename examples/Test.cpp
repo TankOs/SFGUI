@@ -380,7 +380,7 @@ void SampleApp::Run() {
 
 	sfg::CullingTarget culling_target( m_window );
 
-	while( m_window.IsOpened() ) {
+	while( m_window.IsOpen() ) {
 		while( m_window.PollEvent( event ) ) {
 			if( event.Type == sf::Event::Closed ) {
 				m_window.Close();

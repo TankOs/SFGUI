@@ -159,7 +159,7 @@ void GuessMyNumber::Run() {
 	// Make sure all properties are applied.
 	window->Refresh();
 
-	while( render_window.IsOpened() ) {
+	while( render_window.IsOpen() ) {
 		while( render_window.PollEvent( event ) ) {
 			if(
 				(event.Type == sf::Event::KeyPressed && event.Key.Code == sf::Keyboard::Escape) ||

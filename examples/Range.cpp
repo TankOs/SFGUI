@@ -106,7 +106,7 @@ int main() {
 	window->Add( box );
 
 	// Start the game loop
-	while ( app_window.IsOpened() ) {
+	while ( app_window.IsOpen() ) {
 		// Process events
 		sf::Event event;
 

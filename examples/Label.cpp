@@ -33,7 +33,7 @@ int main() {
 	window->Add( label );
 
 	// Start the game loop
-	while ( app_window.IsOpened() ) {
+	while ( app_window.IsOpen() ) {
 		// Process events
 		sf::Event event;
 

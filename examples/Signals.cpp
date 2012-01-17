@@ -116,7 +116,7 @@ void Application::Run() {
 	// specialized cases similar to the one in this example the
 	// Factory Method Pattern and Abstract Factory Pattern.
 
-	while ( app_window.IsOpened() ) {
+	while ( app_window.IsOpen() ) {
 		sf::Event event;
 
 		while ( app_window.PollEvent( event ) ) {

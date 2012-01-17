@@ -53,7 +53,7 @@ int main() {
 
 	sf::Event event;
 
-	while( render_window.IsOpened() ) {
+	while( render_window.IsOpen() ) {
 		while( render_window.PollEvent( event ) ) {
 			if( event.Type == sf::Event::Closed ) {
 				render_window.Close();

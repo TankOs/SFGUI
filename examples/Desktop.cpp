@@ -69,7 +69,7 @@ void DesktopExample::Run() {
 	// Init.
 	m_desktop.SetProperty( "Button#create_window > Label", "FontSize", 18.f );
 
-	while( render_window.IsOpened() ) {
+	while( render_window.IsOpen() ) {
 		while( render_window.PollEvent( event ) ) {
 			if(
 				(event.Type == sf::Event::Closed) ||
