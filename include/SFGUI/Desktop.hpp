@@ -62,6 +62,9 @@ class SFGUI_API Desktop {
 		template <typename T>
 		T GetProperty( const std::string& property, SharedPtr<const Widget> widget = SharedPtr<const Widget>() ) const;
 
+		/** Update
+		 * @param seconds Elapsed time in seconds.
+		 */
 		void Update( float seconds );
 
 		/** Handle event.

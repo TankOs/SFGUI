@@ -103,6 +103,9 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		void SetPosition( const sf::Vector2f& position );
 
+		/** Update
+		 * @param seconds Elapsed time in seconds.
+		 */
 		void Update( float seconds );
 
 		/** Invalidate widget (prepare internal sf::Drawable).
@@ -187,16 +190,34 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void Refresh();
 
+		/** Check if widget is drawn.
+		 * @return true when widget is drawn.
+		 */
 		bool IsDrawn() const;
 
+		/** Draw widget.
+		 * @param draw true to draw widget.
+		 */
 		virtual void Draw( bool draw = true );
 
+		/** Set hierarchy level of this widget.
+		 * @param level New hierarchy level of this widget..
+		 */
 		void SetHierarchyLevel( int level );
 
+		/** Get hierarchy level of this widget.
+		 * @return Hierarchy level of this widget..
+		 */
 		int GetHierarchyLevel() const;
 
+		/** Set viewport of this widget.
+		 * @param viewport Viewport of this widget..
+		 */
 		void SetViewport( const SharedPtr<RendererViewport>& viewport );
 
+		/** Get viewport of this widget.
+		 * @return Viewport of this widget..
+		 */
 		const SharedPtr<RendererViewport>& GetViewport() const;
 
 		// Signals.
@@ -313,11 +334,18 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleVisibilityChange();
 
+		/** Handle update.
+		 */
 		virtual void HandleUpdate( float seconds );
 
+		/** Handle hierarchy level change.
+		 */
 		virtual void HandleSetHierarchyLevel();
 
+		/** Handle viewport change.
+		 */
 		virtual void HandleViewportUpdate();
+
 
 	private:
 		void GrabFocus( Ptr widget );

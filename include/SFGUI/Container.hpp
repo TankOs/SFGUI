@@ -78,10 +78,16 @@ class SFGUI_API Container : public Widget {
 		 */
 		virtual void HandleParentVisibilityChange();
 
+		/** Handle update.
+		 */
 		virtual void HandleUpdate( float seconds );
 
+		/** Handle hierarchy level change.
+		 */
 		virtual void HandleSetHierarchyLevel();
 
+		/** Handle viewport change.
+		 */
 		virtual void HandleViewportUpdate();
 
 	private:

@@ -69,6 +69,9 @@ class SFGUI_API Context {
 		 */
 		SharedPtr<Widget> GetActiveWidget() const;
 
+		/** Get renderer.
+		 * @return Renderer.
+		 */
 		Renderer& GetRenderer();
 
 	private:

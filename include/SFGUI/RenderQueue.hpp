@@ -66,12 +66,24 @@ class SFGUI_API RenderQueue {
 		 */
 		void SetZOrder( int z_order );
 
+		/** Draw this RenderQueue.
+		 * @param show true to draw.
+		 */
 		void Show( bool show = true );
 
+		/** Set draw hierarchy level of this RenderQueue.
+		 * @param level Draw hierarchy level of this RenderQueue.
+		 */
 		void SetLevel( int level );
 
+		/** Set viewport of this RenderQueue.
+		 * @param viewport New viewport of this RenderQueue.
+		 */
 		void SetViewport( const SharedPtr<RendererViewport>& viewport );
 
+		/** Get viewport of this RenderQueue.
+		 * @return Viewport of this RenderQueue.
+		 */
 		const SharedPtr<RendererViewport>& GetViewport() const;
 
 	private:

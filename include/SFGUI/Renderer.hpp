@@ -13,57 +13,144 @@ namespace sfg {
 
 class RendererViewport;
 
+/** SFGUI VBO renderer.
+ */
 class SFGUI_API Renderer {
 	public:
 		enum DepthClearStrategy {
-			NO_DEPTH = 0,
-			CLEAR_DEPTH = 1 << 0,
-			ALTERNATE_DEPTH = 1 << 1,
-			DEFAULT = NO_DEPTH
+			NO_DEPTH = 0, //!< No depth testing.
+			CLEAR_DEPTH = 1 << 0, //!< Depth testing using glClear().
+			ALTERNATE_DEPTH = 1 << 1, //!< Depth testing alternating between GL_LESS and GL_GREATER.
+			DEFAULT = NO_DEPTH //!< Default: No depth testing.
 		};
 
+		/** Ctor.
+		 */
 		Renderer();
 
+		/** Dtor.
+		 */
 		~Renderer();
 
+		/** Get default viewport that covers the entire window.
+		 * @return Default viewport that covers the entire window.
+		 */
 		const SharedPtr<RendererViewport>& GetDefaultViewport();
 
+		/** Create and register a new viewport with the renderer.
+		 * @return New viewport.
+		 */
 		SharedPtr<RendererViewport> CreateViewport();
 
+		/** Create and register a new text primitive with the renderer.
+		 * @param text sf::Text describing the text to be drawn.
+		 * @param background_color_hint Background color hint for pre-blending.
+		 * @return New text primitive.
+		 */
 		Primitive::Ptr CreateText( const sf::Text& text, sf::Color background_color_hint );
 
+		/** Create and register a new quad primitive with the renderer.
+		 * @param top_left Top left corner of the quad.
+		 * @param bottom_left Bottom left corner of the quad.
+		 * @param bottom_right Bottom right corner of the quad.
+		 * @param top_right Top right corner of the quad.
+		 * @param color Color of the quad.
+		 * @return New quad primitive.
+		 */
 		Primitive::Ptr CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
 		                           const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
 		                           const sf::Color& color = sf::Color::White );
 
+		/** Create and register a new pane (rect with border) primitive with the renderer.
+		 * @param position Position of the pane (top left corner).
+		 * @param size Size of the pane.
+		 * @param border_width Width of the border.
+		 * @param color Color of the rect.
+		 * @param border_color Color of the border.
+		 * @param border_color_shift Amount to shift border colors by to create a 3D effect.
+		 * @return New pane primitive.
+		 */
 		Primitive::Ptr CreatePane( const sf::Vector2f& position, const sf::Vector2f& size, float border_width,
 		                           const sf::Color& color = sf::Color::White, const sf::Color& border_color = sf::Color::Black,
 		                           int border_color_shift = 0 );
 
+		/** Create and register a new rect primitive with the renderer.
+		 * @param top_left Top left corner of the rect.
+		 * @param bottom_right Bottom right corner of the rect.
+		 * @param color Color of the rect.
+		 * @return New rect primitive.
+		 */
 		Primitive::Ptr CreateRect( const sf::Vector2f& top_left, const sf::Vector2f& bottom_right, const sf::Color& color = sf::Color::White );
 
+		/** Create and register a new rect primitive with the renderer.
+		 * @param rect sf::FloatRect describing the rect to be constructed.
+		 * @param color Color of the rect.
+		 * @return New rect primitive.
+		 */
 		Primitive::Ptr CreateRect( const sf::FloatRect& rect, const sf::Color& color = sf::Color::White );
 
+		/** Create and register a new triangle primitive with the renderer.
+		 * Keep in mind that the points have to be specified in counter-clockwise order.
+		 * @param point0 First point of the triangle.
+		 * @param point1 Second point of the triangle.
+		 * @param point2 Third point of the triangle.
+		 * @param color Color of the triangle.
+		 * @return New triangle primitive.
+		 */
 		Primitive::Ptr CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color = sf::Color::White );
 
+		/** Create and register a new image primitive with the renderer.
+		 * @param rect sf::FloatRect describing the rect in which the image should be drawn.
+		 * @param image sf::Image containing the image to draw.
+		 * @param background_color_hint Background color hint for pre-blending.
+		 * @return New image primitive.
+		 */
 		Primitive::Ptr CreateImage( const sf::FloatRect& rect, const sf::Image& image, sf::Color background_color_hint );
 
+		/** Create and register a new line primitive with the renderer.
+		 * @param begin Starting point of the line.
+		 * @param end End point of the line.
+		 * @param color Color of the line.
+		 * @param thickness Thickness of the line.
+		 * @return New line primitive.
+		 */
 		Primitive::Ptr CreateLine( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& color = sf::Color::White, float thickness = 1.f );
 
+		/** Unregister a primitive from the renderer.
+		 * @param primitive to be unregistered.
+		 */
 		void RemovePrimitive( const Primitive::Ptr& primitive );
 
+		/** Invalidate VBO data so it is resynchronized with fresh vertex data.
+		 */
 		void InvalidateVBO();
 
-		void Draw( const Primitive::Ptr& primitive );
-
+		/** Draw the GUI.
+		 * @param window sf::RenderWindow to draw to.
+		 */
 		void Display( sf::RenderWindow& window );
 
+		/** Enable and select depth testing method.
+		 * Renderer::NO_DEPTH To disable depth testing.
+		 * Renderer::CLEAR_DEPTH To enable depth testing and running glClear() every frame.
+		 * Renderer::ALTERNATE_DEPTH To enable depth testing and alternate between GL_LESS and GL_GREATER instead of clearing the depth buffer every frame. Use this only if you don't use the depth buffer yourself.
+		 * @param strategy Depth buffer strategy to use (default: NO_DEPTH).
+		 */
 		void TuneDepthTest( unsigned char strategy );
 
+		/** Enable and select alpha testing threshold.
+		 * @param alpha_threshold Threshold at which fragments will get discarded if their alpha value is less than or equal to. Set to 0.f to disable.
+		 */
 		void TuneAlphaThreshold( float alpha_threshold );
 
+		/** Enable or disable blend precomputing. Offload the blending from GPU to CPU. Enable with care. YMMV
+		 * @param enable true to enable, false to disable.
+		 */
 		void TunePrecomputeBlending( bool enable );
 
+		/** Enable or disable CPU driven face culling.
+		 * @param enable true to enable, false to disable.
+		 */
 		void TuneCull( bool enable );
 
 	private:
