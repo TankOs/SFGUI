@@ -1,6 +1,6 @@
 #include <SFGUI/Viewport.hpp>
 #include <SFGUI/RendererViewport.hpp>
-#include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <cmath>
 
 namespace sfg {
@@ -13,7 +13,7 @@ Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustme
 	SetHorizontalAdjustment( horizontal_adjustment );
 	SetVerticalAdjustment( vertical_adjustment );
 
-	m_viewport = Context::Get().GetRenderer().CreateViewport();
+	m_viewport = Renderer::Get().CreateViewport();
 }
 
 Viewport::Ptr Viewport::Create() {

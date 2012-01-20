@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/ComboBox.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -30,7 +31,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 	// Pane
 	queue->Add(
-		Context::Get().GetRenderer().CreatePane(
+		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
 			sf::Vector2f( combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ),
 			border_width,
@@ -54,7 +55,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 		// Popup Pane
 		queue->Add(
-			Context::Get().GetRenderer().CreatePane(
+			Renderer::Get().CreatePane(
 				sf::Vector2f( 0.f, combo_box->GetAllocation().Height ),
 				sf::Vector2f( combo_box->GetAllocation().Width, expanded_height ),
 				border_width,
@@ -73,7 +74,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			if( item_index == combo_box->GetHighlightedItem() ) {
 				// Highlighted item background.
 				queue->Add(
-					Context::Get().GetRenderer().CreateRect(
+					Renderer::Get().CreateRect(
 						sf::FloatRect(
 							item_position.x + border_width,
 							item_position.y + border_width,
@@ -88,7 +89,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			sf::Text text( combo_box->GetItem( item_index ), font, font_size );
 			text.SetPosition( item_position.x + padding, item_position.y + padding );
 			text.SetColor( color );
-			queue->Add( Context::Get().GetRenderer().CreateText( text, highlighted_color ) );
+			queue->Add( Renderer::Get().CreateText( text, highlighted_color ) );
 
 			item_position.y += item_size.y;
 		}
@@ -101,7 +102,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			combo_box->GetAllocation().Height / 2.f - line_height / 2.f
 		);
 		text.SetColor( color );
-		queue->Add( Context::Get().GetRenderer().CreateText( text, background_color ) );
+		queue->Add( Renderer::Get().CreateText( text, background_color ) );
 	}
 
 	// Arrow.
@@ -111,7 +112,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	);
 
 	queue->Add(
-		Context::Get().GetRenderer().CreateTriangle(
+		Renderer::Get().CreateTriangle(
 			position + sf::Vector2f(
 				GetLineHeight( font, font_size ) / 2.f,
 				GetLineHeight( font, font_size ) * 3.f / 4.f

@@ -1,4 +1,5 @@
 #include <SFGUI/RendererViewport.hpp>
+#include <SFGUI/Renderer.hpp>
 
 namespace sfg {
 
@@ -14,6 +15,8 @@ RendererViewport::RendererViewport() :
 
 void RendererViewport::SetSourceOrigin( const sf::Vector2f& origin ) {
 	m_source_origin = origin;
+
+	Renderer::Get().InvalidateVBO();
 }
 
 const sf::Vector2f& RendererViewport::GetSourceOrigin() const {
@@ -22,6 +25,8 @@ const sf::Vector2f& RendererViewport::GetSourceOrigin() const {
 
 void RendererViewport::SetDestinationOrigin( const sf::Vector2f& origin ) {
 	m_destination_origin = origin;
+
+	Renderer::Get().InvalidateVBO();
 }
 
 const sf::Vector2f& RendererViewport::GetDestinationOrigin() const {
@@ -30,6 +35,8 @@ const sf::Vector2f& RendererViewport::GetDestinationOrigin() const {
 
 void RendererViewport::SetSize( const sf::Vector2f& size ) {
 	m_size = size;
+
+	Renderer::Get().InvalidateVBO();
 }
 
 const sf::Vector2f& RendererViewport::GetSize() const {

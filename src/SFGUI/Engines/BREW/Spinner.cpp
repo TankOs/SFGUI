@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Spinner.hpp>
 
 #include <cmath>
@@ -49,7 +50,7 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 		);
 
 		queue->Add(
-			Context::Get().GetRenderer().CreateLine(
+			Renderer::Get().CreateLine(
 				inner_point + center_offset,
 				outer_point + center_offset,
 				rod_color,

@@ -26,6 +26,7 @@ if( WINDOWS )
 	set( BIN_EXTENSION ".exe" )
 	set( SFML_STATIC false CACHE BOOL "Was SFML built as a static library?" )
 	set( SHARE_TARGET_DIR . )
+	add_definitions( -D WIN32 )
 else()
 	set( SHARE_TARGET_DIR share/SFGUI )
 endif()
@@ -35,12 +36,16 @@ set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
 
 set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
 
+if( SFML_STATIC AND NOT SFGUI_STATIC  )
+	message( FATAL_ERROR "If you link to SFML statically you MUST link to SFGUI statically too." )
+endif()
+
 if( SFGUI_STATIC )
 	add_definitions( -D SFGUI_STATIC )
 endif()
 
 if( SFML_STATIC )
-	add_definitions( -D SFML_STATIC -D GLEW_STATIC )
+	add_definitions( -D SFML_STATIC )
 endif()
 
 if( COMPILER_GCC )
@@ -184,6 +189,17 @@ include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
 include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
+include_directories( "${PROJECT_SOURCE_DIR}/extlibs/GLee/include" )
+
+### GLee ###
+
+set(
+	SOURCES
+	${SOURCES}
+	${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c
+)
+
+set_source_files_properties( ${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c PROPERTIES COMPILE_FLAGS "-w" )
 
 if( NOT SFGUI_STATIC )
 	add_library( sfgui SHARED ${SOURCES} )

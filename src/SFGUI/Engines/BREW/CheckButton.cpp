@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/CheckButton.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -25,7 +26,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 
 	// Check Pane.
 	queue->Add(
-		Context::Get().GetRenderer().CreatePane(
+		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, check->GetAllocation().Height / 2.f - box_size / 2.f ),
 			sf::Vector2f( box_size, box_size ),
 			border_width,
@@ -39,7 +40,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 		float diff( box_size - check_size );
 
 		queue->Add(
-			Context::Get().GetRenderer().CreateRect(
+			Renderer::Get().CreateRect(
 				sf::FloatRect(
 					box_size / 2 - check_size / 2,
 					check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f,
@@ -62,7 +63,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 			check->GetAllocation().Height / 2.f - metrics.y / 2.f
 		);
 		text.SetColor( color );
-		queue->Add( Context::Get().GetRenderer().CreateText( text, global_background_color ) );
+		queue->Add( Renderer::Get().CreateText( text, global_background_color ) );
 	}
 
 	return queue;

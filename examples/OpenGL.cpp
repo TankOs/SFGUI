@@ -53,6 +53,8 @@ int main() {
 
 	sf::Event event;
 
+	sf::Clock clock;
+
 	while( render_window.IsOpen() ) {
 		while( render_window.PollEvent( event ) ) {
 			if( event.Type == sf::Event::Closed ) {
@@ -65,7 +67,7 @@ int main() {
 
 		if( auto_check->IsActive() ) {
 			float angle( angle_scale->GetValue() );
-			angle += static_cast<float>( render_window.GetFrameTime() ) * .5f;
+			angle += static_cast<float>( clock.GetElapsedTime().AsMilliseconds() ) * .5f;
 
 			while( angle >= 360.f ) {
 				angle -= 360.f;
@@ -94,10 +96,12 @@ int main() {
 
 		// SFML rendering.
 		render_window.PushGLStates();
-		sfg::Context::Get().GetRenderer().Display( render_window );
+		sfg::Renderer::Get().Display( render_window );
 		render_window.PopGLStates();
 
 		render_window.Display();
+
+		clock.Restart();
 	}
 
 	return 0;

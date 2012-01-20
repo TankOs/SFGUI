@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Window.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -36,7 +37,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			);
 
 			queue->Add(
-				Context::Get().GetRenderer().CreateRect(
+				Renderer::Get().CreateRect(
 					shadow_rect,
 					shadow_color
 				)
@@ -45,7 +46,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 
 		// Pane.
 		queue->Add(
-			Context::Get().GetRenderer().CreatePane(
+			Renderer::Get().CreatePane(
 				sf::Vector2f( 0.f, 0.f ),
 				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height ),
 				border_width,
@@ -58,7 +59,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 
 	if( window->HasStyle( Window::Resize ) ) {
 		queue->Add(
-			Context::Get().GetRenderer().CreateTriangle(
+			Renderer::Get().CreateTriangle(
 				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height - handle_size ),
 				sf::Vector2f( window->GetAllocation().Width - handle_size, window->GetAllocation().Height ),
 				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height ),
@@ -74,7 +75,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 
 	if( title_size > 0 ) {
 		queue->Add(
-			Context::Get().GetRenderer().CreateRect(
+			Renderer::Get().CreateRect(
 				sf::FloatRect(
 					border_width + .1f,
 					border_width + .1f,
@@ -120,7 +121,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		title_text.SetPosition( title_position );
 		title_text.SetColor( title_text_color );
 
-		queue->Add( Context::Get().GetRenderer().CreateText( title_text, title_background_color ) );
+		queue->Add( Renderer::Get().CreateText( title_text, title_background_color ) );
 	}
 
 	return queue;

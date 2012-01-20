@@ -6,6 +6,7 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFML/Graphics.hpp>
 
 #include <string>
@@ -173,7 +174,7 @@ void GuessMyNumber::Run() {
 
 		window->Update( 0.f );
 		render_window.Clear();
-		sfg::Context::Get().GetRenderer().Display( render_window );
+		sfg::Renderer::Get().Display( render_window );
 		render_window.Display();
 	}
 }

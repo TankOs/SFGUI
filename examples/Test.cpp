@@ -127,10 +127,10 @@ void SampleApp::Run() {
 	//m_window.EnableVerticalSync( true );
 
 	// Tune Renderer
-	sfg::Context::Get().GetRenderer().TuneDepthTest( sfg::Renderer::ALTERNATE_DEPTH );
-	sfg::Context::Get().GetRenderer().TuneAlphaThreshold( .2f );
-	sfg::Context::Get().GetRenderer().TunePrecomputeBlending( true );
-	sfg::Context::Get().GetRenderer().TuneCull( true );
+	sfg::Renderer::Get().TuneDepthTest( sfg::Renderer::ALTERNATE_DEPTH );
+	sfg::Renderer::Get().TuneAlphaThreshold( .2f );
+	sfg::Renderer::Get().TunePrecomputeBlending( true );
+	sfg::Renderer::Get().TuneCull( true );
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create( sfg::Window::Titlebar | sfg::Window::Background | sfg::Window::Resize );
@@ -383,7 +383,7 @@ void SampleApp::Run() {
 	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontSize", 18.f );
 
 	m_fps_counter = 0;
-	m_fps_clock.Reset();
+	m_fps_clock.Restart();
 
 	sf::Clock clock;
 
@@ -401,20 +401,20 @@ void SampleApp::Run() {
 
 		m_window.Draw( m_background_sprite );
 
-		sf::Uint32 milliseconds = clock.GetElapsedTime();
+		sf::Uint64 microseconds = clock.GetElapsedTime().AsMicroseconds();
 
-		// Only update every 5ms to reduce the time lost due to rounding
-		if( milliseconds > 5 ) {
-			m_desktop.Update( static_cast<float>( milliseconds ) / 1000.f );
-			clock.Reset();
+		// Only update every 5ms
+		if( microseconds > 5000 ) {
+			m_desktop.Update( static_cast<float>( microseconds ) / 1000000.f );
+			clock.Restart();
 		}
 
-		sfg::Context::Get().GetRenderer().Display( m_window );
+		sfg::Renderer::Get().Display( m_window );
 
 		m_window.Display();
 
-		if( m_fps_clock.GetElapsedTime() >= 1000 ) {
-			m_fps_clock.Reset();
+		if( m_fps_clock.GetElapsedTime().AsMicroseconds() >= 1000000 ) {
+			m_fps_clock.Restart();
 
 			std::stringstream sstr;
 			sstr << "SFGUI test -- FPS: " << m_fps_counter;

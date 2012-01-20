@@ -1,4 +1,5 @@
-#include <GL/glew.h>
+#include <GLee.h>
+
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/RendererViewport.hpp>
@@ -8,6 +9,8 @@
 #include <cstring>
 
 namespace sfg {
+
+SharedPtr<Renderer> Renderer::m_instance = SharedPtr<Renderer>();
 
 Renderer::Renderer() :
 	m_last_vertex_count( 0 ),
@@ -32,6 +35,14 @@ Renderer::~Renderer() {
 	glDeleteBuffers( 1, &m_texture_vbo );
 	glDeleteBuffers( 1, &m_color_vbo );
 	glDeleteBuffers( 1, &m_vertex_vbo );
+}
+
+Renderer& Renderer::Get() {
+	if( !m_instance ) {
+		m_instance.reset( new Renderer );
+	}
+
+	return *m_instance;
 }
 
 const RendererViewport::Ptr& Renderer::GetDefaultViewport() {
@@ -525,6 +536,30 @@ void Renderer::RestoreGL( sf::RenderWindow& window ) {
 }
 
 sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Color background_color_hint, sf::Color foreground_color_hint ) {
+	// Get the font face that Laurent tries to hide from us.
+	struct FontStruct {
+		void* font_face; // Authentic SFML comment: implementation details
+		void* unused1;
+		int* unused2;
+
+		// Since maps allocate everything non-contiguously on the heap we can use void* instead of Page here.
+		mutable std::map<unsigned int, void*> unused3;
+		mutable std::vector<sf::Uint8> unused4;
+	};
+
+	void* face;
+
+	// All your font face are belong to us too.
+	memcpy( &face, reinterpret_cast<const char*>( &font ) + sizeof( sf::Font ) - sizeof( FontStruct ), sizeof( void* ) );
+
+	FontID id( face, size );
+
+	std::map<FontID, sf::Vector2f>::iterator iter( m_font_offsets.find( id ) );
+
+	if( iter != m_font_offsets.end() ) {
+		return iter->second;
+	}
+
 	// Make sure all the glyphs we need are loaded.
 	for( sf::Uint32 codepoint = 0; codepoint < 512; ++codepoint ) {
 		font.GetGlyph( codepoint, size, false );
@@ -532,10 +567,24 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Co
 
 	sf::Image image = font.GetTexture( size ).CopyToImage();
 
-	return LoadImage( image, background_color_hint, foreground_color_hint );
+	sf::Vector2f offset = LoadImage( image, background_color_hint, foreground_color_hint, true );
+
+	m_font_offsets[id] = offset;
+
+	return offset;
 }
 
-sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint ) {
+sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint, bool force_insert ) {
+	const sf::Uint8* pixels_ptr = image.GetPixelsPtr();
+
+	if( !force_insert ) {
+		std::map<const sf::Uint8*, sf::Vector2f>::iterator iter( m_atlas_offsets.find( pixels_ptr ) );
+
+		if( iter != m_atlas_offsets.end() ) {
+			return iter->second;
+		}
+	}
+
 	sf::Image preblended_image;
 
 	preblended_image.Create( image.GetWidth(), image.GetHeight(), image.GetPixelsPtr() );
@@ -590,15 +639,10 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 	const sf::Uint8* bytes = preblended_image.GetPixelsPtr();
 	std::size_t byte_count = preblended_image.GetWidth() * preblended_image.GetHeight() * 4;
 
-	unsigned long hash = 2166136261UL;
-
 	// Disable this check for now.
 	static sf::Uint8 alpha_threshold = 255;
 
 	for ( ; byte_count; --byte_count ) {
-		hash ^= static_cast<unsigned long>( bytes[ byte_count - 1 ] );
-		hash *= 16777619UL;
-
 		// Check if the image makes intentional use of the alpha channel.
 		if( m_depth_clear_strategy && !( byte_count % 4 ) && ( bytes[ byte_count - 1 ] > alpha_threshold ) && ( bytes[ byte_count - 1 ] < 255 ) ) {
 #ifdef SFGUI_DEBUG
@@ -608,29 +652,31 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 		}
 	}
 
-	if( m_atlas_offsets.find( hash ) == m_atlas_offsets.end() ) {
-		// Image needs to be loaded into atlas.
-		sf::Image old_image = m_texture_atlas.CopyToImage();
-		sf::Image new_image;
+	// Image needs to be loaded into atlas.
+	sf::Image old_image = m_texture_atlas.CopyToImage();
+	sf::Image new_image;
 
-		// We insert padding between atlas elements to prevent
-		// texture filtering from screwing up our images.
-		// If 1 pixel isn't enough, increase.
-		const static unsigned int padding = 1;
+	// We insert padding between atlas elements to prevent
+	// texture filtering from screwing up our images.
+	// If 1 pixel isn't enough, increase.
+	const static unsigned int padding = 1;
 
-		new_image.Create( std::max( old_image.GetWidth(), preblended_image.GetWidth() ), old_image.GetHeight() + preblended_image.GetHeight() + padding, sf::Color::White );
-		new_image.Copy( old_image, 0, 0 );
+	new_image.Create( std::max( old_image.GetWidth(), preblended_image.GetWidth() ), old_image.GetHeight() + preblended_image.GetHeight() + padding, sf::Color::White );
+	new_image.Copy( old_image, 0, 0 );
 
-		new_image.Copy( preblended_image, 0, old_image.GetHeight() + padding );
+	new_image.Copy( preblended_image, 0, old_image.GetHeight() + padding );
 
-		m_texture_atlas.LoadFromImage( new_image );
+	m_texture_atlas.LoadFromImage( new_image );
 
-		m_atlas_offsets[hash] = sf::Vector2f( 0.f, static_cast<float>( old_image.GetHeight() + padding ) );
+	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( old_image.GetHeight() + padding ) );
 
-		InvalidateVBO();
+	InvalidateVBO();
+
+	if( !force_insert ) {
+		m_atlas_offsets[pixels_ptr] = offset;
 	}
 
-	return m_atlas_offsets[hash];
+	return offset;
 }
 
 void Renderer::SortPrimitives() {

@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/ProgressBar.hpp>
 #include <cmath>
 
@@ -20,7 +21,7 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 
 	// Pane.
 	queue->Add(
-		Context::Get().GetRenderer().CreatePane(
+		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
 			sf::Vector2f( progress_bar->GetAllocation().Width, progress_bar->GetAllocation().Height ),
 			border_width,
@@ -56,7 +57,7 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 
 		// Bar Pane.
 		queue->Add(
-			Context::Get().GetRenderer().CreatePane(
+			Renderer::Get().CreatePane(
 				sf::Vector2f( bar_rect.Left, bar_rect.Top ),
 				sf::Vector2f( bar_rect.Width, bar_rect.Height ),
 				bar_border_width,

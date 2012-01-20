@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Entry.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -23,7 +24,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 
 	// Pane.
 	queue->Add(
-		Context::Get().GetRenderer().CreatePane(
+		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
 			sf::Vector2f( entry->GetAllocation().Width, entry->GetAllocation().Height ),
 			border_width,
@@ -38,7 +39,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	vis_label.SetColor( text_color );
 	vis_label.SetPosition( text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
 
-	queue->Add( Context::Get().GetRenderer().CreateText( vis_label, background_color ) );
+	queue->Add( Renderer::Get().CreateText( vis_label, background_color ) );
 
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->GetState() == Widget::ACTIVE && entry->IsCursorVisible() ) {
@@ -51,7 +52,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
 
 		queue->Add(
-			Context::Get().GetRenderer().CreateRect(
+			Renderer::Get().CreateRect(
 				sf::FloatRect(
 					metrics.x + text_padding,
 					entry->GetAllocation().Height / 2.f - line_height / 2.f,

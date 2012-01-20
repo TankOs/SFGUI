@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/ToggleButton.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -25,7 +26,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 
 	// Pane.
 	queue->Add(
-		Context::Get().GetRenderer().CreatePane(
+		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
 			sf::Vector2f( button->GetAllocation().Width, button->GetAllocation().Height ),
 			border_width,
@@ -49,7 +50,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 		);
 
 		text.SetColor( color );
-		queue->Add( Context::Get().GetRenderer().CreateText( text, background_color ) );
+		queue->Add( Renderer::Get().CreateText( text, background_color ) );
 	}
 
 	return queue;

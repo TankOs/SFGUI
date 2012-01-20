@@ -1,6 +1,6 @@
 #include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/RendererViewport.hpp>
-#include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shape.hpp>
@@ -14,12 +14,12 @@ RenderQueue::RenderQueue() :
 	m_level( 0 ),
 	m_show( true )
 {
-	m_viewport = Context::Get().GetRenderer().GetDefaultViewport();
+	m_viewport = Renderer::Get().GetDefaultViewport();
 }
 
 RenderQueue::~RenderQueue() {
 	while( !m_primitives.empty() ) {
-		Context::Get().GetRenderer().RemovePrimitive( m_primitives.back() );
+		Renderer::Get().RemovePrimitive( m_primitives.back() );
 		m_primitives.pop_back();
 	}
 }
@@ -42,7 +42,7 @@ void RenderQueue::Add( Primitive::Ptr primitive ) {
 	primitive->SetViewport( m_viewport );
 	primitive->SetVisible( m_show );
 
-	Context::Get().GetRenderer().InvalidateVBO();
+	Renderer::Get().InvalidateVBO();
 }
 
 const sf::Vector2f& RenderQueue::GetPosition() const {
@@ -62,7 +62,7 @@ void RenderQueue::SetPosition( const sf::Vector2f& position ) {
 		m_primitives[index]->SetPosition( position );
 	}
 
-	Context::Get().GetRenderer().InvalidateVBO();
+	Renderer::Get().InvalidateVBO();
 }
 
 const std::vector<Primitive::Ptr>& RenderQueue::GetPrimitives() const {
@@ -86,7 +86,7 @@ void RenderQueue::Show( bool show ) {
 		m_primitives[index]->SetVisible( show );
 	}
 
-	Context::Get().GetRenderer().InvalidateVBO();
+	Renderer::Get().InvalidateVBO();
 }
 
 void RenderQueue::SetLevel( int level ) {
@@ -98,7 +98,7 @@ void RenderQueue::SetLevel( int level ) {
 		m_primitives[index]->SetLevel( level );
 	}
 
-	Context::Get().GetRenderer().InvalidateVBO();
+	Renderer::Get().InvalidateVBO();
 }
 
 void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
@@ -110,7 +110,7 @@ void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
 		m_primitives[index]->SetViewport( m_viewport );
 	}
 
-	Context::Get().GetRenderer().InvalidateVBO();
+	Renderer::Get().InvalidateVBO();
 }
 
 const RendererViewport::Ptr& RenderQueue::GetViewport() const {

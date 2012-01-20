@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Button.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -26,7 +27,7 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 
 	// Pane.
 	queue->Add(
-		Context::Get().GetRenderer().CreatePane(
+		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
 			sf::Vector2f( button->GetAllocation().Width, button->GetAllocation().Height ),
 			border_width,
@@ -61,7 +62,7 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 		}
 
 		text.SetColor( color );
-		queue->Add( Context::Get().GetRenderer().CreateText( text, background_color ) );
+		queue->Add( Renderer::Get().CreateText( text, background_color ) );
 	}
 
 	return queue;

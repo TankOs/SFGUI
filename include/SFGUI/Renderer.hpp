@@ -24,9 +24,10 @@ class SFGUI_API Renderer {
 			DEFAULT = NO_DEPTH //!< Default: No depth testing.
 		};
 
-		/** Ctor.
+		/** Get the Renderer singleton instance.
+		 * @return Renderer instance.
 		 */
-		Renderer();
+		static Renderer& Get();
 
 		/** Dtor.
 		 */
@@ -154,6 +155,10 @@ class SFGUI_API Renderer {
 		void TuneCull( bool enable );
 
 	private:
+		/** Ctor.
+		 */
+		Renderer();
+
 		void SetupGL( sf::RenderWindow& window );
 
 		void RestoreGL( sf::RenderWindow& window );
@@ -164,9 +169,11 @@ class SFGUI_API Renderer {
 
 		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size, sf::Color background_color_hint, sf::Color foreground_color_hint );
 
-		sf::Vector2f LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint = sf::Color( 0, 0, 0, 0 ) );
+		sf::Vector2f LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint = sf::Color( 0, 0, 0, 0 ), bool force_insert = false );
 
 		typedef std::pair<SharedPtr<RendererViewport>, unsigned int> ViewportPair;
+
+		static SharedPtr<Renderer> m_instance;
 
 		std::vector<Primitive::Ptr> m_primitives;
 		std::vector<SharedPtr<RendererViewport> > m_viewports;
@@ -181,7 +188,10 @@ class SFGUI_API Renderer {
 
 		sf::Texture m_texture_atlas;
 
-		std::map<unsigned long, sf::Vector2f> m_atlas_offsets;
+		typedef std::pair<void*, unsigned int> FontID;
+
+		std::map<const sf::Uint8*, sf::Vector2f> m_atlas_offsets;
+		std::map<FontID, sf::Vector2f> m_font_offsets;
 
 		GLuint m_vertex_vbo;
 		GLuint m_color_vbo;

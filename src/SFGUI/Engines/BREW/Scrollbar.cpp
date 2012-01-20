@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Scrollbar.hpp>
 
 namespace sfg {
@@ -24,7 +25,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 
 		// Trough
 		queue->Add(
-			Context::Get().GetRenderer().CreateRect(
+			Renderer::Get().CreateRect(
 				sf::FloatRect(
 					stepper_length,
 					0.f,
@@ -53,7 +54,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 		);
 
 		queue->Add(
-			Context::Get().GetRenderer().CreateTriangle(
+			Renderer::Get().CreateTriangle(
 				sf::Vector2f( stepper_length * .66f, scrollbar->GetAllocation().Height * .33f ),
 				sf::Vector2f( stepper_length * .33f, scrollbar->GetAllocation().Height * .5f ),
 				sf::Vector2f( stepper_length * .66f, scrollbar->GetAllocation().Height * .66f ),
@@ -79,7 +80,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 		);
 
 		queue->Add(
-			Context::Get().GetRenderer().CreateTriangle(
+			Renderer::Get().CreateTriangle(
 				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .66f, scrollbar->GetAllocation().Height * .66f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .33f, scrollbar->GetAllocation().Height * .5f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width - stepper_length * .66f, scrollbar->GetAllocation().Height * .33f ),
@@ -92,7 +93,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 
 		// Trough
 		queue->Add(
-			Context::Get().GetRenderer().CreateRect(
+			Renderer::Get().CreateRect(
 				sf::FloatRect(
 					0.f,
 					stepper_length,
@@ -121,7 +122,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 		);
 
 		queue->Add(
-			Context::Get().GetRenderer().CreateTriangle(
+			Renderer::Get().CreateTriangle(
 				sf::Vector2f( scrollbar->GetAllocation().Width * .33f, stepper_length * .66f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width * .66f, stepper_length * .66f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width * .5f, stepper_length * .33f ),
@@ -147,7 +148,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 		);
 
 		queue->Add(
-			Context::Get().GetRenderer().CreateTriangle(
+			Renderer::Get().CreateTriangle(
 				sf::Vector2f( scrollbar->GetAllocation().Width * .33f, scrollbar->GetAllocation().Height - stepper_length * .66f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width * .5f, scrollbar->GetAllocation().Height - stepper_length * .33f ),
 				sf::Vector2f( scrollbar->GetAllocation().Width * .66f, scrollbar->GetAllocation().Height - stepper_length * .66f ),

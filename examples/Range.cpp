@@ -120,18 +120,18 @@ int main() {
 		}
 
 		// Update the GUI every 5ms
-		if( clock.GetElapsedTime() >= 5 ) {
+		if( clock.GetElapsedTime().AsMicroseconds() >= 5000 ) {
 			// Update() takes the elapsed time in seconds.
-			window->Update( static_cast<float>( clock.GetElapsedTime() ) / 1000.f );
+			window->Update( static_cast<float>( clock.GetElapsedTime().AsMicroseconds() ) / 1000000.f );
 
-			clock.Reset();
+			clock.Restart();
 		}
 
 		// Clear screen
 		app_window.Clear();
 
 		// Draw the GUI
-		sfg::Context::Get().GetRenderer().Display( app_window );
+		sfg::Renderer::Get().Display( app_window );
 
 		// Update the window
 		app_window.Display();

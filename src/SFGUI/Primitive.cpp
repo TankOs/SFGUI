@@ -1,6 +1,6 @@
 #include <SFGUI/Primitive.hpp>
 #include <SFGUI/RendererViewport.hpp>
-#include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 
 namespace sfg {
 
@@ -11,7 +11,7 @@ Primitive::Primitive() :
 	m_synced( false ),
 	m_visible( true )
 {
-	m_viewport = Context::Get().GetRenderer().GetDefaultViewport();
+	m_viewport = Renderer::Get().GetDefaultViewport();
 }
 
 void Primitive::Add( Primitive& primitive ) {

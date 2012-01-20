@@ -35,13 +35,11 @@ bool Context::Deactivate() {
 }
 
 Context::Context() :
-	m_engine( NULL ),
-	m_renderer( NULL )
+	m_engine( NULL )
 {
 }
 
 Context::~Context() {
-	delete m_renderer;
 }
 
 Engine& Context::GetDefaultEngine() {
@@ -63,14 +61,6 @@ void Context::SetActiveWidget( SharedPtr<Widget> widget ) {
 
 SharedPtr<Widget> Context::GetActiveWidget() const {
 	return m_active_widget.lock();
-}
-
-Renderer& Context::GetRenderer() {
-	if( !m_renderer ) {
-		m_renderer = new Renderer;
-	}
-
-	return *m_renderer;
 }
 
 }

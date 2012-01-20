@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Label.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -23,7 +24,7 @@ RenderQueue* BREW::CreateLabelDrawable( SharedPtr<const Label> label ) const {
 	vis_label.SetPosition( position.x, position.y );
 
 	RenderQueue* queue( new RenderQueue );
-	queue->Add( Context::Get().GetRenderer().CreateText( vis_label, background_color ) );
+	queue->Add( Renderer::Get().CreateText( vis_label, background_color ) );
 
 	return queue;
 }

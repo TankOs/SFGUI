@@ -1,5 +1,6 @@
 #include <SFGUI/Spinner.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Engine.hpp>
 
 #include <SFML/Graphics/VertexArray.hpp>
@@ -110,7 +111,7 @@ void Spinner::HandleUpdate( float seconds ) {
 			current_stage = ( current_stage + 1 ) % primitives_size;
 		}
 
-		Context::Get().GetRenderer().InvalidateVBO();
+		Renderer::Get().InvalidateVBO();
 	}
 }
 

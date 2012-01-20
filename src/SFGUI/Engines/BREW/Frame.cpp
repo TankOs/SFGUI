@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/Frame.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -24,7 +25,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Right
 	queue->Add(
-		Context::Get().GetRenderer().CreateLine(
+		Renderer::Get().CreateLine(
 			sf::Vector2f( frame->GetAllocation().Width - border_width, line_height / 2.f ),
 			sf::Vector2f( frame->GetAllocation().Width - border_width, frame->GetAllocation().Height - border_width ),
 			border_color,
@@ -34,7 +35,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Bottom
 	queue->Add(
-		Context::Get().GetRenderer().CreateLine(
+		Renderer::Get().CreateLine(
 			sf::Vector2f( frame->GetAllocation().Width, frame->GetAllocation().Height - border_width ),
 			sf::Vector2f( 0.f, frame->GetAllocation().Height - border_width ),
 			border_color,
@@ -44,7 +45,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Left
 	queue->Add(
-		Context::Get().GetRenderer().CreateLine(
+		Renderer::Get().CreateLine(
 			sf::Vector2f( 0.f, frame->GetAllocation().Height - border_width ),
 			sf::Vector2f( 0.f, line_height / 2.f ),
 			border_color,
@@ -67,12 +68,12 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 		sf::Text text( frame->GetLabel(), font, font_size );
 		text.SetPosition( label_start_x + label_padding, .0f );
 		text.SetColor( color );
-		queue->Add( Context::Get().GetRenderer().CreateText( text, background_color ) );
+		queue->Add( Renderer::Get().CreateText( text, background_color ) );
 	}
 
 	// Top Left
 	queue->Add(
-		Context::Get().GetRenderer().CreateLine(
+		Renderer::Get().CreateLine(
 			sf::Vector2f( 0.f, line_height / 2.f ),
 			sf::Vector2f( label_start_x, line_height / 2.f ),
 			border_color,
@@ -82,7 +83,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 
 	// Top Right
 	queue->Add(
-		Context::Get().GetRenderer().CreateLine(
+		Renderer::Get().CreateLine(
 			sf::Vector2f( label_end_x, line_height / 2.f ),
 			sf::Vector2f( frame->GetAllocation().Width - border_width, line_height / 2.f ),
 			border_color,

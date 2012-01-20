@@ -4,6 +4,7 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Renderer.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <sstream>
@@ -94,7 +95,7 @@ void DesktopExample::Run() {
 
 		m_desktop.Update( 0.f );
 		render_window.Clear();
-		sfg::Context::Get().GetRenderer().Display( render_window );
+		sfg::Renderer::Get().Display( render_window );
 		render_window.Display();
 	}
 }

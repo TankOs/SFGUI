@@ -1,5 +1,4 @@
 #include <SFGUI/Alignment.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
 namespace sfg {
