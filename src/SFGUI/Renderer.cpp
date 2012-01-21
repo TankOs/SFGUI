@@ -5,6 +5,7 @@
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <iostream>
 #include <cmath>
 #include <cstring>
 
