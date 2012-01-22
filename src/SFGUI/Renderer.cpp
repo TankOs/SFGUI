@@ -1,5 +1,8 @@
 #include <GLee.h>
 
+// X headers define None which is used by SFML's window style.
+#undef None
+
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/RendererViewport.hpp>

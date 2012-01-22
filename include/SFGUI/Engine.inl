@@ -33,7 +33,7 @@ T Engine::GetProperty( const std::string& property, SharedPtr<const Widget> widg
 		error_message += " Requested type: ";
 		error_message += typeid( T ).name();
 		error_message += " Value: " + *value;
-		throw BadValue( error_message );
+		throw BadValueException( error_message );
 	}
 
 	return out_value;

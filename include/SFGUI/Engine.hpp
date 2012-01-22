@@ -43,7 +43,7 @@ class ComboBox;
  */
 class SFGUI_API Engine {
 	public:
-		typedef std::runtime_error BadValue; //<! Thrown when value can't be converted to or from string.
+		typedef std::runtime_error BadValueException; //<! Thrown when value can't be converted to or from string.
 
 		/** Dtor.
 		 */
