@@ -76,23 +76,55 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 	if( m_drag_offset ) {
 		delete m_drag_offset;
 		m_drag_offset = 0;
+		m_dragging = false;
+	}
+
+	if( !GetAllocation().Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		return;
 	}
 
 	if( press ) {
-		sf::FloatRect slider_rect = GetSliderRect();
-		if( !slider_rect.Contains( static_cast<float>( x ) - GetAllocation().Left, static_cast<float>( y ) - GetAllocation().Top ) ) {
-			m_dragging = false;
-			return;
+		if( !GetSliderRect().Contains( static_cast<float>( x ) - GetAllocation().Left, static_cast<float>( y ) - GetAllocation().Top ) ) {
+			Adjustment::Ptr adjustment( GetAdjustment() );
+
+			float minor_step = adjustment->GetMinorStep();
+			float range = adjustment->GetUpper() - adjustment->GetLower();
+			float steps = range / minor_step;
+			float needed_steps = 0.f;
+
+			float trough_position;
+			float trough_length;
+
+			if( GetOrientation() == HORIZONTAL ) {
+				trough_position = static_cast<float>( x ) - ( GetAllocation().Left + GetSliderRect().Width / 2.f );
+				trough_length = GetAllocation().Width - GetSliderRect().Width;
+			}
+
+			if( GetOrientation() == VERTICAL ) {
+				trough_position = static_cast<float>( y ) - ( GetAllocation().Top + GetSliderRect().Height / 2.f );
+				trough_length = GetAllocation().Height - GetSliderRect().Height;
+			}
+
+			trough_position = std::min( trough_position, trough_length );
+
+			float trough_ratio = trough_position / trough_length;
+
+			for( ; needed_steps < steps; needed_steps += 1.f ) {
+				if( ( 1.f / steps ) * needed_steps > trough_ratio ) {
+					break;
+				}
+			}
+
+			needed_steps = std::max( needed_steps - 1.f, 0.f );
+
+			adjustment->SetValue( needed_steps * minor_step );
 		}
 
 		m_dragging = true;
 		m_drag_offset = new sf::Vector2f(
-			static_cast<float>( x ) - (GetAllocation().Left + slider_rect.Left + slider_rect.Width / 2.0f),
-			static_cast<float>( y ) - (GetAllocation().Top + slider_rect.Top + slider_rect.Height / 2.0f)
+			static_cast<float>( x ) - ( GetAllocation().Left + GetSliderRect().Left + GetSliderRect().Width / 2.f ),
+			static_cast<float>( y ) - ( GetAllocation().Top + GetSliderRect().Top + GetSliderRect().Height / 2.f )
 		);
-	}
-	else {
-		m_dragging = false;
 	}
 }
 

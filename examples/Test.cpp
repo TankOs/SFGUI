@@ -19,7 +19,6 @@ class SampleApp {
 		void OnToggleSpaceClick();
 		void OnLimitCharsToggle();
 		void OnLoadThemeClick();
-		void OnToggleCullingClick();
 		void OnAdjustmentChange();
 		void OnToggleSpinner();
 
@@ -42,7 +41,6 @@ class SampleApp {
 
 		unsigned int m_fps_counter;
 		sf::Clock m_fps_clock;
-		bool m_cull;
 
 		sf::Texture m_background_texture;
 		sf::Sprite m_background_sprite;
@@ -84,7 +82,6 @@ void Ouchy::DoOuch() {
 
 SampleApp::SampleApp() :
 	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) ),
-	m_cull( true ),
 	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) )
 {
 	m_background_texture.Create( 1024, 768 );
@@ -165,7 +162,6 @@ void SampleApp::Run() {
 
 	sfg::Button::Ptr btntogglespace( sfg::Button::Create( L"Box Spacing") );
 	sfg::Button::Ptr btnloadstyle( sfg::Button::Create( L"Load theme") );
-	sfg::Button::Ptr btntoggleculling( sfg::Button::Create( L"Toggle culling") );
 
 	m_entry = sfg::Entry::Create( L"Type" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
@@ -194,7 +190,6 @@ void SampleApp::Run() {
 	boxtoolbar2->SetSpacing( 5.f );
 	boxtoolbar2->Pack( btntogglespace, false );
 	boxtoolbar2->Pack( btnloadstyle, false );
-	boxtoolbar2->Pack( btntoggleculling, false );
 
 	m_boxbuttonsh = sfg::Box::Create( sfg::Box::HORIZONTAL );
 	m_boxbuttonsh->SetSpacing( 5.f );
@@ -351,7 +346,6 @@ void SampleApp::Run() {
 	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
 	m_limit_check->OnToggle.Connect( &SampleApp::OnLimitCharsToggle, this );
 	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadThemeClick, this );
-	btntoggleculling->OnClick.Connect( &SampleApp::OnToggleCullingClick, this );
 	m_scale->GetAdjustment()->OnChange.Connect( &SampleApp::OnAdjustmentChange, this );
 	spinner_toggle->OnClick.Connect( &SampleApp::OnToggleSpinner, this );
 
@@ -483,10 +477,6 @@ void SampleApp::OnLimitCharsToggle() {
 
 void SampleApp::OnLoadThemeClick() {
 	m_desktop.LoadThemeFromFile( "data/example.theme" );
-}
-
-void SampleApp::OnToggleCullingClick() {
-	m_cull = !m_cull;
 }
 
 void SampleApp::OnAdjustmentChange() {
