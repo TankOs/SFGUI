@@ -167,8 +167,9 @@ void SampleApp::Run() {
 	sfg::Button::Ptr btnloadstyle( sfg::Button::Create( L"Load theme") );
 	sfg::Button::Ptr btntoggleculling( sfg::Button::Create( L"Toggle culling") );
 
-	m_entry = sfg::Entry::Create( L"Type something!" );
+	m_entry = sfg::Entry::Create( L"Type" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
+	m_entry->AppendText( L" something!" );
 
 	m_limit_check = sfg::CheckButton::Create( L"Limit to 4 chars" );
 	m_limit_check->SetId( "limit_check" );

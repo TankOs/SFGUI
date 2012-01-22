@@ -44,6 +44,14 @@ const sf::String& Entry::GetText() const {
 	return m_string;
 }
 
+void Entry::AppendText( const sf::String& text ) {
+	m_string += text;
+}
+
+void Entry::PrependText( const sf::String& text ) {
+	m_string = text + m_string;
+}
+
 void Entry::SetCursorPosition( std::size_t new_position ) {
 	if( new_position == m_cursor_position ) {
 		return;

@@ -31,6 +31,16 @@ class SFGUI_API Entry : public Widget {
 		 */
 		const sf::String& GetText() const;
 
+		/** Append text.
+		 * @param text Text.
+		 */
+		void AppendText( const sf::String& text );
+
+		/** Prepend text.
+		 * @param text Text.
+		 */
+		void PrependText( const sf::String& text );
+
 		/** Get visible text.
 		 * @return Visible text.
 		 */
