@@ -75,6 +75,14 @@ int RenderQueue::GetZOrder() const {
 
 void RenderQueue::SetZOrder( int z_order ) {
 	m_z_order = z_order;
+
+	std::size_t primitive_count = m_primitives.size();
+
+	for( std::size_t index = 0; index < primitive_count; ++index ) {
+		m_primitives[index]->SetLayer( z_order );
+	}
+
+	Renderer::Get().InvalidateVBO();
 }
 
 void RenderQueue::Show( bool show ) {

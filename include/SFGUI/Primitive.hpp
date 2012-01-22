@@ -58,12 +58,12 @@ class SFGUI_API Primitive {
 		/** Set draw layer of this primitive.
 		 * @param layer Draw layer of this primitive.
 		 */
-		void SetLayer( float layer );
+		void SetLayer( int layer );
 
 		/** Get draw layer of this primitive.
 		 * @return Draw layer of this primitive.
 		 */
-		float GetLayer() const;
+		int GetLayer() const;
 
 		/** Set draw hierarchy level of this primitive.
 		 * Primitives with lower levels are drawn first.
@@ -105,7 +105,7 @@ class SFGUI_API Primitive {
 	private:
 		sf::Vector2f m_position;
 		SharedPtr<RendererViewport> m_viewport;
-		float m_layer;
+		int m_layer;
 		int m_level;
 
 		std::vector<Vertex> m_vertices;

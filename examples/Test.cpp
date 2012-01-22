@@ -226,7 +226,7 @@ void SampleApp::Run() {
 
 	m_scrolled_window_box = sfg::Box::Create( sfg::Box::VERTICAL );
 
-	for( int i = 0; i < 7; i++ ) {
+	for( int i = 0; i < 5; i++ ) {
 		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
 
 		for( int j = 0; j < 20; j++ ) {
@@ -237,7 +237,7 @@ void SampleApp::Run() {
 	}
 
 	m_scrolled_window = sfg::ScrolledWindow::Create();
-	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 200.f ) );
+	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 150.f ) );
 	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HORIZONTAL_AUTOMATIC | sfg::ScrolledWindow::VERTICAL_AUTOMATIC );
 	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TOP_LEFT );
 	m_scrolled_window->AddWithViewport( m_scrolled_window_box );
@@ -292,13 +292,17 @@ void SampleApp::Run() {
 
 	box_image->Pack( spinner_box, false );
 
-	sfg::Button::Ptr aligned_button( sfg::Button::Create( L"I'm way over here" ) );
+	sfg::ComboBox::Ptr aligned_combo_box( sfg::ComboBox::Create() );
+	aligned_combo_box->AppendItem( L"I'm way over here" );
+	aligned_combo_box->AppendItem( L"Me too" );
+	aligned_combo_box->AppendItem( L"Me three" );
+	aligned_combo_box->SelectItem( 0 );
 
 	sfg::Alignment::Ptr alignment( sfg::Alignment::Create() );
-	alignment->Add( aligned_button );
+	alignment->Add( aligned_combo_box );
 	box_image->Pack( alignment, true );
-	alignment->SetAlignment( sf::Vector2f( 1.f, 1.f ) );
-	alignment->SetScale( sf::Vector2f( 0.f, .5f ) );
+	alignment->SetAlignment( sf::Vector2f( 1.f, .5f ) );
+	alignment->SetScale( sf::Vector2f( 0.f, .01f ) );
 
 	sfg::Box::Ptr boxmain( sfg::Box::Create( sfg::Box::VERTICAL ) );
 	boxmain->SetSpacing( 5.f );
@@ -308,7 +312,7 @@ void SampleApp::Run() {
 	boxmain->Pack( frame2, false );
 	boxmain->Pack( m_boxbuttonsh, false );
 	boxmain->Pack( m_boxbuttonsv, false );
-	boxmain->Pack( box_image );
+	boxmain->Pack( box_image, true );
 	boxmain->Pack( separatorh, false );
 	boxmain->Pack( m_table, true );
 	boxmain->Pack( m_scrolled_window );

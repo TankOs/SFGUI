@@ -52,13 +52,13 @@ const RendererViewport::Ptr& Primitive::GetViewport() const {
 	return m_viewport;
 }
 
-void Primitive::SetLayer( float layer ) {
+void Primitive::SetLayer( int layer ) {
 	m_layer = layer;
 
 	m_synced = false;
 }
 
-float Primitive::GetLayer() const {
+int Primitive::GetLayer() const {
 	return m_layer;
 }
 

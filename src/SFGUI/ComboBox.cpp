@@ -11,6 +11,7 @@ static const sf::String EMPTY = "";
 
 ComboBox::ComboBox() :
 	Bin(),
+	m_queue( 0 ),
 	m_active( false ),
 	m_active_item( NONE ),
 	m_highlighted_item( NONE )
@@ -28,8 +29,7 @@ ComboBox::Ptr ComboBox::Create() {
 RenderQueue* ComboBox::InvalidateImpl() const {
 	RenderQueue* queue = Context::Get().GetEngine().CreateComboBoxDrawable( DynamicPointerCast<const ComboBox>( shared_from_this() ) );
 
-	// Set Z Layer to 1, above all "normal" widgets.
-	queue->SetZOrder( 1 );
+	m_queue = queue;
 
 	return queue;
 }
@@ -147,11 +147,11 @@ void ComboBox::HandleMouseMoveEvent( int /*x*/, int y ) {
 		const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 		unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 		const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
-		
+
 		IndexType line_y = y;
 		line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + padding );
 		line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) + 2 * padding );
-		
+
 		if( line_y < GetItemCount() ) {
 			if( line_y != m_highlighted_item ) {
 				Invalidate();
@@ -171,12 +171,17 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 	if( button == sf::Mouse::Left && IsMouseInWidget() ) {
 		if( press ) {
 			SetState( ACTIVE );
+
+			if( m_queue ) {
+				// Set Z Layer to 1, above all "normal" widgets.
+				m_queue->SetZOrder( 1 );
+			}
 		}
 		else {
 			SetState( PRELIGHT );
 		}
 	}
-	
+
 	if( button == sf::Mouse::Left ) {
 		if( m_active && !press ) {
 			if( m_highlighted_item != NONE ) {
@@ -199,11 +204,13 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 			Invalidate();
 		}
 	}
-	
+
 	if( !IsMouseInWidget() ) {
 		SetState( NORMAL );
 		m_active = false;
 		m_highlighted_item = NONE;
+
+		// When the RenderQueue is rebuilt, it's Z Layer is reset to 0.
 		Invalidate();
 		return;
 	}
@@ -223,8 +230,11 @@ sf::Vector2f ComboBox::CalculateRequisition() {
 
 	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
 
+	// This is needed for the arrow.
+	metrics.x += metrics.y;
+
 	sf::Vector2f requisition(
-		metrics.x + 2 * padding,
+		metrics.x + 3 * padding,
 		metrics.y + 2 * padding
 	);
 

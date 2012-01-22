@@ -15,38 +15,38 @@ class SFGUI_API ComboBox : public Bin {
 		typedef std::size_t IndexType; ///< Type for item indices.
 
 		static const IndexType NONE; ///< Value for specifying an invalid index/no item selected.
-		
+
 		/** Create combo box.
 		 * @return Combo box.
 		 */
 		static Ptr Create();
-		
+
 		/** Dtor.
 		 */
 		virtual ~ComboBox();
-		
+
 		virtual const std::string& GetName() const;
-		
+
 		/** Get selected item.
 		 * @return Active item or NONE if none selected.
 		 */
 		IndexType GetSelectedItem() const;
-		
+
 		/** Get highlighted item.
 		 * @return Highlighted item or NONE if none highlighted.
 		 */
 		IndexType GetHighlightedItem() const;
-		
+
 		/** Select item.
 		 * @param index Item index.
 		 */
 		void SelectItem( IndexType index );
-		
+
 		/** Append item.
 		 * @param text Item text.
 		 */
 		void AppendItem( const sf::String& text );
-		
+
 		/** Insert item.
 		 * @param index Item index.
 		 * @param text Item text.
@@ -57,42 +57,42 @@ class SFGUI_API ComboBox : public Bin {
 		 * @param text Item text.
 		 */
 		void PrependItem( const sf::String& text );
-		
+
 		/** Change item.
 		 * @param index Item index.
 		 * @param text Item text.
 		 */
 		void ChangeItem( IndexType index, const sf::String& text );
-		
+
 		/** Remove item.
 		 * @param index Item index.
 		 */
 		void RemoveItem( IndexType index );
-		
+
 		/** Get text of selected item.
 		 * @return Text of selected item or empty if none selected.
 		 */
 		const sf::String& GetSelectedText() const;
-		
+
 		/** Get item count.
 		 * @return Item count.
 		 */
 		IndexType GetItemCount() const;
-		
+
 		/** Get text of specific item.
 		 * @param index Item index.
 		 * @return Item text or empty if index is invalid.
 		 */
 		const sf::String& GetItem( IndexType index ) const;
-		
+
 		/** Is the popup being shown?
 		 * @return true if the popup is being shown.
 		 */
 		bool IsPoppedUp() const;
-		
+
 		Signal OnSelect; //!< Fired when an entry is selected.
 		Signal OnOpen; //!< Fired when the popup is opened.
-		
+
 	protected:
 		/** Ctor.
 		 */
@@ -100,13 +100,15 @@ class SFGUI_API ComboBox : public Bin {
 
 		RenderQueue* InvalidateImpl() const;
 		sf::Vector2f CalculateRequisition();
-	
+
 	private:
 		void HandleMouseEnter( int x, int y );
 		void HandleMouseLeave( int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		
+
+		mutable RenderQueue* m_queue;
+
 		bool m_active;
 		IndexType m_active_item;
 		IndexType m_highlighted_item;
