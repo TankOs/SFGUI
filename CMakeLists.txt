@@ -6,49 +6,55 @@ endif()
 
 project( SFGUI )
 
-find_package( SFML 2.0 REQUIRED GRAPHICS WINDOW SYSTEM )
-find_package( OpenGL REQUIRED )
+### USER INPUT ###
 
-if( ${CMAKE_SYSTEM_NAME} MATCHES "Windows" )
-	set( WINDOWS 1 )
-endif()
+set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
+set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
+set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
 
-if( CMAKE_COMPILER_IS_GNUCXX )
-	set( COMPILER_GCC 1 )
-elseif( MSVC_VERSION )
-	set( COMPILER_MSVC 1 )
-endif()
+# This saves us a few headaches.
+set( CMAKE_VERBOSE_MAKEFILE true CACHE BOOL "Print out useful information while building." FORCE )
 
-set( SFGUI_STATIC false CACHE BOOL "Build static library." )
-set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
-
-if( WINDOWS )
-	set( BIN_EXTENSION ".exe" )
-	set( SFML_STATIC false CACHE BOOL "Was SFML built as a static library?" )
-	set( SHARE_TARGET_DIR . )
-	add_definitions( -D WIN32 )
-else()
-	set( SHARE_TARGET_DIR share/SFGUI )
-endif()
-
-set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
-set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
-
-set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
-
-if( SFML_STATIC AND NOT SFGUI_STATIC  )
+if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS  )
 	message( FATAL_ERROR "If you link to SFML statically you MUST link to SFGUI statically too." )
 endif()
 
-if( SFGUI_STATIC )
-	add_definitions( -D SFGUI_STATIC )
+# Make sure FindSFML looks for the right libs if the user changes link type.
+unset( SFML_GRAPHICS_LIBRARY CACHE )
+unset( SFML_GRAPHICS_LIBRARY_DEBUG CACHE )
+unset( SFML_GRAPHICS_LIBRARY_RELEASE CACHE )
+unset( SFML_WINDOW_LIBRARY CACHE )
+unset( SFML_WINDOW_LIBRARY_DEBUG CACHE )
+unset( SFML_WINDOW_LIBRARY_RELEASE CACHE )
+unset( SFML_SYSTEM_LIBRARY CACHE )
+unset( SFML_SYSTEM_LIBRARY_DEBUG CACHE )
+unset( SFML_SYSTEM_LIBRARY_RELEASE CACHE )
+
+find_package( OpenGL REQUIRED )
+find_package( SFML 2.0 QUIET COMPONENTS GRAPHICS WINDOW SYSTEM )
+
+# Useless? variable
+unset( SFML_DIR CACHE )
+
+# FindSFML was not run.
+if( NOT DEFINED FIND_SFML_LIB_SUFFIX )
+	set( CMAKE_MODULE_PATH "" CACHE PATH "SFML root directory" )
+	message( FATAL_ERROR "CMake couldn't find FindSFML.cmake. Did you remember to install SFML?\nOptionally, you can set the CMAKE_MODULE_PATH entry to the directory containing FindSFML.cmake.\nFindSFML.cmake will be searched for in there." )
 endif()
 
-if( SFML_STATIC )
-	add_definitions( -D SFML_STATIC )
+# FindSFML couldn't find SFML.
+if( NOT SFML_FOUND )
+	set( SFMLDIR "" CACHE PATH "SFML root directory" )
+	message( FATAL_ERROR "CMake couldn't find SFML. Set the SFMLDIR entry to SFML's root directory (containing \"include\" and \"lib\" directories)." )
 endif()
 
-if( COMPILER_GCC )
+if( SFML_STATIC_LIBRARIES )
+	# Even though FindSFML sets -DSFML_STATIC itself, better safe than sorry.
+	add_definitions( -DSFML_STATIC )
+endif()
+
+# Set some useful compile flags.
+if( CMAKE_COMPILER_IS_GNUCXX )
 	if( NOT CMAKE_CXX_FLAGS )
 		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
 		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
@@ -59,6 +65,20 @@ if( COMPILER_GCC )
 		set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
 	endif()
 endif()
+
+# Make windows happy.
+if( WIN32 )
+	set( BIN_EXTENSION ".exe" )
+	set( SHARE_TARGET_DIR . )
+	add_definitions( -DWIN32 )
+else()
+	set( SHARE_TARGET_DIR share/SFGUI )
+endif()
+
+set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
+
+set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
+set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
 
 set(
 	SOURCES
@@ -201,29 +221,33 @@ set(
 
 set_source_files_properties( ${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c PROPERTIES COMPILE_FLAGS "-w" )
 
-if( NOT SFGUI_STATIC )
+# Add the library.
+if( BUILD_SHARED_LIBS )
 	add_library( sfgui SHARED ${SOURCES} )
 
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -d )
 
-	if ( WINDOWS AND COMPILER_GCC )
+	if ( WIN32 AND CMAKE_COMPILER_IS_GNUCXX )
 		set_target_properties( sfgui PROPERTIES PREFIX "" )
 		set_target_properties( sfgui PROPERTIES IMPORT_SUFFIX ".a" )
 	endif()
 else()
+	add_definitions( -DSFGUI_STATIC )
+	
 	add_library( sfgui ${SOURCES} )
 
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -s-d )
 	set_target_properties( sfgui PROPERTIES RELEASE_POSTFIX -s )
 endif()
 
-set_target_properties( sfgui PROPERTIES COMPILE_DEFINITIONS SFGUI_EXPORTS )
+# Tell the compiler to export when necessary.
+set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
 target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
 
 ### EXAMPLES ###
 
-if( SFGUI_BUILD_EXAMPLES )
+if( BUILD_EXAMPLES )
 	add_subdirectory( "examples" )
 endif()
 

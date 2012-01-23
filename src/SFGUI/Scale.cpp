@@ -92,8 +92,8 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 			float steps = range / minor_step;
 			float needed_steps = 0.f;
 
-			float trough_position;
-			float trough_length;
+			float trough_position = 0.f;
+			float trough_length = 0.f;
 
 			if( GetOrientation() == HORIZONTAL ) {
 				trough_position = static_cast<float>( x ) - ( GetAllocation().Left + GetSliderRect().Width / 2.f );
