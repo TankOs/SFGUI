@@ -19,6 +19,10 @@ if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS  )
 	message( FATAL_ERROR "If you link to SFML statically you MUST link to SFGUI statically too." )
 endif()
 
+if( MSVC )
+	set( STATIC_STD_LIBS false CACHE BOOL "True to link the runtime library statically, false to link them dynamically." )
+endif()
+
 # Make sure FindSFML looks for the right libs if the user changes link type.
 unset( SFML_GRAPHICS_LIBRARY CACHE )
 unset( SFML_GRAPHICS_LIBRARY_DEBUG CACHE )
@@ -220,6 +224,15 @@ set(
 )
 
 set_source_files_properties( ${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c PROPERTIES COMPILE_FLAGS "-w" )
+
+# Static runtime linkage for our favorite compiler.
+if( MSVC AND STATIC_STD_LIBS )
+	foreach( flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO )
+		if( ${flag} MATCHES "/MD" )
+			string( REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}" )
+		endif()
+	endforeach()
+endif()
 
 # Add the library.
 if( BUILD_SHARED_LIBS )

@@ -1,8 +1,7 @@
+#include <SFGUI/Config.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
-
-#include <iostream>
 
 namespace sfg {
 

@@ -1,3 +1,7 @@
+// Needs to be included before GLee for NOMINMAX
+#include <SFGUI/Config.hpp>
+
+// Needs to be included before OpenGL (so anything else)
 #include <GLee.h>
 
 // X headers define None which is used by SFML's window style.
@@ -8,7 +12,6 @@
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Engine.hpp>
 
-#include <iostream>
 #include <cmath>
 #include <cstring>
 
