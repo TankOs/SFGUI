@@ -24,7 +24,7 @@ class SFGUI_API ScrolledWindow : public Container {
 			TOP_LEFT = TOP | LEFT, //!< Top left corner.
 			TOP_RIGHT = TOP | RIGHT, //!< Top right corner.
 			BOTTOM_LEFT = BOTTOM | LEFT, //!< Bottom left corner.
-			BOTTOM_ROGHT = BOTTOM | RIGHT, //!< Bottom right corner.
+			BOTTOM_RIGHT = BOTTOM | RIGHT, //!< Bottom right corner.
 			DEFAULT_PLACEMENT = TOP_LEFT
 		};
 
