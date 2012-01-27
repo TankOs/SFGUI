@@ -6,8 +6,6 @@
 
 namespace sfg {
 
-Widget::NoFlushTag Widget::m_no_flush_tag;
-
 Widget::Widget() :
 	Object(),
 	m_allocation( 0, 0, 0, 0 ),
@@ -57,7 +55,7 @@ void Widget::GrabFocus( Ptr widget ) {
 	}
 }
 
-bool Widget::HasFocus( Ptr widget ) {
+bool Widget::HasFocus( PtrConst widget ) const {
 	Container::Ptr parent( m_parent.lock() );
 
 	if( !parent ) {
@@ -221,6 +219,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		return;
 	}
 
+	// Ignore the event if another widget is active.
+	if( !IsActiveWidget() && !IsActiveWidget( PtrConst() ) ) {
+		return;
+	}
+
 	// Set widget active in context.
 	Context::Get().SetActiveWidget( shared_from_this() );
 
@@ -280,7 +283,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::KeyPressed:
-			if( GetState() == ACTIVE ) {
+			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.Key.Code, true );
 				OnKeyPress();
@@ -289,7 +292,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::KeyReleased:
-			if( GetState() == ACTIVE ) {
+			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.Key.Code, false );
 				OnKeyRelease();
@@ -297,7 +300,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::TextEntered:
-			if( GetState() == ACTIVE ) {
+			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleTextEvent( event.Text.Unicode );
 				OnText();
@@ -327,6 +330,10 @@ void Widget::SetState( State state ) {
 
 	if( state == ACTIVE ) {
 		GrabFocus( shared_from_this() );
+		SetActiveWidget( shared_from_this() );
+	}
+	else if( old_state == ACTIVE ) {
+		SetActiveWidget( Ptr() );
 	}
 }
 
@@ -346,7 +353,7 @@ void Widget::GrabFocus() {
 	GrabFocus( shared_from_this() );
 }
 
-bool Widget::HasFocus() {
+bool Widget::HasFocus() const {
 	return HasFocus( shared_from_this() );
 }
 
@@ -540,6 +547,39 @@ void Widget::HandleViewportUpdate() {
 	if( m_drawable ) {
 		m_drawable->SetViewport( m_viewport );
 	}
+}
+
+void Widget::SetActiveWidget() {
+	GrabFocus( shared_from_this() );
+}
+
+void Widget::SetActiveWidget( Ptr widget ) {
+	Container::Ptr parent( m_parent.lock() );
+
+	if( !parent ) {
+		m_active_widget = widget;
+	}
+	else {
+		parent->SetActiveWidget( widget );
+	}
+}
+
+bool Widget::IsActiveWidget() const {
+	return HasFocus( shared_from_this() );
+}
+
+bool Widget::IsActiveWidget( PtrConst widget ) const {
+	Container::Ptr parent( m_parent.lock() );
+
+	if( !parent ) {
+		if( m_active_widget == widget ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	return parent->IsActiveWidget( widget );
 }
 
 }

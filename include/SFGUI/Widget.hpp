@@ -18,10 +18,6 @@ class Container;
 /** Base class for widgets.
  */
 class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
-	protected:
-		struct NoFlushTag {};
-		static NoFlushTag m_no_flush_tag;
-
 	public:
 		typedef SharedPtr<Widget> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Widget> PtrConst; //!< Shared pointer.
@@ -67,7 +63,16 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Check if widget has focus.
 		 * @return true if widget has focus.
 		 */
-		bool HasFocus();
+		bool HasFocus() const;
+
+		/** Set this widget to be active.
+		 */
+		void SetActiveWidget();
+
+		/** Check if widget is active widget.
+		 * @return true if widget is active widget.
+		 */
+		bool IsActiveWidget() const;
 
 		/** Allocate size.
 		 * @param rect Rect.
@@ -349,7 +354,10 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 
 	private:
 		void GrabFocus( Ptr widget );
-		bool HasFocus( Ptr widget );
+		bool HasFocus( PtrConst widget ) const;
+
+		void SetActiveWidget( Ptr widget );
+		bool IsActiveWidget( PtrConst widget ) const;
 
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;
@@ -360,6 +368,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		WeakPtr<Container> m_parent;
 
 		Ptr m_focus_widget;
+		Ptr m_active_widget;
 
 		std::string m_id;
 		std::string m_class;

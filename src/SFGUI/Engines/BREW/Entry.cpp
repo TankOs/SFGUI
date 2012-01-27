@@ -42,7 +42,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	queue->Add( Renderer::Get().CreateText( vis_label, background_color ) );
 
 	// Draw cursor if entry is active and cursor is visible.
-	if( entry->GetState() == Widget::ACTIVE && entry->IsCursorVisible() ) {
+	if( entry->HasFocus() && entry->IsCursorVisible() ) {
 		sf::String cursor_string( entry->GetVisibleText() );
 		if( entry->GetCursorPosition() - entry->GetVisibleOffset() < cursor_string.GetSize() ) {
 			cursor_string.Erase( entry->GetCursorPosition() - entry->GetVisibleOffset(), cursor_string.GetSize() );

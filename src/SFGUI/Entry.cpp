@@ -168,7 +168,7 @@ void Entry::HandleTextEvent( sf::Uint32 character ) {
 }
 
 void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
-	if( !press || GetState() != ACTIVE ) {
+	if( !press || !HasFocus() ) {
 		return;
 	}
 
@@ -214,13 +214,13 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 }
 
 void Entry::HandleMouseEnter( int /*x*/, int /*y*/ ) {
-	if( GetState() != ACTIVE ) {
+	if( !HasFocus() ) {
 		SetState( PRELIGHT );
 	}
 }
 
 void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
-	if( GetState() != ACTIVE ) {
+	if( !HasFocus() ) {
 		SetState( NORMAL );
 	}
 }
@@ -235,12 +235,12 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		return;
 	}
 
-	SetState( ACTIVE );
+	GrabFocus();
 	SetCursorPosition( GetPositionFromMouseX( x ) );
 }
 
 void Entry::HandleUpdate( float seconds ) {
-	if( GetState() != ACTIVE ) {
+	if( !HasFocus() ) {
 		return;
 	}
 
@@ -255,20 +255,14 @@ void Entry::HandleUpdate( float seconds ) {
 }
 
 void Entry::HandleFocusChange( const Widget::Ptr& focused_widget ) {
-	if( focused_widget == shared_from_this() ) {
-		SetState( ACTIVE );
-	}
-
-	Widget::HandleFocusChange( focused_widget );
-}
-
-void Entry::HandleStateChange( State old_state ) {
-	if( GetState() == ACTIVE ) {
+	if( HasFocus() ) {
 		m_elapsed_time = 0.f;
 		m_cursor_status = true;
 	}
 
-	Widget::HandleStateChange( old_state );
+	Invalidate();
+
+	Widget::HandleFocusChange( focused_widget );
 }
 
 void Entry::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
