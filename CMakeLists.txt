@@ -20,22 +20,8 @@ if( MSVC )
 	set( STATIC_STD_LIBS false CACHE BOOL "True to link the runtime library statically, false to link them dynamically." )
 endif()
 
-# Make sure FindSFML looks for the right libs if the user changes link type.
-unset( SFML_GRAPHICS_LIBRARY CACHE )
-unset( SFML_GRAPHICS_LIBRARY_DEBUG CACHE )
-unset( SFML_GRAPHICS_LIBRARY_RELEASE CACHE )
-unset( SFML_WINDOW_LIBRARY CACHE )
-unset( SFML_WINDOW_LIBRARY_DEBUG CACHE )
-unset( SFML_WINDOW_LIBRARY_RELEASE CACHE )
-unset( SFML_SYSTEM_LIBRARY CACHE )
-unset( SFML_SYSTEM_LIBRARY_DEBUG CACHE )
-unset( SFML_SYSTEM_LIBRARY_RELEASE CACHE )
-
 find_package( OpenGL REQUIRED )
 find_package( SFML 2.0 QUIET COMPONENTS GRAPHICS WINDOW SYSTEM )
-
-# Useless? variable
-unset( SFML_DIR CACHE )
 
 # FindSFML was not run.
 if( NOT DEFINED FIND_SFML_LIB_SUFFIX )
