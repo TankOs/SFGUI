@@ -226,7 +226,7 @@ void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 }
 
 void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int /*y*/ ) {
-	if( !press ) {
+	if( !press || !IsMouseInWidget() ) {
 		return;
 	}
 

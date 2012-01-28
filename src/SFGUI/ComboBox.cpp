@@ -141,21 +141,29 @@ void ComboBox::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	}
 }
 
-void ComboBox::HandleMouseMoveEvent( int /*x*/, int y ) {
+void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 	if( m_active ) {
-		float padding( Context::Get().GetEngine().GetProperty<float>( "ItemPadding", shared_from_this() ) );
-		const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
-		unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
-		const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
+		if( ( x > GetAllocation().Left ) && ( x < GetAllocation().Left + GetAllocation().Width ) ) {
+			float padding( Context::Get().GetEngine().GetProperty<float>( "ItemPadding", shared_from_this() ) );
+			const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
+			unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
+			const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
-		IndexType line_y = y;
-		line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + padding );
-		line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) + 2 * padding );
+			IndexType line_y = y;
+			line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + padding );
+			line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) + 2 * padding );
 
-		if( line_y < GetItemCount() ) {
-			if( line_y != m_highlighted_item ) {
-				Invalidate();
-				m_highlighted_item = line_y;
+			if( line_y < GetItemCount() ) {
+				if( line_y != m_highlighted_item ) {
+					Invalidate();
+					m_highlighted_item = line_y;
+				}
+			}
+			else {
+				if( m_highlighted_item != NONE ) {
+					m_highlighted_item = NONE;
+					Invalidate();
+				}
 			}
 		}
 		else {
@@ -168,51 +176,46 @@ void ComboBox::HandleMouseMoveEvent( int /*x*/, int y ) {
 }
 
 void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
-	if( button == sf::Mouse::Left && IsMouseInWidget() ) {
-		if( press ) {
-			SetState( ACTIVE );
-
-			if( m_queue ) {
-				// Set Z Layer to 1, above all "normal" widgets.
-				m_queue->SetZOrder( 1 );
-			}
-		}
-		else {
-			SetState( PRELIGHT );
-		}
+	if( !press || ( button != sf::Mouse::Left ) ) {
+		return;
 	}
 
-	if( button == sf::Mouse::Left ) {
-		if( m_active && !press ) {
-			if( m_highlighted_item != NONE ) {
-				m_active_item = m_highlighted_item;
-				m_active = false;
-				m_highlighted_item = NONE;
-
-				OnSelect();
-				Invalidate();
-			}
-			else {
-				m_active = false;
-				Invalidate();
-				m_highlighted_item = NONE;
-			}
-		}
-		else if( !m_active && press ) {
-			m_active = true;
-			OnOpen();
-			Invalidate();
-		}
-	}
-
-	if( !IsMouseInWidget() ) {
-		SetState( NORMAL );
+	if( GetState() == ACTIVE ) {
 		m_active = false;
+
+		if( ( m_highlighted_item != NONE ) && ( m_active_item != m_highlighted_item ) ) {
+			m_active_item = m_highlighted_item;
+			OnSelect();
+		}
+
 		m_highlighted_item = NONE;
 
-		// When the RenderQueue is rebuilt, it's Z Layer is reset to 0.
+		if( IsMouseInWidget() ) {
+			SetState( PRELIGHT );
+		}
+		else {
+			SetState( NORMAL );
+		}
+
 		Invalidate();
+
 		return;
+	}
+
+	if( IsMouseInWidget() ) {
+		m_active = true;
+		m_highlighted_item = NONE;
+
+		SetState( ACTIVE );
+
+		OnOpen();
+
+		if( m_queue ) {
+			// Set Z Layer to 1, above all "normal" widgets.
+			m_queue->SetZOrder( 1 );
+		}
+
+		Invalidate();
 	}
 }
 

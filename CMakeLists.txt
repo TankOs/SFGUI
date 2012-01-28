@@ -12,9 +12,6 @@ set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
 set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
 set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
 
-# This saves us a few headaches.
-set( CMAKE_VERBOSE_MAKEFILE true CACHE BOOL "Print out useful information while building." FORCE )
-
 if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS  )
 	message( FATAL_ERROR "If you link to SFML statically you MUST link to SFGUI statically too." )
 endif()

@@ -63,7 +63,10 @@ void Button::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 
 void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
 	if( !IsMouseInWidget() ) {
-		SetState( NORMAL );
+		if( GetState() == ACTIVE ) {
+			SetState( NORMAL );
+		}
+
 		return;
 	}
 

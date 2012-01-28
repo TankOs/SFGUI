@@ -252,22 +252,17 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::MouseButtonPressed:
-			// If a mouse button has already been pressed for this widget, drop further
-			// presses. This maybe needs changing, but up to now, I can't think of any
-			// cases where it would be useful to have such a functionality.
-			if( m_mouse_button_down == -1 ) {
-				if( m_mouse_in ) {
-					m_mouse_button_down = event.MouseButton.Button;
-
-					HandleMouseButtonEvent( event.MouseButton.Button, true, event.MouseButton.X, event.MouseButton.Y );
-					OnMouseButtonPress();
-				}
+			if( ( m_mouse_button_down == -1 ) && m_mouse_in ) {
+				m_mouse_button_down = event.MouseButton.Button;
 			}
+
+			HandleMouseButtonEvent( event.MouseButton.Button, true, event.MouseButton.X, event.MouseButton.Y );
+			OnMouseButtonPress();
 
 			break;
 
 		case sf::Event::MouseButtonReleased:
-			// Only process when mouse button has been clicked inside the widget before.
+			// Only process as a click when mouse button has been pressed inside the widget before.
 			if( m_mouse_button_down == event.MouseButton.Button ) {
 				m_mouse_button_down = -1;
 
@@ -275,11 +270,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 				if( m_mouse_in ) {
 					HandleMouseClick( event.MouseButton.Button, event.MouseButton.X, event.MouseButton.Y );
 				}
-
-				OnMouseButtonRelease();
 			}
 
 			HandleMouseButtonEvent( event.MouseButton.Button, false, event.MouseButton.X, event.MouseButton.Y );
+			OnMouseButtonRelease();
+
 			break;
 
 		case sf::Event::KeyPressed:
