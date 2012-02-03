@@ -455,6 +455,18 @@ void Renderer::SetupGL( sf::RenderWindow& window ) {
 	unsigned int width = window.GetWidth();
 	unsigned int height = window.GetHeight();
 
+	// SFML doesn't seem to bother updating the OpenGL viewport when
+	// it's window resizes and nothing is drawn directly through SFML...
+	static unsigned int last_width = 0;
+	static unsigned int last_height = 0;
+
+	if( ( last_width != width ) || ( last_height != height ) ) {
+		glViewport( 0, 0, static_cast<GLsizei>( width ), static_cast<GLsizei>( height ) );
+
+		last_width = width;
+		last_height = height;
+	}
+
 	glOrtho( 0.0f, static_cast<GLdouble>( width ? width : 1 ), static_cast<GLdouble>( height ? height : 1 ), 0.0f, -1.0f, 64.0f );
 
 	glMatrixMode( GL_TEXTURE );
@@ -540,6 +552,10 @@ void Renderer::RestoreGL( sf::RenderWindow& window ) {
 
 	// All your cache are belong to us.
 	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ), 0, sizeof( StatesCache ) );
+
+	// This is to make it forget it's cached viewport.
+	// Seriously... caching the viewport? Come on...
+	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ), 1, 1 );
 }
 
 sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Color background_color_hint, sf::Color foreground_color_hint ) {
