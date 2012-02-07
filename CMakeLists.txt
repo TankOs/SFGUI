@@ -12,7 +12,7 @@ set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
 set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
 set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
 
-if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS  )
+if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS )
 	message( FATAL_ERROR "If you link to SFML statically you MUST link to SFGUI statically too." )
 endif()
 
@@ -234,6 +234,7 @@ else()
 
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -s-d )
 	set_target_properties( sfgui PROPERTIES RELEASE_POSTFIX -s )
+	set_target_properties( sfgui PROPERTIES MINSIZEREL_POSTFIX -s )
 endif()
 
 # Tell the compiler to export when necessary.

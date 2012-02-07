@@ -825,17 +825,26 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	// Sync vertex data
 	glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
 	glBufferData( GL_ARRAY_BUFFER, m_vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW );
-	glBufferSubData( GL_ARRAY_BUFFER, 0, m_vertex_data.size() * sizeof( sf::Vector3f ), &m_vertex_data[0] );
+
+	if( m_vertex_data.size() > 0 ) {
+		glBufferSubData( GL_ARRAY_BUFFER, 0, m_vertex_data.size() * sizeof( sf::Vector3f ), &m_vertex_data[0] );
+	}
 
 	// Sync color data
 	glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
 	glBufferData( GL_ARRAY_BUFFER, m_color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW );
-	glBufferSubData( GL_ARRAY_BUFFER, 0, m_color_data.size() * sizeof( sf::Color ), &m_color_data[0] );
+
+	if( m_color_data.size() > 0 ) {
+		glBufferSubData( GL_ARRAY_BUFFER, 0, m_color_data.size() * sizeof( sf::Color ), &m_color_data[0] );
+	}
 
 	// Sync texture coord data
 	glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
 	glBufferData( GL_ARRAY_BUFFER, m_texture_data.size() * sizeof( sf::Vector2f ), 0, GL_STATIC_DRAW );
-	glBufferSubData( GL_ARRAY_BUFFER, 0, m_texture_data.size() * sizeof( sf::Vector2f ), &m_texture_data[0] );
+
+	if( m_texture_data.size() > 0 ) {
+		glBufferSubData( GL_ARRAY_BUFFER, 0, m_texture_data.size() * sizeof( sf::Vector2f ), &m_texture_data[0] );
+	}
 }
 
 void Renderer::RemovePrimitive( const Primitive::Ptr& primitive ) {
