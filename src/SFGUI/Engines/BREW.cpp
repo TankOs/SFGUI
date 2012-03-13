@@ -149,8 +149,8 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	// Top
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( rect.Left, rect.Top ),
-			sf::Vector2f( rect.Left + rect.Width, rect.Top ),
+			sf::Vector2f( rect.left, rect.top ),
+			sf::Vector2f( rect.left + rect.width, rect.top ),
 			light_color,
 			border_width
 		)
@@ -159,8 +159,8 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	// Right
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( rect.Left + rect.Width, rect.Top ),
-			sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height + border_width ),
+			sf::Vector2f( rect.left + rect.width, rect.top ),
+			sf::Vector2f( rect.left + rect.width, rect.top + rect.height + border_width ),
 			dark_color,
 			border_width
 		)
@@ -169,8 +169,8 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	// Bottom
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ),
-			sf::Vector2f( rect.Left, rect.Top + rect.Height ),
+			sf::Vector2f( rect.left + rect.width, rect.top + rect.height ),
+			sf::Vector2f( rect.left, rect.top + rect.height ),
 			dark_color,
 			border_width
 		)
@@ -179,8 +179,8 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	// Left
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( rect.Left, rect.Top + rect.Height ),
-			sf::Vector2f( rect.Left, rect.Top ),
+			sf::Vector2f( rect.left, rect.top + rect.height ),
+			sf::Vector2f( rect.left, rect.top ),
 			light_color,
 			border_width
 		)
@@ -193,10 +193,10 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	RenderQueue* queue( new RenderQueue );
 
 	// Align rect to pixels
-	float left = std::floor( rect.Left + .5f );
-	float top = std::floor( rect.Top + .5f );
-	float width = std::floor( rect.Width + .5f );
-	float height = std::floor( rect.Height + .5f );
+	float left = std::floor( rect.left + .5f );
+	float top = std::floor( rect.top + .5f );
+	float width = std::floor( rect.width + .5f );
+	float height = std::floor( rect.height + .5f );
 
 	queue->Add(
 		Renderer::Get().CreatePane(
@@ -216,10 +216,10 @@ RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& backgrou
 	RenderQueue* queue( new RenderQueue );
 
 	// Align rect to pixels
-	float left = std::floor( rect.Left + .5f );
-	float top = std::floor( rect.Top + .5f );
-	float width = std::floor( rect.Width + .5f );
-	float height = std::floor( rect.Height + .5f );
+	float left = std::floor( rect.left + .5f );
+	float top = std::floor( rect.top + .5f );
+	float width = std::floor( rect.width + .5f );
+	float height = std::floor( rect.height + .5f );
 
 	if( pressed ) {
 		border_color_shift = -border_color_shift;

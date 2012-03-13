@@ -73,16 +73,16 @@ void Widget::SetAllocation( const sf::FloatRect& rect ) {
 	sf::FloatRect oldallocation( m_allocation );
 
 	// Make sure allocation is pixel-aligned.
-	m_allocation.Left = std::floor( rect.Left + .5f );
-	m_allocation.Top = std::floor( rect.Top + .5f );
-	m_allocation.Width = std::floor( rect.Width + .5f );
-	m_allocation.Height = std::floor( rect.Height + .5f );
+	m_allocation.left = std::floor( rect.left + .5f );
+	m_allocation.top = std::floor( rect.top + .5f );
+	m_allocation.width = std::floor( rect.width + .5f );
+	m_allocation.height = std::floor( rect.height + .5f );
 
 	if(
-		oldallocation.Top == m_allocation.Top &&
-		oldallocation.Left == m_allocation.Left &&
-		oldallocation.Width == m_allocation.Width &&
-		oldallocation.Height == m_allocation.Height
+		oldallocation.top == m_allocation.top &&
+		oldallocation.left == m_allocation.left &&
+		oldallocation.width == m_allocation.width &&
+		oldallocation.height == m_allocation.height
 	) {
 		// Nothing even changed. Save the hierarchy the trouble.
 		return;
@@ -120,10 +120,10 @@ void Widget::RequestResize() {
 	}
 	else {
 		sf::FloatRect allocation(
-			GetAllocation().Left,
-			GetAllocation().Top,
-			std::max( GetAllocation().Width, m_requisition.x ),
-			std::max( GetAllocation().Height, m_requisition.y )
+			GetAllocation().left,
+			GetAllocation().top,
+			std::max( GetAllocation().width, m_requisition.x ),
+			std::max( GetAllocation().height, m_requisition.y )
 		);
 
 		SetAllocation( allocation );
@@ -195,11 +195,11 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	sf::FloatRect oldallocation( GetAllocation() );
 
 	// Make sure allocation is pixel-aligned.
-	m_allocation.Left = std::floor( position.x + .5f );
-	m_allocation.Top = std::floor( position.y + .5f );
+	m_allocation.left = std::floor( position.x + .5f );
+	m_allocation.top = std::floor( position.y + .5f );
 
-	if( oldallocation.Top == m_allocation.Top &&
-	 oldallocation.Left == m_allocation.Left ) {
+	if( oldallocation.top == m_allocation.top &&
+	 oldallocation.left == m_allocation.left ) {
 		// Nothing even changed. Save the hierarchy the trouble.
 		return;
 	}
@@ -229,15 +229,15 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 	Container::Ptr parent( m_parent.lock() );
 
-	switch( event.Type ) {
+	switch( event.type ) {
 		case sf::Event::MouseMoved:
 			// Check if pointer inside of widget's allocation.
-			if( GetAllocation().Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
+			if( GetAllocation().contains( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) ) ) {
 				// Check for enter event.
 				if( m_mouse_in == false ) {
 					m_mouse_in = true;
 					OnMouseEnter();
-					HandleMouseEnter( event.MouseMove.X, event.MouseMove.Y );
+					HandleMouseEnter( event.mouseMove.x, event.mouseMove.y );
 				}
 
 				OnMouseMove();
@@ -245,34 +245,34 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			else if( m_mouse_in == true ) { // Check for leave event.
 				m_mouse_in = false;
 				OnMouseLeave();
-				HandleMouseLeave( event.MouseMove.X, event.MouseMove.Y );
+				HandleMouseLeave( event.mouseMove.x, event.mouseMove.y );
 			}
 
-			HandleMouseMoveEvent( event.MouseMove.X, event.MouseMove.Y );
+			HandleMouseMoveEvent( event.mouseMove.x, event.mouseMove.y );
 			break;
 
 		case sf::Event::MouseButtonPressed:
 			if( ( m_mouse_button_down == -1 ) && m_mouse_in ) {
-				m_mouse_button_down = event.MouseButton.Button;
+				m_mouse_button_down = event.mouseButton.button;
 			}
 
-			HandleMouseButtonEvent( event.MouseButton.Button, true, event.MouseButton.X, event.MouseButton.Y );
+			HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
 			OnMouseButtonPress();
 
 			break;
 
 		case sf::Event::MouseButtonReleased:
 			// Only process as a click when mouse button has been pressed inside the widget before.
-			if( m_mouse_button_down == event.MouseButton.Button ) {
+			if( m_mouse_button_down == event.mouseButton.button ) {
 				m_mouse_button_down = -1;
 
 				// When released inside the widget, the event can be considered a click.
 				if( m_mouse_in ) {
-					HandleMouseClick( event.MouseButton.Button, event.MouseButton.X, event.MouseButton.Y );
+					HandleMouseClick( event.mouseButton.button, event.mouseButton.x, event.mouseButton.y );
 				}
 			}
 
-			HandleMouseButtonEvent( event.MouseButton.Button, false, event.MouseButton.X, event.MouseButton.Y );
+			HandleMouseButtonEvent( event.mouseButton.button, false, event.mouseButton.x, event.mouseButton.y );
 			OnMouseButtonRelease();
 
 			break;
@@ -280,7 +280,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		case sf::Event::KeyPressed:
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
-				HandleKeyEvent( event.Key.Code, true );
+				HandleKeyEvent( event.key.code, true );
 				OnKeyPress();
 			}
 
@@ -289,7 +289,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		case sf::Event::KeyReleased:
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
-				HandleKeyEvent( event.Key.Code, false );
+				HandleKeyEvent( event.key.code, false );
 				OnKeyRelease();
 			}
 			break;
@@ -297,7 +297,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		case sf::Event::TextEntered:
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
-				HandleTextEvent( event.Text.Unicode );
+				HandleTextEvent( event.text.unicode );
 				OnText();
 			}
 			break;
@@ -392,15 +392,15 @@ sf::Vector2f Widget::GetAbsolutePosition() const {
 	PtrConst parent( m_parent.lock() );
 
 	if( !parent ) {
-		return sf::Vector2f( GetAllocation().Left, GetAllocation().Top );
+		return sf::Vector2f( GetAllocation().left, GetAllocation().top );
 	}
 
 	// Get parent's absolute position and add own rel. position to it.
 	sf::Vector2f parent_position( parent->GetAbsolutePosition() );
 
 	return sf::Vector2f(
-		parent_position.x + GetAllocation().Left,
-		parent_position.y + GetAllocation().Top
+		parent_position.x + GetAllocation().left,
+		parent_position.y + GetAllocation().top
 	);
 }
 
@@ -482,10 +482,10 @@ void Widget::Refresh() {
 	RequestResize();
 
 	if(
-		old_allocation.Left == GetAllocation().Left &&
-		old_allocation.Top == GetAllocation().Top &&
-		old_allocation.Width == GetAllocation().Width &&
-		old_allocation.Height == GetAllocation().Height
+		old_allocation.left == GetAllocation().left &&
+		old_allocation.top == GetAllocation().top &&
+		old_allocation.width == GetAllocation().width &&
+		old_allocation.height == GetAllocation().height
 	) {
 		HandleAbsolutePositionChange();
 		HandleAllocationChange( old_allocation );

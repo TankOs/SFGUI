@@ -145,8 +145,8 @@ void GuessMyNumber::Run() {
 
 	window->SetPosition(
 		sf::Vector2f(
-			static_cast<float>( render_window.GetWidth() / 2 ) - window->GetAllocation().Width / 2.f,
-			static_cast<float>( render_window.GetHeight() / 2 ) - window->GetAllocation().Height / 2.f
+			static_cast<float>( render_window.getSize().x / 2 ) - window->GetAllocation().width / 2.f,
+			static_cast<float>( render_window.getSize().y / 2 ) - window->GetAllocation().height / 2.f
 		)
 	);
 
@@ -160,21 +160,21 @@ void GuessMyNumber::Run() {
 	// Make sure all properties are applied.
 	window->Refresh();
 
-	while( render_window.IsOpen() ) {
-		while( render_window.PollEvent( event ) ) {
+	while( render_window.isOpen() ) {
+		while( render_window.pollEvent( event ) ) {
 			if(
-				(event.Type == sf::Event::KeyPressed && event.Key.Code == sf::Keyboard::Escape) ||
-				event.Type == sf::Event::Closed
+				(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) ||
+				event.type == sf::Event::Closed
 			) {
-				render_window.Close();
+				render_window.close();
 			}
 
 			window->HandleEvent( event );
 		}
 
 		window->Update( 0.f );
-		render_window.Clear();
+		render_window.clear();
 		sfg::Renderer::Get().Display( render_window );
-		render_window.Display();
+		render_window.display();
 	}
 }

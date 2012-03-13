@@ -84,7 +84,7 @@ SampleApp::SampleApp() :
 	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) ),
 	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) )
 {
-	m_background_texture.Create( 1024, 768 );
+	m_background_texture.create( 1024, 768 );
 
 	sf::Uint8* pixels = new sf::Uint8[ 1024 * 768 * 4 ];
 
@@ -110,9 +110,9 @@ SampleApp::SampleApp() :
 		pixels[ index * 4 + 3 ] = 255; // A
 	}
 
-	m_background_texture.Update( pixels );
+	m_background_texture.update( pixels );
 
-	m_background_sprite.SetTexture( m_background_texture );
+	m_background_sprite.setTexture( m_background_texture );
 
 	delete[] pixels;
 }
@@ -140,7 +140,7 @@ void SampleApp::Run() {
 
 	{
 		sf::Image add_image;
-		if( add_image.LoadFromFile( "data/add.png" ) ) {
+		if( add_image.loadFromFile( "data/add.png" ) ) {
 			sfg::Image::Ptr image( sfg::Image::Create( add_image ) );
 			btnaddbuttonh->SetImage( image );
 
@@ -154,7 +154,7 @@ void SampleApp::Run() {
 
 	{
 		sf::Image close_image;
-		if( close_image.LoadFromFile( "data/delete.png" ) ) {
+		if( close_image.loadFromFile( "data/delete.png" ) ) {
 			sfg::Image::Ptr image( sfg::Image::Create( close_image ) );
 			btnhidewindow->SetImage( image );
 		}
@@ -270,7 +270,7 @@ void SampleApp::Run() {
 	sf::Image sfgui_logo;
 	sfg::Image::Ptr image = sfg::Image::Create();
 
-	if( sfgui_logo.LoadFromFile("sfgui.png") ) {
+	if( sfgui_logo.loadFromFile("sfgui.png") ) {
 		image->SetImage( sfgui_logo );
 		box_image->Pack( image, false );
 	}
@@ -371,7 +371,7 @@ void SampleApp::Run() {
 
 	// Play around with resource manager.
 	sf::Font my_font;
-	my_font.LoadFromFile( "data/linden_hill.otf" );
+	my_font.loadFromFile( "data/linden_hill.otf" );
 	m_desktop.GetEngine().GetResourceManager().AddFont( "custom_font", my_font, false ); // false -> do not manage!
 
 	// Set properties.
@@ -382,43 +382,43 @@ void SampleApp::Run() {
 	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontSize", 18.f );
 
 	m_fps_counter = 0;
-	m_fps_clock.Restart();
+	m_fps_clock.restart();
 
 	sf::Clock clock;
 
-	while( m_window.IsOpen() ) {
-		while( m_window.PollEvent( event ) ) {
-			if( event.Type == sf::Event::Closed ) {
-				m_window.Close();
+	while( m_window.isOpen() ) {
+		while( m_window.pollEvent( event ) ) {
+			if( event.type == sf::Event::Closed ) {
+				m_window.close();
 			}
-			else if( event.Type == sf::Event::Resized ) {
-				m_desktop.UpdateViewRect( sf::FloatRect( 0.f, 0.f, static_cast<float>( event.Size.Width ), static_cast<float>( event.Size.Height ) ) );
+			else if( event.type == sf::Event::Resized ) {
+				m_desktop.UpdateViewRect( sf::FloatRect( 0.f, 0.f, static_cast<float>( event.size.width ), static_cast<float>( event.size.height ) ) );
 			}
 
 			m_desktop.HandleEvent( event );
 		}
 
-		m_window.Draw( m_background_sprite );
+		m_window.draw( m_background_sprite );
 
-		sf::Uint64 microseconds = clock.GetElapsedTime().AsMicroseconds();
+		sf::Uint64 microseconds = clock.getElapsedTime().asMicroseconds();
 
 		// Only update every 5ms
 		if( microseconds > 5000 ) {
 			m_desktop.Update( static_cast<float>( microseconds ) / 1000000.f );
-			clock.Restart();
+			clock.restart();
 		}
 
 		sfg::Renderer::Get().Display( m_window );
 
-		m_window.Display();
+		m_window.display();
 
-		if( m_fps_clock.GetElapsedTime().AsMicroseconds() >= 1000000 ) {
-			m_fps_clock.Restart();
+		if( m_fps_clock.getElapsedTime().asMicroseconds() >= 1000000 ) {
+			m_fps_clock.restart();
 
 			std::stringstream sstr;
 			sstr << "SFGUI test -- FPS: " << m_fps_counter;
 
-			m_window.SetTitle( sstr.str() );
+			m_window.setTitle( sstr.str() );
 
 			m_fps_counter = 0;
 		}

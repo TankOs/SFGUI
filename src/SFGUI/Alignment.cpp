@@ -58,7 +58,7 @@ void Alignment::UpdateChild() {
 
 	sf::FloatRect allocation( GetAllocation() );
 
-	sf::Vector2f spare_space( allocation.Width, allocation.Height );
+	sf::Vector2f spare_space( allocation.width, allocation.height );
 	spare_space -= child->GetRequisition();
 	spare_space.x *= 1.f - GetScale().x;
 	spare_space.y *= 1.f - GetScale().y;
@@ -70,10 +70,10 @@ void Alignment::UpdateChild() {
 #endif
 	}
 
-	allocation.Left = spare_space.x * GetAlignment().x;
-	allocation.Top = spare_space.y * GetAlignment().y;
-	allocation.Width -= spare_space.x;
-	allocation.Height -= spare_space.y;
+	allocation.left = spare_space.x * GetAlignment().x;
+	allocation.top = spare_space.y * GetAlignment().y;
+	allocation.width -= spare_space.x;
+	allocation.height -= spare_space.y;
 
 	child->SetAllocation( allocation );
 }

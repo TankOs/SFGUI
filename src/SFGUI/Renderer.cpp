@@ -34,7 +34,7 @@ Renderer::Renderer() :
 
 	// Load our "no texture" pseudo-texture.
 	sf::Image image;
-	image.Create( 2, 2, sf::Color::White );
+	image.create( 2, 2, sf::Color::White );
 	LoadImage( image, sf::Color::White );
 }
 
@@ -65,22 +65,22 @@ RendererViewport::Ptr Renderer::CreateViewport() {
 Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_color_hint ) {
 	Primitive::Ptr primitive( new Primitive );
 
-	const sf::Font& font = text.GetFont();
-	unsigned int character_size = text.GetCharacterSize();
-	sf::Color color = text.GetColor();
+	const sf::Font& font = text.getFont();
+	unsigned int character_size = text.getCharacterSize();
+	sf::Color color = text.getColor();
 
 	if( m_preblend ) {
 		color = sf::Color::White;
 	}
 
-	sf::Vector2f atlas_offset = LoadFont( font, character_size, background_color_hint, text.GetColor() );
+	sf::Vector2f atlas_offset = LoadFont( font, character_size, background_color_hint, text.getColor() );
 
-	const sf::String& str = text.GetString();
-	std::size_t length = str.GetSize();
+	const sf::String& str = text.getString();
+	std::size_t length = str.getSize();
 
-	float horizontal_spacing = static_cast<float>( font.GetGlyph( L' ', character_size, false ).Advance );
-	float vertical_spacing = static_cast<float>( font.GetLineSpacing( character_size ) );
-	sf::Vector2f position( std::floor( text.GetPosition().x + .5f ), std::floor( text.GetPosition().y + static_cast<float>( character_size ) + .5f ) );
+	float horizontal_spacing = static_cast<float>( font.getGlyph( L' ', character_size, false ).advance );
+	float vertical_spacing = static_cast<float>( font.getLineSpacing( character_size ) );
+	sf::Vector2f position( std::floor( text.getPosition().x + .5f ), std::floor( text.getPosition().y + static_cast<float>( character_size ) + .5f ) );
 
 	const static float tab_spaces = 2.f;
 
@@ -89,7 +89,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_
 	for( std::size_t index = 0; index < length; ++index ) {
 		sf::Uint32 current_character = str[index];
 
-		position.x += static_cast<float>( font.GetKerning( previous_character, current_character, character_size ) );
+		position.x += static_cast<float>( font.getKerning( previous_character, current_character, character_size ) );
 
 		switch( current_character ) {
 			case L' ':
@@ -109,17 +109,17 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_
 				break;
 		}
 
-		const sf::Glyph& glyph = font.GetGlyph( current_character, character_size, false );
+		const sf::Glyph& glyph = font.getGlyph( current_character, character_size, false );
 
 		Primitive::Vertex vertex0;
 		Primitive::Vertex vertex1;
 		Primitive::Vertex vertex2;
 		Primitive::Vertex vertex3;
 
-		vertex0.position = position + sf::Vector2f( static_cast<float>( glyph.Bounds.Left ), static_cast<float>( glyph.Bounds.Top ) );
-		vertex1.position = position + sf::Vector2f( static_cast<float>( glyph.Bounds.Left ), static_cast<float>( glyph.Bounds.Top + glyph.Bounds.Height ) );
-		vertex2.position = position + sf::Vector2f( static_cast<float>( glyph.Bounds.Left + glyph.Bounds.Width ), static_cast<float>( glyph.Bounds.Top ) );
-		vertex3.position = position + sf::Vector2f( static_cast<float>( glyph.Bounds.Left + glyph.Bounds.Width ), static_cast<float>( glyph.Bounds.Top + glyph.Bounds.Height ) );
+		vertex0.position = position + sf::Vector2f( static_cast<float>( glyph.bounds.left ), static_cast<float>( glyph.bounds.top ) );
+		vertex1.position = position + sf::Vector2f( static_cast<float>( glyph.bounds.left ), static_cast<float>( glyph.bounds.top + glyph.bounds.height ) );
+		vertex2.position = position + sf::Vector2f( static_cast<float>( glyph.bounds.left + glyph.bounds.width ), static_cast<float>( glyph.bounds.top ) );
+		vertex3.position = position + sf::Vector2f( static_cast<float>( glyph.bounds.left + glyph.bounds.width ), static_cast<float>( glyph.bounds.top + glyph.bounds.height ) );
 
 		vertex0.color = color;
 		vertex1.color = color;
@@ -127,12 +127,12 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_
 		vertex3.color = color;
 
 		// Let SFML cast the Rect for us.
-		sf::FloatRect texture_rect( glyph.TextureRect );
+		sf::FloatRect texture_rect( glyph.textureRect );
 
-		vertex0.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.Left, texture_rect.Top );
-		vertex1.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.Left, texture_rect.Top + texture_rect.Height );
-		vertex2.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.Left + texture_rect.Width, texture_rect.Top );
-		vertex3.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.Left + texture_rect.Width, texture_rect.Top + texture_rect.Height );
+		vertex0.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.left, texture_rect.top );
+		vertex1.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.left, texture_rect.top + texture_rect.height );
+		vertex2.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.left + texture_rect.width, texture_rect.top );
+		vertex3.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.left + texture_rect.width, texture_rect.top + texture_rect.height );
 
 		primitive->AddVertex( vertex0 );
 		primitive->AddVertex( vertex1 );
@@ -141,7 +141,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_
 		primitive->AddVertex( vertex1 );
 		primitive->AddVertex( vertex3 );
 
-		position.x += static_cast<float>( glyph.Advance );
+		position.x += static_cast<float>( glyph.advance );
 
 		previous_character = current_character;
 	}
@@ -284,7 +284,7 @@ Primitive::Ptr Renderer::CreateRect( const sf::Vector2f& top_left, const sf::Vec
 }
 
 Primitive::Ptr Renderer::CreateRect( const sf::FloatRect& rect, const sf::Color& color ) {
-	return CreateRect( sf::Vector2f( rect.Left, rect.Top ), sf::Vector2f( rect.Left + rect.Width, rect.Top + rect.Height ), color );
+	return CreateRect( sf::Vector2f( rect.left, rect.top ), sf::Vector2f( rect.left + rect.width, rect.top + rect.height ), color );
 }
 
 Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color ) {
@@ -325,10 +325,10 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	Primitive::Vertex vertex2;
 	Primitive::Vertex vertex3;
 
-	vertex0.position = sf::Vector2f( std::floor( rect.Left + .5f ), std::floor( rect.Top + .5f ) );
-	vertex1.position = sf::Vector2f( std::floor( rect.Left + .5f ), std::floor( rect.Top + .5f ) + std::floor( rect.Height + .5f ) );
-	vertex2.position = sf::Vector2f( std::floor( rect.Left + .5f ) + std::floor( rect.Width + .5f ), std::floor( rect.Top + .5f ) );
-	vertex3.position = sf::Vector2f( std::floor( rect.Left + .5f ) + std::floor( rect.Width + .5f ), std::floor( rect.Top + .5f ) + std::floor( rect.Height + .5f ) );
+	vertex0.position = sf::Vector2f( std::floor( rect.left + .5f ), std::floor( rect.top + .5f ) );
+	vertex1.position = sf::Vector2f( std::floor( rect.left + .5f ), std::floor( rect.top + .5f ) + std::floor( rect.height + .5f ) );
+	vertex2.position = sf::Vector2f( std::floor( rect.left + .5f ) + std::floor( rect.width + .5f ), std::floor( rect.top + .5f ) );
+	vertex3.position = sf::Vector2f( std::floor( rect.left + .5f ) + std::floor( rect.width + .5f ), std::floor( rect.top + .5f ) + std::floor( rect.height + .5f ) );
 
 	vertex0.color = sf::Color( 255, 255, 255, 255 );
 	vertex1.color = sf::Color( 255, 255, 255, 255 );
@@ -336,9 +336,9 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	vertex3.color = sf::Color( 255, 255, 255, 255 );
 
 	vertex0.texture_coordinate = offset + sf::Vector2f( 0.f, 0.f );
-	vertex1.texture_coordinate = offset + sf::Vector2f( 0.f, static_cast<float>( image.GetHeight() ) );
-	vertex2.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.GetWidth() ), 0.f );
-	vertex3.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.GetWidth() ), static_cast<float>( image.GetHeight() ) );
+	vertex1.texture_coordinate = offset + sf::Vector2f( 0.f, static_cast<float>( image.getHeight() ) );
+	vertex2.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getWidth() ), 0.f );
+	vertex3.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getWidth() ), static_cast<float>( image.getHeight() ) );
 
 	primitive->AddVertex( vertex0 );
 	primitive->AddVertex( vertex1 );
@@ -385,7 +385,7 @@ void Renderer::Display( sf::RenderWindow& window ) {
 
 	SetupGL( window );
 
-	m_texture_atlas.Bind();
+	m_texture_atlas.bind();
 
 	glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
 	glVertexPointer( 3, GL_FLOAT, 0, 0 );
@@ -416,13 +416,13 @@ void Renderer::Display( sf::RenderWindow& window ) {
 
 			glScissor(
 				static_cast<int>( destination_origin.x ),
-				window.GetHeight() - static_cast<int>( destination_origin.y + size.y ),
+				window.getSize().y - static_cast<int>( destination_origin.y + size.y ),
 				static_cast<int>( size.x ),
 				static_cast<int>( size.y )
 			);
 		}
 		else {
-			glScissor( 0, 0, window.GetWidth(), window.GetHeight() );
+			glScissor( 0, 0, window.getSize().x, window.getSize().y );
 		}
 
 		if( index < scissor_pairs_size - 1 ) {
@@ -452,8 +452,8 @@ void Renderer::SetupGL( sf::RenderWindow& window ) {
 
 	// When SFML dies (closes) it sets these to 0 for some reason.
 	// That then causes glOrtho errors.
-	unsigned int width = window.GetWidth();
-	unsigned int height = window.GetHeight();
+	unsigned int width = window.getSize().x;
+	unsigned int height = window.getSize().y;
 
 	// SFML doesn't seem to bother updating the OpenGL viewport when
 	// it's window resizes and nothing is drawn directly through SFML...
@@ -585,10 +585,10 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Co
 
 	// Make sure all the glyphs we need are loaded.
 	for( sf::Uint32 codepoint = 0; codepoint < 512; ++codepoint ) {
-		font.GetGlyph( codepoint, size, false );
+		font.getGlyph( codepoint, size, false );
 	}
 
-	sf::Image image = font.GetTexture( size ).CopyToImage();
+	sf::Image image = font.getTexture( size ).copyToImage();
 
 	sf::Vector2f offset = LoadImage( image, background_color_hint, foreground_color_hint, true );
 
@@ -598,7 +598,7 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Co
 }
 
 sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint, bool force_insert ) {
-	const sf::Uint8* pixels_ptr = image.GetPixelsPtr();
+	const sf::Uint8* pixels_ptr = image.getPixelsPtr();
 
 	if( !force_insert ) {
 		std::map<const sf::Uint8*, sf::Vector2f>::iterator iter( m_atlas_offsets.find( pixels_ptr ) );
@@ -610,7 +610,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 
 	sf::Image preblended_image;
 
-	preblended_image.Create( image.GetWidth(), image.GetHeight(), image.GetPixelsPtr() );
+	preblended_image.create( image.getWidth(), image.getHeight(), image.getPixelsPtr() );
 
 	// If we get a proper background color hint and preblend is enabled,
 	// precompute blended color with ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ).
@@ -626,11 +626,11 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 				foreground_b_factor = static_cast<float>( foreground_color_hint.b ) / 255.f;
 			}
 
-			std::size_t pixel_count = preblended_image.GetWidth() * preblended_image.GetHeight();
+			std::size_t pixel_count = preblended_image.getWidth() * preblended_image.getHeight();
 
 			sf::Uint8* bytes = new sf::Uint8[pixel_count * 4];
 
-			memcpy( bytes, preblended_image.GetPixelsPtr(), pixel_count * 4 );
+			memcpy( bytes, preblended_image.getPixelsPtr(), pixel_count * 4 );
 
 			for( std::size_t index = 0; index < pixel_count; ++index ) {
 				// Alpha
@@ -646,7 +646,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 				bytes[index * 4 + 2] = static_cast<sf::Uint8>( static_cast<float>( bytes[index * 4 + 2] ) * foreground_b_factor * alpha + static_cast<float>( background_color_hint.b ) * ( 1.f - alpha ) );
 			}
 
-			preblended_image.Create( preblended_image.GetWidth(), preblended_image.GetHeight(), bytes );
+			preblended_image.create( preblended_image.getWidth(), preblended_image.getHeight(), bytes );
 
 			delete[] bytes;
 		}
@@ -659,8 +659,8 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 		}
 	}
 
-	const sf::Uint8* bytes = preblended_image.GetPixelsPtr();
-	std::size_t byte_count = preblended_image.GetWidth() * preblended_image.GetHeight() * 4;
+	const sf::Uint8* bytes = preblended_image.getPixelsPtr();
+	std::size_t byte_count = preblended_image.getWidth() * preblended_image.getHeight() * 4;
 
 	// Disable this check for now.
 	static sf::Uint8 alpha_threshold = 255;
@@ -676,7 +676,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 	}
 
 	// Image needs to be loaded into atlas.
-	sf::Image old_image = m_texture_atlas.CopyToImage();
+	sf::Image old_image = m_texture_atlas.copyToImage();
 	sf::Image new_image;
 
 	// We insert padding between atlas elements to prevent
@@ -684,14 +684,14 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 	// If 1 pixel isn't enough, increase.
 	const static unsigned int padding = 1;
 
-	new_image.Create( std::max( old_image.GetWidth(), preblended_image.GetWidth() ), old_image.GetHeight() + preblended_image.GetHeight() + padding, sf::Color::White );
-	new_image.Copy( old_image, 0, 0 );
+	new_image.create( std::max( old_image.getWidth(), preblended_image.getWidth() ), old_image.getHeight() + preblended_image.getHeight() + padding, sf::Color::White );
+	new_image.copy( old_image, 0, 0 );
 
-	new_image.Copy( preblended_image, 0, old_image.GetHeight() + padding );
+	new_image.copy( preblended_image, 0, old_image.getHeight() + padding );
 
-	m_texture_atlas.LoadFromImage( new_image );
+	m_texture_atlas.loadFromImage( new_image );
 
-	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( old_image.GetHeight() + padding ) );
+	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( old_image.getHeight() + padding ) );
 
 	InvalidateVBO();
 
@@ -752,7 +752,7 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	}
 
 	// Used to normalize texture coordinates.
-	sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.GetWidth() ), 1.f / static_cast<float>( m_texture_atlas.GetHeight() ) );
+	sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.getWidth() ), 1.f / static_cast<float>( m_texture_atlas.getHeight() ) );
 
 	// Depth test vars
 	float depth = -4.f;
@@ -764,7 +764,7 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	RendererViewport::Ptr current_viewport = m_default_viewport;
 	m_viewport_pairs.push_back( ViewportPair( m_default_viewport, 0 ) );
 
-	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( window.GetWidth() ), static_cast<float>( window.GetHeight() ) );
+	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( window.getSize().x ), static_cast<float>( window.getSize().y ) );
 
 	for( std::size_t primitive_index = start; primitive_index != end; primitive_index += direction ) {
 		Primitive* primitive = m_primitives[primitive_index - 1].get();
@@ -799,10 +799,10 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 			position_transform += ( destination_origin - viewport->GetSourceOrigin() );
 
 			if( m_cull ) {
-				viewport_rect.Left = destination_origin.x;
-				viewport_rect.Top = destination_origin.y;
-				viewport_rect.Width = size.x;
-				viewport_rect.Height = size.y;
+				viewport_rect.left = destination_origin.x;
+				viewport_rect.top = destination_origin.y;
+				viewport_rect.width = size.x;
+				viewport_rect.height = size.y;
 			}
 		}
 
@@ -822,7 +822,7 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 			// Normalize SFML's pixel texture coordinates.
 			m_texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
 
-			if( m_cull && viewport_rect.Contains( position.x, position.y ) ) {
+			if( m_cull && viewport_rect.contains( position.x, position.y ) ) {
 				cull = false;
 			}
 		}

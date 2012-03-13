@@ -141,23 +141,23 @@ void ScrolledWindow::RecalculateAdjustments() const {
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
 	if( GetViewport() && GetViewport()->GetChild() ) {
-		float max_horiz_val = std::max( GetViewport()->GetChild()->GetAllocation().Width + 2.f, GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		float max_horiz_val = std::max( GetViewport()->GetChild()->GetAllocation().width + 2.f, GetAllocation().width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
 		Adjustment::Ptr h_adjustment = m_horizontal_scrollbar->GetAdjustment();
 		h_adjustment->SetLower( .0f );
 		h_adjustment->SetUpper( max_horiz_val );
 		h_adjustment->SetMinorStep( 1.f );
-		h_adjustment->SetMajorStep( GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
-		h_adjustment->SetPageSize( GetAllocation().Width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		h_adjustment->SetMajorStep( GetAllocation().width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		h_adjustment->SetPageSize( GetAllocation().width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
-		float max_vert_val = std::max( GetViewport()->GetChild()->GetAllocation().Height + 2.f, GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		float max_vert_val = std::max( GetViewport()->GetChild()->GetAllocation().height + 2.f, GetAllocation().height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
 		Adjustment::Ptr v_adjustment = m_vertical_scrollbar->GetAdjustment();
 		v_adjustment->SetLower( .0f );
 		v_adjustment->SetUpper( max_vert_val );
 		v_adjustment->SetMinorStep( 1.f );
-		v_adjustment->SetMajorStep( GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
-		v_adjustment->SetPageSize( GetAllocation().Height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		v_adjustment->SetMajorStep( GetAllocation().height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		v_adjustment->SetPageSize( GetAllocation().height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 	}
 
 	RecalculateContentAllocation();
@@ -172,33 +172,33 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 
 	m_content_allocation = GetAllocation();
 
-	m_content_allocation.Left = border_width;
-	m_content_allocation.Top = border_width;
-	m_content_allocation.Width -= 2.f * border_width;
-	m_content_allocation.Height -= 2.f * border_width;
+	m_content_allocation.left = border_width;
+	m_content_allocation.top = border_width;
+	m_content_allocation.width -= 2.f * border_width;
+	m_content_allocation.height -= 2.f * border_width;
 
 	if( IsVerticalScrollbarVisible() ) {
-		m_content_allocation.Width -= ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
+		m_content_allocation.width -= ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
 
 		if( m_placement & RIGHT ) { // Content placed at Right
-			m_content_allocation.Left += ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
+			m_content_allocation.left += ( m_vertical_scrollbar->GetRequisition().x + scrollbar_spacing );
 		}
 	}
 
 	if( IsHorizontalScrollbarVisible() ) {
-		m_content_allocation.Height -= ( m_horizontal_scrollbar->GetRequisition().y + scrollbar_spacing );
+		m_content_allocation.height -= ( m_horizontal_scrollbar->GetRequisition().y + scrollbar_spacing );
 
 		if( m_placement & BOTTOM ) { // Content placed at Bottom
-			m_content_allocation.Top += ( m_horizontal_scrollbar->GetRequisition().y + scrollbar_spacing );
+			m_content_allocation.top += ( m_horizontal_scrollbar->GetRequisition().y + scrollbar_spacing );
 		}
 	}
 
 	if( m_placement & TOP ) { // Content placed at Top
 		m_horizontal_scrollbar->SetAllocation(
 			sf::FloatRect(
-				m_content_allocation.Left - border_width,
-				m_content_allocation.Height + 2.f * border_width + scrollbar_spacing,
-				m_content_allocation.Width + 2.f * border_width,
+				m_content_allocation.left - border_width,
+				m_content_allocation.height + 2.f * border_width + scrollbar_spacing,
+				m_content_allocation.width + 2.f * border_width,
 				m_horizontal_scrollbar->GetRequisition().y
 			)
 		);
@@ -206,9 +206,9 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	else { // Content placed at Bottom
 		m_horizontal_scrollbar->SetAllocation(
 			sf::FloatRect(
-				m_content_allocation.Left - border_width,
+				m_content_allocation.left - border_width,
 				0.f,
-				m_content_allocation.Width + 2.f * border_width,
+				m_content_allocation.width + 2.f * border_width,
 				m_horizontal_scrollbar->GetRequisition().y
 			)
 		);
@@ -217,10 +217,10 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	if( m_placement & LEFT ) { // Content placed at Left
 		m_vertical_scrollbar->SetAllocation(
 			sf::FloatRect(
-				m_content_allocation.Width + 2.f * border_width + scrollbar_spacing,
-				m_content_allocation.Top - border_width,
+				m_content_allocation.width + 2.f * border_width + scrollbar_spacing,
+				m_content_allocation.top - border_width,
 				m_vertical_scrollbar->GetRequisition().x,
-				m_content_allocation.Height + 2.f * border_width
+				m_content_allocation.height + 2.f * border_width
 			)
 		);
 	}
@@ -228,20 +228,20 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 		m_vertical_scrollbar->SetAllocation(
 			sf::FloatRect(
 				0.f,
-				m_content_allocation.Top - border_width,
+				m_content_allocation.top - border_width,
 				m_vertical_scrollbar->GetRequisition().x,
-				m_content_allocation.Height + 2.f * border_width
+				m_content_allocation.height + 2.f * border_width
 			)
 		);
 	}
 
 	// Update Scrollbars and viewport allocation if the content allocation changed.
 	if( GetViewport() ) {
-		m_horizontal_scrollbar->GetAdjustment()->SetMajorStep( m_content_allocation.Width );
-		m_horizontal_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.Width );
+		m_horizontal_scrollbar->GetAdjustment()->SetMajorStep( m_content_allocation.width );
+		m_horizontal_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.width );
 
-		m_vertical_scrollbar->GetAdjustment()->SetMajorStep( m_content_allocation.Height );
-		m_vertical_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.Height );
+		m_vertical_scrollbar->GetAdjustment()->SetMajorStep( m_content_allocation.height );
+		m_vertical_scrollbar->GetAdjustment()->SetPageSize( m_content_allocation.height );
 
 		GetViewport()->SetAllocation( m_content_allocation );
 	}

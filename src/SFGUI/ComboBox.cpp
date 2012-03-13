@@ -143,14 +143,14 @@ void ComboBox::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 
 void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 	if( m_active ) {
-		if( ( x > GetAllocation().Left ) && ( x < GetAllocation().Left + GetAllocation().Width ) ) {
+		if( ( x > GetAllocation().left ) && ( x < GetAllocation().left + GetAllocation().width ) ) {
 			float padding( Context::Get().GetEngine().GetProperty<float>( "ItemPadding", shared_from_this() ) );
 			const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 			unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 			const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 			IndexType line_y = y;
-			line_y -= static_cast<int>( GetAllocation().Top + GetAllocation().Height + padding );
+			line_y -= static_cast<int>( GetAllocation().top + GetAllocation().height + padding );
 			line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) + 2 * padding );
 
 			if( line_y < GetItemCount() ) {

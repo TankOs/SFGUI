@@ -118,14 +118,14 @@ void Application::Run() {
 	// specialized cases similar to the one in this example the
 	// Factory Method Pattern and Abstract Factory Pattern.
 
-	while ( app_window.IsOpen() ) {
+	while ( app_window.isOpen() ) {
 		sf::Event event;
 
-		while ( app_window.PollEvent( event ) ) {
+		while ( app_window.pollEvent( event ) ) {
 			window->HandleEvent( event );
 
-			if ( event.Type == sf::Event::Closed ) {
-				app_window.Close();
+			if ( event.type == sf::Event::Closed ) {
+				app_window.close();
 			}
 		}
 
@@ -134,13 +134,13 @@ void Application::Run() {
 		window->Update( 0.f );
 
 		// Clear screen
-		app_window.Clear();
+		app_window.clear();
 
 		// Draw the GUI
 		sfg::Renderer::Get().Display( app_window );
 
 		// Update the window
-		app_window.Display();
+		app_window.display();
 	}
 }
 

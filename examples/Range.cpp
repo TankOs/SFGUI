@@ -105,36 +105,36 @@ int main() {
 	sf::Clock clock;
 
 	// Start the game loop
-	while ( app_window.IsOpen() ) {
+	while ( app_window.isOpen() ) {
 		// Process events
 		sf::Event event;
 
-		while ( app_window.PollEvent( event ) ) {
+		while ( app_window.pollEvent( event ) ) {
 			// Handle events
 			window->HandleEvent( event );
 
 			// Close window : exit
-			if ( event.Type == sf::Event::Closed ) {
-				app_window.Close();
+			if ( event.type == sf::Event::Closed ) {
+				app_window.close();
 			}
 		}
 
 		// Update the GUI every 5ms
-		if( clock.GetElapsedTime().AsMicroseconds() >= 5000 ) {
+		if( clock.getElapsedTime().asMicroseconds() >= 5000 ) {
 			// Update() takes the elapsed time in seconds.
-			window->Update( static_cast<float>( clock.GetElapsedTime().AsMicroseconds() ) / 1000000.f );
+			window->Update( static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f );
 
-			clock.Restart();
+			clock.restart();
 		}
 
 		// Clear screen
-		app_window.Clear();
+		app_window.clear();
 
 		// Draw the GUI
 		sfg::Renderer::Get().Display( app_window );
 
 		// Update the window
-		app_window.Display();
+		app_window.display();
 	}
 
 	return EXIT_SUCCESS;

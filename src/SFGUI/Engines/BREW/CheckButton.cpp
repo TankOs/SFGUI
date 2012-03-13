@@ -27,7 +27,10 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 	// Check Pane.
 	queue->Add(
 		Renderer::Get().CreatePane(
-			sf::Vector2f( 0.f, check->GetAllocation().Height / 2.f - box_size / 2.f ),
+
+
+
+			sf::Vector2f( 0.f, check->GetAllocation().height / 2.f - box_size / 2.f ),
 			sf::Vector2f( box_size, box_size ),
 			border_width,
 			background_color,
@@ -43,7 +46,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
 					box_size / 2 - check_size / 2,
-					check->GetAllocation().Height / 2.f - box_size / 2.f + diff / 2.f,
+					check->GetAllocation().height / 2.f - box_size / 2.f + diff / 2.f,
 					check_size - 1.f,
 					check_size - 1.f
 				),
@@ -53,16 +56,16 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 	}
 
 	// Label.
-	if( check->GetLabel().GetSize() > 0 ) {
+	if( check->GetLabel().getSize() > 0 ) {
 		sf::Vector2f metrics = GetTextMetrics( check->GetLabel(), font, font_size );
 		metrics.y = GetLineHeight( font, font_size );
 
 		sf::Text text( check->GetLabel(), font, font_size );
-		text.SetPosition(
+		text.setPosition(
 			box_size + spacing,
-			check->GetAllocation().Height / 2.f - metrics.y / 2.f
+			check->GetAllocation().height / 2.f - metrics.y / 2.f
 		);
-		text.SetColor( color );
+		text.setColor( color );
 		queue->Add( Renderer::Get().CreateText( text, global_background_color ) );
 	}
 

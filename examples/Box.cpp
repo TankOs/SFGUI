@@ -1,3 +1,4 @@
+
 #include <SFML/Graphics.hpp>
 
 // Always include the necessary header files.
@@ -53,17 +54,17 @@ int main() {
 	window->Add( box );
 
 	// Start the game loop
-	while ( app_window.IsOpen() ) {
+	while ( app_window.isOpen() ) {
 		// Process events
 		sf::Event event;
 
-		while ( app_window.PollEvent( event ) ) {
+		while ( app_window.pollEvent( event ) ) {
 			// Handle events
 			window->HandleEvent( event );
 
 			// Close window : exit
-			if ( event.Type == sf::Event::Closed ) {
-				app_window.Close();
+			if ( event.type == sf::Event::Closed ) {
+				app_window.close();
 			}
 		}
 
@@ -72,13 +73,13 @@ int main() {
 		window->Update( 0.f );
 
 		// Clear screen
-		app_window.Clear();
+		app_window.clear();
 
 		// Draw the GUI
 		sfg::Renderer::Get().Display( app_window );
 
 		// Update the window
-		app_window.Display();
+		app_window.display();
 	}
 
 	return EXIT_SUCCESS;

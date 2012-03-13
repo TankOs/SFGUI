@@ -22,9 +22,9 @@ Image::Ptr Image::Create( const sf::Image& image ) {
 }
 
 void Image::SetImage( const sf::Image& image ) {
-	if( image.GetWidth() && image.GetHeight() ) {
+	if( image.getWidth() && image.getHeight() ) {
 		m_image = image;
-		m_texture.LoadFromImage( m_image );
+		m_texture.loadFromImage( m_image );
 	}
 
 	RequestResize();
@@ -44,7 +44,7 @@ RenderQueue* Image::InvalidateImpl() const {
 }
 
 sf::Vector2f Image::CalculateRequisition() {
-	return sf::Vector2f( static_cast<float>( m_image.GetWidth() ), static_cast<float>( m_image.GetHeight() ) );
+	return sf::Vector2f( static_cast<float>( m_image.getWidth() ), static_cast<float>( m_image.getHeight() ) );
 }
 
 const std::string& Image::GetName() const {

@@ -43,17 +43,17 @@ sf::Vector2f Table::CalculateRequisition() {
 }
 
 void Table::Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
-	assert( rect.Width > 0 );
-	assert( rect.Height > 0 );
+	assert( rect.width > 0 );
+	assert( rect.height > 0 );
 
 	// Store widget in a table cell object.
 	priv::TableCell cell( widget, rect, x_options, y_options, padding );
 	m_cells.push_back( cell );
 
 	// Check if we need to enlarge rows/columns.
-	if( rect.Left + rect.Width >= m_columns.size() ) {
+	if( rect.left + rect.width >= m_columns.size() ) {
 		std::size_t old_size( m_columns.size() );
-		m_columns.resize( rect.Left + rect.Width );
+		m_columns.resize( rect.left + rect.width );
 
 		// Set default spacings.
 		for( std::size_t col_index = old_size; col_index < m_columns.size(); ++col_index ) {
@@ -61,9 +61,9 @@ void Table::Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect,
 		}
 	}
 
-	if( rect.Top + rect.Height >= m_rows.size() ) {
+	if( rect.top + rect.height >= m_rows.size() ) {
 		std::size_t old_size( m_rows.size() );
-		m_rows.resize( rect.Top + rect.Height );
+		m_rows.resize( rect.top + rect.height );
 
 		// Set default spacings.
 		for( std::size_t row_index = old_size; row_index < m_rows.size(); ++row_index ) {
@@ -103,33 +103,33 @@ void Table::UpdateRequisitions() {
 	TableCellList::const_iterator cell_iter_end( m_cells.end() );
 
 	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
-		if( cell_iter->rect.Width == 1 ) {
-			m_columns[cell_iter->rect.Left].requisition = std::max(
-				m_columns[cell_iter->rect.Left].requisition,
+		if( cell_iter->rect.width == 1 ) {
+			m_columns[cell_iter->rect.left].requisition = std::max(
+				m_columns[cell_iter->rect.left].requisition,
 				(
 				cell_iter->child->GetRequisition().x +
 				2.f * cell_iter->padding.x +
-				(cell_iter->rect.Left + 1 < m_columns.size() ? m_columns[cell_iter->rect.Left].spacing : 0.f)
+				(cell_iter->rect.left + 1 < m_columns.size() ? m_columns[cell_iter->rect.left].spacing : 0.f)
 				)
 			);
 
 			if( (cell_iter->x_options & EXPAND) == EXPAND ) {
-				m_columns[cell_iter->rect.Left].expand = true;
+				m_columns[cell_iter->rect.left].expand = true;
 			}
 		}
 
-		if( cell_iter->rect.Height == 1 ) {
-			m_rows[cell_iter->rect.Top].requisition = std::max(
-				m_rows[cell_iter->rect.Top].requisition,
+		if( cell_iter->rect.height == 1 ) {
+			m_rows[cell_iter->rect.top].requisition = std::max(
+				m_rows[cell_iter->rect.top].requisition,
 				(
 				cell_iter->child->GetRequisition().y +
 				2.f * cell_iter->padding.y +
-				(cell_iter->rect.Top + 1 < m_rows.size() ? m_rows[cell_iter->rect.Top].spacing : 0.f)
+				(cell_iter->rect.top + 1 < m_rows.size() ? m_rows[cell_iter->rect.top].spacing : 0.f)
 				)
 			);
 
 			if( (cell_iter->y_options & EXPAND) == EXPAND ) {
-				m_rows[cell_iter->rect.Top].expand = true;
+				m_rows[cell_iter->rect.top].expand = true;
 			}
 		}
 	}
@@ -138,12 +138,12 @@ void Table::UpdateRequisitions() {
 	// separately so we have expand flags available which are prioritized in
 	// enlarging the requisition.
 	for( cell_iter = m_cells.begin(); cell_iter != cell_iter_end; ++cell_iter ) {
-		if( cell_iter->rect.Width > 1 ) {
+		if( cell_iter->rect.width > 1 ) {
 			// Check if there's already enough space.
 			float width( 0.f );
 			unsigned int num_expand( 0 );
 
-			for( unsigned int col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width; ++col_index ) {
+			for( unsigned int col_index = cell_iter->rect.left; col_index < cell_iter->rect.left + cell_iter->rect.width; ++col_index ) {
 				width += m_columns[col_index].requisition;
 
 				// If not the last column, add spacing too.
@@ -169,11 +169,11 @@ void Table::UpdateRequisitions() {
 				bool force_expand( false );
 
 				if( num_expand == 0 ) {
-					num_expand = cell_iter->rect.Width;
+					num_expand = cell_iter->rect.width;
 					force_expand = true;
 				}
 
-				for( unsigned int col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width && num_expand > 0; ++col_index ) {
+				for( unsigned int col_index = cell_iter->rect.left; col_index < cell_iter->rect.left + cell_iter->rect.width && num_expand > 0; ++col_index ) {
 					if( force_expand || m_columns[col_index].expand ) {
 						float extra( width_missing / static_cast<float>( num_expand ) );
 
@@ -186,12 +186,12 @@ void Table::UpdateRequisitions() {
 			}
 		}
 
-		if( cell_iter->rect.Height > 1 ) {
+		if( cell_iter->rect.height > 1 ) {
 			// Check if there's already enough space.
 			float height( 0.f );
 			unsigned int num_expand( 0 );
 
-			for( unsigned int row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height; ++row_index ) {
+			for( unsigned int row_index = cell_iter->rect.top; row_index < cell_iter->rect.top + cell_iter->rect.height; ++row_index ) {
 				height += m_rows[row_index].requisition;
 
 				// If not the last row, add spacing too.
@@ -217,11 +217,11 @@ void Table::UpdateRequisitions() {
 				bool force_expand( false );
 
 				if( num_expand == 0 ) {
-					num_expand = cell_iter->rect.Height;
+					num_expand = cell_iter->rect.height;
 					force_expand = true;
 				}
 
-				for( unsigned int row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height && num_expand > 0; ++row_index ) {
+				for( unsigned int row_index = cell_iter->rect.top; row_index < cell_iter->rect.top + cell_iter->rect.height && num_expand > 0; ++row_index ) {
 					if( force_expand || m_rows[row_index].expand ) {
 						float extra( height_missing / static_cast<float>( num_expand ) );
 
@@ -265,7 +265,7 @@ void Table::AllocateChildren() {
 
 	// If there're expanded columns, we need to set the proper allocation for them.
 	if( num_expand > 0 ) {
-		float extra( (GetAllocation().Width - 2 * gap - width) / static_cast<float>( num_expand ) );
+		float extra( (GetAllocation().width - 2 * gap - width) / static_cast<float>( num_expand ) );
 
 		for( std::size_t column_index = 0; column_index < m_columns.size(); ++column_index ) {
 			if( !m_columns[column_index].expand ) {
@@ -308,7 +308,7 @@ void Table::AllocateChildren() {
 
 	// If there're expanded rows, we need to set the proper allocation for them.
 	if( num_expand > 0 ) {
-		float extra( (GetAllocation().Height - 2 * gap - height) / static_cast<float>( num_expand ) );
+		float extra( (GetAllocation().height - 2 * gap - height) / static_cast<float>( num_expand ) );
 
 		for( std::size_t row_index = 0; row_index < m_rows.size(); ++row_index ) {
 			if( !m_rows[row_index].expand ) {
@@ -333,7 +333,7 @@ void Table::AllocateChildren() {
 		sf::Vector2f allocation( 0.f, 0.f );
 
 		if( (cell_iter->x_options & FILL) == FILL ) {
-			for( unsigned int col_index = cell_iter->rect.Left; col_index < cell_iter->rect.Left + cell_iter->rect.Width; ++col_index ) {
+			for( unsigned int col_index = cell_iter->rect.left; col_index < cell_iter->rect.left + cell_iter->rect.width; ++col_index ) {
 				allocation.x += m_columns[col_index].allocation - cell_iter->padding.x * 2.f;
 
 				if( col_index + 1 < m_columns.size() ) {
@@ -348,10 +348,10 @@ void Table::AllocateChildren() {
 		}
 
 		if( (cell_iter->y_options & FILL) == FILL ) {
-			for( unsigned int row_index = cell_iter->rect.Top; row_index < cell_iter->rect.Top + cell_iter->rect.Height; ++row_index ) {
+			for( unsigned int row_index = cell_iter->rect.top; row_index < cell_iter->rect.top + cell_iter->rect.height; ++row_index ) {
 				allocation.y += m_rows[row_index].allocation - cell_iter->padding.y * 2.f;
 
-				if( row_index + 1 < m_rows.size() && row_index + 1 == cell_iter->rect.Top + cell_iter->rect.Height ) {
+				if( row_index + 1 < m_rows.size() && row_index + 1 == cell_iter->rect.top + cell_iter->rect.height ) {
 					allocation.y -= m_rows[row_index].spacing;
 				}
 			}
@@ -363,8 +363,8 @@ void Table::AllocateChildren() {
 		}
 
 		// Shortcuts.
-		const priv::TableOptions& column( m_columns[cell_iter->rect.Left] );
-		const priv::TableOptions& row( m_rows[cell_iter->rect.Top] );
+		const priv::TableOptions& column( m_columns[cell_iter->rect.left] );
+		const priv::TableOptions& row( m_rows[cell_iter->rect.top] );
 
 		// Check for FILL flag.
 		cell_iter->child->SetAllocation(

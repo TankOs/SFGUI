@@ -72,17 +72,17 @@ void Container::HandleEvent( const sf::Event& event ) {
 	// coordinates if event is a mouse event.
 	sf::Event local_event( event );
 
-	if( local_event.Type == sf::Event::MouseMoved ) {
-		local_event.MouseMove.X -= static_cast<int>( GetAllocation().Left );
-		local_event.MouseMove.Y -= static_cast<int>( GetAllocation().Top );
+	if( local_event.type == sf::Event::MouseMoved ) {
+		local_event.mouseMove.x -= static_cast<int>( GetAllocation().left );
+		local_event.mouseMove.y -= static_cast<int>( GetAllocation().top );
 	}
 
 	if(
-		local_event.Type == sf::Event::MouseButtonPressed ||
-		local_event.Type == sf::Event::MouseButtonReleased
+		local_event.type == sf::Event::MouseButtonPressed ||
+		local_event.type == sf::Event::MouseButtonReleased
 	) {
-		local_event.MouseButton.X -= static_cast<int>( GetAllocation().Left );
-		local_event.MouseButton.Y -= static_cast<int>( GetAllocation().Top );
+		local_event.mouseButton.x -= static_cast<int>( GetAllocation().left );
+		local_event.mouseButton.y -= static_cast<int>( GetAllocation().top );
 	}
 
 	std::size_t children_size = m_children.size();

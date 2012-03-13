@@ -14,10 +14,10 @@ RenderQueue* BREW::CreateImageDrawable( SharedPtr<const Image> image ) const {
 	queue->Add(
 		Renderer::Get().CreateImage(
 			sf::FloatRect(
-				( image->GetAllocation().Width - image->GetRequisition().x ) * image->GetAlignment().x,
-				( image->GetAllocation().Height - image->GetRequisition().y ) * image->GetAlignment().y,
-				static_cast<float>( image->GetImage().GetWidth() ),
-				static_cast<float>( image->GetImage().GetHeight() )
+				( image->GetAllocation().width - image->GetRequisition().x ) * image->GetAlignment().x,
+				( image->GetAllocation().height - image->GetRequisition().y ) * image->GetAlignment().y,
+				static_cast<float>( image->GetImage().getWidth() ),
+				static_cast<float>( image->GetImage().getHeight() )
 			),
 			image->GetImage(),
 			background_color

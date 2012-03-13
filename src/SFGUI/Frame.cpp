@@ -74,10 +74,10 @@ void Frame::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 
 	sf::FloatRect allocation( GetAllocation() );
 
-	allocation.Left = padding + 2 * border_width;
-	allocation.Top = line_height + padding + 2 * border_width;
-	allocation.Width -= 2 * padding + 4 * border_width;
-	allocation.Height -= line_height + 2 * padding + 4 * border_width;
+	allocation.left = padding + 2 * border_width;
+	allocation.top = line_height + padding + 2 * border_width;
+	allocation.width -= 2 * padding + 4 * border_width;
+	allocation.height -= line_height + 2 * padding + 4 * border_width;
 
 	child->SetAllocation( allocation );
 }

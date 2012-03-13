@@ -41,7 +41,7 @@ sf::Vector2f CheckButton::CalculateRequisition() {
 	float box_size( Context::Get().GetEngine().GetProperty<float>( "BoxSize", shared_from_this() ) );
 	sf::Vector2f requisition( box_size, box_size );
 
-	if( GetLabel().GetSize() > 0 ) {
+	if( GetLabel().getSize() > 0 ) {
 		sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( GetLabel(), font, font_size );
 		requisition.x += metrics.x + spacing;
 		requisition.y = std::max( requisition.y, Context::Get().GetEngine().GetLineHeight( font, font_size ) );
@@ -58,7 +58,7 @@ void CheckButton::HandleAllocationChange( const sf::FloatRect& /*old_allocation*
 		GetChild()->SetAllocation(
 			sf::FloatRect(
 				box_size + spacing,
-				GetAllocation().Height / 2.f - GetChild()->GetAllocation().Height / 2.f,
+				GetAllocation().height / 2.f - GetChild()->GetAllocation().height / 2.f,
 				GetChild()->GetRequisition().x,
 				GetChild()->GetRequisition().y
 			)

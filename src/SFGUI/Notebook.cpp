@@ -280,12 +280,12 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 	for( std::size_t index = 0; index < children_size; ++index ) {
 		sf::FloatRect allocation = m_children[index].tab_label->GetAllocation();
 
-		allocation.Left -= padding;
-		allocation.Top -= padding;
-		allocation.Width += 2.f * padding;
-		allocation.Height += 2.f * padding;
+		allocation.left -= padding;
+		allocation.top -= padding;
+		allocation.width += 2.f * padding;
+		allocation.height += 2.f * padding;
 
-		if( allocation.Contains( sf::Vector2f( static_cast<float>( x ) - GetAllocation().Left, static_cast<float>( y ) - GetAllocation().Top ) ) ) {
+		if( allocation.contains( sf::Vector2f( static_cast<float>( x ) - GetAllocation().left, static_cast<float>( y ) - GetAllocation().top ) ) ) {
 			m_prelight_tab = static_cast<IndexType>( index );
 			break;
 		}
@@ -357,8 +357,8 @@ void Notebook::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ )
 				sf::FloatRect(
 					border_width + padding,
 					m_tab_requisition.y + border_width + padding,
-					GetAllocation().Width - 2.f * ( border_width + padding ),
-					GetAllocation().Height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
+					GetAllocation().width - 2.f * ( border_width + padding ),
+					GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
 				)
 			);
 
@@ -383,15 +383,15 @@ void Notebook::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ )
 				sf::FloatRect(
 					border_width + padding,
 					border_width + padding,
-					GetAllocation().Width - 2.f * ( border_width + padding ),
-					GetAllocation().Height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
+					GetAllocation().width - 2.f * ( border_width + padding ),
+					GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
 				)
 			);
 
 			m_children[index].tab_label->SetAllocation(
 				sf::FloatRect(
 					tab_current_x + border_width + padding,
-					GetAllocation().Height - m_tab_requisition.y + padding,
+					GetAllocation().height - m_tab_requisition.y + padding,
 					m_children[index].tab_label->GetRequisition().x,
 					m_tab_requisition.y - 2.f * padding - border_width
 				)
@@ -409,8 +409,8 @@ void Notebook::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ )
 				sf::FloatRect(
 					m_tab_requisition.x + border_width + padding,
 					border_width + padding,
-					GetAllocation().Width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
-					GetAllocation().Height - 2.f * ( border_width + padding )
+					GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
+					GetAllocation().height - 2.f * ( border_width + padding )
 				)
 			);
 
@@ -435,14 +435,14 @@ void Notebook::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ )
 				sf::FloatRect(
 					border_width + padding,
 					border_width + padding,
-					GetAllocation().Width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
-					GetAllocation().Height - 2.f * ( border_width + padding )
+					GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
+					GetAllocation().height - 2.f * ( border_width + padding )
 				)
 			);
 
 			m_children[index].tab_label->SetAllocation(
 				sf::FloatRect(
-					GetAllocation().Width - m_tab_requisition.x + padding,
+					GetAllocation().width - m_tab_requisition.x + padding,
 					tab_current_y + border_width + padding,
 					m_tab_requisition.x - 2.f * padding - border_width,
 					m_children[index].tab_label->GetRequisition().y

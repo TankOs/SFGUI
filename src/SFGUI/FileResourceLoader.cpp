@@ -12,7 +12,7 @@ FileResourceLoader::~FileResourceLoader() {
 const sf::Font* FileResourceLoader::LoadFont( const std::string& path ) {
 	sf::Font* font( new sf::Font );
 
-	if( !font->LoadFromFile( path ) ) {
+	if( !font->loadFromFile( path ) ) {
 		delete font;
 		return NULL;
 	}
@@ -23,12 +23,12 @@ const sf::Font* FileResourceLoader::LoadFont( const std::string& path ) {
 const sf::Texture* FileResourceLoader::LoadTexture( const std::string& path ) {
 	sf::Image image;
 
-	if( !image.LoadFromFile( path ) ) {
+	if( !image.loadFromFile( path ) ) {
 		return NULL;
 	}
 
 	sf::Texture* texture( new sf::Texture );
-	texture->LoadFromImage( image );
+	texture->loadFromImage( image );
 
 	return texture;
 }

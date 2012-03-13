@@ -32,8 +32,8 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			sf::FloatRect shadow_rect(
 				shadow_distance,
 				shadow_distance,
-				window->GetAllocation().Width,
-				window->GetAllocation().Height
+				window->GetAllocation().width,
+				window->GetAllocation().height
 			);
 
 			queue->Add(
@@ -48,7 +48,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		queue->Add(
 			Renderer::Get().CreatePane(
 				sf::Vector2f( 0.f, 0.f ),
-				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height ),
+				sf::Vector2f( window->GetAllocation().width, window->GetAllocation().height ),
 				border_width,
 				background_color,
 				border_color,
@@ -60,9 +60,9 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	if( window->HasStyle( Window::Resize ) ) {
 		queue->Add(
 			Renderer::Get().CreateTriangle(
-				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height - handle_size ),
-				sf::Vector2f( window->GetAllocation().Width - handle_size, window->GetAllocation().Height ),
-				sf::Vector2f( window->GetAllocation().Width, window->GetAllocation().Height ),
+				sf::Vector2f( window->GetAllocation().width, window->GetAllocation().height - handle_size ),
+				sf::Vector2f( window->GetAllocation().width - handle_size, window->GetAllocation().height ),
+				sf::Vector2f( window->GetAllocation().width, window->GetAllocation().height ),
 				title_background_color
 			)
 		);
@@ -79,7 +79,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 				sf::FloatRect(
 					border_width + .1f,
 					border_width + .1f,
-					window->GetAllocation().Width - 2 * border_width,
+					window->GetAllocation().width - 2 * border_width,
 					title_size
 				),
 				title_background_color
@@ -87,19 +87,19 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		);
 
 		// Find out visible text, count in "...".
-		float avail_width( window->GetAllocation().Width - 2.f * border_width - 2.f * title_padding );
+		float avail_width( window->GetAllocation().width - 2.f * border_width - 2.f * title_padding );
 
 		sf::Text title_text( window->GetTitle(), title_font, title_font_size );
 
-		if( title_text.GetLocalBounds().Width > avail_width ) {
+		if( title_text.getLocalBounds().width > avail_width ) {
 			sf::Text dots( "...", title_font, title_font_size );
 			const sf::String& title_string( window->GetTitle() );
 			sf::String visible_title;
 
-			avail_width = window->GetAllocation().Width - 2.f * border_width - 2.f * title_padding - dots.GetLocalBounds().Width;
+			avail_width = window->GetAllocation().width - 2.f * border_width - 2.f * title_padding - dots.getLocalBounds().width;
 
-			for( std::size_t ch_index = 0; ch_index < title_string.GetSize(); ++ch_index ) {
-				avail_width -= static_cast<float>( title_font.GetGlyph( title_string[ch_index], title_font_size, false ).Advance );
+			for( std::size_t ch_index = 0; ch_index < title_string.getSize(); ++ch_index ) {
+				avail_width -= static_cast<float>( title_font.getGlyph( title_string[ch_index], title_font_size, false ).advance );
 
 				if( avail_width < 0.f ) {
 					visible_title += "...";
@@ -109,7 +109,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 				visible_title += title_string[ch_index];
 			}
 
-			title_text.SetString( visible_title );
+			title_text.setString( visible_title );
 		}
 
 		// Calculate title text position.
@@ -118,8 +118,8 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 			border_width + title_size / 2.f - static_cast<float>( title_font_size ) / 2.f
 		);
 
-		title_text.SetPosition( title_position );
-		title_text.SetColor( title_text_color );
+		title_text.setPosition( title_position );
+		title_text.setColor( title_text_color );
 
 		queue->Add( Renderer::Get().CreateText( title_text, title_background_color ) );
 	}

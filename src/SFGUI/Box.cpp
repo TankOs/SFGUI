@@ -150,10 +150,10 @@ void Box::AllocateChildren() const {
 
 	if( num_expand > 0 ) {
 		if( m_orientation == HORIZONTAL ) {
-			extra = std::max( 0.f, GetAllocation().Width - GetRequisition().x ) / static_cast<float>( num_expand );
+			extra = std::max( 0.f, GetAllocation().width - GetRequisition().x ) / static_cast<float>( num_expand );
 		}
 		else {
-			extra = std::max( 0.f, GetAllocation().Height - GetRequisition().y ) / static_cast<float>( num_expand );
+			extra = std::max( 0.f, GetAllocation().height - GetRequisition().y ) / static_cast<float>( num_expand );
 		}
 	}
 
@@ -169,13 +169,13 @@ void Box::AllocateChildren() const {
 
 		if( m_orientation == HORIZONTAL ) {
 			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
-			allocation.y = GetAllocation().Height - 2 * gap;
+			allocation.y = GetAllocation().height - 2 * gap;
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
 			position.x += allocation.x + GetSpacing();
 		}
 		else {
-			allocation.x = GetAllocation().Width - 2 * gap;
+			allocation.x = GetAllocation().width - 2 * gap;
 			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
 
 			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
@@ -189,8 +189,8 @@ void Box::AllocateChildren() const {
 bool Box::IsChildInteresting( const sfg::Widget::PtrConst& child ) const {
 	return
 		child->IsVisible() &&
-		(child->GetRequisition().x > 0.f || child->GetAllocation().Width > 0.0f) &&
-		(child->GetRequisition().y > 0.f || child->GetAllocation().Height > 0.0f)
+		(child->GetRequisition().x > 0.f || child->GetAllocation().width > 0.0f) &&
+		(child->GetRequisition().y > 0.f || child->GetAllocation().height > 0.0f)
 	;
 }
 

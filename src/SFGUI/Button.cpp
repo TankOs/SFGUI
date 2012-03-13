@@ -97,7 +97,7 @@ sf::Vector2f Button::CalculateRequisition() {
 		requisition.x += GetChild()->GetRequisition().x;
 		requisition.y = std::max( requisition.y, GetChild()->GetRequisition().y + 2 * padding );
 
-		if( GetLabel().GetSize() > 0 ) {
+		if( GetLabel().getSize() > 0 ) {
 			requisition.x += spacing;
 		}
 	}
@@ -146,14 +146,14 @@ void Button::AllocateChild() {
 
 	sf::FloatRect allocation( GetAllocation() );
 
-	allocation.Left = padding + border_width;
-	allocation.Top = padding + border_width;
-	allocation.Width = child->GetRequisition().x;
-	allocation.Height -= border_width * 2.f + padding * 2.f;
+	allocation.left = padding + border_width;
+	allocation.top = padding + border_width;
+	allocation.width = child->GetRequisition().x;
+	allocation.height -= border_width * 2.f + padding * 2.f;
 
 	if( GetState() == ACTIVE ) {
-		allocation.Left += border_width;
-		allocation.Top += border_width;
+		allocation.left += border_width;
+		allocation.top += border_width;
 	}
 
 	child->SetAllocation( allocation );

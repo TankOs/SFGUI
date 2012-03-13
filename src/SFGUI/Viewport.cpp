@@ -45,8 +45,8 @@ void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ )
 
 	m_viewport->SetSize(
 		sf::Vector2f(
-			std::floor( allocation.Width + .5f ),
-			std::floor( allocation.Height + .5f )
+			std::floor( allocation.width + .5f ),
+			std::floor( allocation.height + .5f )
 		)
 	);
 }
@@ -70,50 +70,50 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 
 	// Pass event to child
 	if( GetChild() ) {
-		float offset_x = ( -GetAllocation().Left + m_horizontal_adjustment->GetValue() );
-		float offset_y = ( -GetAllocation().Top + m_vertical_adjustment->GetValue() );
+		float offset_x = ( -GetAllocation().left + m_horizontal_adjustment->GetValue() );
+		float offset_y = ( -GetAllocation().top + m_vertical_adjustment->GetValue() );
 
-		switch( event.Type ) {
+		switch( event.type ) {
 		case sf::Event::MouseButtonPressed:
 		case sf::Event::MouseButtonReleased: { // All MouseButton events
-			if( !GetAllocation().Contains( static_cast<float>( event.MouseButton.X ), static_cast<float>( event.MouseButton.Y ) ) ) {
+			if( !GetAllocation().contains( static_cast<float>( event.mouseButton.x ), static_cast<float>( event.mouseButton.y ) ) ) {
 				break;
 			}
 
 			sf::Event altered_event( event );
-			altered_event.MouseButton.X += static_cast<int>( offset_x );
-			altered_event.MouseButton.Y += static_cast<int>( offset_y );
+			altered_event.mouseButton.x += static_cast<int>( offset_x );
+			altered_event.mouseButton.y += static_cast<int>( offset_y );
 
 			GetChild()->HandleEvent( altered_event );
 		} break;
 		case sf::Event::MouseEntered:
 		case sf::Event::MouseLeft:
 		case sf::Event::MouseMoved: { // All MouseMove events
-			if( !GetAllocation().Contains( static_cast<float>( event.MouseMove.X ), static_cast<float>( event.MouseMove.Y ) ) ) {
+			if( !GetAllocation().contains( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) ) ) {
 				// Nice hack to cause scrolledwindow children to get out of
 				// prelight state when the mouse leaves the child allocation.
 				sf::Event altered_event( event );
-				altered_event.MouseMove.X = -1;
-				altered_event.MouseMove.Y = -1;
+				altered_event.mouseMove.x = -1;
+				altered_event.mouseMove.y = -1;
 
 				GetChild()->HandleEvent( altered_event );
 				break;
 			}
 
 			sf::Event altered_event( event );
-			altered_event.MouseMove.X += static_cast<int>( offset_x );
-			altered_event.MouseMove.Y += static_cast<int>( offset_y );
+			altered_event.mouseMove.x += static_cast<int>( offset_x );
+			altered_event.mouseMove.y += static_cast<int>( offset_y );
 
 			GetChild()->HandleEvent( altered_event );
 		} break;
 		case sf::Event::MouseWheelMoved: { // All MouseWheel events
-			if( !GetAllocation().Contains( static_cast<float>( event.MouseWheel.X ), static_cast<float>( event.MouseWheel.Y ) ) ) {
+			if( !GetAllocation().contains( static_cast<float>( event.mouseWheel.x ), static_cast<float>( event.mouseWheel.y ) ) ) {
 				break;
 			}
 
 			sf::Event altered_event( event );
-			altered_event.MouseWheel.X += static_cast<int>( offset_x );
-			altered_event.MouseWheel.Y += static_cast<int>( offset_y );
+			altered_event.mouseWheel.x += static_cast<int>( offset_x );
+			altered_event.mouseWheel.y += static_cast<int>( offset_y );
 
 			GetChild()->HandleEvent( altered_event );
 		} break;
@@ -151,8 +151,8 @@ void Viewport::HandleRequisitionChange() {
 	// and have a virtual screen we give it everything it wants.
 	if( GetChild() ) {
 		sf::FloatRect new_allocation = GetChild()->GetAllocation();
-		new_allocation.Width = GetChild()->GetRequisition().x;
-		new_allocation.Height = GetChild()->GetRequisition().y;
+		new_allocation.width = GetChild()->GetRequisition().x;
+		new_allocation.height = GetChild()->GetRequisition().y;
 		GetChild()->SetAllocation( new_allocation );
 	}
 }

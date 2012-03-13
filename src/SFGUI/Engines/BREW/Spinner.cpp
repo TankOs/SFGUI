@@ -15,7 +15,7 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 	float inner_radius( GetProperty<float>( "InnerRadius", spinner ) );
 	float rod_thickness( GetProperty<float>( "RodThickness", spinner ) );
 	unsigned int stopped_alpha( GetProperty<unsigned int>( "StoppedAlpha", spinner ) );
-	float radius = std::min( spinner->GetAllocation().Width, spinner->GetAllocation().Height ) / 2.f;
+	float radius = std::min( spinner->GetAllocation().width, spinner->GetAllocation().height ) / 2.f;
 
 	// Make sure steps is sane.
 	steps = std::max( steps, 3.f );
@@ -25,7 +25,7 @@ RenderQueue* BREW::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) con
 
 	RenderQueue* queue( new RenderQueue );
 
-	sf::Vector2f center_offset( spinner->GetAllocation().Width / 2.f, spinner->GetAllocation().Height / 2.f );
+	sf::Vector2f center_offset( spinner->GetAllocation().width / 2.f, spinner->GetAllocation().height / 2.f );
 
 	// We just have to produce the spinner in stopped state.
 	// The class itself will take care of the started state.

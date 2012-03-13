@@ -42,7 +42,7 @@ int main() {
 
 	//window->SetAllocation( sf::FloatRect( 0.f, 0.f, 300.f, 400.f ) );
 
-	render_window.SetActive();
+	render_window.setActive();
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -55,10 +55,10 @@ int main() {
 
 	sf::Clock clock;
 
-	while( render_window.IsOpen() ) {
-		while( render_window.PollEvent( event ) ) {
-			if( event.Type == sf::Event::Closed ) {
-				render_window.Close();
+	while( render_window.isOpen() ) {
+		while( render_window.pollEvent( event ) ) {
+			if( event.type == sf::Event::Closed ) {
+				render_window.close();
 			}
 			else {
 				desktop.HandleEvent( event );
@@ -67,7 +67,7 @@ int main() {
 
 		if( auto_check->IsActive() ) {
 			float angle( angle_scale->GetValue() );
-			angle += static_cast<float>( clock.GetElapsedTime().AsMilliseconds() ) * .5f;
+			angle += static_cast<float>( clock.getElapsedTime().asMicroseconds() ) * .0005f;
 
 			while( angle >= 360.f ) {
 				angle -= 360.f;
@@ -76,7 +76,7 @@ int main() {
 			angle_scale->SetValue( angle );
 		}
 
-		render_window.Clear();
+		render_window.clear();
 
 		glMatrixMode( GL_MODELVIEW );
 
@@ -95,13 +95,13 @@ int main() {
 		desktop.Update( 0.f );
 
 		// SFML rendering.
-		render_window.PushGLStates();
+		render_window.pushGLStates();
 		sfg::Renderer::Get().Display( render_window );
-		render_window.PopGLStates();
+		render_window.popGLStates();
 
-		render_window.Display();
+		render_window.display();
 
-		clock.Restart();
+		clock.restart();
 	}
 
 	return 0;

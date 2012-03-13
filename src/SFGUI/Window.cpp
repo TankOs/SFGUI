@@ -37,14 +37,14 @@ const sf::String& Window::GetTitle() const {
 }
 
 sf::FloatRect Window::GetClientRect() const {
-	sf::FloatRect clientrect( 0, 0, GetAllocation().Width, GetAllocation().Height );
+	sf::FloatRect clientrect( 0, 0, GetAllocation().width, GetAllocation().height );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
 
-	clientrect.Left += border_width + gap;
-	clientrect.Top += border_width + gap;
-	clientrect.Width -= 2 * border_width + 2 * gap;
-	clientrect.Height -= 2 * border_width + 2 * gap;
+	clientrect.left += border_width + gap;
+	clientrect.top += border_width + gap;
+	clientrect.width -= 2 * border_width + 2 * gap;
+	clientrect.height -= 2 * border_width + 2 * gap;
 
 	if( HasStyle( Titlebar ) ) {
 		unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
@@ -54,8 +54,8 @@ sf::FloatRect Window::GetClientRect() const {
 			2 * Context::Get().GetEngine().GetProperty<float>( "TitlePadding", shared_from_this() )
 		);
 
-		clientrect.Top += title_height;
-		clientrect.Height -= title_height;
+		clientrect.top += title_height;
+		clientrect.height -= title_height;
 	}
 
 	return clientrect;
@@ -144,38 +144,38 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 
 	// Check for mouse being inside the title area.
 	sf::FloatRect area(
-		GetAllocation().Left,
-		GetAllocation().Top,
-		GetAllocation().Width,
+		GetAllocation().left,
+		GetAllocation().top,
+		GetAllocation().width,
 		title_height
 	);
 
-	if( area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+	if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 		if( HasStyle( Titlebar ) && !m_dragging ) {
 			m_dragging = true;
 			m_resizing = false;
 
 			m_drag_offset = sf::Vector2f(
-				static_cast<float>( x ) - GetAllocation().Left,
-				static_cast<float>( y ) - GetAllocation().Top
+				static_cast<float>( x ) - GetAllocation().left,
+				static_cast<float>( y ) - GetAllocation().top
 			);
 		}
 	}
 	else {
 		float handle_size( Context::Get().GetEngine().GetProperty<float>( "HandleSize", shared_from_this() ) );
 
-		area.Left = GetAllocation().Left + GetAllocation().Width - handle_size;
-		area.Top = GetAllocation().Top + GetAllocation().Height - handle_size;
-		area.Width = handle_size;
-		area.Height = handle_size;
+		area.left = GetAllocation().left + GetAllocation().width - handle_size;
+		area.top = GetAllocation().top + GetAllocation().height - handle_size;
+		area.width = handle_size;
+		area.height = handle_size;
 
-		if( area.Contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			m_dragging = false;
 			m_resizing = true;
 
 			m_drag_offset = sf::Vector2f(
-				handle_size - static_cast<float>( x ) + GetAllocation().Left + GetAllocation().Width - handle_size,
-				handle_size - static_cast<float>( y ) + GetAllocation().Top + GetAllocation().Height - handle_size
+				handle_size - static_cast<float>( x ) + GetAllocation().left + GetAllocation().width - handle_size,
+				handle_size - static_cast<float>( y ) + GetAllocation().top + GetAllocation().height - handle_size
 			);
 		}
 	}
@@ -194,10 +194,10 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 	else if( m_resizing ) {
 		SetAllocation(
 			sf::FloatRect(
-				GetAllocation().Left,
-				GetAllocation().Top,
-				std::max( GetRequisition().x, static_cast<float>( x ) + m_drag_offset.x - GetAllocation().Left ),
-				std::max( GetRequisition().y, static_cast<float>( y ) + m_drag_offset.y - GetAllocation().Top )
+				GetAllocation().left,
+				GetAllocation().top,
+				std::max( GetRequisition().x, static_cast<float>( x ) + m_drag_offset.x - GetAllocation().left ),
+				std::max( GetRequisition().y, static_cast<float>( y ) + m_drag_offset.y - GetAllocation().top )
 			)
 		);
 	}
@@ -208,7 +208,7 @@ void Window::HandleAdd( const Widget::Ptr& child ) {
 
 	if( GetChild() ) {
 		// Reset allocation so the window will be as large as required.
-		SetAllocation( sf::FloatRect( GetAllocation().Left, GetAllocation().Top, 1.f, 1.f ) );
+		SetAllocation( sf::FloatRect( GetAllocation().left, GetAllocation().top, 1.f, 1.f ) );
 		RequestResize();
 	}
 }

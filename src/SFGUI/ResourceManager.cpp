@@ -33,7 +33,7 @@ ResourceLoader* ResourceManager::GetLoader( const std::string& id ) {
 const sf::Font* ResourceManager::GetFont( const std::string& path ) {
 	if( path.empty() ) {
 		if( m_use_default_font ) {
-			return &sf::Font::GetDefaultFont();
+			return &sf::Font::getDefaultFont();
 		}
 
 		return NULL;
@@ -49,7 +49,7 @@ const sf::Font* ResourceManager::GetFont( const std::string& path ) {
 	ResourceLoader* loader( GetMatchingLoader( path ) );
 	if( !loader ) {
 		if( m_use_default_font ) {
-			return &sf::Font::GetDefaultFont();
+			return &sf::Font::getDefaultFont();
 		}
 
 		return NULL;
@@ -58,7 +58,7 @@ const sf::Font* ResourceManager::GetFont( const std::string& path ) {
 	const sf::Font* font( loader->LoadFont( GetFilename( path, *loader ) ) );
 
 	if( !font ) {
-		return m_use_default_font ? &sf::Font::GetDefaultFont() : NULL;
+		return m_use_default_font ? &sf::Font::getDefaultFont() : NULL;
 	}
 
 	// Cache.
@@ -120,14 +120,14 @@ ResourceLoader* ResourceManager::GetMatchingLoader( const std::string& path ) {
 void ResourceManager::Clear() {
 	LoaderMap::iterator loader_iter( m_loaders.begin() );
 	LoaderMap::iterator loader_iter_end( m_loaders.end() );
-	
+
 	for( ; loader_iter != loader_iter_end; ++loader_iter ) {
 		delete loader_iter->second;
 	}
 
 	FontMap::iterator font_iter( m_fonts.begin() );
 	FontMap::iterator font_iter_end( m_fonts.end() );
-	
+
 	for( ; font_iter != font_iter_end; ++font_iter ) {
 		if( font_iter->second.second ) {
 			delete font_iter->second.first;
@@ -136,7 +136,7 @@ void ResourceManager::Clear() {
 
 	TextureMap::iterator tex_iter( m_textures.begin() );
 	TextureMap::iterator tex_iter_end( m_textures.end() );
-	
+
 	for( ; tex_iter != tex_iter_end; ++tex_iter ) {
 		if( tex_iter->second.second ) {
 			delete tex_iter->second.first;
@@ -184,7 +184,7 @@ void ResourceManager::CopyFrom( const ResourceManager& other ) {
 
 	FontMap::const_iterator font_iter( other.m_fonts.begin() );
 	FontMap::const_iterator font_iter_end( other.m_fonts.end() );
-	
+
 	for( ; font_iter != font_iter_end; ++font_iter ) {
 		if( font_iter->second.second ) {
 			const sf::Font* new_font( new sf::Font( *font_iter->second.first ) );
@@ -197,7 +197,7 @@ void ResourceManager::CopyFrom( const ResourceManager& other ) {
 
 	TextureMap::const_iterator tex_iter( other.m_textures.begin() );
 	TextureMap::const_iterator tex_iter_end( other.m_textures.end() );
-	
+
 	for( ; tex_iter != tex_iter_end; ++tex_iter ) {
 		if( tex_iter->second.second ) {
 			const sf::Texture* new_texture( new sf::Texture( *tex_iter->second.first ) );

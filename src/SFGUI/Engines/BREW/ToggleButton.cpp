@@ -28,7 +28,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 	queue->Add(
 		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
-			sf::Vector2f( button->GetAllocation().Width, button->GetAllocation().Height ),
+			sf::Vector2f( button->GetAllocation().width, button->GetAllocation().height ),
 			border_width,
 			background_color,
 			border_color,
@@ -37,19 +37,19 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 	);
 
 	// Label.
-	if( button->GetLabel().GetSize() > 0 ) {
+	if( button->GetLabel().getSize() > 0 ) {
 		sf::Vector2f metrics = GetTextMetrics( button->GetLabel(), font, font_size );
 		metrics.y = GetLineHeight( font, font_size );
 
 		sf::Text text( button->GetLabel(), font, font_size );
 		float offset = ( ( button->GetState() == Button::ACTIVE ) || button->IsActive() ) ? border_width : 0.f;
 
-		text.SetPosition(
-			button->GetAllocation().Width / 2.f - metrics.x / 2.f + offset,
-			button->GetAllocation().Height / 2.f - metrics.y / 2.f + offset
+		text.setPosition(
+			button->GetAllocation().width / 2.f - metrics.x / 2.f + offset,
+			button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
 		);
 
-		text.SetColor( color );
+		text.setColor( color );
 		queue->Add( Renderer::Get().CreateText( text, background_color ) );
 	}
 

@@ -26,7 +26,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	queue->Add(
 		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
-			sf::Vector2f( entry->GetAllocation().Width, entry->GetAllocation().Height ),
+			sf::Vector2f( entry->GetAllocation().width, entry->GetAllocation().height ),
 			border_width,
 			background_color,
 			border_color,
@@ -36,16 +36,16 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 
 	float line_height = GetLineHeight( font, font_size );
 	sf::Text vis_label( entry->GetVisibleText(), font, font_size );
-	vis_label.SetColor( text_color );
-	vis_label.SetPosition( text_padding, entry->GetAllocation().Height / 2.f - line_height / 2.f );
+	vis_label.setColor( text_color );
+	vis_label.setPosition( text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f );
 
 	queue->Add( Renderer::Get().CreateText( vis_label, background_color ) );
 
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->HasFocus() && entry->IsCursorVisible() ) {
 		sf::String cursor_string( entry->GetVisibleText() );
-		if( entry->GetCursorPosition() - entry->GetVisibleOffset() < cursor_string.GetSize() ) {
-			cursor_string.Erase( entry->GetCursorPosition() - entry->GetVisibleOffset(), cursor_string.GetSize() );
+		if( entry->GetCursorPosition() - entry->GetVisibleOffset() < cursor_string.getSize() ) {
+			cursor_string.erase( entry->GetCursorPosition() - entry->GetVisibleOffset(), cursor_string.getSize() );
 		}
 
 		// Get metrics.
@@ -55,7 +55,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
 					metrics.x + text_padding,
-					entry->GetAllocation().Height / 2.f - line_height / 2.f,
+					entry->GetAllocation().height / 2.f - line_height / 2.f,
 					cursor_thickness,
 					line_height
 				),

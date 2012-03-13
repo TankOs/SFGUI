@@ -27,19 +27,19 @@ int main() {
 	// API documentation.
 
 	// Start the game loop
-	while ( app_window.IsOpen() ) {
+	while ( app_window.isOpen() ) {
 		// Process events
 		sf::Event event;
 
-		while ( app_window.PollEvent( event ) ) {
+		while ( app_window.pollEvent( event ) ) {
 			// Every frame we have to send SFML events to the window
 			// to enable user interactivity. Without doing this your
 			// GUI is nothing but a big colorful picture ;)
 			window->HandleEvent( event );
 
 			// Close window : exit
-			if ( event.Type == sf::Event::Closed ) {
-				app_window.Close();
+			if ( event.type == sf::Event::Closed ) {
+				app_window.close();
 			}
 		}
 
@@ -48,7 +48,7 @@ int main() {
 		window->Update( 0.f );
 
 		// Clear screen
-		app_window.Clear();
+		app_window.clear();
 
 		// After drawing the rest of your game, you have to let the GUI
 		// render itself. If you don't do this you will never be able
@@ -62,7 +62,7 @@ int main() {
 		// you'll get to see more.
 
 		// Update the window
-		app_window.Display();
+		app_window.display();
 	}
 
 	return EXIT_SUCCESS;

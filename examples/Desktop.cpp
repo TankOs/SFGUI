@@ -70,21 +70,21 @@ void DesktopExample::Run() {
 	// Init.
 	m_desktop.SetProperty( "Button#create_window > Label", "FontSize", 18.f );
 
-	while( render_window.IsOpen() ) {
-		while( render_window.PollEvent( event ) ) {
+	while( render_window.isOpen() ) {
+		while( render_window.pollEvent( event ) ) {
 			if(
-				(event.Type == sf::Event::Closed) ||
-				(event.Type == sf::Event::KeyPressed && event.Key.Code == sf::Keyboard::Escape)
+				(event.type == sf::Event::Closed) ||
+				(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 			) {
-				render_window.Close();
+				render_window.close();
 			}
-			else if( event.Type == sf::Event::Resized ) {
+			else if( event.type == sf::Event::Resized ) {
 				m_desktop.UpdateViewRect(
 					sf::FloatRect(
 						0,
 						0,
-						static_cast<float>( render_window.GetWidth() ),
-						static_cast<float>( render_window.GetHeight() )
+						static_cast<float>( render_window.getSize().x ),
+						static_cast<float>( render_window.getSize().y )
 					)
 				);
 			}
@@ -94,9 +94,9 @@ void DesktopExample::Run() {
 		}
 
 		m_desktop.Update( 0.f );
-		render_window.Clear();
+		render_window.clear();
 		sfg::Renderer::Get().Display( render_window );
-		render_window.Display();
+		render_window.display();
 	}
 }
 

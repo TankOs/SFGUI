@@ -16,18 +16,18 @@ RenderQueue* BREW::CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow>
 
 	sf::FloatRect rect = scrolled_window->GetContentAllocation();
 
-	rect.Left -= ( border_width + scrolled_window->GetAllocation().Left );
-	rect.Top -= ( border_width + scrolled_window->GetAllocation().Top );
-	rect.Width += 2.f * border_width;
-	rect.Height += 2.f * border_width;
+	rect.left -= ( border_width + scrolled_window->GetAllocation().left );
+	rect.top -= ( border_width + scrolled_window->GetAllocation().top );
+	rect.width += 2.f * border_width;
+	rect.height += 2.f * border_width;
 
 	queue->Add(
 		CreateBorder(
 			sf::FloatRect(
 				0.f,
 				0.f,
-				rect.Width,
-				rect.Height
+				rect.width,
+				rect.height
 			),
 			border_width,
 			border_color_dark,

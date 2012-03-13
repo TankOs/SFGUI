@@ -33,7 +33,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	queue->Add(
 		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
-			sf::Vector2f( combo_box->GetAllocation().Width, combo_box->GetAllocation().Height ),
+			sf::Vector2f( combo_box->GetAllocation().width, combo_box->GetAllocation().height ),
 			border_width,
 			background_color,
 			border_color,
@@ -43,12 +43,12 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 	if( combo_box->IsPoppedUp() ) {
 		const sf::Vector2f item_size(
-			combo_box->GetAllocation().Width - 2 * border_width,
+			combo_box->GetAllocation().width - 2 * border_width,
 			line_height + 2 * padding
 		);
 		sf::Vector2f item_position(
 			0.f,
-			combo_box->GetAllocation().Height
+			combo_box->GetAllocation().height
 		);
 
 		float expanded_height = static_cast<float>( combo_box->GetItemCount() ) * item_size.y;
@@ -56,8 +56,8 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		// Popup Pane
 		queue->Add(
 			Renderer::Get().CreatePane(
-				sf::Vector2f( 0.f, combo_box->GetAllocation().Height ),
-				sf::Vector2f( combo_box->GetAllocation().Width, expanded_height ),
+				sf::Vector2f( 0.f, combo_box->GetAllocation().height ),
+				sf::Vector2f( combo_box->GetAllocation().width, expanded_height ),
 				border_width,
 				background_color,
 				border_color,
@@ -67,7 +67,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 		// Labels.
 		for( ComboBox::IndexType item_index = 0; item_index < combo_box->GetItemCount(); ++item_index ) {
-			if( combo_box->GetItem( item_index ).GetSize() == 0 ) {
+			if( combo_box->GetItem( item_index ).getSize() == 0 ) {
 				continue;
 			}
 
@@ -87,8 +87,8 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			}
 
 			sf::Text text( combo_box->GetItem( item_index ), font, font_size );
-			text.SetPosition( item_position.x + padding, item_position.y + padding );
-			text.SetColor( color );
+			text.setPosition( item_position.x + padding, item_position.y + padding );
+			text.setColor( color );
 			queue->Add( Renderer::Get().CreateText( text, highlighted_color ) );
 
 			item_position.y += item_size.y;
@@ -97,17 +97,17 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 	if( combo_box->GetSelectedItem() != ComboBox::NONE ) {
 		sf::Text text( combo_box->GetSelectedText(), font, font_size );
-		text.SetPosition(
+		text.setPosition(
 			border_width + padding,
-			combo_box->GetAllocation().Height / 2.f - line_height / 2.f
+			combo_box->GetAllocation().height / 2.f - line_height / 2.f
 		);
-		text.SetColor( color );
+		text.setColor( color );
 		queue->Add( Renderer::Get().CreateText( text, background_color ) );
 	}
 
 	// Arrow.
 	sf::Vector2f position(
-		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + combo_box->GetAllocation().Width - padding - GetLineHeight( font, font_size ),
+		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + combo_box->GetAllocation().width - padding - GetLineHeight( font, font_size ),
 		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + padding
 	);
 
