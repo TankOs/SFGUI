@@ -446,6 +446,10 @@ void Renderer::Display( sf::RenderWindow& window ) {
 }
 
 void Renderer::SetupGL( sf::RenderWindow& window ) {
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glLoadIdentity();
+
 	glMatrixMode( GL_PROJECTION );
 	glPushMatrix();
 	glLoadIdentity();
@@ -520,9 +524,12 @@ void Renderer::RestoreGL( sf::RenderWindow& window ) {
 	}
 
 	glPopMatrix();
+
 	glMatrixMode( GL_PROJECTION );
 	glPopMatrix();
+
 	glMatrixMode( GL_MODELVIEW );
+	glPopMatrix();
 
 	// Make SFML disable it's **************** vertex cache without us
 	// having to call ResetGLStates() and disturbing OpenGL needlessly.
@@ -758,7 +765,7 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	float depth = -4.f;
 	float depth_delta = 4.f / static_cast<float>( primitives_size );
 	int direction = m_depth_clear_strategy ? -1 : 1;
-	int start = m_depth_clear_strategy ? primitives_size : 1;
+	int start = static_cast<int>( m_depth_clear_strategy ? primitives_size : 1 );
 	std::size_t end = m_depth_clear_strategy ? 0 : primitives_size + 1;
 
 	RendererViewport::Ptr current_viewport = m_default_viewport;
