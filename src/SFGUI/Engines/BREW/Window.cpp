@@ -24,25 +24,23 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
 	float title_size( GetLineHeight( title_font, title_font_size ) + 2 * title_padding );
 
-	if( window->HasStyle( Window::Background ) ) {
+	if( window->HasStyle( Window::BACKGROUND ) ) {
 		// Shadow.
-		if( window->HasStyle( Window::Shadow ) ) {
-			sf::Color shadow_color( 0, 0, 0, shadow_alpha );
+		sf::Color shadow_color( 0, 0, 0, shadow_alpha );
 
-			sf::FloatRect shadow_rect(
-				shadow_distance,
-				shadow_distance,
-				window->GetAllocation().width,
-				window->GetAllocation().height
-			);
+		sf::FloatRect shadow_rect(
+			shadow_distance,
+			shadow_distance,
+			window->GetAllocation().width,
+			window->GetAllocation().height
+		);
 
-			queue->Add(
-				Renderer::Get().CreateRect(
-					shadow_rect,
-					shadow_color
-				)
-			);
-		}
+		queue->Add(
+			Renderer::Get().CreateRect(
+				shadow_rect,
+				shadow_color
+			)
+		);
 
 		// Pane.
 		queue->Add(
@@ -57,7 +55,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		);
 	}
 
-	if( window->HasStyle( Window::Resize ) ) {
+	if( window->HasStyle( Window::RESIZE ) ) {
 		queue->Add(
 			Renderer::Get().CreateTriangle(
 				sf::Vector2f( window->GetAllocation().width, window->GetAllocation().height - handle_size ),
@@ -69,7 +67,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	}
 
 
-	if( !window->HasStyle( Window::Titlebar ) ) {
+	if( !window->HasStyle( Window::TITLEBAR ) ) {
 		title_size = 0;
 	}
 

@@ -130,7 +130,7 @@ void SampleApp::Run() {
 	sfg::Renderer::Get().TuneCull( true );
 
 	// Create widgets.
-	m_wndmain = sfg::Window::Create( sfg::Window::Titlebar | sfg::Window::Background | sfg::Window::Resize );
+	m_wndmain = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE );
 	m_wndmain->SetTitle( L"Example application" );
 
 	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );
@@ -352,7 +352,7 @@ void SampleApp::Run() {
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
 	// Another window
-	sfg::Window::Ptr second_window( sfg::Window::Create( sfg::Window::Titlebar | sfg::Window::Background | sfg::Window::Resize ) );
+	sfg::Window::Ptr second_window( sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND ) );
 	second_window->SetId( "second_window" );
 	second_window->SetTitle( "Another window" );
 	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
@@ -450,7 +450,7 @@ void SampleApp::OnAddButtonVClick() {
 }
 
 void SampleApp::OnToggleTitlebarClick() {
-	m_wndmain->SetStyle( m_wndmain->GetStyle() ^ sfg::Window::Titlebar );
+	m_wndmain->SetStyle( m_wndmain->GetStyle() ^ sfg::Window::TITLEBAR );
 }
 
 void SampleApp::OnHideWindowClicked() {

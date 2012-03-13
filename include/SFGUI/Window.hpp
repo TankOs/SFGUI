@@ -16,12 +16,11 @@ class SFGUI_API Window : public Bin {
 		typedef SharedPtr<const Window> PtrConst; //!< Shared pointer.
 
 		enum Style {
-			NoStyle = 0, //!< Transparent window.
-			Titlebar = 1 << 0, //!< Titlebar.
-			Background = 1 << 1, //!< Background.
-			Resize = 1 << 2, //!< Resizable.
-			Shadow = 1 << 3, //!< Has shadow.
-			Toplevel = Titlebar | Background | Resize | Shadow //!< Toplevel window.
+			NO_STYLE = 0, //!< Transparent window.
+			TITLEBAR = 1 << 0, //!< Titlebar.
+			BACKGROUND = 1 << 1, //!< Background.
+			RESIZE = 1 << 2, //!< Resizable.
+			TOPLEVEL = TITLEBAR | BACKGROUND | RESIZE //!< Toplevel window.
 		};
 
 		/** Dtor.
@@ -31,7 +30,7 @@ class SFGUI_API Window : public Bin {
 		/** Create widget.
 		 * @param style Style the Window should have. Defaults to TopLevel.
 		 */
-		static Ptr Create( int style = Window::Toplevel );
+		static Ptr Create( int style = TOPLEVEL );
 
 		virtual const std::string& GetName() const;
 

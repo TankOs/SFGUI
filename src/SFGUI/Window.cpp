@@ -46,7 +46,7 @@ sf::FloatRect Window::GetClientRect() const {
 	clientrect.width -= 2 * border_width + 2 * gap;
 	clientrect.height -= 2 * border_width + 2 * gap;
 
-	if( HasStyle( Titlebar ) ) {
+	if( HasStyle( TITLEBAR ) ) {
 		unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 		const sf::Font& title_font( *Context::Get().GetEngine().GetResourceManager().GetFont( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) ) );
 		float title_height(
@@ -97,7 +97,7 @@ sf::Vector2f Window::CalculateRequisition() {
 	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
 	sf::Vector2f requisition( 2 * visual_border_width + 2 * gap, 2 * visual_border_width + 2 * gap );
 
-	if( HasStyle( Titlebar ) ) {
+	if( HasStyle( TITLEBAR ) ) {
 		unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 		const sf::Font& title_font( *Context::Get().GetEngine().GetResourceManager().GetFont( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) ) );
 		float title_height(
@@ -151,7 +151,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 	);
 
 	if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-		if( HasStyle( Titlebar ) && !m_dragging ) {
+		if( HasStyle( TITLEBAR ) && !m_dragging ) {
 			m_dragging = true;
 			m_resizing = false;
 
@@ -191,7 +191,7 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 			)
 		);
 	}
-	else if( m_resizing ) {
+	else if( m_resizing && (GetStyle() & RESIZE) == RESIZE ) {
 		SetAllocation(
 			sf::FloatRect(
 				GetAllocation().left,
