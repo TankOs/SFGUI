@@ -124,7 +124,7 @@ void Entry::RecalculateVisibleString() const {
 	// While the string is too long for the given space keep chopping off characters
 	// on the right end of the string until the cursor is reached, then start
 	// chopping off characters on the left side of the string.
-	while( (GetAllocation().width > 0) && (length > GetAllocation().width - (2.f * text_padding)) ) {
+	while( !string.empty() && (GetAllocation().width > 0) && (length > GetAllocation().width - (2.f * text_padding)) ) {
 		if( ( m_cursor_position - m_visible_offset ) < string.size() ) {
 			string = string.substr( 0, string.size() - 1 );
 		}
