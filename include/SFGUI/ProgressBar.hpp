@@ -8,6 +8,8 @@
 
 namespace sfg {
 
+/** Progress Bar.
+ */
 class SFGUI_API ProgressBar : public Widget {
 	public:
 		typedef SharedPtr<ProgressBar> Ptr; ///< Shared pointer.

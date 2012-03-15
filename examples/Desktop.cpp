@@ -1,10 +1,4 @@
-#include <SFGUI/Desktop.hpp>
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Label.hpp>
-#include <SFGUI/Button.hpp>
-#include <SFGUI/Box.hpp>
-#include <SFGUI/Context.hpp>
-#include <SFGUI/Renderer.hpp>
+#include <SFGUI/SFGUI.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <sstream>
@@ -32,8 +26,16 @@ const unsigned int DesktopExample::SCREEN_WIDTH = 800;
 const unsigned int DesktopExample::SCREEN_HEIGHT = 600;
 
 int main() {
-	DesktopExample app;
-	app.Run();
+	// Construct our SFML guard
+	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	sfg::SFGUI sfgui;
+
+	// Make sure app is destroyed before the guard.
+	{
+		DesktopExample app;
+		app.Run();
+	}
+
 	return 0;
 }
 

@@ -52,6 +52,10 @@ Renderer& Renderer::Get() {
 	return *m_instance;
 }
 
+void Renderer::Destroy() {
+	m_instance.reset();
+}
+
 const RendererViewport::Ptr& Renderer::GetDefaultViewport() {
 	return m_default_viewport;
 }
@@ -146,7 +150,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text, sf::Color background_
 		previous_character = current_character;
 	}
 
-	m_primitives.push_back( primitive );
+	AddPrimitive( primitive );
 
 	return primitive;
 }
@@ -183,7 +187,7 @@ Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vec
 	primitive->AddVertex( vertex1 );
 	primitive->AddVertex( vertex3 );
 
-	m_primitives.push_back( primitive );
+	AddPrimitive( primitive );
 
 	return primitive;
 }
@@ -268,7 +272,7 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 	iter = m_primitives.erase( iter ); // line_bottom
 	m_primitives.erase( iter ); // line_left
 
-	m_primitives.push_back( primitive );
+	AddPrimitive( primitive );
 
 	return primitive;
 }
@@ -310,7 +314,7 @@ Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::V
 	primitive->AddVertex( vertex1 );
 	primitive->AddVertex( vertex2 );
 
-	m_primitives.push_back( primitive );
+	AddPrimitive( primitive );
 
 	return primitive;
 }
@@ -347,7 +351,7 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	primitive->AddVertex( vertex1 );
 	primitive->AddVertex( vertex3 );
 
-	m_primitives.push_back( primitive );
+	AddPrimitive( primitive );
 
 	return primitive;
 }
@@ -870,10 +874,18 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	}
 }
 
+void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
+	m_primitives.push_back( primitive );
+
+	InvalidateVBO();
+}
+
 void Renderer::RemovePrimitive( const Primitive::Ptr& primitive ) {
 	std::vector<Primitive::Ptr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), primitive ) );
 
-	m_primitives.erase( iter );
+	if( iter != m_primitives.end() ) {
+		m_primitives.erase( iter );
+	}
 
 	InvalidateVBO();
 }

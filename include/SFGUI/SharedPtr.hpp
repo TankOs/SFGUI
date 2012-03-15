@@ -53,6 +53,7 @@ class WeakPtr;
 template<typename T>
 class EnableSharedFromThis;
 
+/// @cond
 class ReferenceCountBase : public NonCopyable {
 	public:
 		ReferenceCountBase();
@@ -143,17 +144,22 @@ class WeakReferenceCount {
 
 		friend class StrongReferenceCount;
 };
+/// @endcond
 
 template<typename T, typename U, typename V>
 SHARED_PTR_INLINE_ATTR void RegisterSharedInstance( const SharedPtr<T>* shared_pointer, const U* pointer, const EnableSharedFromThis<V>* base_pointer );
 
 SHARED_PTR_INLINE_ATTR void RegisterSharedInstance( ... );
 
+/** SFGUI Shared Pointer
+ */
 template<typename T>
 class SharedPtr {
 	public:
+		/// @cond
 		struct StaticCastTag {};
 		struct DynamicCastTag {};
+		/// @endcond
 
 		SharedPtr();
 
@@ -223,6 +229,8 @@ SharedPtr<T> StaticPointerCast( const SharedPtr<U>& shared_pointer );
 template<typename T, typename U>
 SharedPtr<T> DynamicPointerCast( const SharedPtr<U>& shared_pointer );
 
+/** SFGUI Weak Pointer
+ */
 template<typename T>
 class WeakPtr
 {
@@ -254,6 +262,8 @@ class WeakPtr
 		WeakReferenceCount m_reference_count;
 };
 
+/** Interface to enable a class to access it's own shared instance.
+ */
 template<typename T>
 class EnableSharedFromThis : public NonCopyable
 {

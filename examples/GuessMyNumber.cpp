@@ -1,12 +1,4 @@
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Box.hpp>
-#include <SFGUI/Table.hpp>
-#include <SFGUI/Label.hpp>
-#include <SFGUI/Entry.hpp>
-#include <SFGUI/Button.hpp>
-#include <SFGUI/Context.hpp>
-#include <SFGUI/Engine.hpp>
-#include <SFGUI/Renderer.hpp>
+#include <SFGUI/SFGUI.hpp>
 #include <SFML/Graphics.hpp>
 
 #include <string>
@@ -38,8 +30,15 @@ class GuessMyNumber {
 };
 
 int main() {
-	GuessMyNumber game;
-	game.Run();
+	// Construct our SFML guard
+	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	sfg::SFGUI sfgui;
+
+	// Make sure game is destroyed before the guard.
+	{
+		GuessMyNumber game;
+		game.Run();
+	}
 
 	return 0;
 }

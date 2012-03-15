@@ -142,10 +142,23 @@ void Application::Run() {
 		// Update the window
 		app_window.display();
 	}
+
+	// If you have any global or static widgets,
+	// you need to reset their pointers before your
+	// application exits.
+	window.reset();
 }
 
 int main() {
-	Application app;
-	app.Run();
+	// Construct our SFML guard
+	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	sfg::SFGUI sfgui;
+
+	// Make sure app is destroyed before the guard.
+	{
+		Application app;
+		app.Run();
+	}
+
 	return EXIT_SUCCESS;
 }

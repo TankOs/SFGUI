@@ -30,3 +30,20 @@
 #include <SFGUI/Spinner.hpp>
 #include <SFGUI/ComboBox.hpp>
 #include <SFGUI/Renderer.hpp>
+
+namespace sfg {
+
+/** A class to shield us from evil SFML and MSVC.
+ */
+class SFGUI_API SFGUI {
+	public:
+		/** Constructor.
+		 */
+		SFGUI();
+
+		/** Dtor.
+		 */
+		~SFGUI();
+};
+
+}

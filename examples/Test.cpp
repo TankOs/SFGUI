@@ -494,7 +494,15 @@ void SampleApp::OnToggleSpinner() {
 }
 
 int main() {
-	SampleApp app;
-	app.Run();
+	// SFML guard
+	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	sfg::SFGUI sfgui;
+
+	// Make sure app is destroyed before the guard.
+	{
+		SampleApp app;
+		app.Run();
+	}
+
 	return 0;
 }

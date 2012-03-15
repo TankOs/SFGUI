@@ -7,6 +7,8 @@
 
 namespace sfg {
 
+/** Check Button.
+ */
 class SFGUI_API CheckButton : public ToggleButton {
 	public:
 		typedef SharedPtr<CheckButton> Ptr; //!< Shared pointer.

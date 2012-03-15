@@ -6,9 +6,10 @@
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
 
-// Create our button smart pointer.
+// Create our ComboBox smart pointer.
 sfg::ComboBox::Ptr combo_box;
-sfg::Label::Ptr sel_label( sfg::Label::Create( L"Please select an item!" ) );
+
+sfg::Label::Ptr sel_label;
 
 void OnComboSelect();
 void OnAddItemClick();
@@ -16,6 +17,10 @@ void OnAddItemClick();
 int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Combo Box Example", sf::Style::Titlebar | sf::Style::Close );
+
+	// Construct our SFML guard
+	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
 	sfg::Window::Ptr window;
@@ -28,6 +33,8 @@ int main() {
 	// Set the entries of the combo box.
 	combo_box->AppendItem( "Bar" );
 	combo_box->PrependItem( "Foo" );
+
+	sel_label = sfg::Label::Create( L"Please select an item!" );
 
 	sfg::Button::Ptr button( sfg::Button::Create( L"Add item" ) );
 
@@ -80,6 +87,12 @@ int main() {
 		// Update the window
 		app_window.display();
 	}
+
+	// If you have any global or static widgets,
+	// you need to reset their pointers before your
+	// application exits.
+	combo_box.reset();
+	sel_label.reset();
 
 	return EXIT_SUCCESS;
 }

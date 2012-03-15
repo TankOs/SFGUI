@@ -29,6 +29,10 @@ class SFGUI_API Renderer {
 		 */
 		static Renderer& Get();
 
+		/** Destroy the Renderer singleton instance.
+		 */
+		static void Destroy();
+
 		/** Dtor.
 		 */
 		~Renderer();
@@ -117,8 +121,13 @@ class SFGUI_API Renderer {
 		 */
 		Primitive::Ptr CreateLine( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& color = sf::Color::White, float thickness = 1.f );
 
+		/** Register a primitive with the renderer.
+		 * @param primitive Primitive to be registered.
+		 */
+		void AddPrimitive( const Primitive::Ptr& primitive );
+
 		/** Unregister a primitive from the renderer.
-		 * @param primitive to be unregistered.
+		 * @param primitive Primitive to be unregistered.
 		 */
 		void RemovePrimitive( const Primitive::Ptr& primitive );
 

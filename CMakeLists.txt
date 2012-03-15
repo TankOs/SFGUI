@@ -111,6 +111,7 @@ set(
 	${INC_DIR}/SFGUI/ScrolledWindow.hpp
 	${INC_DIR}/SFGUI/Selector.hpp
 	${INC_DIR}/SFGUI/Separator.hpp
+	${INC_DIR}/SFGUI/SFGUI.hpp
 	${INC_DIR}/SFGUI/SharedPtr.hpp
 	${INC_DIR}/SFGUI/SharedPtr.inl
 	${INC_DIR}/SFGUI/Signal.hpp
@@ -181,6 +182,7 @@ set(
 	${SRC_DIR}/SFGUI/ScrolledWindow.cpp
 	${SRC_DIR}/SFGUI/Selector.cpp
 	${SRC_DIR}/SFGUI/Separator.cpp
+	${SRC_DIR}/SFGUI/SFGUI.cpp
 	${SRC_DIR}/SFGUI/Signal.cpp
 	${SRC_DIR}/SFGUI/Spinner.cpp
 	${SRC_DIR}/SFGUI/Table.cpp

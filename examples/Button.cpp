@@ -14,6 +14,10 @@ int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
 
+	// Construct our SFML guard
+	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	sfg::SFGUI sfgui;
+
 	// Create our main SFGUI window
 	sfg::Window::Ptr window;
 	window = sfg::Window::Create();
@@ -64,6 +68,11 @@ int main() {
 		// Update the window
 		app_window.display();
 	}
+
+	// If you have any global or static widgets,
+	// you need to reset their pointers before your
+	// application exits.
+	button.reset();
 
 	return EXIT_SUCCESS;
 }

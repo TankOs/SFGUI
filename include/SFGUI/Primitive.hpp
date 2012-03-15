@@ -15,6 +15,8 @@ class SFGUI_API Primitive {
 	public:
 		typedef SharedPtr<Primitive> Ptr; //!< Shared pointer.
 
+		/** Primitive vertex
+		 */
 		struct Vertex {
 			sf::Vector2f position;
 			sf::Color color;
