@@ -31,6 +31,11 @@ RenderQueue* ComboBox::InvalidateImpl() const {
 
 	m_queue = queue;
 
+	if( GetState() == ACTIVE ) {
+		// Set Z Layer to 1, above all "normal" widgets.
+		m_queue->SetZOrder( 1 );
+	}
+
 	return queue;
 }
 

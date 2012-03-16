@@ -723,7 +723,7 @@ void Renderer::SortPrimitives() {
 	while( current_position < primitives_size ) {
 		sort_index = current_position++;
 
-		while( ( sort_index > 0 ) && ( ( m_primitives[sort_index - 1]->GetLayer() > m_primitives[sort_index]->GetLayer() ) || ( m_primitives[sort_index - 1]->GetLevel() > m_primitives[sort_index]->GetLevel() ) ) ) {
+		while( ( sort_index > 0 ) && ( m_primitives[sort_index - 1]->GetLayer() * 1048576 + m_primitives[sort_index - 1]->GetLevel() > m_primitives[sort_index]->GetLayer() * 1048576 + m_primitives[sort_index]->GetLevel() ) ) {
 			m_primitives[sort_index].swap( m_primitives[sort_index - 1] );
 			--sort_index;
 		}
