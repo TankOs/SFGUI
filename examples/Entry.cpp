@@ -67,6 +67,8 @@ int main() {
 	// Add our box to the window
 	window->Add( box );
 
+	sf::Clock clock;
+
 	// Start the game loop
 	while ( app_window.isOpen() ) {
 		// Process events
@@ -82,9 +84,13 @@ int main() {
 			}
 		}
 
-		// Update the GUI, note that you shouldn't normally
-		// pass 0 seconds to the update method.
-		window->Update( 0.f );
+		// Update the GUI every 5ms
+		if( clock.getElapsedTime().asMicroseconds() >= 5000 ) {
+			// Update() takes the elapsed time in seconds.
+			window->Update( static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f );
+
+			clock.restart();
+		}
 
 		// Clear screen
 		app_window.clear();

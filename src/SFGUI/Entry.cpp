@@ -76,15 +76,18 @@ sf::Uint32 Entry::GetHideCharacter() const {
 std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
- std::basic_string<sf::Uint32> string( m_visible_string.begin(), m_visible_string.end() );
-	float text_start = GetAllocation().left + 2.f;
-	float last_delta = std::fabs( text_start - (float)mouse_pos_x );
-	std::size_t cursor_position = 0;
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
+	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+
+	std::basic_string<sf::Uint32> string( m_visible_string.begin(), m_visible_string.end() );
+
+	float text_start = GetAllocation().left + text_padding;
+	float last_delta = std::fabs( text_start - static_cast<float>( mouse_pos_x ) );
+	std::size_t cursor_position = 0;
 
 	for( cursor_position = 0; cursor_position < string.size(); cursor_position++ ) {
 		float text_length = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, cursor_position + 1 ), font, font_size ).x;
-		float new_delta = std::fabs( text_start + text_length - (float)mouse_pos_x );
+		float new_delta = std::fabs( text_start + text_length - static_cast<float>( mouse_pos_x ) );
 		if( new_delta < last_delta ) {
 			last_delta = new_delta;
 		}

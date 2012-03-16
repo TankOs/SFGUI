@@ -64,8 +64,47 @@ float Engine::GetLineHeight( const sf::Font& font, unsigned int font_size ) cons
 }
 
 sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {
-	sf::Text text( string, font, font_size );
-	return sf::Vector2f( text.getLocalBounds().width, text.getLocalBounds().height );
+	// SFML is incapable of giving us the metrics we need so we have to do it ourselves.
+	sf::Vector2f metrics( 0.f, 0.f );
+
+	float horizontal_spacing = static_cast<float>( font.getGlyph( L' ', font_size, false ).advance );
+	float vertical_spacing = static_cast<float>( font.getLineSpacing( font_size ) );
+
+	const static float tab_spaces = 2.f;
+
+	sf::Uint32 previous_character = 0;
+
+	std::size_t length = string.getSize();
+
+	for( std::size_t index = 0; index < length; ++index ) {
+		sf::Uint32 current_character = string[index];
+
+		metrics.x += static_cast<float>( font.getKerning( previous_character, current_character, font_size ) );
+
+		switch( current_character ) {
+			case L' ':
+				metrics.x += horizontal_spacing;
+				continue;
+			case L'\t':
+				metrics.x += horizontal_spacing * tab_spaces;
+				continue;
+			case L'\n':
+				metrics.y += vertical_spacing;
+				metrics.x = 0.f;
+				continue;
+			case L'\v':
+				metrics.y += vertical_spacing * tab_spaces;
+				continue;
+			default:
+				break;
+		}
+
+		const sf::Glyph& glyph = font.getGlyph( current_character, font_size, false );
+
+		metrics.x += static_cast<float>( glyph.advance );
+	}
+
+	return metrics;
 }
 
 bool Engine::LoadThemeFromFile( const std::string& filename ) {
