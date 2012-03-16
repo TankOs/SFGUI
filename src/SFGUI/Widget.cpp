@@ -378,7 +378,7 @@ const sf::Vector2f& Widget::GetRequisition() const {
 }
 
 void Widget::SetRequisition( const sf::Vector2f& requisition ) {
-	if( requisition.x > 0.f || requisition.y >= 0.f ) {
+	if( requisition.x > 0.f || requisition.y > 0.f ) {
 		delete m_custom_requisition;
 		m_custom_requisition = new sf::Vector2f( requisition );
 	}

@@ -46,7 +46,7 @@ void Box::HandleAdd( const Widget::Ptr& child ) {
 		Remove( child );
 	}
 
-	RequestResize();
+	Refresh();
 	AllocateChildren();
 }
 
