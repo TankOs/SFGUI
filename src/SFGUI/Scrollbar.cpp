@@ -112,11 +112,11 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 
 			if( GetOrientation() == HORIZONTAL ) {
 				float slider_mid = slider_rect.left + slider_rect.width / 2.f;
-				m_slider_click_offset = static_cast<float>( x ) - slider_mid;
+				m_slider_click_offset = static_cast<float>( x ) + GetAllocation().left - slider_mid;
 			}
 			else {
 				float slider_mid = slider_rect.top + slider_rect.height / 2.f;
-				m_slider_click_offset = static_cast<float>( y ) - slider_mid;
+				m_slider_click_offset = static_cast<float>( y ) + GetAllocation().top - slider_mid;
 			}
 
 			return;
