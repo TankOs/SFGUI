@@ -269,6 +269,11 @@ void Entry::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 }
 
 void Entry::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+	if( HasFocus() ) {
+		GrabFocus( Widget::Ptr() );
+	}
+
+	SetCursorPosition( 0 );
 	RecalculateVisibleString();
 }
 

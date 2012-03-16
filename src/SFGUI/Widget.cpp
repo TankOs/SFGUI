@@ -47,8 +47,11 @@ void Widget::GrabFocus( Ptr widget ) {
 		}
 
 		m_focus_widget = widget;
-		m_focus_widget->OnGainFocus();
-		m_focus_widget->HandleFocusChange( widget );
+
+		if( m_focus_widget ) {
+			m_focus_widget->OnGainFocus();
+			m_focus_widget->HandleFocusChange( widget );
+		}
 	}
 	else {
 		parent->GrabFocus( widget );

@@ -351,11 +351,18 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleViewportUpdate();
 
-
-	private:
+		/** Set the focused widget.
+		 * @param widget Focused widget.
+		 */
 		void GrabFocus( Ptr widget );
+
+		/** Check if a widget has focus.
+		 * @param widget Checked widget.
+		 * @return true if widget has focus.
+		 */
 		bool HasFocus( PtrConst widget ) const;
 
+	private:
 		void SetActiveWidget( Ptr widget );
 		bool IsActiveWidget( PtrConst widget ) const;
 
