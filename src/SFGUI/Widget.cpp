@@ -1,5 +1,6 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Container.hpp>
+#include <SFGUI/Renderer.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Context.hpp>
 #include <cmath>
@@ -21,6 +22,7 @@ Widget::Widget() :
 	m_mouse_button_down( -1 ),
 	m_invalidated( true )
 {
+	m_viewport = Renderer::Get().GetDefaultViewport();
 }
 
 Widget::~Widget() {

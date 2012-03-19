@@ -69,6 +69,10 @@ class SFGUI_API Viewport : public Bin {
 
 		virtual void HandleAdd( const Widget::Ptr& child );
 
+		/** Handle viewport change.
+		 */
+		virtual void HandleViewportUpdate();
+
 		virtual RenderQueue* InvalidateImpl() const;
 
 	private:
@@ -81,7 +85,7 @@ class SFGUI_API Viewport : public Bin {
 		Adjustment::Ptr m_horizontal_adjustment;
 		Adjustment::Ptr m_vertical_adjustment;
 
-		SharedPtr<RendererViewport> m_viewport;
+		SharedPtr<RendererViewport> m_children_viewport;
 };
 
 }

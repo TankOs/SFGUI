@@ -96,7 +96,8 @@ void Container::HandleEvent( const sf::Event& event ) {
 	Widget::HandleEvent( event );
 }
 
-void Container::HandleAdd( const Widget::Ptr& /*child*/ ) {
+void Container::HandleAdd( const Widget::Ptr& child ) {
+	child->SetViewport( GetViewport() );
 }
 
 void Container::HandleRemove( const Widget::Ptr& /*child*/ ) {

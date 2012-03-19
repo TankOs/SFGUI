@@ -13,7 +13,7 @@ Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustme
 	SetHorizontalAdjustment( horizontal_adjustment );
 	SetVerticalAdjustment( vertical_adjustment );
 
-	m_viewport = Renderer::Get().CreateViewport();
+	m_children_viewport = Renderer::Get().CreateViewport();
 }
 
 Viewport::Ptr Viewport::Create() {
@@ -26,7 +26,7 @@ Viewport::Ptr Viewport::Create( const Adjustment::Ptr& horizontal_adjustment, co
 }
 
 RenderQueue* Viewport::InvalidateImpl() const {
-	m_viewport->SetSourceOrigin(
+	m_children_viewport->SetSourceOrigin(
 		sf::Vector2f(
 			std::floor( m_horizontal_adjustment->GetValue() + .5f ),
 			std::floor( m_vertical_adjustment->GetValue() + .5f )
@@ -43,7 +43,7 @@ sf::Vector2f Viewport::CalculateRequisition() {
 void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
 	sf::FloatRect allocation = GetAllocation();
 
-	m_viewport->SetSize(
+	m_children_viewport->SetSize(
 		sf::Vector2f(
 			std::floor( allocation.width + .5f ),
 			std::floor( allocation.height + .5f )
@@ -54,7 +54,7 @@ void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ )
 void Viewport::HandleAbsolutePositionChange() {
 	sf::Vector2f position = Widget::GetAbsolutePosition();
 
-	m_viewport->SetDestinationOrigin(
+	m_children_viewport->SetDestinationOrigin(
 		sf::Vector2f(
 			std::floor( position.x + .5f ),
 			std::floor( position.y + .5f )
@@ -163,17 +163,31 @@ const std::string& Viewport::GetName() const {
 }
 
 void Viewport::HandleAdd( const Widget::Ptr& child ) {
-	Bin::HandleAdd( child );
+	if( GetChildren().size() > 1 ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "SFGUI warning: Only one widget can be added to a Bin." << std::endl;
+#endif
+
+		Remove( child );
+	}
 
 	if( !IsChild( child ) ) {
 		return;
 	}
 
-	child->SetViewport( m_viewport );
+	child->SetViewport( m_children_viewport );
+}
+
+void Viewport::HandleViewportUpdate() {
+	const Widget::Ptr& child( GetChild() );
+
+	if( child ) {
+		child->SetViewport( m_children_viewport );
+	}
 }
 
 void Viewport::UpdateView() {
-	m_viewport->SetSourceOrigin(
+	m_children_viewport->SetSourceOrigin(
 		sf::Vector2f(
 			std::floor( m_horizontal_adjustment->GetValue() + .5f ),
 			std::floor( m_vertical_adjustment->GetValue() + .5f )

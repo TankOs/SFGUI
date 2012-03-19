@@ -275,6 +275,8 @@ void ScrolledWindow::HandleAdd( const Widget::Ptr& child ) {
 }
 
 void ScrolledWindow::AddWithViewport( const Widget::Ptr& widget ) {
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+
 	Viewport::Ptr viewport = Viewport::Create();
 
 	viewport->SetHorizontalAdjustment( m_horizontal_scrollbar->GetAdjustment() );
@@ -283,6 +285,14 @@ void ScrolledWindow::AddWithViewport( const Widget::Ptr& widget ) {
 	viewport->Add( widget );
 
 	Container::Add( viewport );
+
+	// Make sure the viewport is offset by the border width.
+	sf::FloatRect allocation( viewport->GetAllocation() );
+
+	allocation.left += border_width;
+	allocation.top += border_width;
+
+	viewport->SetAllocation( allocation );
 }
 
 void ScrolledWindow::Add( const Widget::Ptr& /*widget*/ ) {

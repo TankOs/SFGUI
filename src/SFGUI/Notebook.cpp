@@ -305,6 +305,8 @@ void Notebook::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 }
 
 void Notebook::HandleAdd( const Widget::Ptr& child ) {
+	Container::HandleAdd( child );
+
 	bool allowed = false;
 
 	std::size_t children_size = m_children.size();

@@ -33,6 +33,8 @@ void Box::Pack( const Widget::Ptr& widget, bool expand, bool fill ) {
 }
 
 void Box::HandleAdd( const Widget::Ptr& child ) {
+	Container::HandleAdd( child );
+
 	ChildrenCont::const_iterator iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget

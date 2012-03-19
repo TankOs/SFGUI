@@ -682,7 +682,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 #ifdef SFGUI_DEBUG
 			std::cerr << "Detected alpha value " << static_cast<int>( bytes[ byte_count - 1 ]  ) << " in texture, disabling depth test.\n";
 #endif
-			m_depth_clear_strategy = false;
+			m_depth_clear_strategy = NO_DEPTH;
 		}
 	}
 
@@ -757,7 +757,7 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 #ifdef SFGUI_DEBUG
 				std::cerr << "Detected alpha value " << static_cast<int>( vertex.color.a ) << " disabling depth test.\n";
 #endif
-				m_depth_clear_strategy = false;
+				m_depth_clear_strategy = NO_DEPTH;
 			}
 		}
 	}

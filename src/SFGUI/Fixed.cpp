@@ -49,6 +49,8 @@ void Fixed::Move( const Widget::Ptr& widget, const sf::Vector2f& position ) {
 }
 
 void Fixed::HandleAdd( const Widget::Ptr& child ) {
+	Container::HandleAdd( child );
+
 	// If there's no position info present for the widget, the user added the widget
 	// manually, which is not allowed for this class.
 	if( m_children_position_map.find( child ) == m_children_position_map.end() ) {
