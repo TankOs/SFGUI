@@ -41,7 +41,7 @@ const std::string& Alignment::GetName() const {
 	return name;
 }
 
-void Alignment::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Alignment::HandleSizeChange() {
 	UpdateChild();
 }
 

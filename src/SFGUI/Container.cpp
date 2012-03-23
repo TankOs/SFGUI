@@ -120,7 +120,7 @@ void Container::HandleAbsolutePositionChange() {
 	}
 
 	// Update own drawable position.
-	UpdateDrawablePosition();
+	Widget::HandleAbsolutePositionChange();
 }
 
 void Container::HandleVisibilityChange() {

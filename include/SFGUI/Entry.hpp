@@ -119,7 +119,7 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
 		virtual void HandleUpdate( float seconds );
 		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
-		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		virtual void HandleSizeChange();
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;

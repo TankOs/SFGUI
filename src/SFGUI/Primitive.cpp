@@ -6,7 +6,7 @@ namespace sfg {
 
 Primitive::Primitive() :
 	m_position( sf::Vector2f( 0.f, 0.f ) ),
-	m_layer( 0.f ),
+	m_layer( 0 ),
 	m_level( 0 ),
 	m_synced( false ),
 	m_visible( true )

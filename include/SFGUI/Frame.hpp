@@ -40,7 +40,7 @@ class SFGUI_API Frame : public Bin, public Misc {
 		virtual sf::Vector2f CalculateRequisition();
 
 	private:
-		void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		void HandleSizeChange();
 
 		sf::String m_label;
 		float m_alignment;

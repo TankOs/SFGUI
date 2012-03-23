@@ -151,7 +151,7 @@ class SFGUI_API Notebook : public Container {
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		void HandleAdd( const Widget::Ptr& child );
 		void HandleRemove( const Widget::Ptr& child );
-		void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		void HandleSizeChange();
 
 		sf::Vector2f m_tab_requisition;
 		sf::Vector2f m_child_requisition;

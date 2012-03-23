@@ -21,6 +21,7 @@ SharedPtr<Renderer> Renderer::m_instance = SharedPtr<Renderer>();
 
 Renderer::Renderer() :
 	m_last_vertex_count( 0 ),
+	m_vertex_count( 0 ),
 	m_alpha_threshold( 0.f ),
 	m_depth_clear_strategy( NO_DEPTH ),
 	m_vbo_synced( false ),
@@ -733,34 +734,19 @@ void Renderer::SortPrimitives() {
 void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	SortPrimitives();
 
-	m_vertex_data.clear();
-	m_color_data.clear();
-	m_texture_data.clear();
+	std::vector<sf::Vector3f> vertex_data;
+	std::vector<sf::Color> color_data;
+	std::vector<sf::Vector2f> texture_data;
+
+	vertex_data.reserve( m_vertex_count );
+	color_data.reserve( m_vertex_count );
+	texture_data.reserve( m_vertex_count );
 
 	m_viewport_pairs.clear();
 
 	m_last_vertex_count = 0;
 
 	std::size_t primitives_size = m_primitives.size();
-
-	// Check for alpha values in all primitives.
-	// Disable depth test if any found.
-	for( std::size_t primitive_index = 0; primitive_index < primitives_size; ++primitive_index ) {
-		const std::vector<Primitive::Vertex>& vertices( m_primitives[primitive_index]->GetVertices() );
-
-		std::size_t vertices_size = vertices.size();
-
-		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
-			const Primitive::Vertex& vertex( vertices[vertex_index] );
-
-			if( m_depth_clear_strategy && ( vertex.color.a < 255 ) ) {
-#ifdef SFGUI_DEBUG
-				std::cerr << "Detected alpha value " << static_cast<int>( vertex.color.a ) << " disabling depth test.\n";
-#endif
-				m_depth_clear_strategy = NO_DEPTH;
-			}
-		}
-	}
 
 	// Used to normalize texture coordinates.
 	sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.getWidth() ), 1.f / static_cast<float>( m_texture_atlas.getHeight() ) );
@@ -822,16 +808,19 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 
 		std::size_t vertices_size = vertices.size();
 
+		sf::Vector3f position( 0.f, 0.f, depth );
+
 		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
 			const Primitive::Vertex& vertex( vertices[vertex_index] );
 
-			sf::Vector3f position( vertex.position.x + position_transform.x, vertex.position.y + position_transform.y, depth );
+			position.x = vertex.position.x + position_transform.x;
+			position.y = vertex.position.y + position_transform.y;
 
-			m_vertex_data.push_back( position );
-			m_color_data.push_back( vertex.color );
+			vertex_data.push_back( position );
+			color_data.push_back( vertex.color );
 
 			// Normalize SFML's pixel texture coordinates.
-			m_texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
+			texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
 
 			if( m_cull && viewport_rect.contains( position.x, position.y ) ) {
 				cull = false;
@@ -839,9 +828,9 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 		}
 
 		if( cull ) {
-			m_vertex_data.resize( m_last_vertex_count );
-			m_color_data.resize( m_last_vertex_count );
-			m_texture_data.resize( m_last_vertex_count );
+			vertex_data.resize( m_last_vertex_count );
+			color_data.resize( m_last_vertex_count );
+			texture_data.resize( m_last_vertex_count );
 		}
 		else {
 			m_last_vertex_count += vertices_size;
@@ -851,31 +840,50 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 
 	// Sync vertex data
 	glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
-	glBufferData( GL_ARRAY_BUFFER, m_vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW );
 
-	if( m_vertex_data.size() > 0 ) {
-		glBufferSubData( GL_ARRAY_BUFFER, 0, m_vertex_data.size() * sizeof( sf::Vector3f ), &m_vertex_data[0] );
+	if( vertex_data.size() > 0 ) {
+		glBufferSubData( GL_ARRAY_BUFFER, 0, vertex_data.size() * sizeof( sf::Vector3f ), &vertex_data[0] );
 	}
 
 	// Sync color data
 	glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
-	glBufferData( GL_ARRAY_BUFFER, m_color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW );
 
-	if( m_color_data.size() > 0 ) {
-		glBufferSubData( GL_ARRAY_BUFFER, 0, m_color_data.size() * sizeof( sf::Color ), &m_color_data[0] );
+	if( color_data.size() > 0 ) {
+		glBufferSubData( GL_ARRAY_BUFFER, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
 	}
 
 	// Sync texture coord data
 	glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
-	glBufferData( GL_ARRAY_BUFFER, m_texture_data.size() * sizeof( sf::Vector2f ), 0, GL_STATIC_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_STATIC_DRAW );
 
-	if( m_texture_data.size() > 0 ) {
-		glBufferSubData( GL_ARRAY_BUFFER, 0, m_texture_data.size() * sizeof( sf::Vector2f ), &m_texture_data[0] );
+	if( texture_data.size() > 0 ) {
+		glBufferSubData( GL_ARRAY_BUFFER, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
 	}
 }
 
 void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
 	m_primitives.push_back( primitive );
+
+	// Check for alpha values in primitive.
+	// Disable depth test if any found.
+	const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+
+	std::size_t vertices_size = vertices.size();
+
+	m_vertex_count += vertices_size;
+
+	for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
+		const Primitive::Vertex& vertex( vertices[vertex_index] );
+
+		if( m_depth_clear_strategy && ( vertex.color.a < 255 ) ) {
+#ifdef SFGUI_DEBUG
+			std::cerr << "Detected alpha value " << static_cast<int>( vertex.color.a ) << " disabling depth test.\n";
+#endif
+			m_depth_clear_strategy = NO_DEPTH;
+		}
+	}
 
 	InvalidateVBO();
 }
@@ -884,6 +892,12 @@ void Renderer::RemovePrimitive( const Primitive::Ptr& primitive ) {
 	std::vector<Primitive::Ptr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), primitive ) );
 
 	if( iter != m_primitives.end() ) {
+		const std::vector<Primitive::Vertex>& vertices( (*iter)->GetVertices() );
+
+		assert( m_vertex_count >= vertices.size() );
+
+		m_vertex_count -= vertices.size();
+
 		m_primitives.erase( iter );
 	}
 
@@ -897,6 +911,8 @@ void Renderer::InvalidateVBO() {
 void Renderer::TuneDepthTest( unsigned char strategy ) {
 	if( strategy & NO_DEPTH ) {
 		m_depth_clear_strategy = strategy;
+
+		return;
 	}
 	else if( strategy & CLEAR_DEPTH ) {
 		m_depth_clear_strategy = strategy;
@@ -910,6 +926,27 @@ void Renderer::TuneDepthTest( unsigned char strategy ) {
 		glClear( GL_DEPTH_BUFFER_BIT );
 		glDepthRange( 0.0, 0.5 );
 		glDepthFunc( GL_LESS );
+	}
+
+	std::size_t primitives_size = m_primitives.size();
+
+	// Check for alpha values in all primitives.
+	// Disable depth test if any found.
+	for( std::size_t primitive_index = 0; primitive_index < primitives_size; ++primitive_index ) {
+		const std::vector<Primitive::Vertex>& vertices( m_primitives[primitive_index]->GetVertices() );
+
+		std::size_t vertices_size = vertices.size();
+
+		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
+			const Primitive::Vertex& vertex( vertices[vertex_index] );
+
+			if( m_depth_clear_strategy && ( vertex.color.a < 255 ) ) {
+#ifdef SFGUI_DEBUG
+				std::cerr << "Detected alpha value " << static_cast<int>( vertex.color.a ) << " disabling depth test.\n";
+#endif
+				m_depth_clear_strategy = NO_DEPTH;
+			}
+		}
 	}
 }
 

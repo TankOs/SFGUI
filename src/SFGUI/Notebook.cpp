@@ -344,7 +344,7 @@ void Notebook::HandleRemove( const Widget::Ptr& child ) {
 	Invalidate();
 }
 
-void Notebook::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Notebook::HandleSizeChange() {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 

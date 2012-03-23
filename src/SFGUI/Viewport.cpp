@@ -40,7 +40,7 @@ sf::Vector2f Viewport::CalculateRequisition() {
 	return sf::Vector2f( 0.f, 0.f );
 }
 
-void Viewport::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Viewport::HandleSizeChange() {
 	sf::FloatRect allocation = GetAllocation();
 
 	m_children_viewport->SetSize(

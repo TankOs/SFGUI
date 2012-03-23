@@ -65,7 +65,7 @@ class SFGUI_API Viewport : public Bin {
 	protected:
 		sf::Vector2f CalculateRequisition();
 
-		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		virtual void HandleSizeChange();
 
 		virtual void HandleAdd( const Widget::Ptr& child );
 

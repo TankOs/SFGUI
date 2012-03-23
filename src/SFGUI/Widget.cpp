@@ -9,8 +9,8 @@ namespace sfg {
 
 Widget::Widget() :
 	Object(),
-	m_allocation( 0, 0, 0, 0 ),
-	m_requisition( 0, 0 ),
+	m_allocation( 0.f, 0.f, 0.f, 0.f ),
+	m_requisition( 0.f, 0.f ),
 	m_custom_requisition( 0 ),
 	m_hierarchy_level( 0 ),
 	m_drawable( 0 ),
@@ -93,11 +93,18 @@ void Widget::SetAllocation( const sf::FloatRect& rect ) {
 		return;
 	}
 
-	HandleAbsolutePositionChange();
-	HandleAllocationChange( oldallocation );
+	if( ( oldallocation.top != m_allocation.top ) || ( oldallocation.left != m_allocation.left ) ) {
+	  HandlePositionChange();
+	  HandleAbsolutePositionChange();
+	}
 
-	OnSizeAllocate();
-	Invalidate();
+	if( ( oldallocation.width != m_allocation.width ) || ( oldallocation.height != m_allocation.height ) ) {
+	  HandleSizeChange();
+
+	  Invalidate();
+
+	  OnSizeAllocate();
+	}
 }
 
 void Widget::RequestResize() {
@@ -197,26 +204,16 @@ void Widget::SetParent( const Widget::Ptr& parent ) {
 }
 
 void Widget::SetPosition( const sf::Vector2f& position ) {
-	sf::FloatRect oldallocation( GetAllocation() );
+	sf::FloatRect allocation( GetAllocation() );
 
 	// Make sure allocation is pixel-aligned.
 	m_allocation.left = std::floor( position.x + .5f );
 	m_allocation.top = std::floor( position.y + .5f );
 
-	if( oldallocation.top == m_allocation.top &&
-	 oldallocation.left == m_allocation.left ) {
-		// Nothing even changed. Save the hierarchy the trouble.
-		return;
+	if( ( allocation.top != m_allocation.top ) || ( allocation.left != m_allocation.left ) ) {
+	  HandlePositionChange();
+	  HandleAbsolutePositionChange();
 	}
-
-	HandleAbsolutePositionChange();
-	HandleAllocationChange( oldallocation );
-
-	if( m_drawable ) {
-		m_drawable->SetPosition( GetAbsolutePosition() );
-	}
-
-	OnSizeAllocate();
 }
 
 void Widget::HandleEvent( const sf::Event& event ) {
@@ -440,7 +437,10 @@ void Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*
 void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
 }
 
-void Widget::HandleAllocationChange( const sf::FloatRect& /*new_allocation*/ ) {
+void Widget::HandlePositionChange() {
+}
+
+void Widget::HandleSizeChange() {
 }
 
 void Widget::HandleStateChange( State /*old_state*/ ) {
@@ -482,19 +482,7 @@ void Widget::HandleAbsolutePositionChange() {
 }
 
 void Widget::Refresh() {
-	sf::FloatRect old_allocation( GetAllocation() );
-
 	RequestResize();
-
-	if(
-		old_allocation.left == GetAllocation().left &&
-		old_allocation.top == GetAllocation().top &&
-		old_allocation.width == GetAllocation().width &&
-		old_allocation.height == GetAllocation().height
-	) {
-		HandleAbsolutePositionChange();
-		HandleAllocationChange( old_allocation );
-	}
 
 	Invalidate();
 }

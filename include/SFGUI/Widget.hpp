@@ -190,8 +190,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		const std::string& GetClass() const;
 
 		/** Refresh.
-		 * Invalidates the widget, re-requests size and triggers allocation
-		 * handlers.
+		 * Invalidates the widget and re-requests size
 		 */
 		virtual void Refresh();
 
@@ -289,10 +288,13 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
 
-		/** Handle allocation changes.
-		 * @param old_allocation Previous allocation.
+		/** Handle widget (relative) position changes.
 		 */
-		virtual void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		virtual void HandlePositionChange();
+
+		/** Handle widget size changes.
+		 */
+		virtual void HandleSizeChange();
 
 		/** Handle requisition changes.
 		 * Called after new requisition is set.

@@ -77,7 +77,7 @@ class SFGUI_API Window : public Bin {
 		sf::Vector2f CalculateRequisition();
 
 	private:
-		void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		void HandleSizeChange();
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 		void HandleMouseMoveEvent( int x, int y );
 		void HandleAdd( const Widget::Ptr& child );

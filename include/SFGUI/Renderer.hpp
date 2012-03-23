@@ -187,10 +187,6 @@ class SFGUI_API Renderer {
 		std::vector<Primitive::Ptr> m_primitives;
 		std::vector<SharedPtr<RendererViewport> > m_viewports;
 
-		std::vector<sf::Vector3f> m_vertex_data;
-		std::vector<sf::Color> m_color_data;
-		std::vector<sf::Vector2f> m_texture_data;
-
 		std::vector<ViewportPair> m_viewport_pairs;
 
 		SharedPtr<RendererViewport> m_default_viewport;
@@ -207,6 +203,8 @@ class SFGUI_API Renderer {
 		GLuint m_texture_vbo;
 
 		GLsizei m_last_vertex_count;
+
+		std::size_t m_vertex_count;
 
 		float m_alpha_threshold;
 

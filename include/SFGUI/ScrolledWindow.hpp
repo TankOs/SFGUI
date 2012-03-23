@@ -137,7 +137,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		void RecalculateContentAllocation() const;
 
-		void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		void HandleSizeChange();
 		void HandleAdd( const Widget::Ptr& child );
 
 		mutable sf::FloatRect m_content_allocation;

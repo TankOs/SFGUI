@@ -44,7 +44,6 @@ class SFGUI_API Fixed : public Container {
 
 		void HandleAdd( const Widget::Ptr& child );
 		void HandleRemove( const Widget::Ptr& child );
-		void HandleAllocationChange( const sf::FloatRect& old_allocation );
 
 		ChildrenPositionMap m_children_position_map;
 };

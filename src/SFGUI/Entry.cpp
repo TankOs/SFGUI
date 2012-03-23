@@ -268,7 +268,7 @@ void Entry::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 	Widget::HandleFocusChange( focused_widget );
 }
 
-void Entry::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Entry::HandleSizeChange() {
 	if( HasFocus() ) {
 		GrabFocus( Widget::Ptr() );
 	}

@@ -59,7 +59,7 @@ const std::string& Frame::GetName() const {
 	return name;
 }
 
-void Frame::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Frame::HandleSizeChange() {
 	Widget::Ptr child = GetChild();
 	if( !child ) {
 		return;

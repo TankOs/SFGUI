@@ -72,7 +72,7 @@ void Table::Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect,
 }
 
 
-void Table::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Table::HandleSizeChange() {
 	AllocateChildren();
 }
 
@@ -93,7 +93,7 @@ void Table::UpdateRequisitions() {
 	// Iterate over children and add requisitions to columns and rows.
 	TableCellList::iterator cell_iter( m_cells.begin() );
 	TableCellList::iterator cell_iter_end( m_cells.end() );
-	
+
 	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
 		float col_requisition = (
 			cell_iter->child->GetRequisition().x / static_cast<float>( cell_iter->rect.width ) +
@@ -214,7 +214,7 @@ void Table::AllocateChildren() {
 	TableCellList::iterator cell_iter( m_cells.begin() );
 	TableCellList::iterator cell_iter_end( m_cells.end() );
 	std::size_t bound = 0;
-	
+
 	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
 		sf::FloatRect allocation(
 			m_columns[cell_iter->rect.left].position,

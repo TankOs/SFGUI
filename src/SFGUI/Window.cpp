@@ -61,7 +61,7 @@ sf::FloatRect Window::GetClientRect() const {
 	return clientrect;
 }
 
-void Window::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Window::HandleSizeChange() {
 	if( !GetChild() ) {
 		return;
 	}

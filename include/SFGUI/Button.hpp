@@ -63,7 +63,7 @@ class SFGUI_API Button : public Bin {
 
 		void HandleMouseClick( sf::Mouse::Button button, int x, int y );
 
-		void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		void HandleSizeChange();
 
 		virtual void HandleStateChange( State old_state );
 

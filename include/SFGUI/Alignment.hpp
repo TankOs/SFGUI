@@ -37,7 +37,7 @@ class SFGUI_API Alignment : public Bin, public Misc {
 		sf::Vector2f CalculateRequisition();
 
 	private:
-		void HandleAllocationChange( const sf::FloatRect& old_allocation );
+		void HandleSizeChange();
 		void HandleAlignmentChange( const sf::Vector2f& old_alignment );
 
 		void UpdateChild();

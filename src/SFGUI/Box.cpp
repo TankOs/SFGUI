@@ -103,7 +103,7 @@ sf::Vector2f Box::CalculateRequisition() {
 	return requisition;
 }
 
-void Box::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Box::HandleSizeChange() {
 	AllocateChildren();
 }
 

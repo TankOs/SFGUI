@@ -44,6 +44,8 @@ void Fixed::Move( const Widget::Ptr& widget, const sf::Vector2f& position ) {
 	if( m_children_position_map.find( widget ) != m_children_position_map.end() ) {
 		m_children_position_map[ widget ] = position;
 
+		widget->SetAllocation( sf::FloatRect( position, widget->GetRequisition() ) );
+
 		RequestResize();
 	}
 }
@@ -60,24 +62,17 @@ void Fixed::HandleAdd( const Widget::Ptr& child ) {
 #endif
 
 		Remove( child );
-	}
+	} else {
+		child->SetAllocation( sf::FloatRect( m_children_position_map[ child ], child->GetRequisition() ) );
 
-	RequestResize();
+		RequestResize();
+	}
 }
 
 void Fixed::HandleRemove( const Widget::Ptr& child ) {
 	m_children_position_map.erase( child );
 
 	RequestResize();
-}
-
-void Fixed::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
-	ChildrenPositionMap::const_iterator child_iter( m_children_position_map.begin() );
-	ChildrenPositionMap::const_iterator child_iter_end( m_children_position_map.end() );
-
-	for( ; child_iter != child_iter_end; ++ child_iter ) {
-		child_iter->first->SetAllocation( sf::FloatRect( child_iter->second, child_iter->first->GetRequisition() ) );
-	}
 }
 
 }

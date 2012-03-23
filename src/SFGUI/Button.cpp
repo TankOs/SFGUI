@@ -130,7 +130,7 @@ void Button::HandleAdd( const Widget::Ptr& child ) {
 	}
 }
 
-void Button::HandleAllocationChange( const sf::FloatRect& /*old_allocation*/ ) {
+void Button::HandleSizeChange() {
 	AllocateChild();
 }
 

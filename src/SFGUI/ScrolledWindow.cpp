@@ -249,9 +249,7 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	Invalidate();
 }
 
-void ScrolledWindow::HandleAllocationChange( const sf::FloatRect& old_allocation ) {
-	Container::HandleAllocationChange( old_allocation );
-
+void ScrolledWindow::HandleSizeChange() {
 	// A parent caused us to move/resize, have to recalculate everything.
 	RecalculateAdjustments();
 	RecalculateContentAllocation();
