@@ -26,17 +26,13 @@ Renderer::Renderer() :
 	m_depth_clear_strategy( NO_DEPTH ),
 	m_vbo_synced( false ),
 	m_preblend( false ),
-	m_cull( false ) {
+	m_cull( false ),
+	m_pseudo_texture_loaded( false ) {
 	glGenBuffers( 1, &m_vertex_vbo );
 	glGenBuffers( 1, &m_color_vbo );
 	glGenBuffers( 1, &m_texture_vbo );
 
 	m_default_viewport = CreateViewport();
-
-	// Load our "no texture" pseudo-texture.
-	sf::Image image;
-	image.create( 2, 2, sf::Color::White );
-	LoadImage( image, sf::Color::White );
 }
 
 Renderer::~Renderer() {
@@ -610,6 +606,15 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Co
 }
 
 sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint, bool force_insert ) {
+	if( !m_pseudo_texture_loaded ) {
+		m_pseudo_texture_loaded = true;
+
+		// Load our "no texture" pseudo-texture.
+		sf::Image image;
+		image.create( 2, 2, sf::Color::White );
+		LoadImage( image, sf::Color::White );
+	}
+
 	const sf::Uint8* pixels_ptr = image.getPixelsPtr();
 
 	if( !force_insert ) {

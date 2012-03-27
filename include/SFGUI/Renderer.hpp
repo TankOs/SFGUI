@@ -214,6 +214,8 @@ class SFGUI_API Renderer {
 		bool m_vbo_synced;
 		bool m_preblend;
 		bool m_cull;
+
+		bool m_pseudo_texture_loaded;
 };
 
 }
