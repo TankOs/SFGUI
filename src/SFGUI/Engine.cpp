@@ -258,4 +258,8 @@ bool Engine::SetProperty( const sfg::Selector::Ptr& selector, const std::string&
 	return true;
 }
 
+void Engine::ClearProperties() {
+	m_properties.clear();
+}
+
 }

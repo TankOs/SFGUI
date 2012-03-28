@@ -160,6 +160,10 @@ class SFGUI_API Engine {
 		 */
 		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
 
+		/** Clear all properties.
+		 */
+		void ClearProperties();
+
 		/** Set property.
 		 * @param selector selector string (leave empty for all widgets).
 		 * @param property Property.

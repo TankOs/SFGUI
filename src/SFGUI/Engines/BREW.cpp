@@ -29,6 +29,12 @@ namespace eng {
 BREW::BREW() :
 	Engine()
 {
+	ResetProperties();
+}
+
+void BREW::ResetProperties() {
+	ClearProperties();
+
 	// Set defaults.
 	SetProperty( "*", "Color", sf::Color( 0xc6, 0xcb, 0xc4 ) );
 	SetProperty( "*", "FontSize", 12 );

@@ -20,6 +20,10 @@ class SFGUI_API BREW : public Engine {
 		 */
 		BREW();
 
+		/** Reset properties to defaults.
+		 */
+		void ResetProperties();
+
 		RenderQueue* CreateWindowDrawable( SharedPtr<const Window> window ) const;
 		RenderQueue* CreateButtonDrawable( SharedPtr<const Button> button ) const;
 		RenderQueue* CreateToggleButtonDrawable( SharedPtr<const ToggleButton> button ) const;
