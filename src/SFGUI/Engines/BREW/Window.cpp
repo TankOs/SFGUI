@@ -24,7 +24,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
 	float title_size( GetLineHeight( title_font, title_font_size ) + 2 * title_padding );
 
-	if( window->HasStyle( Window::BACKGROUND ) ) {
+	if( window->HasStyle( Window::SHADOW ) ) {
 		// Shadow.
 		sf::Color shadow_color( 0, 0, 0, shadow_alpha );
 
@@ -41,7 +41,9 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 				shadow_color
 			)
 		);
+	}
 
+	if( window->HasStyle( Window::BACKGROUND ) ) {
 		// Pane.
 		queue->Add(
 			Renderer::Get().CreatePane(

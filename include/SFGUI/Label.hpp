@@ -47,6 +47,9 @@ class SFGUI_API Label : public Widget, public Misc {
 		sf::Vector2f CalculateRequisition();
 
 	private:
+		virtual void HandleParentVisibilityChange();
+		virtual void HandleVisibilityChange();
+
 		sf::String m_text;
 };
 

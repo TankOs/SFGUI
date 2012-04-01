@@ -239,6 +239,7 @@ void Notebook::SetTabLabel( const Widget::Ptr& child, const Widget::Ptr& tab_lab
 void Notebook::SetCurrentPage( IndexType page_number ) {
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
 		m_children[m_current_page].child->Show( false );
+		m_children[m_current_page].tab_label->SetState( NORMAL );
 	}
 
 	if( ( page_number >= 0 ) && ( page_number < GetPageCount() ) ) {
@@ -250,6 +251,7 @@ void Notebook::SetCurrentPage( IndexType page_number ) {
 
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
 		m_children[m_current_page].child->Show( true );
+		m_children[m_current_page].tab_label->SetState( SELECTED );
 	}
 
 	Invalidate();
@@ -277,6 +279,10 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 	IndexType m_old_prelight_tab = m_prelight_tab;
 	m_prelight_tab = -1;
 
+	if( m_old_prelight_tab != -1 && m_old_prelight_tab != m_current_page ) {
+		m_children[m_old_prelight_tab].tab_label->SetState( NORMAL );
+	}
+
 	for( std::size_t index = 0; index < children_size; ++index ) {
 		sf::FloatRect allocation = m_children[index].tab_label->GetAllocation();
 
@@ -287,6 +293,11 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 
 		if( allocation.contains( sf::Vector2f( static_cast<float>( x ) - GetAllocation().left, static_cast<float>( y ) - GetAllocation().top ) ) ) {
 			m_prelight_tab = static_cast<IndexType>( index );
+
+			if( m_prelight_tab != m_current_page ) {
+				m_children[m_prelight_tab].tab_label->SetState( PRELIGHT );
+			}
+
 			break;
 		}
 	}

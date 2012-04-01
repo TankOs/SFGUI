@@ -20,6 +20,7 @@ class SFGUI_API Window : public Bin {
 			TITLEBAR = 1 << 0, //!< Titlebar.
 			BACKGROUND = 1 << 1, //!< Background.
 			RESIZE = 1 << 2, //!< Resizable.
+			SHADOW = 1 << 3, //!< Display Shadow.
 			TOPLEVEL = TITLEBAR | BACKGROUND | RESIZE //!< Toplevel window.
 		};
 

@@ -337,9 +337,9 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	vertex3.color = sf::Color( 255, 255, 255, 255 );
 
 	vertex0.texture_coordinate = offset + sf::Vector2f( 0.f, 0.f );
-	vertex1.texture_coordinate = offset + sf::Vector2f( 0.f, static_cast<float>( image.getHeight() ) );
-	vertex2.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getWidth() ), 0.f );
-	vertex3.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getWidth() ), static_cast<float>( image.getHeight() ) );
+	vertex1.texture_coordinate = offset + sf::Vector2f( 0.f, static_cast<float>( image.getSize().y ) );
+	vertex2.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getSize().x ), 0.f );
+	vertex3.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getSize().x ), static_cast<float>( image.getSize().y ) );
 
 	primitive->AddVertex( vertex0 );
 	primitive->AddVertex( vertex1 );
@@ -584,7 +584,40 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Co
 	// All your font face are belong to us too.
 	memcpy( &face, reinterpret_cast<const char*>( &font ) + sizeof( sf::Font ) - sizeof( FontStruct ), sizeof( void* ) );
 
-	FontID id( face, size );
+	// Hash.
+	std::size_t hash = static_cast<std::size_t>( 2166136261UL );
+
+	hash ^= reinterpret_cast<std::size_t>( face );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( size );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( background_color_hint.r );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( background_color_hint.g );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( background_color_hint.b );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( background_color_hint.a );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( foreground_color_hint.r );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( foreground_color_hint.g );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( foreground_color_hint.b );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	hash ^= static_cast<std::size_t>( foreground_color_hint.a );
+	hash *= static_cast<std::size_t>( 16777619UL );
+
+	FontID id = hash;
 
 	std::map<FontID, sf::Vector2f>::iterator iter( m_font_offsets.find( id ) );
 
@@ -628,7 +661,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 
 	sf::Image preblended_image;
 
-	preblended_image.create( image.getWidth(), image.getHeight(), image.getPixelsPtr() );
+	preblended_image.create( image.getSize().x, image.getSize().y, image.getPixelsPtr() );
 
 	// If we get a proper background color hint and preblend is enabled,
 	// precompute blended color with ( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ).
@@ -644,7 +677,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 				foreground_b_factor = static_cast<float>( foreground_color_hint.b ) / 255.f;
 			}
 
-			std::size_t pixel_count = preblended_image.getWidth() * preblended_image.getHeight();
+			std::size_t pixel_count = preblended_image.getSize().x * preblended_image.getSize().y;
 
 			sf::Uint8* bytes = new sf::Uint8[pixel_count * 4];
 
@@ -664,7 +697,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 				bytes[index * 4 + 2] = static_cast<sf::Uint8>( static_cast<float>( bytes[index * 4 + 2] ) * foreground_b_factor * alpha + static_cast<float>( background_color_hint.b ) * ( 1.f - alpha ) );
 			}
 
-			preblended_image.create( preblended_image.getWidth(), preblended_image.getHeight(), bytes );
+			preblended_image.create( preblended_image.getSize().x, preblended_image.getSize().y, bytes );
 
 			delete[] bytes;
 		}
@@ -678,7 +711,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 	}
 
 	const sf::Uint8* bytes = preblended_image.getPixelsPtr();
-	std::size_t byte_count = preblended_image.getWidth() * preblended_image.getHeight() * 4;
+	std::size_t byte_count = preblended_image.getSize().x * preblended_image.getSize().y * 4;
 
 	// Disable this check for now.
 	static sf::Uint8 alpha_threshold = 255;
@@ -702,14 +735,14 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, sf::Color background_c
 	// If 1 pixel isn't enough, increase.
 	const static unsigned int padding = 1;
 
-	new_image.create( std::max( old_image.getWidth(), preblended_image.getWidth() ), old_image.getHeight() + preblended_image.getHeight() + padding, sf::Color::White );
+	new_image.create( std::max( old_image.getSize().x, preblended_image.getSize().x ), old_image.getSize().y + preblended_image.getSize().y + padding, sf::Color::White );
 	new_image.copy( old_image, 0, 0 );
 
-	new_image.copy( preblended_image, 0, old_image.getHeight() + padding );
+	new_image.copy( preblended_image, 0, old_image.getSize().y + padding );
 
 	m_texture_atlas.loadFromImage( new_image );
 
-	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( old_image.getHeight() + padding ) );
+	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( old_image.getSize().y + padding ) );
 
 	InvalidateVBO();
 
@@ -755,7 +788,7 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	std::size_t primitives_size = m_primitives.size();
 
 	// Used to normalize texture coordinates.
-	sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.getWidth() ), 1.f / static_cast<float>( m_texture_atlas.getHeight() ) );
+	sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.getSize().x ), 1.f / static_cast<float>( m_texture_atlas.getSize().y ) );
 
 	// Depth test vars
 	float depth = -4.f;
@@ -915,6 +948,12 @@ void Renderer::InvalidateVBO() {
 }
 
 void Renderer::TuneDepthTest( unsigned char strategy ) {
+#ifdef SFGUI_DEBUG
+	std::cerr << "TuneDepthTest is currently broken. We might consider fixing this in the future.\n";
+#endif
+
+	return;
+
 	if( strategy & NO_DEPTH ) {
 		m_depth_clear_strategy = strategy;
 
@@ -961,6 +1000,12 @@ void Renderer::TuneAlphaThreshold( float alpha_threshold ) {
 }
 
 void Renderer::TunePrecomputeBlending( bool enable ) {
+#ifdef SFGUI_DEBUG
+	std::cerr << "TunePrecomputeBlending is currently broken. We might consider fixing this in the future.\n";
+#endif
+
+	return;
+
 	if( !m_primitives.empty() ) {
 #ifdef SFGUI_DEBUG
 		std::cerr << "TunePrecomputeBlending() can only be called before any primitives are constructed.\n";

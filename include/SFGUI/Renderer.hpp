@@ -141,6 +141,7 @@ class SFGUI_API Renderer {
 		void Display( sf::RenderWindow& window );
 
 		/** Enable and select depth testing method.
+		 * WARNING: THIS IS BROKEN UNTIL FURTHER NOTICE.
 		 * Renderer::NO_DEPTH To disable depth testing.
 		 * Renderer::CLEAR_DEPTH To enable depth testing and running glClear() every frame.
 		 * Renderer::ALTERNATE_DEPTH To enable depth testing and alternate between GL_LESS and GL_GREATER instead of clearing the depth buffer every frame. Use this only if you don't use the depth buffer yourself.
@@ -154,6 +155,7 @@ class SFGUI_API Renderer {
 		void TuneAlphaThreshold( float alpha_threshold );
 
 		/** Enable or disable blend precomputing. Offload the blending from GPU to CPU. Enable with care. YMMV
+		 * WARNING: THIS IS BROKEN UNTIL FURTHER NOTICE.
 		 * @param enable true to enable, false to disable.
 		 */
 		void TunePrecomputeBlending( bool enable );
@@ -193,7 +195,7 @@ class SFGUI_API Renderer {
 
 		sf::Texture m_texture_atlas;
 
-		typedef std::pair<void*, unsigned int> FontID;
+		typedef std::size_t FontID;
 
 		std::map<const sf::Uint8*, sf::Vector2f> m_atlas_offsets;
 		std::map<FontID, sf::Vector2f> m_font_offsets;

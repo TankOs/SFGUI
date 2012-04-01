@@ -53,4 +53,10 @@ const std::string& Label::GetName() const {
 	return name;
 }
 
+void Label::HandleVisibilityChange() {
+}
+
+void Label::HandleParentVisibilityChange() {
+}
+
 }

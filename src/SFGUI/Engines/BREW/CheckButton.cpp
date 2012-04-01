@@ -10,8 +10,8 @@ namespace eng {
 
 RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const {
 	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", check ) );
+	sf::Color check_background_color( GetProperty<sf::Color>( "CheckBackgroundColor", check ) );
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", check ) );
-	sf::Color global_background_color( GetProperty<sf::Color>( "BackgroundColor", Widget::Ptr() ) );
 	sf::Color color( GetProperty<sf::Color>( "Color", check ) );
 	sf::Color check_color( GetProperty<sf::Color>( "CheckColor", check ) );
 	int border_color_shift( GetProperty<int>( "BorderColorShift", check ) );
@@ -27,13 +27,10 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 	// Check Pane.
 	queue->Add(
 		Renderer::Get().CreatePane(
-
-
-
 			sf::Vector2f( 0.f, check->GetAllocation().height / 2.f - box_size / 2.f ),
 			sf::Vector2f( box_size, box_size ),
 			border_width,
-			background_color,
+			check_background_color,
 			border_color,
 			-border_color_shift
 		)
@@ -66,7 +63,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 			check->GetAllocation().height / 2.f - metrics.y / 2.f
 		);
 		text.setColor( color );
-		queue->Add( Renderer::Get().CreateText( text, global_background_color ) );
+		queue->Add( Renderer::Get().CreateText( text, background_color ) );
 	}
 
 	return queue;

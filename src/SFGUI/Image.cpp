@@ -22,7 +22,7 @@ Image::Ptr Image::Create( const sf::Image& image ) {
 }
 
 void Image::SetImage( const sf::Image& image ) {
-	if( image.getWidth() && image.getHeight() ) {
+	if( image.getSize().x && image.getSize().y ) {
 		m_image = image;
 		m_texture.loadFromImage( m_image );
 	}
@@ -44,7 +44,7 @@ RenderQueue* Image::InvalidateImpl() const {
 }
 
 sf::Vector2f Image::CalculateRequisition() {
-	return sf::Vector2f( static_cast<float>( m_image.getWidth() ), static_cast<float>( m_image.getHeight() ) );
+	return sf::Vector2f( static_cast<float>( m_image.getSize().x ), static_cast<float>( m_image.getSize().y ) );
 }
 
 const std::string& Image::GetName() const {

@@ -124,13 +124,11 @@ void SampleApp::Run() {
 	//m_window.EnableVerticalSync( true );
 
 	// Tune Renderer
-	sfg::Renderer::Get().TuneDepthTest( sfg::Renderer::ALTERNATE_DEPTH );
 	sfg::Renderer::Get().TuneAlphaThreshold( .2f );
-	sfg::Renderer::Get().TunePrecomputeBlending( true );
 	sfg::Renderer::Get().TuneCull( true );
 
 	// Create widgets.
-	m_wndmain = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE );
+	m_wndmain = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE | sfg::Window::SHADOW );
 	m_wndmain->SetTitle( L"Example application" );
 
 	sfg::Button::Ptr btnaddbuttonh( sfg::Button::Create( L"Add button horizontally" ) );

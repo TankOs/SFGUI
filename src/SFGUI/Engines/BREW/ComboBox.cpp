@@ -89,7 +89,13 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			sf::Text text( combo_box->GetItem( item_index ), font, font_size );
 			text.setPosition( item_position.x + padding, item_position.y + padding );
 			text.setColor( color );
-			queue->Add( Renderer::Get().CreateText( text, highlighted_color ) );
+
+			if( item_index == combo_box->GetHighlightedItem() ) {
+				queue->Add( Renderer::Get().CreateText( text, highlighted_color ) );
+			}
+			else {
+				queue->Add( Renderer::Get().CreateText( text, background_color ) );
+			}
 
 			item_position.y += item_size.y;
 		}
