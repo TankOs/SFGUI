@@ -551,6 +551,7 @@ void Renderer::RestoreGL( sf::RenderWindow& window ) {
 	// the data structures directly from the SFML headers, if Laurent
 	// decides to change their size one day we won't even notice.
 	struct StatesCache {
+		bool glStatesSet;
 		bool ViewChanged;
 		sf::BlendMode LastBlendMode;
 		sf::Uint64 LastTextureId;
@@ -559,11 +560,11 @@ void Renderer::RestoreGL( sf::RenderWindow& window ) {
 	};
 
 	// All your cache are belong to us.
-	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ), 0, sizeof( StatesCache ) );
+	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderWindow ) - sizeof( StatesCache ) + 1, 0, sizeof( StatesCache ) - 1 );
 
 	// This is to make it forget it's cached viewport.
 	// Seriously... caching the viewport? Come on...
-	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ), 1, 1 );
+	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderWindow ) - sizeof( StatesCache ) + 1, 1, 1 );
 }
 
 sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size, sf::Color background_color_hint, sf::Color foreground_color_hint ) {

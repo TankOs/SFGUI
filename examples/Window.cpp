@@ -9,6 +9,9 @@ int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Window Example", sf::Style::Titlebar | sf::Style::Close );
 
+	// We have to do this because we don't use SFML to draw.
+	app_window.resetGLStates();
+
 	// Construct our SFML guard
 	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
 	sfg::SFGUI sfgui;

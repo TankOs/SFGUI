@@ -50,6 +50,9 @@ void DesktopExample::Run() {
 	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "SFGUI Desktop Example" );
 	sf::Event event;
 
+	// We have to do this because we don't use SFML to draw.
+	render_window.resetGLStates();
+
 	//// Main window ////
 	// Widgets.
 	m_window->SetTitle( "SFGUI Desktop Example" );

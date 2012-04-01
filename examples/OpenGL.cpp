@@ -8,6 +8,9 @@ const float PI = 3.14159265f;
 int main() {
 	sf::RenderWindow render_window( sf::VideoMode( 800, 600 ), "SFGUI with OpenGL example", sf::Style::Titlebar | sf::Style::Close );
 
+	// We have to do this because we don't use SFML to draw.
+	render_window.resetGLStates();
+
 	// Construct our SFML guard
 	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
 	sfg::SFGUI sfgui;

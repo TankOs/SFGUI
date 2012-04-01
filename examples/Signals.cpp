@@ -75,6 +75,9 @@ void BazClass::Baz() {
 void Application::Run() {
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
 
+	// We have to do this because we don't use SFML to draw.
+	app_window.resetGLStates();
+
 	window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 

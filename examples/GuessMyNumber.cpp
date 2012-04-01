@@ -107,6 +107,9 @@ void GuessMyNumber::Run() {
 	sf::RenderWindow render_window( sf::VideoMode( 1024, 768, 32 ), TITLE, sf::Style::Titlebar | sf::Style::Close );
 	sf::Event event;
 
+	// We have to do this because we don't use SFML to draw.
+	render_window.resetGLStates();
+
 	// Create widgets.
 	sfg::Window::Ptr window( sfg::Window::Create() );
 	window->SetTitle( TITLE );
