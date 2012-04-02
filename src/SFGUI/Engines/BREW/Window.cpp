@@ -121,7 +121,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		title_text.setPosition( title_position );
 		title_text.setColor( title_text_color );
 
-		queue->Add( Renderer::Get().CreateText( title_text, title_background_color ) );
+		queue->Add( Renderer::Get().CreateText( title_text ) );
 	}
 
 	return queue;

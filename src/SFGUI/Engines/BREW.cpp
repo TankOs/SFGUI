@@ -56,16 +56,6 @@ void BREW::ResetProperties() {
 	SetProperty( "Window", "ShadowDistance", 3.f );
 	SetProperty( "Window", "ShadowAlpha", 100.f );
 
-	// Notebook-specific.
-	SetProperty( "Notebook", "BorderColor", sf::Color( 0x50, 0x52, 0x4D ) );
-	SetProperty( "Notebook", "BackgroundColor", sf::Color( 0x4C, 0x4C, 0x4C ) );
-	SetProperty( "Notebook", "BackgroundColorDark", sf::Color( 0x42, 0x42, 0x42 ) );
-	SetProperty( "Notebook", "BackgroundColorPrelight", sf::Color( 0x48, 0x48, 0x48 ) );
-	SetProperty( "Notebook > Label:NORMAL", "BackgroundColor", sf::Color( 0x42, 0x42, 0x42 ) );
-	SetProperty( "Notebook > Label:PRELIGHT", "BackgroundColor", sf::Color( 0x48, 0x48, 0x48 ) );
-	SetProperty( "Notebook > Label:SELECTED", "BackgroundColor", sf::Color( 0x4C, 0x4C, 0x4C ) );
-	SetProperty( "Notebook *", "BackgroundColor", sf::Color( 0x4C, 0x4C, 0x4C ) );
-
 	// Button-specific.
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
 	SetProperty( "Button", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
@@ -74,9 +64,6 @@ void BREW::ResetProperties() {
 	SetProperty( "Button:PRELIGHT", "Color", sf::Color::White );
 	SetProperty( "Button:ACTIVE", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
 	SetProperty( "Button:ACTIVE", "Color", sf::Color::Black );
-	SetProperty( "Button *", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
-	SetProperty( "Button:PRELIGHT *", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
-	SetProperty( "Button:ACTIVE *", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
 
 	// ToggleButton-specific.
 	SetProperty( "ToggleButton", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );
@@ -92,10 +79,10 @@ void BREW::ResetProperties() {
 	SetProperty( "CheckButton", "BoxSize", 14.f );
 	SetProperty( "CheckButton", "CheckSize", 6.f );
 	SetProperty( "CheckButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
-	SetProperty( "CheckButton", "CheckBackgroundColor", sf::Color( 0x36, 0x36, 0x36 ) );
+	SetProperty( "CheckButton", "BackgroundColor", sf::Color( 0x36, 0x36, 0x36 ) );
 	SetProperty( "CheckButton", "CheckColor", sf::Color( 0x9e, 0x9e, 0x9e ) );
-	SetProperty( "CheckButton:PRELIGHT", "CheckBackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
-	SetProperty( "CheckButton:ACTIVE", "CheckBackgroundColor", sf::Color( 0x56, 0x56, 0x56 ) );
+	SetProperty( "CheckButton:PRELIGHT", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
+	SetProperty( "CheckButton:ACTIVE", "BackgroundColor", sf::Color( 0x56, 0x56, 0x56 ) );
 
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
@@ -136,6 +123,12 @@ void BREW::ResetProperties() {
 	SetProperty( "Frame", "BorderColor", sf::Color( 0x75, 0x77, 0x72 ) );
 	SetProperty( "Frame", "Padding", 7.f );
 	SetProperty( "Frame", "LabelPadding", 5.f );
+
+	// Notebook-specific.
+	SetProperty( "Notebook", "BorderColor", sf::Color( 0x50, 0x52, 0x4D ) );
+	SetProperty( "Notebook", "BackgroundColor", sf::Color( 0x4C, 0x4C, 0x4C ) );
+	SetProperty( "Notebook", "BackgroundColorDark", sf::Color( 0x42, 0x42, 0x42 ) );
+	SetProperty( "Notebook", "BackgroundColorPrelight", sf::Color( 0x48, 0x48, 0x48 ) );
 
 	// Spinner-specific.
 	SetProperty( "Spinner", "CycleDuration", 800.f );

@@ -52,7 +52,7 @@ class SFGUI_API Renderer {
 		 * @param background_color_hint Background color hint for pre-blending.
 		 * @return New text primitive.
 		 */
-		Primitive::Ptr CreateText( const sf::Text& text, sf::Color background_color_hint );
+		Primitive::Ptr CreateText( const sf::Text& text );
 
 		/** Create and register a new quad primitive with the renderer.
 		 * @param top_left Top left corner of the quad.
@@ -110,7 +110,7 @@ class SFGUI_API Renderer {
 		 * @param background_color_hint Background color hint for pre-blending.
 		 * @return New image primitive.
 		 */
-		Primitive::Ptr CreateImage( const sf::FloatRect& rect, const sf::Image& image, sf::Color background_color_hint );
+		Primitive::Ptr CreateImage( const sf::FloatRect& rect, const sf::Image& image );
 
 		/** Create and register a new line primitive with the renderer.
 		 * @param begin Starting point of the line.
@@ -141,7 +141,6 @@ class SFGUI_API Renderer {
 		void Display( sf::RenderWindow& window );
 
 		/** Enable and select depth testing method.
-		 * WARNING: THIS IS BROKEN UNTIL FURTHER NOTICE.
 		 * Renderer::NO_DEPTH To disable depth testing.
 		 * Renderer::CLEAR_DEPTH To enable depth testing and running glClear() every frame.
 		 * Renderer::ALTERNATE_DEPTH To enable depth testing and alternate between GL_LESS and GL_GREATER instead of clearing the depth buffer every frame. Use this only if you don't use the depth buffer yourself.
@@ -153,12 +152,6 @@ class SFGUI_API Renderer {
 		 * @param alpha_threshold Threshold at which fragments will get discarded if their alpha value is less than or equal to. Set to 0.f to disable.
 		 */
 		void TuneAlphaThreshold( float alpha_threshold );
-
-		/** Enable or disable blend precomputing. Offload the blending from GPU to CPU. Enable with care. YMMV
-		 * WARNING: THIS IS BROKEN UNTIL FURTHER NOTICE.
-		 * @param enable true to enable, false to disable.
-		 */
-		void TunePrecomputeBlending( bool enable );
 
 		/** Enable or disable CPU driven face culling.
 		 * @param enable true to enable, false to disable.
@@ -178,9 +171,9 @@ class SFGUI_API Renderer {
 
 		void RefreshVBO( sf::RenderWindow& window );
 
-		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size, sf::Color background_color_hint, sf::Color foreground_color_hint );
+		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size );
 
-		sf::Vector2f LoadImage( const sf::Image& image, sf::Color background_color_hint, sf::Color foreground_color_hint = sf::Color( 0, 0, 0, 0 ), bool force_insert = false );
+		sf::Vector2f LoadImage( const sf::Image& image, bool force_insert = false );
 
 		typedef std::pair<SharedPtr<RendererViewport>, unsigned int> ViewportPair;
 
@@ -195,7 +188,7 @@ class SFGUI_API Renderer {
 
 		sf::Texture m_texture_atlas;
 
-		typedef std::size_t FontID;
+		typedef std::pair<void*, unsigned int> FontID;
 
 		std::map<const sf::Uint8*, sf::Vector2f> m_atlas_offsets;
 		std::map<FontID, sf::Vector2f> m_font_offsets;
@@ -214,7 +207,6 @@ class SFGUI_API Renderer {
 		bool m_depth_alternate_flag;
 
 		bool m_vbo_synced;
-		bool m_preblend;
 		bool m_cull;
 
 		bool m_pseudo_texture_loaded;

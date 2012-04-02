@@ -39,7 +39,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	vis_label.setColor( text_color );
 	vis_label.setPosition( text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f );
 
-	queue->Add( Renderer::Get().CreateText( vis_label, background_color ) );
+	queue->Add( Renderer::Get().CreateText( vis_label ) );
 
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->HasFocus() && entry->IsCursorVisible() ) {

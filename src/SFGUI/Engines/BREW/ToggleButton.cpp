@@ -50,7 +50,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 		);
 
 		text.setColor( color );
-		queue->Add( Renderer::Get().CreateText( text, background_color ) );
+		queue->Add( Renderer::Get().CreateText( text ) );
 	}
 
 	return queue;

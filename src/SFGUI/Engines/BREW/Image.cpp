@@ -19,8 +19,7 @@ RenderQueue* BREW::CreateImageDrawable( SharedPtr<const Image> image ) const {
 				static_cast<float>( image->GetImage().getSize().x ),
 				static_cast<float>( image->GetImage().getSize().y )
 			),
-			image->GetImage(),
-			background_color
+			image->GetImage()
 		)
 	);
 

@@ -68,7 +68,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 		sf::Text text( frame->GetLabel(), font, font_size );
 		text.setPosition( label_start_x + label_padding, .0f );
 		text.setColor( color );
-		queue->Add( Renderer::Get().CreateText( text, background_color ) );
+		queue->Add( Renderer::Get().CreateText( text ) );
 	}
 
 	// Top Left

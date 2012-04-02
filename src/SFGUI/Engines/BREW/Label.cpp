@@ -24,7 +24,7 @@ RenderQueue* BREW::CreateLabelDrawable( SharedPtr<const Label> label ) const {
 	vis_label.setPosition( position.x, position.y );
 
 	RenderQueue* queue( new RenderQueue );
-	queue->Add( Renderer::Get().CreateText( vis_label, background_color ) );
+	queue->Add( Renderer::Get().CreateText( vis_label ) );
 
 	return queue;
 }

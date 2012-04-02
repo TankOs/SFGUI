@@ -62,7 +62,7 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 		}
 
 		text.setColor( color );
-		queue->Add( Renderer::Get().CreateText( text, background_color ) );
+		queue->Add( Renderer::Get().CreateText( text ) );
 	}
 
 	return queue;
