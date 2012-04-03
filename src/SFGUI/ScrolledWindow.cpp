@@ -37,6 +37,14 @@ const Adjustment::Ptr& ScrolledWindow::GetHorizontalAdjustment() const {
 void ScrolledWindow::SetHorizontalAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_horizontal_scrollbar->SetAdjustment( adjustment );
 
+	if( GetChildren().size() > 2 ) {
+		sfg::Viewport::Ptr viewport = sfg::DynamicPointerCast<sfg::Viewport>( GetChildren()[2] );
+
+		if( viewport ) {
+			viewport->SetHorizontalAdjustment( adjustment );
+		}
+	}
+
 	RecalculateContentAllocation();
 	Invalidate();
 }
@@ -47,6 +55,14 @@ const Adjustment::Ptr& ScrolledWindow::GetVerticalAdjustment() const {
 
 void ScrolledWindow::SetVerticalAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_vertical_scrollbar->SetAdjustment( adjustment );
+
+	if( GetChildren().size() > 2 ) {
+		sfg::Viewport::Ptr viewport = sfg::DynamicPointerCast<sfg::Viewport>( GetChildren()[2] );
+
+		if( viewport ) {
+			viewport->SetVerticalAdjustment( adjustment );
+		}
+	}
 
 	RecalculateContentAllocation();
 	Invalidate();

@@ -598,9 +598,9 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, bool force_insert ) {
 		m_pseudo_texture_loaded = true;
 
 		// Load our "no texture" pseudo-texture.
-		sf::Image image;
-		image.create( 2, 2, sf::Color::White );
-		LoadImage( image );
+		sf::Image pseudo_image;
+		pseudo_image.create( 2, 2, sf::Color::White );
+		LoadImage( pseudo_image );
 	}
 
 	const sf::Uint8* pixels_ptr = image.getPixelsPtr();
