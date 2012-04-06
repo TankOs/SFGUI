@@ -20,21 +20,31 @@ namespace sfg {
 SharedPtr<Renderer> Renderer::m_instance = SharedPtr<Renderer>();
 
 Renderer::Renderer() :
+	m_frame_buffer( 0 ),
+	m_display_list( 0 ),
 	m_last_vertex_count( 0 ),
 	m_vertex_count( 0 ),
 	m_alpha_threshold( 0.f ),
 	m_depth_clear_strategy( NO_DEPTH ),
 	m_vbo_synced( false ),
 	m_cull( false ),
-	m_pseudo_texture_loaded( false ) {
+	m_use_fbo( false ),
+	m_pseudo_texture_loaded( false ),
+	m_fbo_supported( false ) {
 	glGenBuffers( 1, &m_vertex_vbo );
 	glGenBuffers( 1, &m_color_vbo );
 	glGenBuffers( 1, &m_texture_vbo );
 
 	m_default_viewport = CreateViewport();
+
+	if( GLEE_ARB_framebuffer_object ) {
+		m_fbo_supported = true;
+	}
 }
 
 Renderer::~Renderer() {
+	DestroyFBO();
+
 	glDeleteBuffers( 1, &m_texture_vbo );
 	glDeleteBuffers( 1, &m_color_vbo );
 	glDeleteBuffers( 1, &m_vertex_vbo );
@@ -366,79 +376,137 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 }
 
 void Renderer::Display( sf::RenderWindow& window ) {
-	// Refresh VBO data if out of sync
-	if( !m_vbo_synced ) {
-		RefreshVBO( window );
-
-		m_vbo_synced = true;
-	}
-
-	// Thanks to color / texture modulation we can draw the entire
-	// frame in a single pass by pseudo-disabling the texturing with
-	// the help of a white texture ( 1.f * something = something ).
-	// Further, we stick all referenced textures into our giant atlas
-	// so we don't have to rebind during the draw.
-
 	SetupGL( window );
 
-	m_texture_atlas.bind();
-
-	glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
-	glVertexPointer( 3, GL_FLOAT, 0, 0 );
-
-	glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
-	glColorPointer( 4, GL_UNSIGNED_BYTE, 0, 0 );
-
-	glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
-	glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
-
-	// Not needed, constantly kept enabled by SFML... -_-
-	//glEnableClientState( GL_VERTEX_ARRAY );
-	//glEnableClientState( GL_COLOR_ARRAY );
-	//glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	std::size_t scissor_pairs_size = m_viewport_pairs.size();
-
-	glEnable( GL_SCISSOR_TEST );
-
-	for( std::size_t index = 0; index < scissor_pairs_size; ++index ) {
-		const ViewportPair& scissor_pair = m_viewport_pairs[index];
-
-		RendererViewport::Ptr viewport = scissor_pair.first;
-
-		if( viewport && ( viewport != m_default_viewport ) ) {
-			sf::Vector2f destination_origin = viewport->GetDestinationOrigin();
-			sf::Vector2f size = viewport->GetSize();
-
-			glScissor(
-				static_cast<int>( destination_origin.x ),
-				window.getSize().y - static_cast<int>( destination_origin.y + size.y ),
-				static_cast<int>( size.x ),
-				static_cast<int>( size.y )
-			);
-		}
-		else {
-			glScissor( 0, 0, window.getSize().x, window.getSize().y );
-		}
-
-		if( index < scissor_pairs_size - 1 ) {
-			glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_viewport_pairs[index + 1].second - scissor_pair.second );
-		}
-		else {
-			glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_last_vertex_count - scissor_pair.second );
-		}
+	if( !m_vbo_synced ) {
+		// Refresh VBO data if out of sync
+		RefreshVBO( window );
 	}
 
-	glDisable( GL_SCISSOR_TEST );
+	if( !m_use_fbo || !m_vbo_synced ) {
+		// Thanks to color / texture modulation we can draw the entire
+		// frame in a single pass by pseudo-disabling the texturing with
+		// the help of a white texture ( 1.f * something = something ).
+		// Further, we stick all referenced textures into our giant atlas
+		// so we don't have to rebind during the draw.
 
-	//glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	//glDisableClientState( GL_COLOR_ARRAY );
-	//glDisableClientState( GL_VERTEX_ARRAY );
+		m_texture_atlas.bind();
 
-	// Needed otherwise SFML will blow up...
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
+		glVertexPointer( 3, GL_FLOAT, 0, 0 );
+
+		glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
+		glColorPointer( 4, GL_UNSIGNED_BYTE, 0, 0 );
+
+		glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
+		glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
+
+		// Not needed, constantly kept enabled by SFML... -_-
+		//glEnableClientState( GL_VERTEX_ARRAY );
+		//glEnableClientState( GL_COLOR_ARRAY );
+		//glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+		std::size_t scissor_pairs_size = m_viewport_pairs.size();
+
+		if( m_use_fbo ) {
+			glBindFramebuffer( GL_FRAMEBUFFER, m_frame_buffer );
+
+			glClear( GL_COLOR_BUFFER_BIT | ( ( m_depth_clear_strategy == CLEAR_DEPTH ) ? GL_DEPTH_BUFFER_BIT : 0 ) );
+		}
+
+		if( m_depth_clear_strategy ) {
+			glEnable( GL_DEPTH_TEST );
+
+			if( !m_use_fbo && ( m_depth_clear_strategy & CLEAR_DEPTH ) ) {
+				glClear( GL_DEPTH_BUFFER_BIT );
+			}
+			else if( m_depth_clear_strategy & ALTERNATE_DEPTH ) {
+				if( m_depth_alternate_flag ) {
+					glDepthFunc( GL_LESS );
+					glDepthRange( 0.0, 0.5 );
+				}
+				else {
+					glDepthFunc( GL_GREATER );
+					glDepthRange( 1.0, 0.5 );
+				}
+
+				m_depth_alternate_flag = !m_depth_alternate_flag;
+			}
+		}
+
+		glEnable( GL_SCISSOR_TEST );
+
+		for( std::size_t index = 0; index < scissor_pairs_size; ++index ) {
+			const ViewportPair& scissor_pair = m_viewport_pairs[index];
+
+			RendererViewport::Ptr viewport = scissor_pair.first;
+
+			if( viewport && ( viewport != m_default_viewport ) ) {
+				sf::Vector2f destination_origin = viewport->GetDestinationOrigin();
+				sf::Vector2f size = viewport->GetSize();
+
+				glScissor(
+					static_cast<int>( destination_origin.x ),
+					window.getSize().y - static_cast<int>( destination_origin.y + size.y ),
+					static_cast<int>( size.x ),
+					static_cast<int>( size.y )
+				);
+			}
+			else {
+				glScissor( 0, 0, window.getSize().x, window.getSize().y );
+			}
+
+			if( index < scissor_pairs_size - 1 ) {
+				glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_viewport_pairs[index + 1].second - scissor_pair.second );
+			}
+			else {
+				glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_last_vertex_count - scissor_pair.second );
+			}
+		}
+
+		glDisable( GL_SCISSOR_TEST );
+
+		if( m_depth_clear_strategy ) {
+			glDisable( GL_DEPTH_TEST );
+		}
+
+		//glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+		//glDisableClientState( GL_COLOR_ARRAY );
+		//glDisableClientState( GL_VERTEX_ARRAY );
+
+		// Needed otherwise SFML will blow up...
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+		if( m_use_fbo ) {
+			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+			glNewList( m_display_list, GL_COMPILE_AND_EXECUTE );
+
+			glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture );
+
+			glBegin( GL_QUADS );
+			glTexCoord2f( 0, 1 );
+			glVertex3i( 0, 0, -10 );
+			glTexCoord2f( 0, 0 );
+			glVertex3i( 0, window.getSize().y, -10 );
+			glTexCoord2f( 1, 0 );
+			glVertex3i( window.getSize().x, window.getSize().y, -10 );
+			glTexCoord2f( 1, 1 );
+			glVertex3i( window.getSize().x, 0, -10 );
+			glEnd();
+
+			glBindTexture( GL_TEXTURE_2D, 0 );
+
+			glEndList();
+		}
+	}
+	else {
+		glCallList( m_display_list );
+	}
 
 	RestoreGL( window );
+
+	m_vbo_synced = true;
 }
 
 void Renderer::SetupGL( sf::RenderWindow& window ) {
@@ -465,6 +533,12 @@ void Renderer::SetupGL( sf::RenderWindow& window ) {
 
 		last_width = width;
 		last_height = height;
+
+		if( last_width && last_height ) {
+			SetupFBO( last_width, last_height );
+
+			InvalidateVBO();
+		}
 	}
 
 	glOrtho( 0.0f, static_cast<GLdouble>( width ? width : 1 ), static_cast<GLdouble>( height ? height : 1 ), 0.0f, -1.0f, 64.0f );
@@ -473,28 +547,9 @@ void Renderer::SetupGL( sf::RenderWindow& window ) {
 	glPushMatrix();
 	glLoadIdentity();
 
-	if( m_depth_clear_strategy ) {
-		glEnable( GL_DEPTH_TEST );
-
-		if( m_depth_clear_strategy & CLEAR_DEPTH ) {
-			glClear( GL_DEPTH_BUFFER_BIT );
-		}
-		else if( m_depth_clear_strategy & ALTERNATE_DEPTH ) {
-			if( m_depth_alternate_flag ) {
-				glDepthFunc( GL_LESS );
-				glDepthRange( 0.0, 0.5 );
-			}
-			else {
-				glDepthFunc( GL_GREATER );
-				glDepthRange( 1.0, 0.5 );
-			}
-
-			m_depth_alternate_flag = !m_depth_alternate_flag;
-		}
-	}
-
 	if( m_alpha_threshold > 0.f ) {
 		glAlphaFunc( GL_GREATER, m_alpha_threshold );
+		glEnable( GL_ALPHA_TEST );
 	}
 
 	glEnable( GL_CULL_FACE );
@@ -504,11 +559,8 @@ void Renderer::RestoreGL( sf::RenderWindow& window ) {
 	glDisable( GL_CULL_FACE );
 
 	if( m_alpha_threshold > 0.f ) {
+		glDisable( GL_ALPHA_TEST );
 		glAlphaFunc( GL_GREATER, 0.f );
-	}
-
-	if( m_depth_clear_strategy ) {
-		glDisable( GL_DEPTH_TEST );
 	}
 
 	glPopMatrix();
@@ -850,7 +902,94 @@ void Renderer::InvalidateVBO() {
 	m_vbo_synced = false;
 }
 
+void Renderer::SetupFBO( unsigned int width, unsigned int height ) {
+	if( !m_use_fbo ) {
+		return;
+	}
+
+	// Create FBO.
+	glGenFramebuffers( 1, &m_frame_buffer );
+
+	glBindFramebuffer( GL_FRAMEBUFFER, m_frame_buffer );
+
+	// Create FBO texture object.
+	glGenTextures( 1, &m_frame_buffer_texture );
+
+	glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture );
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE );
+
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+
+	glBindTexture( GL_TEXTURE_2D, 0 );
+
+	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_frame_buffer_texture, 0 );
+
+	// Create FBO renderbuffer for depth storage.
+	glGenRenderbuffers( 1, &m_frame_buffer_depth );
+
+	glBindRenderbuffer( GL_RENDERBUFFER, m_frame_buffer_depth );
+	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
+	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
+
+	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_frame_buffer_depth );
+
+	// Sanity check.
+	GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+
+	if( status != GL_FRAMEBUFFER_COMPLETE ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "glCheckFramebufferStatus() returned error " << status << ", disabling FBO.\n";
+#endif
+
+		DestroyFBO();
+
+		m_fbo_supported = false;
+		m_use_fbo = false;
+	}
+
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+	m_display_list = glGenLists( 1 );
+}
+
+void Renderer::DestroyFBO() {
+	if( !m_use_fbo ) {
+		return;
+	}
+
+	glDeleteLists( m_display_list, 1 );
+
+	if( m_frame_buffer_depth ) {
+		glDeleteRenderbuffers( 1, &m_frame_buffer_depth );
+
+		m_frame_buffer_depth = 0;
+	}
+
+	if( m_frame_buffer_texture ) {
+		glDeleteTextures( 1, &m_frame_buffer_texture );
+
+		m_frame_buffer_texture = 0;
+	}
+
+	if( m_frame_buffer ) {
+		glDeleteFramebuffers( 1, &m_frame_buffer );
+
+		m_frame_buffer = 0;
+	}
+}
+
 void Renderer::TuneDepthTest( unsigned char strategy ) {
+#ifdef SFGUI_DEBUG
+	std::cerr << "SFGUI warning: Depth testing is currently broken and disabled.\n";
+#endif
+
+	return;
+
 	if( strategy & NO_DEPTH ) {
 		m_depth_clear_strategy = strategy;
 
@@ -898,6 +1037,16 @@ void Renderer::TuneAlphaThreshold( float alpha_threshold ) {
 
 void Renderer::TuneCull( bool enable ) {
 	m_cull = enable;
+}
+
+void Renderer::TuneUseFBO( bool enable ) {
+	if( !m_fbo_supported && enable ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "FBO extension unavailable.\n";
+#endif
+	}
+
+	m_use_fbo = enable && m_fbo_supported;
 }
 
 }

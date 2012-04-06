@@ -141,6 +141,7 @@ class SFGUI_API Renderer {
 		void Display( sf::RenderWindow& window );
 
 		/** Enable and select depth testing method.
+		 * WARNING: THIS FEATURE IS BROKEN AND THEREFORE DISABLED UNTIL FURTHER NOTICE.
 		 * Renderer::NO_DEPTH To disable depth testing.
 		 * Renderer::CLEAR_DEPTH To enable depth testing and running glClear() every frame.
 		 * Renderer::ALTERNATE_DEPTH To enable depth testing and alternate between GL_LESS and GL_GREATER instead of clearing the depth buffer every frame. Use this only if you don't use the depth buffer yourself.
@@ -157,6 +158,11 @@ class SFGUI_API Renderer {
 		 * @param enable true to enable, false to disable.
 		 */
 		void TuneCull( bool enable );
+
+		/** Enable or disable FBO GUI caching.
+		 * @param enable true to enable, false to disable.
+		 */
+		void TuneUseFBO( bool enable );
 
 	private:
 		/** Ctor.
@@ -175,6 +181,10 @@ class SFGUI_API Renderer {
 
 		sf::Vector2f LoadImage( const sf::Image& image, bool force_insert = false );
 
+		void SetupFBO( unsigned int width, unsigned int height );
+
+		void DestroyFBO();
+
 		typedef std::pair<SharedPtr<RendererViewport>, unsigned int> ViewportPair;
 
 		static SharedPtr<Renderer> m_instance;
@@ -187,6 +197,12 @@ class SFGUI_API Renderer {
 		SharedPtr<RendererViewport> m_default_viewport;
 
 		sf::Texture m_texture_atlas;
+
+		GLuint m_frame_buffer;
+		GLuint m_frame_buffer_texture;
+		GLuint m_frame_buffer_depth;
+
+		GLuint m_display_list;
 
 		typedef std::pair<void*, unsigned int> FontID;
 
@@ -208,8 +224,11 @@ class SFGUI_API Renderer {
 
 		bool m_vbo_synced;
 		bool m_cull;
+		bool m_use_fbo;
 
 		bool m_pseudo_texture_loaded;
+
+		bool m_fbo_supported;
 };
 
 }

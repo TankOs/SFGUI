@@ -124,7 +124,8 @@ void SampleApp::Run() {
 	//m_window.EnableVerticalSync( true );
 
 	// Tune Renderer
-	sfg::Renderer::Get().TuneDepthTest( sfg::Renderer::ALTERNATE_DEPTH );
+	//sfg::Renderer::Get().TuneDepthTest( sfg::Renderer::ALTERNATE_DEPTH );
+	sfg::Renderer::Get().TuneUseFBO( true );
 	sfg::Renderer::Get().TuneAlphaThreshold( .2f );
 	sfg::Renderer::Get().TuneCull( true );
 
@@ -384,6 +385,10 @@ void SampleApp::Run() {
 	m_fps_clock.restart();
 
 	sf::Clock clock;
+	sf::Clock frame_time_clock;
+
+	sf::Int64 frame_times[5000];
+	std::size_t frame_times_index = 0;
 
 	while( m_window.isOpen() ) {
 		while( m_window.pollEvent( event ) ) {
@@ -411,11 +416,26 @@ void SampleApp::Run() {
 
 		m_window.display();
 
+		sf::Int64 frame_time = frame_time_clock.getElapsedTime().asMicroseconds();
+		frame_time_clock.restart();
+
+		frame_times[ frame_times_index ] = frame_time;
+		frame_times_index = ( frame_times_index + 1 ) % 5000;
+
 		if( m_fps_clock.getElapsedTime().asMicroseconds() >= 1000000 ) {
 			m_fps_clock.restart();
 
+			sf::Int64 total_time = 0;
+
+			for( std::size_t index = 0; index < 5000; ++index ) {
+				total_time += frame_times[index];
+			}
+
 			std::stringstream sstr;
-			sstr << "SFGUI test -- FPS: " << m_fps_counter;
+			sstr << "SFGUI test -- FPS: " << m_fps_counter << " -- Frame Time (microsecs): min: "
+			<< *std::min_element( frame_times, frame_times + 5000 ) << " max: "
+			<< *std::max_element( frame_times, frame_times + 5000 ) << " avg: "
+			<< static_cast<float>( total_time ) / 5000.f;
 
 			m_window.setTitle( sstr.str() );
 
