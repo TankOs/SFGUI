@@ -129,6 +129,9 @@ void BREW::ResetProperties() {
 	SetProperty( "Notebook", "BackgroundColor", sf::Color( 0x4C, 0x4C, 0x4C ) );
 	SetProperty( "Notebook", "BackgroundColorDark", sf::Color( 0x42, 0x42, 0x42 ) );
 	SetProperty( "Notebook", "BackgroundColorPrelight", sf::Color( 0x48, 0x48, 0x48 ) );
+	SetProperty( "Notebook", "ScrollButtonSize", 20.f );
+	SetProperty( "Notebook", "ScrollButtonPrelightColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "Notebook", "ScrollSpeed", 2.f );
 
 	// Spinner-specific.
 	SetProperty( "Spinner", "CycleDuration", 800.f );

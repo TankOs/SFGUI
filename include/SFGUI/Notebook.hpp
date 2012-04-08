@@ -128,6 +128,46 @@ class SFGUI_API Notebook : public Container {
 		 */
 		IndexType GetPrelightTab() const;
 
+		/** Set whether the tabs of this Notebook are scrollable.
+		 * @param scrollable True to set the tabs of this Notebook as scrollable.
+		 */
+		void SetScrollable( bool scrollable );
+
+		/** Check whether the tabs of this Notebook scrollable.
+		 * @return true when the tabs of this Notebook are scrollable.
+		 */
+		bool GetScrollable() const;
+
+		/** Get the index of the first tab currently displayed on the tab bar.
+		 * @return Index of the first tab currently displayed on the tab bar.
+		 */
+		IndexType GetFirstDisplayedTab() const;
+
+		/** Get the total number of tabs currently displayed on the tab bar.
+		 * @return Total number of tabs currently displayed on the tab bar.
+		 */
+		IndexType GetDisplayedTabCount() const;
+
+		/** Are the tabs being scrolled forward.
+		 * @return true if the tabs are being scrolled forward.
+		 */
+		bool IsScrollingForward() const;
+
+		/** Are the tabs being scrolled backward.
+		 * @return true if the tabs are being scrolled backward.
+		 */
+		bool IsScrollingBackward() const;
+
+		/** Is the forward scrolling button in prelight state.
+		 * @return true if the forward scrolling button is in prelight state.
+		 */
+		bool IsForwardScrollPrelight() const;
+
+		/** Is the backward scrolling button in prelight state.
+		 * @return true if the backward scrolling button is in prelight state.
+		 */
+		bool IsBackwardScrollPrelight() const;
+
 	protected:
 		/** Ctor.
 		 */
@@ -152,6 +192,10 @@ class SFGUI_API Notebook : public Container {
 		void HandleAdd( const Widget::Ptr& child );
 		void HandleRemove( const Widget::Ptr& child );
 		void HandleSizeChange();
+		void HandleUpdate( float seconds );
+		void HandleVisibilityChange();
+
+		void RecalculateSize();
 
 		sf::Vector2f m_tab_requisition;
 		sf::Vector2f m_child_requisition;
@@ -160,8 +204,20 @@ class SFGUI_API Notebook : public Container {
 
 		IndexType m_current_page;
 		IndexType m_prelight_tab;
+		IndexType m_first_tab;
+		IndexType m_num_displayed_tabs;
 
 		unsigned char m_tab_position;
+
+		float m_elapsed_time;
+
+		bool m_scrollable;
+
+		bool m_scrolling_forward;
+		bool m_scrolling_backward;
+
+		bool m_forward_scroll_prelight;
+		bool m_backward_scroll_prelight;
 };
 
 }

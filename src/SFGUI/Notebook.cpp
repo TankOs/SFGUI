@@ -10,7 +10,15 @@ Notebook::Notebook() :
 	m_child_requisition( 0.f, 0.f ),
 	m_current_page( 0 ),
 	m_prelight_tab( -1 ),
-	m_tab_position( TOP )
+	m_first_tab( 0 ),
+	m_num_displayed_tabs( 0 ),
+	m_tab_position( TOP ),
+	m_elapsed_time( 0.f ),
+	m_scrollable( false ),
+	m_scrolling_forward( false ),
+	m_scrolling_backward( false ),
+	m_forward_scroll_prelight( false ),
+	m_backward_scroll_prelight( false )
 {
 	SetCurrentPage( 0 );
 }
@@ -78,6 +86,17 @@ sf::Vector2f Notebook::CalculateRequisition() {
 
 	m_child_requisition = child_requisition;
 	m_tab_requisition = tab_requisition;
+
+	if( GetScrollable() ) {
+		if( ( GetTabPosition() == TOP ) || ( GetTabPosition() == BOTTOM ) ) {
+			m_tab_requisition.x = 0.f;
+			requisition.x = m_child_requisition.x + 2.f * ( padding + border_width );
+		}
+		else {
+			m_tab_requisition.y = 0.f;
+			requisition.y = m_child_requisition.y + 2.f * ( padding + border_width );
+		}
+	}
 
 	return requisition;
 }
@@ -271,13 +290,95 @@ bool Notebook::ChildLabelPair::operator==( const ChildLabelPair& rhs ) const {
 
 void Notebook::HandleMouseMoveEvent( int x, int y ) {
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
+	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+	float scroll_button_size( Context::Get().GetEngine().GetProperty<float>( "ScrollButtonSize", shared_from_this() ) );
 
-	std::size_t children_size = m_children.size();
-
-	IndexType m_old_prelight_tab = m_prelight_tab;
+	IndexType old_prelight_tab = m_prelight_tab;
 	m_prelight_tab = -1;
 
-	for( std::size_t index = 0; index < children_size; ++index ) {
+	bool old_forward_scroll_prelight = m_forward_scroll_prelight;
+	bool old_backward_scroll_prelight = m_backward_scroll_prelight;
+
+	m_forward_scroll_prelight = false;
+	m_backward_scroll_prelight = false;
+
+	sf::Vector2f tab_size( GetNthTabLabel( 0 )->GetAllocation().width, GetNthTabLabel( 0 )->GetAllocation().height );
+
+	sf::FloatRect scroll_button_allocation( GetAllocation() );
+
+	if( GetFirstDisplayedTab() != 0 ) {
+		// Handle backward scrolling button.
+		switch( GetTabPosition() ) {
+			case TOP:
+				scroll_button_allocation.left += 0.f;
+				scroll_button_allocation.top += 0.f;
+				scroll_button_allocation.width = scroll_button_size;
+				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				break;
+			case BOTTOM:
+				scroll_button_allocation.left += 0.f;
+				scroll_button_allocation.top += GetAllocation().height - ( scroll_button_size + padding );
+				scroll_button_allocation.width = scroll_button_size;
+				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				break;
+			case LEFT:
+				scroll_button_allocation.left += 0.f;
+				scroll_button_allocation.top += 0.f;
+				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.height = scroll_button_size;
+				break;
+			case RIGHT:
+				scroll_button_allocation.left += ( GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) );
+				scroll_button_allocation.top += 0.f;
+				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.height = scroll_button_size;
+				break;
+			default:
+				break;
+		}
+
+		if( scroll_button_allocation.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			m_backward_scroll_prelight = true;
+		}
+	}
+
+	if( GetFirstDisplayedTab() + GetDisplayedTabCount() < GetPageCount() ) {
+		// Handle forward scrolling button.
+		switch( GetTabPosition() ) {
+			case TOP:
+				scroll_button_allocation.left += ( GetAllocation().width - scroll_button_size );
+				scroll_button_allocation.top += 0.f;
+				scroll_button_allocation.width = scroll_button_size;
+				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				break;
+			case BOTTOM:
+				scroll_button_allocation.left += ( GetAllocation().width - scroll_button_size );
+				scroll_button_allocation.top += GetAllocation().height - ( scroll_button_size + padding );
+				scroll_button_allocation.width = scroll_button_size;
+				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				break;
+			case LEFT:
+				scroll_button_allocation.left += 0.f;
+				scroll_button_allocation.top += GetAllocation().height - scroll_button_size;
+				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.height = scroll_button_size;
+				break;
+			case RIGHT:
+				scroll_button_allocation.left += ( GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) );
+				scroll_button_allocation.top += GetAllocation().height - scroll_button_size;
+				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.height = scroll_button_size;
+				break;
+			default:
+				break;
+		}
+
+		if( scroll_button_allocation.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			m_forward_scroll_prelight = true;
+		}
+	}
+
+	for( IndexType index = GetFirstDisplayedTab(); index < GetFirstDisplayedTab() + GetDisplayedTabCount(); ++index ) {
 		sf::FloatRect allocation = m_children[index].tab_label->GetAllocation();
 
 		allocation.left -= padding;
@@ -291,13 +392,39 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 		}
 	}
 
-	if( m_old_prelight_tab != m_prelight_tab ) {
+	if( old_prelight_tab != m_prelight_tab || old_forward_scroll_prelight != m_forward_scroll_prelight || old_backward_scroll_prelight != m_backward_scroll_prelight ) {
 		Invalidate();
 	}
 }
 
 void Notebook::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
-	if( ( button != sf::Mouse::Left ) || !press || ( m_prelight_tab < 0 ) ) {
+	if( ( button != sf::Mouse::Left ) ) {
+		return;
+	}
+
+	float scroll_speed( Context::Get().GetEngine().GetProperty<float>( "ScrollSpeed", shared_from_this() ) );
+
+	m_scrolling_forward = false;
+	m_scrolling_backward = false;
+
+	Invalidate();
+
+	if( m_forward_scroll_prelight && press ) {
+		m_scrolling_forward = true;
+		m_elapsed_time = ( 1.f / scroll_speed );
+		return;
+	}
+	else if( m_backward_scroll_prelight && press ) {
+		m_scrolling_backward = true;
+		m_elapsed_time = ( 1.f / scroll_speed );
+		return;
+	}
+
+	if( !press ) {
+		return;
+	}
+
+	if( m_prelight_tab < 0 ) {
 		return;
 	}
 
@@ -345,16 +472,63 @@ void Notebook::HandleRemove( const Widget::Ptr& child ) {
 }
 
 void Notebook::HandleSizeChange() {
+	m_first_tab = 0;
+
+	RecalculateSize();
+}
+
+void Notebook::HandleUpdate( float seconds ) {
+	Container::HandleUpdate( seconds );
+
+	float scroll_speed( Context::Get().GetEngine().GetProperty<float>( "ScrollSpeed", shared_from_this() ) );
+
+	m_elapsed_time += seconds;
+
+	if( m_elapsed_time < ( 1.f / scroll_speed ) ) {
+		return;
+	}
+
+	m_elapsed_time -= ( 1.f / scroll_speed );
+
+	if( IsScrollingForward() ) {
+		m_first_tab = std::min( m_first_tab + 1, GetPageCount() - GetDisplayedTabCount() );
+		RecalculateSize();
+	}
+	else if( IsScrollingBackward() ) {
+		m_first_tab = std::max( m_first_tab - 1, 0 );
+		RecalculateSize();
+	}
+}
+
+void Notebook::RecalculateSize() {
+	if( !IsVisible() ) {
+		return;
+	}
+
 	float padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+	float scroll_button_size( Context::Get().GetEngine().GetProperty<float>( "ScrollButtonSize", shared_from_this() ) );
 
 	std::size_t children_size = m_children.size();
 
+	for( std::size_t index = 0; index < children_size; ++index ) {
+		m_children[index].tab_label->Show( false );
+	}
+
+	m_num_displayed_tabs = children_size - GetFirstDisplayedTab();
+
 	if( GetTabPosition() == TOP ) {
 		// Tabs are positioned at top.
-		float tab_current_x = 0.f;
+		float tab_current_x = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = 0; index < children_size; ++index ) {
+		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				break;
+			}
+
+			m_children[index].tab_label->Show( true );
+
 			m_children[index].child->SetAllocation(
 				sf::FloatRect(
 					border_width + padding,
@@ -378,9 +552,16 @@ void Notebook::HandleSizeChange() {
 	}
 	else if( GetTabPosition() == BOTTOM ) {
 		// Tabs are positioned at bottom.
-		float tab_current_x = 0.f;
+		float tab_current_x = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = 0; index < children_size; ++index ) {
+		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				break;
+			}
+
+			m_children[index].tab_label->Show( true );
+
 			m_children[index].child->SetAllocation(
 				sf::FloatRect(
 					border_width + padding,
@@ -404,9 +585,16 @@ void Notebook::HandleSizeChange() {
 	}
 	else if( GetTabPosition() == LEFT ) {
 		// Tabs are positioned at left.
-		float tab_current_y = 0.f;
+		float tab_current_y = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = 0; index < children_size; ++index ) {
+		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				break;
+			}
+
+			m_children[index].tab_label->Show( true );
+
 			m_children[index].child->SetAllocation(
 				sf::FloatRect(
 					m_tab_requisition.x + border_width + padding,
@@ -430,9 +618,16 @@ void Notebook::HandleSizeChange() {
 	}
 	else if( GetTabPosition() == RIGHT ) {
 		// Tabs are positioned at right.
-		float tab_current_y = 0.f;
+		float tab_current_y = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = 0; index < children_size; ++index ) {
+		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				break;
+			}
+
+			m_children[index].tab_label->Show( true );
+
 			m_children[index].child->SetAllocation(
 				sf::FloatRect(
 					border_width + padding,
@@ -456,6 +651,52 @@ void Notebook::HandleSizeChange() {
 	}
 
 	Invalidate();
+}
+
+void Notebook::HandleVisibilityChange() {
+	RecalculateSize();
+}
+
+void Notebook::SetScrollable( bool scrollable ) {
+	m_scrollable = scrollable;
+
+	RecalculateSize();
+}
+
+bool Notebook::GetScrollable() const {
+	return m_scrollable;
+}
+
+Notebook::IndexType Notebook::GetFirstDisplayedTab() const {
+	if( !m_scrollable ) {
+		return 0;
+	}
+
+	return m_first_tab;
+}
+
+Notebook::IndexType Notebook::GetDisplayedTabCount() const {
+	if( !m_scrollable ) {
+		return GetPageCount();
+	}
+
+	return m_num_displayed_tabs;
+}
+
+bool Notebook::IsScrollingForward() const {
+	return m_scrolling_forward;
+}
+
+bool Notebook::IsScrollingBackward() const {
+	return m_scrolling_backward;
+}
+
+bool Notebook::IsForwardScrollPrelight() const {
+	return m_forward_scroll_prelight;
+}
+
+bool Notebook::IsBackwardScrollPrelight() const {
+	return m_backward_scroll_prelight;
 }
 
 }

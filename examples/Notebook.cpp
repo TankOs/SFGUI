@@ -35,9 +35,20 @@ int main() {
 	// containing solely the buttons as their children.
 	notebook->AppendPage( button1, sfg::Label::Create( "Page 1" ) );
 	notebook->AppendPage( button2, sfg::Label::Create( "Page 2" ) );
+	notebook->AppendPage( sfg::Label::Create(), sfg::Label::Create( "Page 3" ) );
+	notebook->AppendPage( sfg::Label::Create(), sfg::Label::Create( "Page 4" ) );
+	notebook->AppendPage( sfg::Label::Create(), sfg::Label::Create( "Page 5" ) );
+	notebook->AppendPage( sfg::Label::Create(), sfg::Label::Create( "Page 6" ) );
+	notebook->AppendPage( sfg::Label::Create(), sfg::Label::Create( "Page 7" ) );
+	notebook->AppendPage( sfg::Label::Create(), sfg::Label::Create( "Page 8" ) );
+
+	notebook->SetScrollable( true );
+	notebook->SetRequisition( sf::Vector2f( 200.f, 0.f ) );
 
 	// Add the notebook to the window.
 	window->Add( notebook );
+
+	sf::Clock clock;
 
 	// Start the game loop
 	while ( app_window.isOpen() ) {
@@ -54,9 +65,13 @@ int main() {
 			}
 		}
 
-		// Update the GUI, note that you shouldn't normally
-		// pass 0 seconds to the update method.
-		window->Update( 0.f );
+		// Update the GUI every 5ms
+		if( clock.getElapsedTime().asMicroseconds() >= 5000 ) {
+			// Update() takes the elapsed time in seconds.
+			window->Update( static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f );
+
+			clock.restart();
+		}
 
 		// Clear screen
 		app_window.clear();
