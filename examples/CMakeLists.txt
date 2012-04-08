@@ -25,6 +25,7 @@ if( NOT SKIP_ADDT_EXAMPLES )
 	build_example( "ComboBox" "ComboBox.cpp" )
 	build_example( "Notebook" "Notebook.cpp" )
 	build_example( "GuessMyNumber" "GuessMyNumber.cpp" )
+	build_example( "Multiview" "Multiview.cpp" )
 endif()
 
 build_example( "test" "Test.cpp" )

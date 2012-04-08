@@ -40,7 +40,7 @@ int main() {
 }
 
 DesktopExample::DesktopExample() :
-	m_desktop( sf::FloatRect( 0, 0, static_cast<float>( SCREEN_WIDTH ), static_cast<float>( SCREEN_HEIGHT ) ) ),
+	m_desktop(),
 	m_window( sfg::Window::Create() ),
 	m_count( 0 )
 {

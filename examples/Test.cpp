@@ -81,7 +81,7 @@ void Ouchy::DoOuch() {
 }
 
 SampleApp::SampleApp() :
-	m_desktop( sf::FloatRect( .0f, .0f, 1024.f, 768.f ) ),
+	m_desktop(),
 	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) )
 {
 	m_background_texture.create( 1024, 768 );

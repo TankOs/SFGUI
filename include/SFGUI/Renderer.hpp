@@ -136,9 +136,9 @@ class SFGUI_API Renderer {
 		void InvalidateVBO();
 
 		/** Draw the GUI.
-		 * @param window sf::RenderWindow to draw to.
+		 * @param target sf::RenderTarget to draw to.
 		 */
-		void Display( sf::RenderWindow& window );
+		void Display( sf::RenderTarget& target );
 
 		/** Enable and select depth testing method.
 		 * WARNING: THIS FEATURE IS BROKEN AND THEREFORE DISABLED UNTIL FURTHER NOTICE.
@@ -169,13 +169,13 @@ class SFGUI_API Renderer {
 		 */
 		Renderer();
 
-		void SetupGL( sf::RenderWindow& window );
+		void SetupGL( sf::RenderTarget& target );
 
-		void RestoreGL( sf::RenderWindow& window );
+		void RestoreGL( sf::RenderTarget& target );
 
 		void SortPrimitives();
 
-		void RefreshVBO( sf::RenderWindow& window );
+		void RefreshVBO( sf::RenderTarget& target );
 
 		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size );
 

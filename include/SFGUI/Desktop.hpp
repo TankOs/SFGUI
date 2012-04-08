@@ -26,14 +26,8 @@ class Widget;
 class SFGUI_API Desktop {
 	public:
 		/** Ctor.
-		 * @param viewport Viewport.
 		 */
-		Desktop( const sf::FloatRect& viewport );
-
-		/** Ctor.
-		 * @param window Window which size is used for the desktop's viewport.
-		 */
-		Desktop( const sf::Window& window );
+		Desktop();
 
 		/** Dtor.
 		 */
@@ -117,7 +111,6 @@ class SFGUI_API Desktop {
 	private:
 		typedef std::deque<SharedPtr<Widget> > WidgetsList;
 
-		sf::Vector2f TransformToLocal( const sf::Vector2f& global ) const;
 		void SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x = -1337, int y = -1337 ) const;
 		void ResendMouseMoveEvent();
 		void RecalculateWidgetLevels();

@@ -375,12 +375,12 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	return CreateQuad( corner3, corner2, corner1, corner0, color );
 }
 
-void Renderer::Display( sf::RenderWindow& window ) {
-	SetupGL( window );
+void Renderer::Display( sf::RenderTarget& target ) {
+	SetupGL( target );
 
 	if( !m_vbo_synced ) {
 		// Refresh VBO data if out of sync
-		RefreshVBO( window );
+		RefreshVBO( target );
 	}
 
 	if( !m_use_fbo || !m_vbo_synced ) {
@@ -447,13 +447,13 @@ void Renderer::Display( sf::RenderWindow& window ) {
 
 				glScissor(
 					static_cast<int>( destination_origin.x ),
-					window.getSize().y - static_cast<int>( destination_origin.y + size.y ),
+					target.getSize().y - static_cast<int>( destination_origin.y + size.y ),
 					static_cast<int>( size.x ),
 					static_cast<int>( size.y )
 				);
 			}
 			else {
-				glScissor( 0, 0, window.getSize().x, window.getSize().y );
+				glScissor( 0, 0, target.getSize().x, target.getSize().y );
 			}
 
 			if( index < scissor_pairs_size - 1 ) {
@@ -488,11 +488,11 @@ void Renderer::Display( sf::RenderWindow& window ) {
 			glTexCoord2f( 0, 1 );
 			glVertex3i( 0, 0, -10 );
 			glTexCoord2f( 0, 0 );
-			glVertex3i( 0, window.getSize().y, -10 );
+			glVertex3i( 0, target.getSize().y, -10 );
 			glTexCoord2f( 1, 0 );
-			glVertex3i( window.getSize().x, window.getSize().y, -10 );
+			glVertex3i( target.getSize().x, target.getSize().y, -10 );
 			glTexCoord2f( 1, 1 );
-			glVertex3i( window.getSize().x, 0, -10 );
+			glVertex3i( target.getSize().x, 0, -10 );
 			glEnd();
 
 			glBindTexture( GL_TEXTURE_2D, 0 );
@@ -504,12 +504,12 @@ void Renderer::Display( sf::RenderWindow& window ) {
 		glCallList( m_display_list );
 	}
 
-	RestoreGL( window );
+	RestoreGL( target );
 
 	m_vbo_synced = true;
 }
 
-void Renderer::SetupGL( sf::RenderWindow& window ) {
+void Renderer::SetupGL( sf::RenderTarget& target ) {
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 	glLoadIdentity();
@@ -520,8 +520,8 @@ void Renderer::SetupGL( sf::RenderWindow& window ) {
 
 	// When SFML dies (closes) it sets these to 0 for some reason.
 	// That then causes glOrtho errors.
-	unsigned int width = window.getSize().x;
-	unsigned int height = window.getSize().y;
+	unsigned int width = target.getSize().x;
+	unsigned int height = target.getSize().y;
 
 	// SFML doesn't seem to bother updating the OpenGL viewport when
 	// it's window resizes and nothing is drawn directly through SFML...
@@ -555,7 +555,7 @@ void Renderer::SetupGL( sf::RenderWindow& window ) {
 	glEnable( GL_CULL_FACE );
 }
 
-void Renderer::RestoreGL( sf::RenderWindow& window ) {
+void Renderer::RestoreGL( sf::RenderTarget& target ) {
 	glDisable( GL_CULL_FACE );
 
 	if( m_alpha_threshold > 0.f ) {
@@ -599,11 +599,11 @@ void Renderer::RestoreGL( sf::RenderWindow& window ) {
 	};
 
 	// All your cache are belong to us.
-	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderWindow ) - sizeof( StatesCache ) + 1, 0, sizeof( StatesCache ) - 1 );
+	memset( reinterpret_cast<char*>( &target ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ) + 1, 0, sizeof( StatesCache ) - 1 );
 
 	// This is to make it forget it's cached viewport.
 	// Seriously... caching the viewport? Come on...
-	memset( reinterpret_cast<char*>( &window ) + sizeof( sf::RenderWindow ) - sizeof( StatesCache ) + 1, 1, 1 );
+	memset( reinterpret_cast<char*>( &target ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ) + 1, 1, 1 );
 }
 
 sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
@@ -725,7 +725,7 @@ void Renderer::SortPrimitives() {
 	}
 }
 
-void Renderer::RefreshVBO( sf::RenderWindow& window ) {
+void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 	SortPrimitives();
 
 	std::vector<sf::Vector3f> vertex_data;
@@ -755,7 +755,7 @@ void Renderer::RefreshVBO( sf::RenderWindow& window ) {
 	RendererViewport::Ptr current_viewport = m_default_viewport;
 	m_viewport_pairs.push_back( ViewportPair( m_default_viewport, 0 ) );
 
-	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( window.getSize().x ), static_cast<float>( window.getSize().y ) );
+	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( target.getSize().x ), static_cast<float>( target.getSize().y ) );
 
 	for( std::size_t primitive_index = start; primitive_index != end; primitive_index += direction ) {
 		Primitive* primitive = m_primitives[primitive_index - 1].get();

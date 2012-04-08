@@ -40,7 +40,7 @@ int main() {
 	window->SetTitle( "SFGUI with OpenGL" );
 	window->Add( table );
 
-	sfg::Desktop desktop( render_window );
+	sfg::Desktop desktop;
 	desktop.Add( window );
 
 	red_scale->SetValue( .2f );
