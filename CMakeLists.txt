@@ -20,6 +20,10 @@ if( MSVC )
 	set( STATIC_STD_LIBS false CACHE BOOL "True to link the runtime library statically, false to link them dynamically." )
 endif()
 
+# Add SFML's CMake Modules directory from extlibs to module search path for
+# finding FindSFML.cmake more easily.
+set( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/extlibs/SFML/cmake/Modules/;${CMAKE_MODULE_PATH}" )
+
 find_package( OpenGL REQUIRED )
 find_package( SFML 2.0 QUIET COMPONENTS GRAPHICS WINDOW SYSTEM )
 
