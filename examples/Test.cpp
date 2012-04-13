@@ -270,7 +270,7 @@ void SampleApp::Run() {
 	sf::Image sfgui_logo;
 	sfg::Image::Ptr image = sfg::Image::Create();
 
-	if( sfgui_logo.loadFromFile("sfgui.png") ) {
+	if( sfgui_logo.loadFromFile( "data/sfgui.png" ) ) {
 		image->SetImage( sfgui_logo );
 		box_image->Pack( image, false );
 	}
