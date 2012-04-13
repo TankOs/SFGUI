@@ -1,86 +1,73 @@
+#include <SFGUI/SFGUI.hpp>
 #include <SFML/Graphics.hpp>
 
-// Always include the necessary header files.
-// Including SFGUI/SFGUI.hpp includes everything
-// you can possibly need automatically.
-#include <SFGUI/SFGUI.hpp>
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
 
-// Create our button smart pointer.
-sfg::Button::Ptr button;
+// Create the label label pointer globally to reach it from OnButtonClick().
+sfg::Label::Ptr g_label;
 
-void ButtonClick();
+void OnButtonClick() {
+	g_label->SetText( "Hello SFGUI, pleased to meet you!" );
+}
 
 int main() {
-	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
+	// Create SFML's window.
+	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "Hello world!" );
 
-	// We have to do this because we don't use SFML to draw.
-	app_window.resetGLStates();
+	// Install SFGUI guard that prevents applications from crashing at exit. You
+	// only need to create one object, but make sure to do it!
+	sfg::SFGUI guard;
 
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
+	// Create the label.
+	g_label = sfg::Label::Create( "Hello world!" );
 
-	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
-	window->SetTitle( "Title" );
+	// Create a simple button and connect the click signal.
+	sfg::Button::Ptr button( sfg::Button::Create( "Greet SFGUI!" ) );
+	button->OnClick.Connect( &OnButtonClick );
 
-	// Create the button itself.
-	button = sfg::Button::Create();
+	// Create a vertical box layouter with 5 pixels spacing and add the label
+	// and button to it.
+	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.0f ) );
+	box->Pack( g_label );
+	box->Pack( button, false );
 
-	// Set the label of the button.
-	button->SetLabel( "Foo" );
+	// Create a window and add the box layouter to it. Also set the window's title.
+	sfg::Window::Ptr window( sfg::Window::Create() );
+	window->SetTitle( "Hello world!" );
+	window->Add( box );
 
-	// Add the button to the window
-	window->Add( button );
+	// Create a desktop and add the window to it.
+	sfg::Desktop desktop;
+	desktop.Add( window );
 
-	// So that our button has a meaningful purpose
-	// (besides just looking awesome :P) we need to tell it to connect
-	// to a callback of our choosing to notify us when it is clicked.
-	button->OnClick.Connect( &ButtonClick );
+	// We're not using SFML to render anything in this program, so reset OpenGL
+	// states. Otherwise we wouldn't see anything.
+	render_window.resetGLStates();
 
-	// If attempting to connect to a class method you need to provide
-	// a pointer to it as the second parameter after the function address.
+	// Main loop!
+	sf::Event event;
+	sf::Clock clock;
 
-	// Start the game loop
-	while ( app_window.isOpen() ) {
-		// Process events
-		sf::Event event;
+	while( render_window.isOpen() ) {
+		// Event processing.
+		while( render_window.pollEvent( event ) ) {
+			desktop.HandleEvent( event );
 
-		while ( app_window.pollEvent( event ) ) {
-			// Handle events
-			window->HandleEvent( event );
-
-			// Close window : exit
-			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+			// If window is about to be closed, leave program.
+			if( event.type == sf::Event::Closed ) {
+				render_window.close();
 			}
 		}
 
-		// Update the GUI, note that you shouldn't normally
-		// pass 0 seconds to the update method.
-		window->Update( 0.f );
+		// Update SFGUI with elapsed seconds since last call.
+		desktop.Update( clock.restart().asSeconds() );
 
-		// Clear screen
-		app_window.clear();
-
-		// Draw the GUI
-		sfg::Renderer::Get().Display( app_window );
-
-		// Update the window
-		app_window.display();
+		// Rendering.
+		render_window.clear();
+		sfg::Renderer::Get().Display( render_window );
+		render_window.display();
 	}
 
-	// If you have any global or static widgets,
-	// you need to reset their pointers before your
-	// application exits.
-	button.reset();
-
-	return EXIT_SUCCESS;
-}
-
-void ButtonClick() {
-	// When the button is clicked it's label should change.
-	button->SetLabel( "Bar" );
+	return 0;
 }
