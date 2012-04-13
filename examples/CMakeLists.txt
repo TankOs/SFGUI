@@ -34,3 +34,25 @@ install(
 	DIRECTORY data
 	DESTINATION ${SHARE_TARGET_DIR}/examples
 )
+
+set(
+	EXAMPLE_SOURCES
+	Window.cpp
+	Label.cpp
+	Button.cpp
+	Box.cpp
+	Entry.cpp
+	Range.cpp
+	Desktop.cpp
+	Signals.cpp
+	OpenGL.cpp
+	ComboBox.cpp
+	Notebook.cpp
+	GuessMyNumber.cpp
+	Multiview.cpp
+)
+
+install(
+	FILES EXAMPLE_SOURCES
+	DESTINATION ${SHARE_TARGET_DIR}/examples
+)
