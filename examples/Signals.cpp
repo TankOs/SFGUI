@@ -7,6 +7,10 @@
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
 
+// This is only done here for demonstration purposes.
+// DO NOT DECLARE STATIC OR GLOBAL WIDGETS IN YOUR PROGRAMS.
+// We simply cannot guarantee that it will work in every case.
+// We have to reset this SharedPtr at the end of the program.
 sfg::Window::Ptr window;
 
 // This is the first possibility you have of connecting a signal handler.
@@ -26,6 +30,10 @@ class Application {
 		// You would pass it the address of the method and the this pointer:
 		// button->OnClick.Connect( &Application::Bar, this );
 		void Bar();
+
+	private:
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
 };
 
 // The definition of the second possibility
@@ -140,7 +148,7 @@ void Application::Run() {
 		app_window.clear();
 
 		// Draw the GUI
-		sfg::Renderer::Get().Display( app_window );
+		m_sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
@@ -153,15 +161,8 @@ void Application::Run() {
 }
 
 int main() {
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
-
-	// Make sure app is destroyed before the guard.
-	{
-		Application app;
-		app.Run();
-	}
+	Application app;
+	app.Run();
 
 	return EXIT_SUCCESS;
 }

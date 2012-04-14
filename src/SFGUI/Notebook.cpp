@@ -450,7 +450,7 @@ void Notebook::HandleAdd( const Widget::Ptr& child ) {
 	if( !allowed ) {
 
 #ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Child must be added via AppendPage() or PrependPage() or InsertPage() for sfg::Notebook widgets." << std::endl;
+		std::cerr << "SFGUI warning: Child must be added via AppendPage() or PrependPage() or InsertPage() for sfg::Notebook widgets.\n";
 #endif
 
 		Remove( child );

@@ -4,27 +4,35 @@
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
-// Create the label label pointer globally to reach it from OnButtonClick().
-sfg::Label::Ptr g_label;
+class ButtonExample {
+	public:
+		// Our button click handler.
+		void OnButtonClick();
 
-void OnButtonClick() {
+		void Run();
+
+	private:
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
+
+		// Create the label pointer here to reach it from OnButtonClick().
+		sfg::Label::Ptr g_label;
+};
+
+void ButtonExample::OnButtonClick() {
 	g_label->SetText( "Hello SFGUI, pleased to meet you!" );
 }
 
-int main() {
+void ButtonExample::Run() {
 	// Create SFML's window.
 	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "Hello world!" );
-
-	// Install SFGUI guard that prevents applications from crashing at exit. You
-	// only need to create one object, but make sure to do it!
-	sfg::SFGUI guard;
 
 	// Create the label.
 	g_label = sfg::Label::Create( "Hello world!" );
 
 	// Create a simple button and connect the click signal.
 	sfg::Button::Ptr button( sfg::Button::Create( "Greet SFGUI!" ) );
-	button->OnClick.Connect( &OnButtonClick );
+	button->OnClick.Connect( &ButtonExample::OnButtonClick, this );
 
 	// Create a vertical box layouter with 5 pixels spacing and add the label
 	// and button to it.
@@ -65,14 +73,14 @@ int main() {
 
 		// Rendering.
 		render_window.clear();
-		sfg::Renderer::Get().Display( render_window );
+		m_sfgui.Display( render_window );
 		render_window.display();
 	}
+}
 
-	// If you have any global or static widgets,
-	// you need to reset their pointers before your
-	// application exits.
-	g_label.reset();
+int main() {
+	ButtonExample example;
+	example.Run();
 
 	return 0;
 }

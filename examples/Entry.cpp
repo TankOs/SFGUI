@@ -5,24 +5,35 @@
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
 
-// Create our entry smart pointer.
-sfg::Entry::Ptr entry;
+class EntryExample {
+	public:
+		void ButtonClick();
 
-// Create our label smart pointer.
-sfg::Label::Ptr label;
+		void Run();
 
-void ButtonClick();
+	private:
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
 
-int main() {
+		// Create our entry smart pointer.
+		sfg::Entry::Ptr m_entry;
+
+		// Create our label smart pointer.
+		sfg::Label::Ptr m_label;
+};
+
+void EntryExample::ButtonClick() {
+	// When the button is clicked set the contents of the label
+	// to the contents of the entry widget.
+	m_label->SetText( m_entry->GetText() );
+}
+
+void EntryExample::Run() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Entry Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
-
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
 	sfg::Window::Ptr window;
@@ -37,14 +48,14 @@ int main() {
 	button->SetLabel( "Set" );
 
 	// Connect the button.
-	button->OnClick.Connect( &ButtonClick );
+	button->OnClick.Connect( &EntryExample::ButtonClick, this );
 
 	// Create a label.
-	label = sfg::Label::Create();
-	label->SetText( "no text yet" );
+	m_label = sfg::Label::Create();
+	m_label->SetText( "no text yet" );
 
 	// Create our entry widget itself.
-	entry = sfg::Entry::Create();
+	m_entry = sfg::Entry::Create();
 
 	// Until now all widgets only expanded to fit the text inside of it.
 	// This is not the case with the entry widget which can be empty
@@ -54,15 +65,15 @@ int main() {
 	// parameter. Depending on which side you want to have a minimum size,
 	// you set the corresponding value in the vector.
 	// Here we chose to set the minimum x size of the widget to 80.
-	entry->SetRequisition( sf::Vector2f( 80.f, 0.f ) );
+	m_entry->SetRequisition( sf::Vector2f( 80.f, 0.f ) );
 
 	// Setting sizing back to automatic is as easy as setting
 	// x and y sizes to 0.
 
 	// Pack into box
-	box->Pack( entry );
+	box->Pack( m_entry );
 	box->Pack( button );
-	box->Pack( label );
+	box->Pack( m_label );
 
 	// Set box spacing
 	box->SetSpacing( 5.f );
@@ -99,23 +110,16 @@ int main() {
 		app_window.clear();
 
 		// Draw the GUI
-		sfg::Renderer::Get().Display( app_window );
+		m_sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
 	}
-
-	// If you have any global or static widgets,
-	// you need to reset their pointers before your
-	// application exits.
-	entry.reset();
-	label.reset();
-
-	return EXIT_SUCCESS;
 }
 
-void ButtonClick() {
-	// When the button is clicked set the contents of the label
-	// to the contents of the entry widget.
-	label->SetText( entry->GetText() );
+int main() {
+	EntryExample example;
+	example.Run();
+
+	return EXIT_SUCCESS;
 }

@@ -17,6 +17,9 @@ class DesktopExample {
 		void OnDestroyWindowClick();
 		void OnFrontClick();
 
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
+
 		sfg::Desktop m_desktop;
 		sfg::Window::Ptr m_window;
 		unsigned int m_count;
@@ -26,15 +29,8 @@ const unsigned int DesktopExample::SCREEN_WIDTH = 800;
 const unsigned int DesktopExample::SCREEN_HEIGHT = 600;
 
 int main() {
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
-
-	// Make sure app is destroyed before the guard.
-	{
-		DesktopExample app;
-		app.Run();
-	}
+	DesktopExample app;
+	app.Run();
 
 	return 0;
 }
@@ -100,7 +96,7 @@ void DesktopExample::Run() {
 
 		m_desktop.Update( 0.f );
 		render_window.clear();
-		sfg::Renderer::Get().Display( render_window );
+		m_sfgui.Display( render_window );
 		render_window.display();
 	}
 }

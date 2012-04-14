@@ -42,7 +42,7 @@ void Box::HandleAdd( const Widget::Ptr& child ) {
 	if( iter == m_children.end() ) {
 
 #ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Child must be added via Pack() for sfg::Box widgets." << std::endl;
+		std::cerr << "SFGUI warning: Child must be added via Pack() for sfg::Box widgets.\n";
 #endif
 
 		Remove( child );

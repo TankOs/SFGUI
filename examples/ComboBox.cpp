@@ -6,24 +6,46 @@
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
 
-// Create our ComboBox smart pointer.
-sfg::ComboBox::Ptr combo_box;
+class ComboBoxExample {
+	public:
+		void OnComboSelect();
+		void OnAddItemClick();
 
-sfg::Label::Ptr sel_label;
+		void Run();
 
-void OnComboSelect();
-void OnAddItemClick();
+	private:
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
 
-int main() {
+		// Create our ComboBox smart pointer.
+		sfg::ComboBox::Ptr m_combo_box;
+
+		sfg::Label::Ptr m_sel_label;
+};
+
+void ComboBoxExample::OnComboSelect() {
+	std::stringstream sstr;
+
+	sstr << "Item " << m_combo_box->GetSelectedItem() << " selected with text \"" << static_cast<std::string>( m_combo_box->GetSelectedText() ) << "\"";
+	m_sel_label->SetText( sstr.str() );
+}
+
+void ComboBoxExample::OnAddItemClick() {
+	static int counter( 0 );
+
+	std::stringstream sstr;
+	sstr << "Item " << counter;
+	m_combo_box->AppendItem( sstr.str() );
+
+	++counter;
+}
+
+void ComboBoxExample::Run() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Combo Box Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
-
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
 	sfg::Window::Ptr window;
@@ -31,23 +53,23 @@ int main() {
 	window->SetTitle( "Title" );
 
 	// Create the combo box itself.
-	combo_box = sfg::ComboBox::Create();
+	m_combo_box = sfg::ComboBox::Create();
 
 	// Set the entries of the combo box.
-	combo_box->AppendItem( "Bar" );
-	combo_box->PrependItem( "Foo" );
+	m_combo_box->AppendItem( "Bar" );
+	m_combo_box->PrependItem( "Foo" );
 
-	sel_label = sfg::Label::Create( L"Please select an item!" );
+	m_sel_label = sfg::Label::Create( L"Please select an item!" );
 
 	sfg::Button::Ptr button( sfg::Button::Create( L"Add item" ) );
 
 	sfg::Box::Ptr hbox( sfg::Box::Create( sfg::Box::HORIZONTAL, 5 ) );
-	hbox->Pack( combo_box );
+	hbox->Pack( m_combo_box );
 	hbox->Pack( button, false );
 
 	sfg::Box::Ptr vbox( sfg::Box::Create( sfg::Box::VERTICAL, 5 ) );
 	vbox->Pack( hbox, false );
-	vbox->Pack( sel_label, true );
+	vbox->Pack( m_sel_label, true );
 
 	// Add the combo box to the window
 	window->Add( vbox );
@@ -55,9 +77,9 @@ int main() {
 	// So that our combo box has a meaningful purpose (besides just looking
 	// awesome :P) we need to tell it to connect to a callback of our choosing to
 	// notify us when it is clicked.
-	combo_box->OnSelect.Connect( &OnComboSelect );
+	m_combo_box->OnSelect.Connect( &ComboBoxExample::OnComboSelect, this );
 
-	button->OnClick.Connect( &OnAddItemClick );
+	button->OnClick.Connect( &ComboBoxExample::OnAddItemClick, this );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.
@@ -85,34 +107,16 @@ int main() {
 		app_window.clear();
 
 		// Draw the GUI
-		sfg::Renderer::Get().Display( app_window );
+		m_sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
 	}
+}
 
-	// If you have any global or static widgets,
-	// you need to reset their pointers before your
-	// application exits.
-	combo_box.reset();
-	sel_label.reset();
+int main() {
+	ComboBoxExample example;
+	example.Run();
 
 	return EXIT_SUCCESS;
-}
-
-void OnComboSelect() {
-	std::stringstream sstr;
-
-	sstr << "Item " << combo_box->GetSelectedItem() << " selected with text \"" << static_cast<std::string>( combo_box->GetSelectedText() ) << "\"";
-	sel_label->SetText( sstr.str() );
-}
-
-void OnAddItemClick() {
-	static int counter( 0 );
-
-	std::stringstream sstr;
-	sstr << "Item " << counter;
-	combo_box->AppendItem( sstr.str() );
-
-	++counter;
 }

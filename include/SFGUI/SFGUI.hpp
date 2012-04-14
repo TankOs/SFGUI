@@ -44,6 +44,38 @@ class SFGUI_API SFGUI {
 		/** Dtor.
 		 */
 		~SFGUI();
+
+		/** Draw the GUI.
+		 * Just a wrapper for the renderer.
+		 * @param target sf::RenderTarget to draw to.
+		 */
+		void Display( sf::RenderTarget& target );
+
+		/** Enable and select alpha testing threshold.
+		 * Just a wrapper for the renderer.
+		 * @param alpha_threshold Threshold at which fragments will get discarded if their alpha value is less than or equal to. Set to 0.f to disable.
+		 */
+		void TuneAlphaThreshold( float alpha_threshold );
+
+		/** Enable or disable CPU driven face culling.
+		 * Just a wrapper for the renderer.
+		 * @param enable true to enable, false to disable.
+		 */
+		void TuneCull( bool enable );
+
+		/** Enable or disable FBO GUI caching.
+		 * Just a wrapper for the renderer.
+		 * @param enable true to enable, false to disable.
+		 */
+		void TuneUseFBO( bool enable );
+
+		/** Check if an SFGUI object was created.
+		 * @return true if an SFGUI object was created.
+		 */
+		static bool IsAlive();
+
+	private:
+		static bool m_alive;
 };
 
 }

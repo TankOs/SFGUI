@@ -23,7 +23,7 @@ void Bin::HandleAdd( const Widget::Ptr& child ) {
 
 	if( GetChildren().size() > 1 ) {
 #ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Only one widget can be added to a Bin." << std::endl;
+		std::cerr << "SFGUI warning: Only one widget can be added to a Bin.\n";
 #endif
 
 		Remove( child );

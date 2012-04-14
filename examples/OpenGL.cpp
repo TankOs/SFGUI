@@ -11,8 +11,7 @@ int main() {
 	// We have to do this because we don't use SFML to draw.
 	render_window.resetGLStates();
 
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
 
 	sfg::Scale::Ptr red_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
@@ -103,7 +102,7 @@ int main() {
 
 		// SFML rendering.
 		render_window.pushGLStates();
-		sfg::Renderer::Get().Display( render_window );
+		sfgui.Display( render_window );
 		render_window.popGLStates();
 
 		render_window.display();

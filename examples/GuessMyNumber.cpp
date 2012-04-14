@@ -20,6 +20,9 @@ class GuessMyNumber {
 		void OnGuessClick();
 		void OnNewGameClick();
 
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
+
 		unsigned char m_number;
 		unsigned int m_tries;
 
@@ -30,15 +33,8 @@ class GuessMyNumber {
 };
 
 int main() {
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
-
-	// Make sure game is destroyed before the guard.
-	{
-		GuessMyNumber game;
-		game.Run();
-	}
+	GuessMyNumber game;
+	game.Run();
 
 	return 0;
 }
@@ -176,7 +172,7 @@ void GuessMyNumber::Run() {
 
 		window->Update( 0.f );
 		render_window.clear();
-		sfg::Renderer::Get().Display( render_window );
+		m_sfgui.Display( render_window );
 		render_window.display();
 	}
 }

@@ -277,7 +277,7 @@ void ScrolledWindow::HandleAdd( const Widget::Ptr& child ) {
 	if( GetChildren().size() > 3 ) {
 
 #ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow." << std::endl;
+		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow.\n";
 #endif
 
 		Remove( child );
@@ -311,7 +311,7 @@ void ScrolledWindow::AddWithViewport( const Widget::Ptr& widget ) {
 
 void ScrolledWindow::Add( const Widget::Ptr& /*widget*/ ) {
 #ifdef SFGUI_DEBUG
-	std::cerr << "SFGUI warning: Widgets can only be added to a ScrolledWindow with a Viewport." << std::endl;
+	std::cerr << "SFGUI warning: Widgets can only be added to a ScrolledWindow with a Viewport.\n";
 #endif
 }
 

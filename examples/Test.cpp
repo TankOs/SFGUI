@@ -22,6 +22,9 @@ class SampleApp {
 		void OnAdjustmentChange();
 		void OnToggleSpinner();
 
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
+
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
 		sfg::Box::Ptr m_boxbuttonsv;
@@ -124,10 +127,9 @@ void SampleApp::Run() {
 	//m_window.EnableVerticalSync( true );
 
 	// Tune Renderer
-	//sfg::Renderer::Get().TuneDepthTest( sfg::Renderer::ALTERNATE_DEPTH );
-	sfg::Renderer::Get().TuneUseFBO( true );
-	sfg::Renderer::Get().TuneAlphaThreshold( .2f );
-	sfg::Renderer::Get().TuneCull( true );
+	m_sfgui.TuneUseFBO( true );
+	m_sfgui.TuneAlphaThreshold( .2f );
+	m_sfgui.TuneCull( true );
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE );
@@ -412,7 +414,7 @@ void SampleApp::Run() {
 			clock.restart();
 		}
 
-		sfg::Renderer::Get().Display( m_window );
+		m_sfgui.Display( m_window );
 
 		m_window.display();
 
@@ -513,15 +515,8 @@ void SampleApp::OnToggleSpinner() {
 }
 
 int main() {
-	// SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
-
-	// Make sure app is destroyed before the guard.
-	{
-		SampleApp app;
-		app.Run();
-	}
+	SampleApp app;
+	app.Run();
 
 	return 0;
 }

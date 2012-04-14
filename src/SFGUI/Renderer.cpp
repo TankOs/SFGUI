@@ -50,9 +50,20 @@ Renderer::~Renderer() {
 	glDeleteBuffers( 1, &m_vertex_vbo );
 }
 
-Renderer& Renderer::Get() {
+Renderer& Renderer::Create() {
 	if( !m_instance ) {
 		m_instance.reset( new Renderer );
+	}
+
+	return *m_instance;
+}
+
+Renderer& Renderer::Get() {
+	if( !m_instance ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "Renderer not created yet. Did you create an sfg::SFGUI object?\n";
+#endif
+		Create();
 	}
 
 	return *m_instance;

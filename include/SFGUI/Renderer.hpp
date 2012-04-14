@@ -24,6 +24,11 @@ class SFGUI_API Renderer {
 			DEFAULT = NO_DEPTH //!< Default: No depth testing.
 		};
 
+		/** Create the Renderer singleton instance.
+		 * @return Renderer instance.
+		 */
+		static Renderer& Create();
+
 		/** Get the Renderer singleton instance.
 		 * @return Renderer instance.
 		 */

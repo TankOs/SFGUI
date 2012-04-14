@@ -123,7 +123,7 @@ void Button::HandleAdd( const Widget::Ptr& child ) {
 
 	if( GetChild() && GetChild()->GetName() != "Image" ) {
 #ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Only an Image can be added to a Button." << std::endl;
+		std::cerr << "SFGUI warning: Only an Image can be added to a Button.\n";
 #endif
 
 		Remove( GetChild() );

@@ -5,21 +5,31 @@
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
 
-// Create our button smart pointer.
-sfg::Button::Ptr button;
+class MultiviewExample {
+	public:
+		void ButtonClick();
 
-void ButtonClick();
+		void Run();
 
-int main() {
+	private:
+		// Create an SFGUI. This is required before doing anything with SFGUI.
+		sfg::SFGUI m_sfgui;
+
+		// Create our button smart pointer.
+		sfg::Button::Ptr m_button;
+};
+
+void MultiviewExample::ButtonClick() {
+	// When the button is clicked it's label should change.
+	m_button->SetLabel( "Bar" );
+}
+
+void MultiviewExample::Run() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Multiview Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
-
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
-	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
 	sfg::Window::Ptr window;
@@ -28,21 +38,21 @@ int main() {
 	window->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
 	// Create the button itself.
-	button = sfg::Button::Create();
+	m_button = sfg::Button::Create();
 
 	// Set the label of the button.
-	button->SetLabel( "Foo" );
+	m_button->SetLabel( "Foo" );
 
 	// Make the button nice and big
-	button->SetRequisition( sf::Vector2f( 200.f, 20.f ) );
+	m_button->SetRequisition( sf::Vector2f( 200.f, 20.f ) );
 
 	// Add the button to the window
-	window->Add( button );
+	window->Add( m_button );
 
 	// So that our button has a meaningful purpose
 	// (besides just looking awesome :P) we need to tell it to connect
 	// to a callback of our choosing to notify us when it is clicked.
-	button->OnClick.Connect( &ButtonClick );
+	m_button->OnClick.Connect( &MultiviewExample::ButtonClick, this );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.
@@ -112,7 +122,7 @@ int main() {
 		render_texture.draw( clear_rect );
 
 		// Draw the GUI onto the RenderTexture.
-		sfg::Renderer::Get().Display( render_texture );
+		m_sfgui.Display( render_texture );
 
 		// Display the RenderTexture.
 		render_texture.display();
@@ -129,16 +139,11 @@ int main() {
 		// Update the window
 		app_window.display();
 	}
-
-	// If you have any global or static widgets,
-	// you need to reset their pointers before your
-	// application exits.
-	button.reset();
-
-	return EXIT_SUCCESS;
 }
 
-void ButtonClick() {
-	// When the button is clicked it's label should change.
-	button->SetLabel( "Bar" );
+int main() {
+	MultiviewExample example;
+	example.Run();
+
+	return EXIT_SUCCESS;
 }

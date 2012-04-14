@@ -1,4 +1,3 @@
-
 #include <SFML/Graphics.hpp>
 
 // Always include the necessary header files.
@@ -13,8 +12,7 @@ int main() {
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
 
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
@@ -83,7 +81,7 @@ int main() {
 		app_window.clear();
 
 		// Draw the GUI
-		sfg::Renderer::Get().Display( app_window );
+		sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();

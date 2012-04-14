@@ -58,7 +58,7 @@ void Fixed::HandleAdd( const Widget::Ptr& child ) {
 	if( m_children_position_map.find( child ) == m_children_position_map.end() ) {
 
 #ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Child must be added via Put() for sfg::Fixed widgets." << std::endl;
+		std::cerr << "SFGUI warning: Child must be added via Put() for sfg::Fixed widgets.\n";
 #endif
 
 		Remove( child );

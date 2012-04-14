@@ -65,7 +65,7 @@ void Alignment::UpdateChild() {
 
 	if( ( spare_space.x < 0 ) || ( spare_space.y < 0 ) ) {
 #ifdef SFGUI_DEBUG
-		std::cerr << "SFGUI warning: Alignment got a smaller allocation than it requested." << std::endl;
+		std::cerr << "SFGUI warning: Alignment got a smaller allocation than it requested.\n";
 		return;
 #endif
 	}

@@ -12,8 +12,7 @@ int main() {
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
 
-	// Construct our SFML guard
-	// See http://sfgui.sfml-dev.de/forum/topic52-crash-on-close.html for more info.
+	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
@@ -60,7 +59,7 @@ int main() {
 		// After drawing the rest of your game, you have to let the GUI
 		// render itself. If you don't do this you will never be able
 		// to see it ;)
-		sfg::Renderer::Get().Display( app_window );
+		sfgui.Display( app_window );
 
 		// NOTICE
 		// Because the window doesn't have any children it will shrink to
