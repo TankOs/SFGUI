@@ -69,5 +69,10 @@ int main() {
 		render_window.display();
 	}
 
+	// If you have any global or static widgets,
+	// you need to reset their pointers before your
+	// application exits.
+	g_label.reset();
+
 	return 0;
 }
