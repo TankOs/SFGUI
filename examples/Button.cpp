@@ -16,11 +16,11 @@ class ButtonExample {
 		sfg::SFGUI m_sfgui;
 
 		// Create the label pointer here to reach it from OnButtonClick().
-		sfg::Label::Ptr g_label;
+		sfg::Label::Ptr m_label;
 };
 
 void ButtonExample::OnButtonClick() {
-	g_label->SetText( "Hello SFGUI, pleased to meet you!" );
+	m_label->SetText( "Hello SFGUI, pleased to meet you!" );
 }
 
 void ButtonExample::Run() {
@@ -28,7 +28,7 @@ void ButtonExample::Run() {
 	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "Hello world!" );
 
 	// Create the label.
-	g_label = sfg::Label::Create( "Hello world!" );
+	m_label = sfg::Label::Create( "Hello world!" );
 
 	// Create a simple button and connect the click signal.
 	sfg::Button::Ptr button( sfg::Button::Create( "Greet SFGUI!" ) );
@@ -37,7 +37,7 @@ void ButtonExample::Run() {
 	// Create a vertical box layouter with 5 pixels spacing and add the label
 	// and button to it.
 	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.0f ) );
-	box->Pack( g_label );
+	box->Pack( m_label );
 	box->Pack( button, false );
 
 	// Create a window and add the box layouter to it. Also set the window's title.

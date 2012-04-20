@@ -178,8 +178,8 @@ void ScrolledWindow::RecalculateAdjustments() const {
 
 	RecalculateContentAllocation();
 
-	m_horizontal_scrollbar->Show( IsHorizontalScrollbarVisible() );
-	m_vertical_scrollbar->Show( IsVerticalScrollbarVisible() );
+	m_horizontal_scrollbar->Show( IsDrawn() && IsHorizontalScrollbarVisible() );
+	m_vertical_scrollbar->Show( IsDrawn() && IsVerticalScrollbarVisible() );
 }
 
 void ScrolledWindow::RecalculateContentAllocation() const {
@@ -343,6 +343,13 @@ void ScrolledWindow::HandleChildInvalidate( const Widget::PtrConst& child ) cons
 const std::string& ScrolledWindow::GetName() const {
 	static const std::string name( "ScrolledWindow" );
 	return name;
+}
+
+void ScrolledWindow::HandleVisibilityChange() {
+	Widget::HandleVisibilityChange();
+
+	m_horizontal_scrollbar->Show( IsDrawn() && IsHorizontalScrollbarVisible() );
+	m_vertical_scrollbar->Show( IsDrawn() && IsVerticalScrollbarVisible() );
 }
 
 }
