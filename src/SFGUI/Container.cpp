@@ -64,7 +64,7 @@ void Container::Refresh() {
 
 void Container::HandleEvent( const sf::Event& event ) {
 	// Ignore event when widget is not visible.
-	if( !IsVisible() ) {
+	if( !IsGloballyVisible() ) {
 		return;
 	}
 
@@ -123,24 +123,13 @@ void Container::HandleAbsolutePositionChange() {
 	Widget::HandleAbsolutePositionChange();
 }
 
-void Container::HandleVisibilityChange() {
-	Widget::HandleVisibilityChange();
+void Container::HandleGlobalVisibilityChange() {
+	Widget::HandleGlobalVisibilityChange();
 
 	std::size_t children_size = m_children.size();
 
 	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->Draw( IsDrawn() );
-		m_children[index]->HandleParentVisibilityChange();
-	}
-}
-
-void Container::HandleParentVisibilityChange() {
-	Widget::HandleParentVisibilityChange();
-
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->HandleParentVisibilityChange();
+		m_children[index]->HandleGlobalVisibilityChange();
 	}
 }
 
@@ -161,16 +150,6 @@ void Container::HandleSetHierarchyLevel() {
 
 	for( std::size_t index = 0; index < children_size; ++index ) {
 		m_children[index]->SetHierarchyLevel( GetHierarchyLevel() + 1 );
-	}
-}
-
-void Container::Draw( bool draw ) {
-	Widget::Draw( draw );
-
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->Draw( IsDrawn() && IsVisible() );
 	}
 }
 

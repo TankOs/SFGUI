@@ -235,7 +235,7 @@ void SampleApp::Run() {
 	}
 
 	m_scrolled_window = sfg::ScrolledWindow::Create();
-	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 150.f ) );
+	m_scrolled_window->SetRequisition( sf::Vector2f( .0f, 160.f ) );
 	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HORIZONTAL_AUTOMATIC | sfg::ScrolledWindow::VERTICAL_AUTOMATIC );
 	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TOP_LEFT );
 	m_scrolled_window->AddWithViewport( m_scrolled_window_box );
@@ -475,7 +475,7 @@ void SampleApp::OnToggleTitlebarClick() {
 }
 
 void SampleApp::OnHideWindowClicked() {
-	m_wndmain->Show( !m_wndmain->IsVisible() );
+	m_wndmain->Show( !m_wndmain->IsLocallyVisible() );
 }
 
 void SampleApp::OnToggleSpaceClick() {

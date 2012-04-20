@@ -41,10 +41,17 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		bool IsSensitive() const;
 
-		/** Check if widget is visible, i.e. gets rendered.
-		 * @return true when visible.
+		/** Check if widget is locally visible, i.e. is rendered when allowed to.
+		 * This DOES NOT take into account the global visibility of it's parents.
+		 * @return true when locally visible.
 		 */
-		bool IsVisible() const;
+		bool IsLocallyVisible() const;
+
+		/** Check if widget is globaly visible, i.e. is currently rendered.
+		 * This takes into account the global visibility of it's parents.
+		 * @return true when globally visible.
+		 */
+		bool IsGloballyVisible() const;
 
 		/** Show (or hide) widget.
 		 * @param show true to show, false to hide.
@@ -161,9 +168,9 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleAbsolutePositionChange();
 
-		/** Handle parent visibility change.
+		/** Handle global visibility change.
 		 */
-		virtual void HandleParentVisibilityChange();
+		virtual void HandleGlobalVisibilityChange();
 
 		/** Update position of drawable.
 		 */
@@ -193,16 +200,6 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 * Invalidates the widget and re-requests size
 		 */
 		virtual void Refresh();
-
-		/** Check if widget is drawn.
-		 * @return true when widget is drawn.
-		 */
-		bool IsDrawn() const;
-
-		/** Draw widget.
-		 * @param draw true to draw widget.
-		 */
-		virtual void Draw( bool draw = true );
 
 		/** Set hierarchy level of this widget.
 		 * @param level New hierarchy level of this widget..
@@ -337,9 +334,9 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
 
-		/** Handle visibility change.
+		/** Handle local visibility change.
 		 */
-		virtual void HandleVisibilityChange();
+		virtual void HandleLocalVisibilityChange();
 
 		/** Handle update.
 		 */
