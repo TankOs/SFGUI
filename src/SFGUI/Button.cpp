@@ -88,7 +88,7 @@ sf::Vector2f Button::CalculateRequisition() {
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 	sf::Vector2f requisition = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
-	requisition.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
+	requisition.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	requisition.x += 2 * padding;
 	requisition.y += 2 * padding;

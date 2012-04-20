@@ -50,7 +50,7 @@ sf::FloatRect Window::GetClientRect() const {
 		unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 		const sf::Font& title_font( *Context::Get().GetEngine().GetResourceManager().GetFont( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) ) );
 		float title_height(
-			Context::Get().GetEngine().GetLineHeight( title_font, title_font_size ) +
+			Context::Get().GetEngine().GetFontLineHeight( title_font, title_font_size ) +
 			2 * Context::Get().GetEngine().GetProperty<float>( "TitlePadding", shared_from_this() )
 		);
 
@@ -101,7 +101,7 @@ sf::Vector2f Window::CalculateRequisition() {
 		unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 		const sf::Font& title_font( *Context::Get().GetEngine().GetResourceManager().GetFont( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) ) );
 		float title_height(
-			Context::Get().GetEngine().GetLineHeight( title_font, title_font_size ) +
+			Context::Get().GetEngine().GetFontLineHeight( title_font, title_font_size ) +
 			2 * Context::Get().GetEngine().GetProperty<float>( "TitlePadding", shared_from_this() )
 		);
 
@@ -138,7 +138,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 	unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& title_font( *Context::Get().GetEngine().GetResourceManager().GetFont( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) ) );
 	float title_height(
-		Context::Get().GetEngine().GetLineHeight( title_font, title_font_size ) +
+		Context::Get().GetEngine().GetFontLineHeight( title_font, title_font_size ) +
 		2 * Context::Get().GetEngine().GetProperty<float>( "TitlePadding", shared_from_this() )
 	);
 

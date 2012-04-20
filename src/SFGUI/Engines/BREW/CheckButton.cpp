@@ -54,7 +54,7 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 	// Label.
 	if( check->GetLabel().getSize() > 0 ) {
 		sf::Vector2f metrics = GetTextMetrics( check->GetLabel(), font, font_size );
-		metrics.y = GetLineHeight( font, font_size );
+		metrics.y = GetFontLineHeight( font, font_size );
 
 		sf::Text text( check->GetLabel(), font, font_size );
 		text.setPosition(

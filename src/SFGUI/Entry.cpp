@@ -283,7 +283,7 @@ sf::Vector2f Entry::CalculateRequisition() {
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
-	float line_height = Context::Get().GetEngine().GetLineHeight( font, font_size );
+	float line_height = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	return sf::Vector2f( 2 * (border_width + text_padding), line_height + 2 * ( border_width + text_padding ) );
 }

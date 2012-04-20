@@ -156,7 +156,7 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 
 			IndexType line_y = y;
 			line_y -= static_cast<int>( GetAllocation().top + GetAllocation().height + padding );
-			line_y /= static_cast<int>( Context::Get().GetEngine().GetLineHeight( font, font_size ) + 2 * padding );
+			line_y /= static_cast<int>( Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 2 * padding );
 
 			if( line_y < GetItemCount() ) {
 				if( line_y != m_highlighted_item ) {
@@ -236,7 +236,7 @@ sf::Vector2f ComboBox::CalculateRequisition() {
 		metrics.x = std::max( metrics.x, Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size ).x );
 	}
 
-	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
+	metrics.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	// This is needed for the arrow.
 	metrics.x += metrics.y;

@@ -34,7 +34,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 		)
 	);
 
-	float line_height = GetLineHeight( font, font_size );
+	float line_height = GetFontLineHeight( font, font_size );
 	sf::Text vis_label( entry->GetVisibleText(), font, font_size );
 	vis_label.setColor( text_color );
 	vis_label.setPosition( text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f );

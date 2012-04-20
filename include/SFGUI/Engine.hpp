@@ -120,7 +120,7 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual RenderQueue* CreateFrameDrawable( SharedPtr<const Frame> frame ) const = 0;
-		
+
 		/** Create drawable for combo box widgets.
 		 * @param combo_box Widget.
 		 * @return New drawable object (unmanaged memory!).
@@ -145,12 +145,27 @@ class SFGUI_API Engine {
 		 */
 		virtual RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const = 0;
 
-		/** Get line height of a font.
+		/** Get maximum line height.
 		 * @param font Font.
 		 * @param font_size Font size.
 		 * @return Line height.
 		 */
-		float GetLineHeight( const sf::Font& font, unsigned int font_size ) const;
+		float GetFontLineHeight( const sf::Font& font, unsigned int font_size ) const;
+
+		/** Get baseline offset.
+		 * The offset needed to be applied to get from the text origin y to the baseline y.
+		 * @param font Font.
+		 * @param font_size Font size.
+		 * @return Baseline offset.
+		 */
+		float GetFontBaselineOffset( const sf::Font& font, unsigned int font_size ) const;
+
+		/** Get line spacing of a font. The space between 2 baselines.
+		 * @param font Font.
+		 * @param font_size Font size.
+		 * @return Line spacing.
+		 */
+		float GetFontLineSpacing( const sf::Font& font, unsigned int font_size ) const;
 
 		/** Get metrics of a text string.
 		 * @param string String.
@@ -226,6 +241,13 @@ class SFGUI_API Engine {
 		typedef std::map<const std::string, WidgetNameMap> PropertyMap;
 
 		const std::string* GetValue( const std::string& property, SharedPtr<const Widget> widget ) const;
+
+		/** Get maximum line height and baseline offset of a font.
+		 * @param font Font.
+		 * @param font_size Font size.
+		 * @return sf::Vector2f containing line height in x and baseline offset in y.
+		 */
+		sf::Vector2f GetFontHeightProperties( const sf::Font& font, unsigned int font_size ) const;
 
 		PropertyMap m_properties;
 

@@ -21,7 +21,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	unsigned int font_size( GetProperty<unsigned int>( "FontSize", combo_box ) );
 	float padding( GetProperty<float>( "ItemPadding", combo_box ) );
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
-	const float line_height( GetLineHeight( font, font_size ) );
+	const float line_height( GetFontLineHeight( font, font_size ) );
 
 	RenderQueue* queue( new RenderQueue );
 
@@ -107,23 +107,23 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 	// Arrow.
 	sf::Vector2f position(
-		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + combo_box->GetAllocation().width - padding - GetLineHeight( font, font_size ),
+		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + combo_box->GetAllocation().width - padding - GetFontLineHeight( font, font_size ),
 		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + padding
 	);
 
 	queue->Add(
 		Renderer::Get().CreateTriangle(
 			position + sf::Vector2f(
-				GetLineHeight( font, font_size ) / 2.f,
-				GetLineHeight( font, font_size ) * 3.f / 4.f
+				GetFontLineHeight( font, font_size ) / 2.f,
+				GetFontLineHeight( font, font_size ) * 3.f / 4.f
 			),
 			position + sf::Vector2f(
-				GetLineHeight( font, font_size ) * 3.f / 4.f,
-				GetLineHeight( font, font_size ) / 4.f
+				GetFontLineHeight( font, font_size ) * 3.f / 4.f,
+				GetFontLineHeight( font, font_size ) / 4.f
 			),
 			position + sf::Vector2f(
-				GetLineHeight( font, font_size ) / 4.f,
-				GetLineHeight( font, font_size ) / 4.f
+				GetFontLineHeight( font, font_size ) / 4.f,
+				GetFontLineHeight( font, font_size ) / 4.f
 			),
 			arrow_color
 		)

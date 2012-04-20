@@ -59,16 +59,66 @@ namespace sfg {
 Engine::~Engine() {
 }
 
-float Engine::GetLineHeight( const sf::Font& font, unsigned int font_size ) const {
-	return static_cast<float>( font.getLineSpacing( font_size ) ) + std::floor( static_cast<float>( font_size ) / 20.f ); // Last part from experimentation
+sf::Vector2f Engine::GetFontHeightProperties( const sf::Font& font, unsigned int font_size ) const {
+	// We want to cache line height values because they are expensive to compute.
+
+	static std::map<std::pair<void*, unsigned int>, sf::Vector2f> height_property_cache;
+
+	// Get the font face that Laurent tries to hide from us.
+	struct FontStruct {
+		void* font_face; // Authentic SFML comment: implementation details
+		void* unused1;
+		int* unused2;
+
+		// Since maps allocate everything non-contiguously on the heap we can use void* instead of Page here.
+		mutable std::map<unsigned int, void*> unused3;
+		mutable std::vector<sf::Uint8> unused4;
+	};
+
+	void* face;
+
+	// All your font face are belong to us too.
+	memcpy( &face, reinterpret_cast<const char*>( &font ) + sizeof( sf::Font ) - sizeof( FontStruct ), sizeof( void* ) );
+
+	std::pair<void*, unsigned int> id( face, font_size );
+
+	std::map<std::pair<void*, unsigned int>, sf::Vector2f>::iterator iter( height_property_cache.find( id ) );
+
+	if( iter != height_property_cache.end() ) {
+		return iter->second;
+	}
+
+	sf::Vector2f properties( 0.f, 0.f );
+
+	for( sf::Uint32 current_character = 0; current_character < 0x0370; ++current_character ) {
+		const sf::Glyph& glyph = font.getGlyph( current_character, font_size, false );
+		properties.x = std::max( properties.x, static_cast<float>( glyph.bounds.height ) );
+		properties.y = std::max( properties.y, static_cast<float>( -glyph.bounds.top ) );
+	}
+
+	height_property_cache[id] = properties;
+
+	return properties;
+}
+
+float Engine::GetFontLineHeight( const sf::Font& font, unsigned int font_size ) const {
+	return GetFontHeightProperties( font, font_size ).x;
+}
+
+float Engine::GetFontBaselineOffset( const sf::Font& font, unsigned int font_size ) const {
+	return GetFontHeightProperties( font, font_size ).y;
+}
+
+float Engine::GetFontLineSpacing( const sf::Font& font, unsigned int font_size ) const {
+	return static_cast<float>( font.getLineSpacing( font_size ) );
 }
 
 sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {
 	// SFML is incapable of giving us the metrics we need so we have to do it ourselves.
-	sf::Vector2f metrics( 0.f, 0.f );
-
 	float horizontal_spacing = static_cast<float>( font.getGlyph( L' ', font_size, false ).advance );
 	float vertical_spacing = static_cast<float>( font.getLineSpacing( font_size ) );
+
+	sf::Vector2f metrics( 0.f, 0.f );
 
 	const static float tab_spaces = 2.f;
 
@@ -102,6 +152,7 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 		const sf::Glyph& glyph = font.getGlyph( current_character, font_size, false );
 
 		metrics.x += static_cast<float>( glyph.advance );
+		metrics.y = std::max( metrics.y, static_cast<float>( glyph.bounds.height ) );
 	}
 
 	return metrics;

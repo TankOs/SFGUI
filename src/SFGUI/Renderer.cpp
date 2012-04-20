@@ -643,7 +643,7 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 	}
 
 	// Make sure all the glyphs we need are loaded.
-	for( sf::Uint32 codepoint = 0; codepoint < 512; ++codepoint ) {
+	for( sf::Uint32 codepoint = 0; codepoint < 0x0370; ++codepoint ) {
 		font.getGlyph( codepoint, size, false );
 	}
 

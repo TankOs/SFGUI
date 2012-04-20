@@ -19,7 +19,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
 	float label_padding( GetProperty<float>( "LabelPadding", frame ) );
 
-	float line_height = GetLineHeight( font, font_size );
+	float line_height = GetFontLineHeight( font, font_size );
 
 	RenderQueue* queue( new RenderQueue );
 

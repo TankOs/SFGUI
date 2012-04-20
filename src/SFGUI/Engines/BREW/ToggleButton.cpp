@@ -39,7 +39,7 @@ RenderQueue* BREW::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> but
 	// Label.
 	if( button->GetLabel().getSize() > 0 ) {
 		sf::Vector2f metrics = GetTextMetrics( button->GetLabel(), font, font_size );
-		metrics.y = GetLineHeight( font, font_size );
+		metrics.y = GetFontLineHeight( font, font_size );
 
 		sf::Text text( button->GetLabel(), font, font_size );
 		float offset = ( ( button->GetState() == Button::ACTIVE ) || button->IsActive() ) ? border_width : 0.f;

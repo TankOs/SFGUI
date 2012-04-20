@@ -43,7 +43,7 @@ sf::Vector2f Frame::CalculateRequisition() {
 
 	sf::Vector2f requisition( Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size ) );
 	requisition.x += 2 * label_padding + 4 * border_width;
-	requisition.y = Context::Get().GetEngine().GetLineHeight( font, font_size ) + 4 * border_width;
+	requisition.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 4 * border_width;
 
 	Widget::Ptr child = GetChild();
 	if( child ) {
@@ -70,7 +70,7 @@ void Frame::HandleSizeChange() {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
-	float line_height( Context::Get().GetEngine().GetLineHeight( font, font_size ) );
+	float line_height( Context::Get().GetEngine().GetFontLineHeight( font, font_size ) );
 
 	sf::FloatRect allocation( GetAllocation() );
 

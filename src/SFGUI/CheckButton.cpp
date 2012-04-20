@@ -44,7 +44,7 @@ sf::Vector2f CheckButton::CalculateRequisition() {
 	if( GetLabel().getSize() > 0 ) {
 		sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( GetLabel(), font, font_size );
 		requisition.x += metrics.x + spacing;
-		requisition.y = std::max( requisition.y, Context::Get().GetEngine().GetLineHeight( font, font_size ) );
+		requisition.y = std::max( requisition.y, Context::Get().GetEngine().GetFontLineHeight( font, font_size ) );
 	}
 
 	return requisition;

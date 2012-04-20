@@ -22,7 +22,7 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
 	unsigned int title_font_size( GetProperty<unsigned int>( "FontSize", window ) );
 	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
-	float title_size( GetLineHeight( title_font, title_font_size ) + 2 * title_padding );
+	float title_size( GetFontLineHeight( title_font, title_font_size ) + 2 * title_padding );
 
 	if( window->HasStyle( Window::SHADOW ) ) {
 		// Shadow.

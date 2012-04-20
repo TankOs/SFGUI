@@ -43,7 +43,7 @@ sf::Vector2f Label::CalculateRequisition() {
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( m_text, font, font_size );
-	metrics.y = Context::Get().GetEngine().GetLineHeight( font, font_size );
+	metrics.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	return metrics;
 }
