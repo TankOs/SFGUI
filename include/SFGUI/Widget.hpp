@@ -222,7 +222,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		const SharedPtr<RendererViewport>& GetViewport() const;
 
 		// Signals.
-		Signal OnStateChange; //!< Fired when state changed. (old state)
+		Signal OnStateChange; //!< Fired when state changed.
 		Signal OnGainFocus; //!< Fired when focus gained.
 		Signal OnLostFocus; //!< Fired when focus lost.
 
@@ -231,11 +231,16 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		Signal OnSizeAllocate; //!< Fired when widget's allocation changed.
 		Signal OnSizeRequest; //!< Fired when size was requested.
 
-		Signal OnMouseEnter; //!< Fired when mouse entered widget. (x, y)
-		Signal OnMouseLeave; //!< Fired when mouse left widget. (x, y) Return true to keep the mouse move hook alive.
-		Signal OnMouseMove; //!< Fired when mouse moved over widget. (x, y)
-		Signal OnMouseButtonPress; //!< Fired when mouse button pressed. (x, y, button)
-		Signal OnMouseButtonRelease; //!< Fired when mouse button released. (x, y, button)
+		Signal OnMouseEnter; //!< Fired when mouse entered widget.
+		Signal OnMouseLeave; //!< Fired when mouse left widget.
+		Signal OnMouseMove; //!< Fired when mouse moved over widget.
+		Signal OnMouseLeftPress; //!< Fired when left button pressed.
+		Signal OnMouseRightPress; //!< Fired when right button pressed.
+		Signal OnMouseLeftRelease; //!< Fired when left button released.
+		Signal OnMouseRightRelease; //!< Fired when right button released.
+
+		Signal OnLeftClick; //!< Fired when left button clicked.
+		Signal OnRightClick; //!< Fired when left button clicked.
 
 		Signal OnKeyPress; //!< Fired when a key is pressed while State == Active.
 		Signal OnKeyRelease; //!< Fired when a key is released while State == Active.

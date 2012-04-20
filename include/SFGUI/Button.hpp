@@ -49,8 +49,6 @@ class SFGUI_API Button : public Bin {
 		 */
 		void ClearImage();
 
-		Signal OnClick; //!< Fired when button clicked.
-
 	protected:
 		/** Ctor.
 		 */
@@ -60,8 +58,6 @@ class SFGUI_API Button : public Bin {
 		virtual sf::Vector2f CalculateRequisition();
 
 		virtual void HandleAdd( const Widget::Ptr& child );
-
-		void HandleMouseClick( sf::Mouse::Button button, int x, int y );
 
 		void HandleSizeChange();
 

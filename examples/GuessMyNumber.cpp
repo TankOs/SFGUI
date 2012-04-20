@@ -111,10 +111,10 @@ void GuessMyNumber::Run() {
 	window->SetTitle( TITLE );
 
 	sfg::Button::Ptr new_game_button( sfg::Button::Create( "New game" ) );
-	new_game_button->OnClick.Connect( &GuessMyNumber::OnNewGameClick, this );
+	new_game_button->OnLeftClick.Connect( &GuessMyNumber::OnNewGameClick, this );
 
 	m_guess_button->SetId( "guess" );
-	m_guess_button->OnClick.Connect( &GuessMyNumber::OnGuessClick, this );
+	m_guess_button->OnLeftClick.Connect( &GuessMyNumber::OnGuessClick, this );
 
 	// Layout.
 	sfg::Table::Ptr table( sfg::Table::Create() );

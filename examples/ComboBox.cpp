@@ -79,7 +79,7 @@ void ComboBoxExample::Run() {
 	// notify us when it is clicked.
 	m_combo_box->OnSelect.Connect( &ComboBoxExample::OnComboSelect, this );
 
-	button->OnClick.Connect( &ComboBoxExample::OnAddItemClick, this );
+	button->OnLeftClick.Connect( &ComboBoxExample::OnAddItemClick, this );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.

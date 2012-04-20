@@ -276,7 +276,13 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			}
 
 			HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
-			OnMouseButtonPress();
+
+			if( event.mouseButton.button == sf::Mouse::Left ) {
+				OnMouseLeftPress();
+			}
+			else if( event.mouseButton.button == sf::Mouse::Right ) {
+				OnMouseRightPress();
+			}
 
 			break;
 
@@ -288,11 +294,24 @@ void Widget::HandleEvent( const sf::Event& event ) {
 				// When released inside the widget, the event can be considered a click.
 				if( m_mouse_in ) {
 					HandleMouseClick( event.mouseButton.button, event.mouseButton.x, event.mouseButton.y );
+
+					if( event.mouseButton.button == sf::Mouse::Left ) {
+						OnLeftClick();
+					}
+					else if( event.mouseButton.button == sf::Mouse::Right ) {
+						OnRightClick();
+					}
 				}
 			}
 
 			HandleMouseButtonEvent( event.mouseButton.button, false, event.mouseButton.x, event.mouseButton.y );
-			OnMouseButtonRelease();
+
+			if( event.mouseButton.button == sf::Mouse::Left ) {
+				OnMouseLeftRelease();
+			}
+			else if( event.mouseButton.button == sf::Mouse::Right ) {
+				OnMouseRightRelease();
+			}
 
 			break;
 

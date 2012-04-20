@@ -341,15 +341,15 @@ void SampleApp::Run() {
 	m_wndmain->Add( notebook1 );
 
 	// Signals.
-	btnaddbuttonh->OnClick.Connect( &SampleApp::OnAddButtonHClick, this );
-	btnaddbuttonv->OnClick.Connect( &SampleApp::OnAddButtonVClick, this );
-	m_titlebar_toggle->OnClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
-	btnhidewindow->OnClick.Connect( &SampleApp::OnHideWindowClicked, this );
-	btntogglespace->OnClick.Connect( &SampleApp::OnToggleSpaceClick, this );
+	btnaddbuttonh->OnLeftClick.Connect( &SampleApp::OnAddButtonHClick, this );
+	btnaddbuttonv->OnLeftClick.Connect( &SampleApp::OnAddButtonVClick, this );
+	m_titlebar_toggle->OnLeftClick.Connect( &SampleApp::OnToggleTitlebarClick, this );
+	btnhidewindow->OnLeftClick.Connect( &SampleApp::OnHideWindowClicked, this );
+	btntogglespace->OnLeftClick.Connect( &SampleApp::OnToggleSpaceClick, this );
 	m_limit_check->OnToggle.Connect( &SampleApp::OnLimitCharsToggle, this );
-	btnloadstyle->OnClick.Connect( &SampleApp::OnLoadThemeClick, this );
+	btnloadstyle->OnLeftClick.Connect( &SampleApp::OnLoadThemeClick, this );
 	m_scale->GetAdjustment()->OnChange.Connect( &SampleApp::OnAdjustmentChange, this );
-	spinner_toggle->OnClick.Connect( &SampleApp::OnToggleSpinner, this );
+	spinner_toggle->OnLeftClick.Connect( &SampleApp::OnToggleSpinner, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -454,7 +454,7 @@ void SampleApp::OnAddButtonHClick() {
 	Ouchy::Ptr ouchy( new Ouchy( button ) );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->OnClick.Connect( &Ouchy::DoOuch, ouchy.get() );
+	button->OnLeftClick.Connect( &Ouchy::DoOuch, ouchy.get() );
 
 	m_boxbuttonsh->Pack( button, true );
 }
@@ -465,7 +465,7 @@ void SampleApp::OnAddButtonVClick() {
 	Ouchy::Ptr ouchy( new Ouchy( button ) );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->OnClick.Connect( &Ouchy::DoOuch, ouchy.get() );
+	button->OnLeftClick.Connect( &Ouchy::DoOuch, ouchy.get() );
 
 	m_boxbuttonsv->Pack( button, false );
 }

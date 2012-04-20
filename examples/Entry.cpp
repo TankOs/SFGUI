@@ -48,7 +48,7 @@ void EntryExample::Run() {
 	button->SetLabel( "Set" );
 
 	// Connect the button.
-	button->OnClick.Connect( &EntryExample::ButtonClick, this );
+	button->OnLeftClick.Connect( &EntryExample::ButtonClick, this );
 
 	// Create a label.
 	m_label = sfg::Label::Create();

@@ -16,8 +16,8 @@ namespace sfg {
  * member functions (methods) specify the class, method name and object.
  * Examples:\n
  * \code
- * widget->OnClick.Connect( &my_callback ); // Free function binding.
- * widget->OnClick.Connect( &MyClass::MyCallback, this ); // Method binding.
+ * widget->OnLeftClick.Connect( &my_callback ); // Free function binding.
+ * widget->OnLeftClick.Connect( &MyClass::MyCallback, this ); // Method binding.
  * \endcode
  *
  */

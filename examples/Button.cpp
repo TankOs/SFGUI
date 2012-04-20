@@ -32,7 +32,7 @@ void ButtonExample::Run() {
 
 	// Create a simple button and connect the click signal.
 	sfg::Button::Ptr button( sfg::Button::Create( "Greet SFGUI!" ) );
-	button->OnClick.Connect( &ButtonExample::OnButtonClick, this );
+	button->OnLeftClick.Connect( &ButtonExample::OnButtonClick, this );
 
 	// Create a vertical box layouter with 5 pixels spacing and add the label
 	// and button to it.

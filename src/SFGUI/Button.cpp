@@ -110,14 +110,6 @@ const std::string& Button::GetName() const {
 	return name;
 }
 
-void Button::HandleMouseClick( sf::Mouse::Button button, int /*x*/, int /*y*/ ) {
-	if( button != sf::Mouse::Left ) {
-		return;
-	}
-
-	OnClick();
-}
-
 void Button::HandleAdd( const Widget::Ptr& child ) {
 	Bin::HandleAdd( child );
 
