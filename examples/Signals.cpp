@@ -95,13 +95,13 @@ void Application::Run() {
 	// Possibility 1, normal function
 	sfg::Button::Ptr button1 = sfg::Button::Create();
 	button1->SetLabel( "Clicky 1" );
-	button1->OnLeftClick.Connect( &Foo );
+	button1->GetSignal( sfg::OnLeftClick ).Connect( &Foo );
 	box->Pack( button1, false );
 
 	// Possibility 2, this class
 	sfg::Button::Ptr button2 = sfg::Button::Create();
 	button2->SetLabel( "Clicky 2" );
-	button2->OnLeftClick.Connect( &Application::Bar, this );
+	button2->GetSignal( sfg::OnLeftClick ).Connect( &Application::Bar, this );
 	box->Pack( button2, false );
 
 	// Possibility 3, objects
@@ -115,7 +115,7 @@ void Application::Run() {
 		// This is just a more complicated way of passing a pointer to a
 		// BazClass to Connect() when the BazClass object is part of an array.
 		// Passing normal pointers such as &baz1 would also work.
-		button->OnLeftClick.Connect( &BazClass::Baz, &( baz_array[i] ) );
+		button->GetSignal( sfg::OnLeftClick ).Connect( &BazClass::Baz, &( baz_array[i] ) );
 		box->Pack( button, false );
 	}
 

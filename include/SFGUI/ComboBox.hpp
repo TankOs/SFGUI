@@ -90,9 +90,6 @@ class SFGUI_API ComboBox : public Bin {
 		 */
 		bool IsPoppedUp() const;
 
-		Signal OnSelect; //!< Fired when an entry is selected.
-		Signal OnOpen; //!< Fired when the popup is opened.
-
 	protected:
 		/** Ctor.
 		 */

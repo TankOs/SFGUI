@@ -66,7 +66,7 @@ void DesktopExample::Run() {
 	m_desktop.Add( m_window );
 
 	// Signals.
-	create_window_button->OnLeftClick.Connect( &DesktopExample::OnCreateWindowClick, this );
+	create_window_button->GetSignal( sfg::OnLeftClick ).Connect( &DesktopExample::OnCreateWindowClick, this );
 
 	// Init.
 	m_desktop.SetProperty( "Button#create_window > Label", "FontSize", 18.f );
@@ -127,8 +127,8 @@ void DesktopExample::OnCreateWindowClick() {
 	m_desktop.Add( window );
 
 	// Signals.
-	destroy_button->OnLeftClick.Connect( &DesktopExample::OnDestroyWindowClick, this );
-	front_button->OnLeftClick.Connect( &DesktopExample::OnFrontClick, this );
+	destroy_button->GetSignal( sfg::OnLeftClick ).Connect( &DesktopExample::OnDestroyWindowClick, this );
+	front_button->GetSignal( sfg::OnLeftClick ).Connect( &DesktopExample::OnFrontClick, this );
 }
 
 void DesktopExample::OnDestroyWindowClick() {

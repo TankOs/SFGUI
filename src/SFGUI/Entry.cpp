@@ -37,7 +37,7 @@ void Entry::SetText( const sf::String& text ) {
 	m_visible_offset = 0;
 	m_cursor_position = 0;
 	RecalculateVisibleString();
-	OnTextChanged();
+	GetSignals().Emit( OnTextChanged );
 }
 
 const sf::String& Entry::GetText() const {
@@ -166,7 +166,7 @@ void Entry::HandleTextEvent( sf::Uint32 character ) {
 		m_string.insert( m_cursor_position, character );
 		MoveCursor( 1 );
 
-		OnTextChanged();
+		GetSignals().Emit( OnTextChanged );
 	}
 }
 
@@ -196,8 +196,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			m_elapsed_time = 0.f;
 			m_cursor_status = true;
 
-			OnTextChanged();
-		}
+			GetSignals().Emit( OnTextChanged );		}
 	} break;
 	case sf::Keyboard::Delete: {
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < m_string.getSize() ) ) {
@@ -218,7 +217,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			m_elapsed_time = 0.f;
 			m_cursor_status = true;
 
-			OnTextChanged();
+			GetSignals().Emit( OnTextChanged );
 		}
 	} break;
 	case sf::Keyboard::Home: {
@@ -347,7 +346,7 @@ void Entry::SetMaximumLength( std::size_t max_length ) {
 	if( m_max_length < m_string.getSize() && m_max_length != 0 ) {
 		m_string.erase( m_max_length, m_max_length - m_string.getSize() );
 		RecalculateVisibleString();
-		OnTextChanged();
+		GetSignals().Emit( OnTextChanged );
 	}
 }
 

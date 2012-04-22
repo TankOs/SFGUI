@@ -190,7 +190,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 
 		if( ( m_highlighted_item != NONE ) && ( m_active_item != m_highlighted_item ) ) {
 			m_active_item = m_highlighted_item;
-			OnSelect();
+			GetSignals().Emit( OnSelect );
 		}
 
 		m_highlighted_item = NONE;
@@ -213,7 +213,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 
 		SetState( ACTIVE );
 
-		OnOpen();
+		GetSignals().Emit( OnOpen );
 
 		if( m_queue ) {
 			// Set Z Layer to 1, above all "normal" widgets.

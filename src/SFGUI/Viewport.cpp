@@ -8,7 +8,7 @@ namespace sfg {
 Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) :
 	Bin()
 {
-	OnSizeRequest.Connect( &Viewport::HandleRequisitionChange, this );
+	GetSignal( OnSizeRequest ).Connect( &Viewport::HandleRequisitionChange, this );
 
 	SetHorizontalAdjustment( horizontal_adjustment );
 	SetVerticalAdjustment( vertical_adjustment );
@@ -134,7 +134,7 @@ const Adjustment::Ptr& Viewport::GetHorizontalAdjustment() const {
 
 void Viewport::SetHorizontalAdjustment( const Adjustment::Ptr& horizontal_adjustment ) {
 	m_horizontal_adjustment = horizontal_adjustment;
-	m_horizontal_adjustment->OnChange.Connect( &Viewport::UpdateView, this );
+	m_horizontal_adjustment->GetSignal( OnChange ).Connect( &Viewport::UpdateView, this );
 }
 
 const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
@@ -143,7 +143,7 @@ const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
 
 void Viewport::SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment ) {
 	m_vertical_adjustment = vertical_adjustment;
-	m_vertical_adjustment->OnChange.Connect( &Viewport::UpdateView, this );
+	m_vertical_adjustment->GetSignal( OnChange ).Connect( &Viewport::UpdateView, this );
 }
 
 void Viewport::HandleRequisitionChange() {

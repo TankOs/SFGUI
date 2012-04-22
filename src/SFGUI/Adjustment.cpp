@@ -50,7 +50,7 @@ void Adjustment::SetValue( float new_value ) {
 	}
 
 	if( m_value != old_value ) {
-		OnChange();
+		GetSignals().Emit( OnChange );
 	}
 }
 

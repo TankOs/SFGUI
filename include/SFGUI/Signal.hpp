@@ -7,6 +7,43 @@
 
 namespace sfg {
 
+enum SignalType {
+	Default, //!< Default to return when an invalid type is requested. Connecting to this will do nothing.
+
+	OnStateChange, //!< Fired when state changed.
+	OnGainFocus, //!< Fired when focus gained.
+	OnLostFocus, //!< Fired when focus lost.
+
+	OnExpose, //!< Fired when widget is being rendered.
+
+	OnSizeAllocate, //!< Fired when widget's allocation changed.
+	OnSizeRequest, //!< Fired when size was requested.
+
+	OnMouseEnter, //!< Fired when mouse entered widget.
+	OnMouseLeave, //!< Fired when mouse left widget.
+	OnMouseMove, //!< Fired when mouse moved over widget.
+	OnMouseLeftPress, //!< Fired when left button pressed.
+	OnMouseRightPress, //!< Fired when right button pressed.
+	OnMouseLeftRelease, //!< Fired when left button released.
+	OnMouseRightRelease, //!< Fired when right button released.
+
+	OnLeftClick, //!< Fired when left button clicked.
+	OnRightClick, //!< Fired when left button clicked.
+
+	OnKeyPress, //!< Fired when a key is pressed while State == Active.
+	OnKeyRelease, //!< Fired when a key is released while State == Active.
+	OnText, //!< Fired when text is entered while State == Active.
+
+	OnChange, //!< Fired when parameter changed.
+
+	OnSelect, //!< Fired when an entry is selected.
+	OnOpen, //!< Fired when the popup is opened.
+
+	OnTextChanged, //!< Fired when the text changes.
+
+	OnToggle //!< Fired when toggled.
+};
+
 /** Widget signal.
  * Calls a function if something interesting is happening in a widget. Signals
  * can be connected to multiple endpoints. An endpoint may be a free or member
@@ -59,6 +96,34 @@ class SFGUI_API Signal {
 
 		static unsigned int m_serial;
 		DelegateMap* m_delegates;
+};
+
+/** Widget signal container
+ * Should only be used internally to store signals.
+ * Needed to reduce memory consumption of widgets without any connected handlers.
+ */
+class SFGUI_API SignalContainer {
+	public:
+		/** Ctor.
+		 */
+		SignalContainer();
+
+		/** Dtor.
+		 */
+		~SignalContainer();
+
+		/** Access signal.
+		 */
+		Signal& operator[]( const SignalType& type );
+
+		/** Emit signal.
+		 */
+		void Emit( const SignalType& type );
+
+	private:
+		typedef std::map<SignalType, Signal> SignalMap;
+
+		SignalMap* m_signals;
 };
 
 }

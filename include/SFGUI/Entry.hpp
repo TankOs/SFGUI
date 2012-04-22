@@ -86,8 +86,6 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void SetMaximumLength( std::size_t max_length );
 
-		Signal OnTextChanged; //!< Fired when the text changes.
-
 	protected:
 		RenderQueue* InvalidateImpl() const;
 		sf::Vector2f CalculateRequisition();

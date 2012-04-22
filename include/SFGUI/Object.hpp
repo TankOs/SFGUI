@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+#include <SFGUI/Signal.hpp>
 #include <SFGUI/NonCopyable.hpp>
 #include <SFGUI/SharedPtr.hpp>
 
@@ -17,12 +18,25 @@ class SFGUI_API Object : public NonCopyable {
 		 */
 		virtual ~Object();
 
+		/** Request a reference to a specific signal for this widget.
+		 * @param type Requested signal type.
+		 * @return Reference to requested signal.
+		 */
+		Signal& GetSignal( SignalType type );
+
 	protected:
 		/** Constructor.
 		 */
 		Object();
 
+		/** Get the signal container.
+		 * @return Reference to the signal container.
+		 */
+		SignalContainer& GetSignals();
+
 	private:
+		// Signals.
+		SignalContainer m_signals;
 };
 
 }

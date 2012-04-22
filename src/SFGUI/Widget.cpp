@@ -7,19 +7,18 @@
 
 namespace sfg {
 
+WeakPtr<Widget> Widget::m_focus_widget;
+WeakPtr<Widget> Widget::m_active_widget;
+
 Widget::Widget() :
 	Object(),
 	m_allocation( 0.f, 0.f, 0.f, 0.f ),
 	m_requisition( 0.f, 0.f ),
 	m_custom_requisition( 0 ),
+	m_class_id( 0 ),
 	m_hierarchy_level( 0 ),
 	m_drawable( 0 ),
-	m_sensitive( true ),
-	m_visible( true ),
-	m_drawn( true ),
-	m_state( NORMAL ),
-	m_mouse_in( false ),
-	m_mouse_button_down( -1 ),
+	m_bitfield( static_cast<char>( 0xe1 ) ),
 	m_invalidated( true )
 {
 	m_viewport = Renderer::Get().GetDefaultViewport();
@@ -28,14 +27,11 @@ Widget::Widget() :
 Widget::~Widget() {
 	delete m_drawable;
 	delete m_custom_requisition;
-}
-
-bool Widget::IsSensitive() const {
-	return m_sensitive;
+	delete m_class_id;
 }
 
 bool Widget::IsLocallyVisible() const {
-	return m_visible;
+	return ( m_bitfield & 0x01 );
 }
 
 bool Widget::IsGloballyVisible() const {
@@ -58,39 +54,26 @@ bool Widget::IsGloballyVisible() const {
 }
 
 void Widget::GrabFocus( Ptr widget ) {
-	Container::Ptr parent( m_parent.lock() );
-
-	if( !parent ) {
-		// Notify old focused widget.
-		if( m_focus_widget ) {
-			m_focus_widget->OnLostFocus();
-			m_focus_widget->HandleFocusChange( widget );
-		}
-
-		m_focus_widget = widget;
-
-		if( m_focus_widget ) {
-			m_focus_widget->OnGainFocus();
-			m_focus_widget->HandleFocusChange( widget );
-		}
+	// Notify old focused widget.
+	if( m_focus_widget.lock() ) {
+		m_focus_widget.lock()->GetSignals().Emit( OnLostFocus );
+		m_focus_widget.lock()->HandleFocusChange( widget );
 	}
-	else {
-		parent->GrabFocus( widget );
+
+	m_focus_widget = widget;
+
+	if( m_focus_widget.lock() ) {
+		m_focus_widget.lock()->GetSignals().Emit( OnGainFocus );
+		m_focus_widget.lock()->HandleFocusChange( widget );
 	}
 }
 
-bool Widget::HasFocus( PtrConst widget ) const {
-	Container::Ptr parent( m_parent.lock() );
-
-	if( !parent ) {
-		if( m_focus_widget == widget ) {
-			return true;
-		}
-
-		return false;
+bool Widget::HasFocus( PtrConst widget ) {
+	if( m_focus_widget.lock() == widget ) {
+		return true;
 	}
 
-	return parent->HasFocus( widget );
+	return false;
 }
 
 void Widget::SetAllocation( const sf::FloatRect& rect ) {
@@ -122,7 +105,7 @@ void Widget::SetAllocation( const sf::FloatRect& rect ) {
 
 	  Invalidate();
 
-	  OnSizeAllocate();
+	  GetSignals().Emit( OnSizeAllocate );
 	}
 }
 
@@ -144,7 +127,7 @@ void Widget::RequestResize() {
 	Container::Ptr parent = m_parent.lock();
 
 	// Notify observers.
-	OnSizeRequest();
+	GetSignals().Emit( OnSizeRequest );
 
 	if( parent ) {
 		parent->RequestResize();
@@ -253,17 +236,17 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			// Check if pointer inside of widget's allocation.
 			if( GetAllocation().contains( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) ) ) {
 				// Check for enter event.
-				if( m_mouse_in == false ) {
-					m_mouse_in = true;
-					OnMouseEnter();
+				if( !IsMouseInWidget() ) {
+					m_bitfield ^= static_cast<char>( 0x10 );
+					GetSignals().Emit( OnMouseEnter );
 					HandleMouseEnter( event.mouseMove.x, event.mouseMove.y );
 				}
 
-				OnMouseMove();
+				GetSignals().Emit( OnMouseMove );
 			}
-			else if( m_mouse_in == true ) { // Check for leave event.
-				m_mouse_in = false;
-				OnMouseLeave();
+			else if( IsMouseInWidget() ) { // Check for leave event.
+				m_bitfield ^= static_cast<char>( 0x10 );
+				GetSignals().Emit( OnMouseLeave );
 				HandleMouseLeave( event.mouseMove.x, event.mouseMove.y );
 			}
 
@@ -271,35 +254,36 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::MouseButtonPressed:
-			if( ( m_mouse_button_down == -1 ) && m_mouse_in ) {
-				m_mouse_button_down = event.mouseButton.button;
+			if( ( ( m_bitfield & static_cast<char>( 0xe0 ) ) == static_cast<char>( 0xe0 ) ) && IsMouseInWidget() ) {
+				m_bitfield &= static_cast<char>( 0x1f );
+				m_bitfield |= static_cast<char>( event.mouseButton.button << 5 );
 			}
 
 			HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
 
 			if( event.mouseButton.button == sf::Mouse::Left ) {
-				OnMouseLeftPress();
+				GetSignals().Emit( OnMouseLeftPress );
 			}
 			else if( event.mouseButton.button == sf::Mouse::Right ) {
-				OnMouseRightPress();
+				GetSignals().Emit( OnMouseRightPress );
 			}
 
 			break;
 
 		case sf::Event::MouseButtonReleased:
 			// Only process as a click when mouse button has been pressed inside the widget before.
-			if( m_mouse_button_down == event.mouseButton.button ) {
-				m_mouse_button_down = -1;
+			if( ( ( m_bitfield & 0xe0 ) >> 5 ) == event.mouseButton.button ) {
+				m_bitfield |= static_cast<char>( 0xe0 );
 
 				// When released inside the widget, the event can be considered a click.
-				if( m_mouse_in ) {
+				if( IsMouseInWidget() ) {
 					HandleMouseClick( event.mouseButton.button, event.mouseButton.x, event.mouseButton.y );
 
 					if( event.mouseButton.button == sf::Mouse::Left ) {
-						OnLeftClick();
+						GetSignals().Emit( OnLeftClick );
 					}
 					else if( event.mouseButton.button == sf::Mouse::Right ) {
-						OnRightClick();
+						GetSignals().Emit( OnRightClick );
 					}
 				}
 			}
@@ -307,10 +291,10 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			HandleMouseButtonEvent( event.mouseButton.button, false, event.mouseButton.x, event.mouseButton.y );
 
 			if( event.mouseButton.button == sf::Mouse::Left ) {
-				OnMouseLeftRelease();
+				GetSignals().Emit( OnMouseLeftRelease );
 			}
 			else if( event.mouseButton.button == sf::Mouse::Right ) {
-				OnMouseRightRelease();
+				GetSignals().Emit( OnMouseRightRelease );
 			}
 
 			break;
@@ -319,7 +303,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.key.code, true );
-				OnKeyPress();
+				GetSignals().Emit( OnKeyPress );
 			}
 
 			break;
@@ -328,7 +312,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.key.code, false );
-				OnKeyRelease();
+				GetSignals().Emit( OnKeyRelease );
 			}
 			break;
 
@@ -336,7 +320,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleTextEvent( event.text.unicode );
-				OnText();
+				GetSignals().Emit( OnText );
 			}
 			break;
 
@@ -347,18 +331,20 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 void Widget::SetState( State state ) {
 	// Do nothing if state wouldn't change.
-	if( m_state == state ) {
+	if( GetState() == state ) {
 		return;
 	}
 
-	unsigned char old_state( m_state );
-	m_state = state;
+	unsigned char old_state( GetState() );
+
+	m_bitfield &= static_cast<char>( 0xf1 );
+	m_bitfield |= static_cast<char>( state << 1 );
 
 	// If HandleStateChange() changed the state, do not call observer, will be
 	// done from there too.
-	if( m_state != old_state ) {
+	if( GetState() != old_state ) {
 		HandleStateChange( static_cast<State>( old_state ) );
-		OnStateChange();
+		GetSignals().Emit( OnStateChange );
 	}
 
 	if( state == ACTIVE ) {
@@ -371,7 +357,7 @@ void Widget::SetState( State state ) {
 }
 
 Widget::State Widget::GetState() const {
-	return static_cast<State>( m_state );
+	return static_cast<State>( ( ( m_bitfield & 0x0e ) >> 1 ) );
 }
 
 Container::Ptr Widget::GetParent() {
@@ -391,17 +377,17 @@ bool Widget::HasFocus() const {
 }
 
 bool Widget::IsMouseInWidget() const {
-	return m_mouse_in;
+	return ( m_bitfield & static_cast<char>( 0x10 ) );
 }
 
 void Widget::Show( bool show ) {
-	if( show == m_visible ) {
+	if( show == IsLocallyVisible() ) {
 		return;
 	}
 
 	bool old_global_visibility = IsGloballyVisible();
 
-	m_visible = show;
+	m_bitfield ^= 0x01;
 
 	HandleLocalVisibilityChange();
 
@@ -453,19 +439,43 @@ void Widget::UpdateDrawablePosition() const {
 }
 
 void Widget::SetId( const std::string& id ) {
-	m_id = id;
+	if( id.empty() ) {
+		return;
+	}
+
+	if( !m_class_id ) {
+		m_class_id = new struct ClassId;
+	}
+
+	m_class_id->id = id;
 }
 
-const std::string& Widget::GetId() const {
-	return m_id;
+std::string Widget::GetId() const {
+	if( !m_class_id ) {
+		return "";
+	}
+
+	return m_class_id->id;
 }
 
 void Widget::SetClass( const std::string& cls ) {
-	m_class = cls;
+	if( cls.empty() ) {
+		return;
+	}
+
+	if( !m_class_id ) {
+		m_class_id = new struct ClassId;
+	}
+
+	m_class_id->class_ = cls;
 }
 
-const std::string& Widget::GetClass() const {
-	return m_class;
+std::string Widget::GetClass() const {
+	if( !m_class_id ) {
+		return "";
+	}
+
+	return m_class_id->class_;
 }
 
 void Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
@@ -509,7 +519,7 @@ void Widget::HandleLocalVisibilityChange() {
 }
 
 void Widget::HandleGlobalVisibilityChange() {
-	if( m_state == PRELIGHT ) {
+	if( GetState() == PRELIGHT ) {
 		SetState( NORMAL );
 	}
 
@@ -567,36 +577,23 @@ void Widget::HandleViewportUpdate() {
 }
 
 void Widget::SetActiveWidget() {
-	GrabFocus( shared_from_this() );
+	SetActiveWidget( shared_from_this() );
 }
 
 void Widget::SetActiveWidget( Ptr widget ) {
-	Container::Ptr parent( m_parent.lock() );
-
-	if( !parent ) {
-		m_active_widget = widget;
-	}
-	else {
-		parent->SetActiveWidget( widget );
-	}
+	m_active_widget = widget;
 }
 
 bool Widget::IsActiveWidget() const {
-	return HasFocus( shared_from_this() );
+	return IsActiveWidget( shared_from_this() );
 }
 
-bool Widget::IsActiveWidget( PtrConst widget ) const {
-	Container::Ptr parent( m_parent.lock() );
-
-	if( !parent ) {
-		if( m_active_widget == widget ) {
-			return true;
-		}
-
-		return false;
+bool Widget::IsActiveWidget( PtrConst widget ) {
+	if( m_active_widget.lock() == widget ) {
+		return true;
 	}
 
-	return parent->IsActiveWidget( widget );
+	return false;
 }
 
 }

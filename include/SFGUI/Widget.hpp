@@ -2,7 +2,6 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Object.hpp>
-#include <SFGUI/Signal.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <SFGUI/RenderQueue.hpp>
 
@@ -35,11 +34,6 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Destructor.
 		 */
 		virtual ~Widget();
-
-		/** Check if widget is sensitive (enabled).
-		 * @return true when sensitive.
-		 */
-		bool IsSensitive() const;
 
 		/** Check if widget is locally visible, i.e. is rendered when allowed to.
 		 * This DOES NOT take into account the global visibility of it's parents.
@@ -184,7 +178,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Get ID.
 		 * @return ID or empty.
 		 */
-		const std::string& GetId() const;
+		std::string GetId() const;
 
 		/** Set class.
 		 * @param cls Class.
@@ -194,7 +188,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Get class.
 		 * @return Class or empty.
 		 */
-		const std::string& GetClass() const;
+		std::string GetClass() const;
 
 		/** Refresh.
 		 * Invalidates the widget and re-requests size
@@ -220,31 +214,6 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 * @return Viewport of this widget..
 		 */
 		const SharedPtr<RendererViewport>& GetViewport() const;
-
-		// Signals.
-		Signal OnStateChange; //!< Fired when state changed.
-		Signal OnGainFocus; //!< Fired when focus gained.
-		Signal OnLostFocus; //!< Fired when focus lost.
-
-		Signal OnExpose; //!< Fired when widget is being rendered.
-
-		Signal OnSizeAllocate; //!< Fired when widget's allocation changed.
-		Signal OnSizeRequest; //!< Fired when size was requested.
-
-		Signal OnMouseEnter; //!< Fired when mouse entered widget.
-		Signal OnMouseLeave; //!< Fired when mouse left widget.
-		Signal OnMouseMove; //!< Fired when mouse moved over widget.
-		Signal OnMouseLeftPress; //!< Fired when left button pressed.
-		Signal OnMouseRightPress; //!< Fired when right button pressed.
-		Signal OnMouseLeftRelease; //!< Fired when left button released.
-		Signal OnMouseRightRelease; //!< Fired when right button released.
-
-		Signal OnLeftClick; //!< Fired when left button clicked.
-		Signal OnRightClick; //!< Fired when left button clicked.
-
-		Signal OnKeyPress; //!< Fired when a key is pressed while State == Active.
-		Signal OnKeyRelease; //!< Fired when a key is released while State == Active.
-		Signal OnText; //!< Fired when text is entered while State == Active.
 
 	protected:
 		/** Constructor.
@@ -358,17 +327,22 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Set the focused widget.
 		 * @param widget Focused widget.
 		 */
-		void GrabFocus( Ptr widget );
+		static void GrabFocus( Ptr widget );
 
 		/** Check if a widget has focus.
 		 * @param widget Checked widget.
 		 * @return true if widget has focus.
 		 */
-		bool HasFocus( PtrConst widget ) const;
+		static bool HasFocus( PtrConst widget );
 
 	private:
-		void SetActiveWidget( Ptr widget );
-		bool IsActiveWidget( PtrConst widget ) const;
+		struct ClassId {
+			std::string id;
+			std::string class_;
+		};
+
+		static void SetActiveWidget( Ptr widget );
+		static bool IsActiveWidget( PtrConst widget );
 
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;
@@ -378,23 +352,30 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 
 		WeakPtr<Container> m_parent;
 
-		Ptr m_focus_widget;
-		Ptr m_active_widget;
+		static WeakPtr<Widget> m_focus_widget;
+		static WeakPtr<Widget> m_active_widget;
 
-		std::string m_id;
-		std::string m_class;
+		ClassId* m_class_id;
 
 		int m_hierarchy_level;
 
 		mutable RenderQueue* m_drawable;
 
-		bool m_sensitive;
-		bool m_visible;
-		bool m_drawn;
+		/**
+		 * Bit-field
+		 * 7=6=5 4 3=2=1 0
+		 * ^ ^ ^ ^ ^ ^ ^ ^
+		 * | | | | | | | |
+		 * | | | | | | | visible
+		 * | | | | | | |
+		 * | | | | state
+		 * | | | |
+		 * | | | mouse_in
+		 * | | |
+		 * mouse_button_down
+		 */
 
-		unsigned char m_state;
-		bool m_mouse_in;
-		char m_mouse_button_down;
+		char m_bitfield;
 
 		mutable bool m_invalidated;
 };
