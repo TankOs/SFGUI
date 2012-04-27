@@ -179,7 +179,23 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	case sf::Keyboard::Back: { // backspace
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.erase( m_cursor_position - 1 );
+
+			// Store old number of visible characters.
+			std::size_t old_num_visible_chars = m_visible_string.getSize();
+
 			MoveCursor( -1 );
+			RecalculateVisibleString();
+
+			// If new amount of chars is less and we have some chars in front, go
+			// back.
+			if( m_visible_offset > 0 && old_num_visible_chars > m_visible_string.getSize() ) {
+				--m_visible_offset;
+				RecalculateVisibleString();
+			}
+
+			m_elapsed_time = 0.f;
+			m_cursor_status = true;
+
 			OnTextChanged();
 		}
 	} break;
@@ -187,7 +203,18 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < m_string.getSize() ) ) {
 			m_string.erase( m_cursor_position );
 
+			// Store old number of visible characters.
+			std::size_t old_num_visible_chars = m_visible_string.getSize();
+
 			RecalculateVisibleString();
+
+			// If new amount of chars is less and we have some chars in front, go
+			// back.
+			if( m_visible_offset > 0 && old_num_visible_chars > m_visible_string.getSize() ) {
+				--m_visible_offset;
+				RecalculateVisibleString();
+			}
+
 			m_elapsed_time = 0.f;
 			m_cursor_status = true;
 
