@@ -515,7 +515,7 @@ void Notebook::RecalculateSize() {
 		m_children[index].tab_label->Show( false );
 	}
 
-	m_num_displayed_tabs = children_size - GetFirstDisplayedTab();
+	m_num_displayed_tabs = static_cast<IndexType>( children_size - GetFirstDisplayedTab() );
 
 	if( GetTabPosition() == TOP ) {
 		// Tabs are positioned at top.
@@ -523,7 +523,7 @@ void Notebook::RecalculateSize() {
 
 		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
 			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
-				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
 				break;
 			}
 
@@ -556,7 +556,7 @@ void Notebook::RecalculateSize() {
 
 		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
 			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
-				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
 				break;
 			}
 
@@ -589,7 +589,7 @@ void Notebook::RecalculateSize() {
 
 		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
 			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
-				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
 				break;
 			}
 
@@ -622,7 +622,7 @@ void Notebook::RecalculateSize() {
 
 		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
 			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
-				m_num_displayed_tabs = index - GetFirstDisplayedTab();
+				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
 				break;
 			}
 

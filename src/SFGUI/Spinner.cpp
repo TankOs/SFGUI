@@ -85,7 +85,7 @@ void Spinner::HandleUpdate( float seconds ) {
 
 		unsigned int current_stage = m_stage++;
 
-		m_stage %= primitives_size;
+		m_stage %= static_cast<unsigned int>( primitives_size );
 
 		for( std::size_t index = primitives_size; index > 0; --index ) {
 			Primitive* primitive = primitives[index - 1].get();
@@ -108,7 +108,7 @@ void Spinner::HandleUpdate( float seconds ) {
 
 			primitive->SetSynced( false );
 
-			current_stage = ( current_stage + 1 ) % primitives_size;
+			current_stage = static_cast<unsigned int>( ( current_stage + 1 ) % primitives_size );
 		}
 
 		Renderer::Get().InvalidateVBO();

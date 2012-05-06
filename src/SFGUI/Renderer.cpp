@@ -838,7 +838,7 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 			texture_data.resize( m_last_vertex_count );
 		}
 		else {
-			m_last_vertex_count += vertices_size;
+			m_last_vertex_count += static_cast<GLsizei>( vertices_size );
 			depth -= depth_delta;
 		}
 	}
