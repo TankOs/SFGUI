@@ -26,6 +26,11 @@ if( NOT SKIP_ADDT_EXAMPLES )
 	build_example( "Notebook" "Notebook.cpp" )
 	build_example( "GuessMyNumber" "GuessMyNumber.cpp" )
 	build_example( "Multiview" "Multiview.cpp" )
+	build_example( "Image" "Image.cpp" )
+	build_example( "Layout" "Layout.cpp" )
+	build_example( "ScrolledWindowViewport" "ScrolledWindowViewport.cpp" )
+	build_example( "Spinner" "Spinner.cpp" )
+	build_example( "Table" "Table.cpp" )
 endif()
 
 build_example( "test" "Test.cpp" )
@@ -50,6 +55,11 @@ set(
 	Notebook.cpp
 	GuessMyNumber.cpp
 	Multiview.cpp
+	Image.cpp
+	Layout.cpp
+	ScrolledWindowViewport.cpp
+	Spinner.cpp
+	Table.cpp
 )
 
 install(
