@@ -341,15 +341,15 @@ void SampleApp::Run() {
 	m_wndmain->Add( notebook1 );
 
 	// Signals.
-	btnaddbuttonh->GetSignal( sfg::OnLeftClick ).Connect( &SampleApp::OnAddButtonHClick, this );
-	btnaddbuttonv->GetSignal( sfg::OnLeftClick ).Connect( &SampleApp::OnAddButtonVClick, this );
-	m_titlebar_toggle->GetSignal( sfg::OnLeftClick ).Connect( &SampleApp::OnToggleTitlebarClick, this );
-	btnhidewindow->GetSignal( sfg::OnLeftClick ).Connect( &SampleApp::OnHideWindowClicked, this );
-	btntogglespace->GetSignal( sfg::OnLeftClick ).Connect( &SampleApp::OnToggleSpaceClick, this );
-	m_limit_check->GetSignal( sfg::OnToggle ).Connect( &SampleApp::OnLimitCharsToggle, this );
-	btnloadstyle->GetSignal( sfg::OnLeftClick ).Connect( &SampleApp::OnLoadThemeClick, this );
-	m_scale->GetAdjustment()->GetSignal( sfg::OnChange ).Connect( &SampleApp::OnAdjustmentChange, this );
-	spinner_toggle->GetSignal( sfg::OnLeftClick ).Connect( &SampleApp::OnToggleSpinner, this );
+	btnaddbuttonh->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnAddButtonHClick, this );
+	btnaddbuttonv->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnAddButtonVClick, this );
+	m_titlebar_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnToggleTitlebarClick, this );
+	btnhidewindow->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnHideWindowClicked, this );
+	btntogglespace->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnToggleSpaceClick, this );
+	m_limit_check->GetSignal( sfg::ToggleButton::OnToggle ).Connect( &SampleApp::OnLimitCharsToggle, this );
+	btnloadstyle->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnLoadThemeClick, this );
+	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &SampleApp::OnAdjustmentChange, this );
+	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnToggleSpinner, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -454,7 +454,7 @@ void SampleApp::OnAddButtonHClick() {
 	Ouchy::Ptr ouchy( new Ouchy( button ) );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->GetSignal( sfg::OnLeftClick ).Connect( &Ouchy::DoOuch, ouchy.get() );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &Ouchy::DoOuch, ouchy.get() );
 
 	m_boxbuttonsh->Pack( button, true );
 }
@@ -465,7 +465,7 @@ void SampleApp::OnAddButtonVClick() {
 	Ouchy::Ptr ouchy( new Ouchy( button ) );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->GetSignal( sfg::OnLeftClick ).Connect( &Ouchy::DoOuch, ouchy.get() );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &Ouchy::DoOuch, ouchy.get() );
 
 	m_boxbuttonsv->Pack( button, false );
 }

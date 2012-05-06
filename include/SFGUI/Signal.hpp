@@ -7,43 +7,6 @@
 
 namespace sfg {
 
-enum SignalType {
-	Default, //!< Default to return when an invalid type is requested. Connecting to this will do nothing.
-
-	OnStateChange, //!< Fired when state changed.
-	OnGainFocus, //!< Fired when focus gained.
-	OnLostFocus, //!< Fired when focus lost.
-
-	OnExpose, //!< Fired when widget is being rendered.
-
-	OnSizeAllocate, //!< Fired when widget's allocation changed.
-	OnSizeRequest, //!< Fired when size was requested.
-
-	OnMouseEnter, //!< Fired when mouse entered widget.
-	OnMouseLeave, //!< Fired when mouse left widget.
-	OnMouseMove, //!< Fired when mouse moved over widget.
-	OnMouseLeftPress, //!< Fired when left button pressed.
-	OnMouseRightPress, //!< Fired when right button pressed.
-	OnMouseLeftRelease, //!< Fired when left button released.
-	OnMouseRightRelease, //!< Fired when right button released.
-
-	OnLeftClick, //!< Fired when left button clicked.
-	OnRightClick, //!< Fired when left button clicked.
-
-	OnKeyPress, //!< Fired when a key is pressed while State == Active.
-	OnKeyRelease, //!< Fired when a key is released while State == Active.
-	OnText, //!< Fired when text is entered while State == Active.
-
-	OnChange, //!< Fired when parameter changed.
-
-	OnSelect, //!< Fired when an entry is selected.
-	OnOpen, //!< Fired when the popup is opened.
-
-	OnTextChanged, //!< Fired when the text changes.
-
-	OnToggle //!< Fired when toggled.
-};
-
 /** Widget signal.
  * Calls a function if something interesting is happening in a widget. Signals
  * can be connected to multiple endpoints. An endpoint may be a free or member
@@ -60,6 +23,8 @@ enum SignalType {
  */
 class SFGUI_API Signal {
 	public:
+		typedef std::size_t SignalID; //!< Signal ID type.
+
 		/** Ctor.
 		 */
 		Signal();
@@ -91,11 +56,18 @@ class SFGUI_API Signal {
 		 */
 		void operator()() const;
 
+		/** Generate a GUID for a signal.
+		 * @return Signal GUID.
+		 */
+		static SignalID GetGUID();
+
 	private:
 		typedef std::map<unsigned int, Delegate> DelegateMap;
 
 		static unsigned int m_serial;
 		DelegateMap* m_delegates;
+
+		static SignalID m_last_guid;
 };
 
 /** Widget signal container
@@ -113,15 +85,18 @@ class SFGUI_API SignalContainer {
 		~SignalContainer();
 
 		/** Access signal.
+		 * @param id Signal ID.
+		 * @return Reference to the requested signal.
 		 */
-		Signal& operator[]( const SignalType& type );
+		Signal& operator[]( const Signal::SignalID& id );
 
 		/** Emit signal.
+		 * @param id Signal ID.
 		 */
-		void Emit( const SignalType& type );
+		void Emit( const Signal::SignalID& id );
 
 	private:
-		typedef std::map<SignalType, Signal> SignalMap;
+		typedef std::map<Signal::SignalID, Signal> SignalMap;
 
 		SignalMap* m_signals;
 };

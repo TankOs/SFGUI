@@ -4,6 +4,9 @@
 
 namespace sfg {
 
+// Signals.
+Signal::SignalID ToggleButton::OnToggle = 0;
+
 ToggleButton::ToggleButton() :
 	Button(),
 	m_active( false )

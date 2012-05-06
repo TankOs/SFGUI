@@ -97,7 +97,7 @@ void RangeExample::Run() {
 
 	// Additionally you can connect to the OnChange signal of an adjustment
 	// to get notified when any of it's parameters are changed.
-	m_adjustment->GetSignal( sfg::OnChange ).Connect( &RangeExample::AdjustmentChange, this );
+	m_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( &RangeExample::AdjustmentChange, this );
 
 	// Just as with the entry widget we set custom requisitions for our
 	// range widgets to make sure they don't look strange.

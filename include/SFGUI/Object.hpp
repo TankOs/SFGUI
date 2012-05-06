@@ -18,11 +18,11 @@ class SFGUI_API Object : public NonCopyable {
 		 */
 		virtual ~Object();
 
-		/** Request a reference to a specific signal for this widget.
-		 * @param type Requested signal type.
+		/** Request a reference to a specific signal for this object.
+		 * @param id Requested signal id.
 		 * @return Reference to requested signal.
 		 */
-		Signal& GetSignal( SignalType type );
+		Signal& GetSignal( Signal::SignalID& id );
 
 	protected:
 		/** Constructor.

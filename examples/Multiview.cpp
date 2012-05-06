@@ -52,7 +52,7 @@ void MultiviewExample::Run() {
 	// So that our button has a meaningful purpose
 	// (besides just looking awesome :P) we need to tell it to connect
 	// to a callback of our choosing to notify us when it is clicked.
-	m_button->GetSignal( sfg::OnLeftClick ).Connect( &MultiviewExample::ButtonClick, this );
+	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &MultiviewExample::ButtonClick, this );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.

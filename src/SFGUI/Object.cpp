@@ -8,8 +8,12 @@ Object::Object() {
 Object::~Object() {
 }
 
-Signal& Object::GetSignal( SignalType type ) {
-	return m_signals[type];
+Signal& Object::GetSignal( Signal::SignalID& id ) {
+	if( !id ) {
+		id = Signal::GetGUID();
+	}
+
+	return m_signals[id];
 }
 
 SignalContainer& Object::GetSignals() {

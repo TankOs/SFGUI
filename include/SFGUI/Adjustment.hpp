@@ -120,6 +120,9 @@ class SFGUI_API Adjustment : public Object, public EnableSharedFromThis<Adjustme
 		 */
 		void DecrementPage();
 
+		// Signals.
+		static Signal::SignalID OnChange; //!< Fired when parameter changed.
+
 	private:
 		/** Ctor.
 		 * @param value Current value.

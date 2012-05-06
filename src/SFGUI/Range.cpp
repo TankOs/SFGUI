@@ -21,7 +21,7 @@ void Range::SetAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_adjustment = adjustment;
 
 	// Connect change signal. This also disconnects the previous connection.
-	m_change_connection = m_adjustment->GetSignal( OnChange ).Connect( &Range::HandleAdjustmentChange, this );
+	m_change_connection = m_adjustment->GetSignal( Adjustment::OnChange ).Connect( &Range::HandleAdjustmentChange, this );
 }
 
 float Range::GetValue() const {

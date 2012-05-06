@@ -8,6 +8,9 @@
 
 namespace sfg {
 
+// Signals.
+Signal::SignalID Entry::OnTextChanged = 0;
+
 Entry::Entry() :
 	m_string(),
 	m_visible_string(),

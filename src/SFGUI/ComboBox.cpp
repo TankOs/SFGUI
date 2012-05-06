@@ -6,6 +6,10 @@
 
 namespace sfg {
 
+// Signals.
+Signal::SignalID ComboBox::OnSelect = 0;
+Signal::SignalID ComboBox::OnOpen = 0;
+
 const ComboBox::IndexType ComboBox::NONE = std::numeric_limits<ComboBox::IndexType>::max();
 static const sf::String EMPTY = "";
 

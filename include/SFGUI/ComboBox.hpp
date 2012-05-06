@@ -90,6 +90,10 @@ class SFGUI_API ComboBox : public Bin {
 		 */
 		bool IsPoppedUp() const;
 
+		// Signals.
+		static Signal::SignalID OnSelect; //!< Fired when an entry is selected.
+		static Signal::SignalID OnOpen; //!< Fired when the popup is opened.
+
 	protected:
 		/** Ctor.
 		 */

@@ -7,6 +7,31 @@
 
 namespace sfg {
 
+// Signals.
+Signal::SignalID Widget::OnStateChange = 0;
+Signal::SignalID Widget::OnGainFocus = 0;
+Signal::SignalID Widget::OnLostFocus = 0;
+
+Signal::SignalID Widget::OnExpose = 0;
+
+Signal::SignalID Widget::OnSizeAllocate = 0;
+Signal::SignalID Widget::OnSizeRequest = 0;
+
+Signal::SignalID Widget::OnMouseEnter = 0;
+Signal::SignalID Widget::OnMouseLeave = 0;
+Signal::SignalID Widget::OnMouseMove = 0;
+Signal::SignalID Widget::OnMouseLeftPress = 0;
+Signal::SignalID Widget::OnMouseRightPress = 0;
+Signal::SignalID Widget::OnMouseLeftRelease = 0;
+Signal::SignalID Widget::OnMouseRightRelease = 0;
+
+Signal::SignalID Widget::OnLeftClick = 0;
+Signal::SignalID Widget::OnRightClick = 0;
+
+Signal::SignalID Widget::OnKeyPress = 0;
+Signal::SignalID Widget::OnKeyRelease = 0;
+Signal::SignalID Widget::OnText = 0;
+
 WeakPtr<Widget> Widget::m_focus_widget;
 WeakPtr<Widget> Widget::m_active_widget;
 
@@ -237,7 +262,9 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( GetAllocation().contains( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) ) ) {
 				// Check for enter event.
 				if( !IsMouseInWidget() ) {
+					// Flip the mouse_in bit.
 					m_bitfield ^= static_cast<char>( 0x10 );
+
 					GetSignals().Emit( OnMouseEnter );
 					HandleMouseEnter( event.mouseMove.x, event.mouseMove.y );
 				}
@@ -245,7 +272,9 @@ void Widget::HandleEvent( const sf::Event& event ) {
 				GetSignals().Emit( OnMouseMove );
 			}
 			else if( IsMouseInWidget() ) { // Check for leave event.
+				// Flip the mouse_in bit.
 				m_bitfield ^= static_cast<char>( 0x10 );
+
 				GetSignals().Emit( OnMouseLeave );
 				HandleMouseLeave( event.mouseMove.x, event.mouseMove.y );
 			}
@@ -255,7 +284,10 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 		case sf::Event::MouseButtonPressed:
 			if( ( ( m_bitfield & static_cast<char>( 0xe0 ) ) == static_cast<char>( 0xe0 ) ) && IsMouseInWidget() ) {
+				// Clear the mouse_button_down bits to 0s.
 				m_bitfield &= static_cast<char>( 0x1f );
+
+				// Set the mouse_button_down bits.
 				m_bitfield |= static_cast<char>( event.mouseButton.button << 5 );
 			}
 
@@ -273,6 +305,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		case sf::Event::MouseButtonReleased:
 			// Only process as a click when mouse button has been pressed inside the widget before.
 			if( ( ( m_bitfield & 0xe0 ) >> 5 ) == event.mouseButton.button ) {
+				// Set the mouse_button_down bits to 111 (none).
 				m_bitfield |= static_cast<char>( 0xe0 );
 
 				// When released inside the widget, the event can be considered a click.
@@ -337,7 +370,10 @@ void Widget::SetState( State state ) {
 
 	unsigned char old_state( GetState() );
 
+	// Clear the state bits to 0s.
 	m_bitfield &= static_cast<char>( 0xf1 );
+
+	// Store the new state.
 	m_bitfield |= static_cast<char>( state << 1 );
 
 	// If HandleStateChange() changed the state, do not call observer, will be
@@ -387,6 +423,7 @@ void Widget::Show( bool show ) {
 
 	bool old_global_visibility = IsGloballyVisible();
 
+	// Flip the visible bit since we know show != IsLocallyVisible()
 	m_bitfield ^= 0x01;
 
 	HandleLocalVisibilityChange();

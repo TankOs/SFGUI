@@ -215,6 +215,31 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		const SharedPtr<RendererViewport>& GetViewport() const;
 
+		// Signals.
+		static Signal::SignalID OnStateChange; //!< Fired when state changed.
+		static Signal::SignalID OnGainFocus; //!< Fired when focus gained.
+		static Signal::SignalID OnLostFocus; //!< Fired when focus lost.
+
+		static Signal::SignalID OnExpose; //!< Fired when widget is being rendered.
+
+		static Signal::SignalID OnSizeAllocate; //!< Fired when widget's allocation changed.
+		static Signal::SignalID OnSizeRequest; //!< Fired when size was requested.
+
+		static Signal::SignalID OnMouseEnter; //!< Fired when mouse entered widget.
+		static Signal::SignalID OnMouseLeave; //!< Fired when mouse left widget.
+		static Signal::SignalID OnMouseMove; //!< Fired when mouse moved over widget.
+		static Signal::SignalID OnMouseLeftPress; //!< Fired when left button pressed.
+		static Signal::SignalID OnMouseRightPress; //!< Fired when right button pressed.
+		static Signal::SignalID OnMouseLeftRelease; //!< Fired when left button released.
+		static Signal::SignalID OnMouseRightRelease; //!< Fired when right button released.
+
+		static Signal::SignalID OnLeftClick; //!< Fired when left button clicked.
+		static Signal::SignalID OnRightClick; //!< Fired when left button clicked.
+
+		static Signal::SignalID OnKeyPress; //!< Fired when a key is pressed while State == Active.
+		static Signal::SignalID OnKeyRelease; //!< Fired when a key is released while State == Active.
+		static Signal::SignalID OnText; //!< Fired when text is entered while State == Active.
+
 	protected:
 		/** Constructor.
 		 */

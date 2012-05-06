@@ -2,6 +2,9 @@
 
 namespace sfg {
 
+// Signals.
+Signal::SignalID Adjustment::OnChange = 0;
+
 Adjustment::Adjustment( float value, float lower, float upper, float minor_step, float major_step, float page_size ) :
 	m_value( value ),
 	m_lower( lower ),

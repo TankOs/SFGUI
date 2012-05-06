@@ -35,6 +35,9 @@ class SFGUI_API ToggleButton : public Button {
 		 */
 		bool IsActive() const;
 
+		// Signals.
+		static Signal::SignalID OnToggle; //!< Fired when toggled.
+
 	protected:
 		virtual RenderQueue* InvalidateImpl() const;
 

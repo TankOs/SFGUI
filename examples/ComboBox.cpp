@@ -77,9 +77,9 @@ void ComboBoxExample::Run() {
 	// So that our combo box has a meaningful purpose (besides just looking
 	// awesome :P) we need to tell it to connect to a callback of our choosing to
 	// notify us when it is clicked.
-	m_combo_box->GetSignal( sfg::OnSelect ).Connect( &ComboBoxExample::OnComboSelect, this );
+	m_combo_box->GetSignal( sfg::ComboBox::OnSelect ).Connect( &ComboBoxExample::OnComboSelect, this );
 
-	button->GetSignal( sfg::OnLeftClick ).Connect( &ComboBoxExample::OnAddItemClick, this );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &ComboBoxExample::OnAddItemClick, this );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.
