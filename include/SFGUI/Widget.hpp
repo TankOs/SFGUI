@@ -35,19 +35,14 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual ~Widget();
 
-		/** Check if widget is locally visible, i.e. is rendered when allowed to.
-		 * This DOES NOT take into account the global visibility of it's parents.
-		 * @return true when locally visible.
+		/** Check if widget is visible.
+		 * @return true if visible.
 		 */
-		bool IsLocallyVisible() const;
-
-		/** Check if widget is globaly visible, i.e. is currently rendered.
-		 * This takes into account the global visibility of it's parents.
-		 * @return true when globally visible.
-		 */
-		bool IsGloballyVisible() const;
+		bool IsVisible() const;
 
 		/** Show (or hide) widget.
+		 * Does NOT show/hide children if the method is called on container
+		 * widgets.
 		 * @param show true to show, false to hide.
 		 */
 		void Show( bool show = true );
@@ -178,9 +173,9 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual void HandleAbsolutePositionChange();
 
-		/** Handle global visibility changes.
+		/** Handle visibility changes.
 		 */
-		virtual void HandleGlobalVisibilityChange();
+		virtual void HandleVisibilityChange();
 
 		/** Update position of drawable.
 		 */
@@ -350,10 +345,6 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 * @param focused_widget Widget currently being focused.
 		 */
 		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
-
-		/** Handle local visibility change.
-		 */
-		virtual void HandleLocalVisibilityChange();
 
 		/** Handle update.
 		 */

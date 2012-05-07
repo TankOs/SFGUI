@@ -193,7 +193,7 @@ class SFGUI_API Notebook : public Container {
 		void HandleRemove( const Widget::Ptr& child );
 		void HandleSizeChange();
 		void HandleUpdate( float seconds );
-		void HandleGlobalVisibilityChange();
+		void HandleVisibilityChange();
 
 		void RecalculateSize();
 

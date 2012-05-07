@@ -55,27 +55,8 @@ Widget::~Widget() {
 	delete m_class_id;
 }
 
-bool Widget::IsLocallyVisible() const {
-	return ( m_bitfield & 0x01 );
-}
-
-bool Widget::IsGloballyVisible() const {
-	// If not locally visible, also cannot be globally visible.
-	if( !IsLocallyVisible() ) {
-		return false;
-	}
-
-	// At this point we know the widget is locally visible.
-
-	PtrConst parent( m_parent.lock() );
-
-	// If locally visible and no parent, globally visible.
-	if( !parent ) {
-		return true;
-	}
-
-	// Return parent's global visibility.
-	return parent->IsGloballyVisible();
+bool Widget::IsVisible() const {
+	return (m_bitfield & 0x01);
 }
 
 void Widget::GrabFocus( Ptr widget ) {
@@ -184,7 +165,7 @@ void Widget::Update( float seconds ) {
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
 			m_drawable->SetLevel( m_hierarchy_level );
-			m_drawable->Show( IsGloballyVisible() );
+			m_drawable->Show( IsVisible() );
 			m_drawable->SetViewport( m_viewport );
 		}
 	}
@@ -242,7 +223,7 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 }
 
 void Widget::HandleEvent( const sf::Event& event ) {
-	if( !IsGloballyVisible() ) {
+	if( !IsVisible() ) {
 		return;
 	}
 
@@ -417,21 +398,14 @@ bool Widget::IsMouseInWidget() const {
 }
 
 void Widget::Show( bool show ) {
-	if( show == IsLocallyVisible() ) {
+	if( show == IsVisible() ) {
 		return;
 	}
 
-	bool old_global_visibility = IsGloballyVisible();
-
-	// Flip the visible bit since we know show != IsLocallyVisible()
+	// Flip the visible bit.
 	m_bitfield ^= 0x01;
 
-	HandleLocalVisibilityChange();
-
-	if( old_global_visibility != IsGloballyVisible() ) {
-		HandleGlobalVisibilityChange();
-	}
-
+	HandleVisibilityChange();
 	RequestResize();
 }
 
@@ -552,16 +526,13 @@ void Widget::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 	}
 }
 
-void Widget::HandleLocalVisibilityChange() {
-}
-
-void Widget::HandleGlobalVisibilityChange() {
+void Widget::HandleVisibilityChange() {
 	if( GetState() == PRELIGHT ) {
 		SetState( NORMAL );
 	}
 
 	if( m_drawable ) {
-		m_drawable->Show( IsGloballyVisible() );
+		m_drawable->Show( IsVisible() );
 	}
 }
 

@@ -475,7 +475,7 @@ void SampleApp::OnToggleTitlebarClick() {
 }
 
 void SampleApp::OnHideWindowClicked() {
-	m_wndmain->Show( !m_wndmain->IsLocallyVisible() );
+	m_wndmain->Show( !m_wndmain->IsVisible() );
 }
 
 void SampleApp::OnToggleSpaceClick() {

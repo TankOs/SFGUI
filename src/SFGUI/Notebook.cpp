@@ -501,7 +501,7 @@ void Notebook::HandleUpdate( float seconds ) {
 }
 
 void Notebook::RecalculateSize() {
-	if( !IsGloballyVisible() ) {
+	if( !IsVisible() ) {
 		return;
 	}
 
@@ -653,8 +653,8 @@ void Notebook::RecalculateSize() {
 	Invalidate();
 }
 
-void Notebook::HandleGlobalVisibilityChange() {
-	Container::HandleGlobalVisibilityChange();
+void Notebook::HandleVisibilityChange() {
+	Container::HandleVisibilityChange();
 
 	RecalculateSize();
 }
