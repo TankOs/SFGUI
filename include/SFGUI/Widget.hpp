@@ -53,6 +53,9 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		void Show( bool show = true );
 
 		/** Get name of widget.
+		 * The name of a widget is a descriptive name of the widget itself. E.g.
+		 * "CheckButton" for the CheckButton widget. The name is mainly used by the
+		 * style parser.
 		 * @return Name.
 		 */
 		virtual const std::string& GetName() const = 0;
@@ -67,6 +70,8 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		bool HasFocus() const;
 
 		/** Set this widget to be active.
+		 * Only one widget at a time can be active. This often happens when a
+		 * widget is gaining focus. You normally don't want to call this yourself.
 		 */
 		void SetActiveWidget();
 
@@ -75,46 +80,57 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		bool IsActiveWidget() const;
 
-		/** Allocate size.
+		/** Set allocation (position + size).
 		 * @param rect Rect.
 		 */
 		void SetAllocation( const sf::FloatRect& rect );
 
-		/** Request new allocation at parent.
+		/** Request a resize at the parent widget.
+		 * When a widget's requisition changes, it requests a resize at the parent
+		 * to actually get more space (if possible).
 		 */
 		void RequestResize();
 
-		/** Get allocated size (position and size).
-		 * @return Rect.
+		/** Get allocation (position and size).
+		 * @return Allocation.
 		 */
 		const sf::FloatRect& GetAllocation() const;
 
-		/** Get requested size (requisition).
-		 * @return Size.
+		/** Get requisition (minimum size the widget is asking for).
+		 * @return Requisition.
 		 */
 		const sf::Vector2f& GetRequisition() const;
 
-		/** Set a custom requisition.
+		/** Set custom requisition.
 		 * This can be compared to setting a minimum widget size. Mostly setting it
-		 * is not needed because sizers take care of proper widget dimensions. You
-		 * can specify 0 for width or height to enable calculating the requisition
-		 * for each axis. If you specify 0 both for width and height, normal
-		 * requisition calculation is re-enabled.
+		 * is not needed because layouters take care of proper widget dimensions.
+		 * You can specify 0 for width and/or height to enable calculating the
+		 * requisition for each axis. If you specify 0 both for width and height,
+		 * normal requisition calculation is re-enabled.
 		 * @param requisition Custom requisition (skip argument to disable custom requisition).
 		 */
 		void SetRequisition( const sf::Vector2f& requisition = sf::Vector2f( 0.f, 0.f ) );
 
 		/** Set position.
+		 * Shortcut for SetAllocation(): Only the position part of the allocation
+		 * is changed.
 		 * @param position Position.
 		 */
 		void SetPosition( const sf::Vector2f& position );
 
-		/** Update
+		/** Update.
+		 * Update the widget's state, i.e. invalidate graphics, process animations
+		 * etc.
 		 * @param seconds Elapsed time in seconds.
 		 */
 		void Update( float seconds );
 
-		/** Invalidate widget (prepare internal sf::Drawable).
+		/** Invalidate widget.
+		 * When a widget is about to invalidate it will recreate itself in a
+		 * graphical manner. This happens automatically when code detects the
+		 * visual representation needs to be regenerated, so you normally don't
+		 * have to call it yourself.
+		 *
 		 * Implement InvalidateImpl() for your own code.
 		 */
 		void Invalidate() const;
@@ -158,11 +174,11 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		virtual sf::Vector2f GetAbsolutePosition() const;
 
-		/** Handle changing of absolute position
+		/** Handle absolute position changes.
 		 */
 		virtual void HandleAbsolutePositionChange();
 
-		/** Handle global visibility change.
+		/** Handle global visibility changes.
 		 */
 		virtual void HandleGlobalVisibilityChange();
 
@@ -171,6 +187,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		virtual void UpdateDrawablePosition() const;
 
 		/** Set ID.
+		 * Mostly used for identification and by styles (#widget_id).
 		 * @param id ID.
 		 */
 		void SetId( const std::string& id );
@@ -181,6 +198,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		std::string GetId() const;
 
 		/** Set class.
+		 * Mostly used by style (.widget_class).
 		 * @param cls Class.
 		 */
 		void SetClass( const std::string& cls );
@@ -191,27 +209,27 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		std::string GetClass() const;
 
 		/** Refresh.
-		 * Invalidates the widget and re-requests size
+		 * Invalidate the widget and request resize.
 		 */
 		virtual void Refresh();
 
 		/** Set hierarchy level of this widget.
-		 * @param level New hierarchy level of this widget..
+		 * @param level New hierarchy level of this widget.
 		 */
 		void SetHierarchyLevel( int level );
 
 		/** Get hierarchy level of this widget.
-		 * @return Hierarchy level of this widget..
+		 * @return Hierarchy level of this widget.
 		 */
 		int GetHierarchyLevel() const;
 
 		/** Set viewport of this widget.
-		 * @param viewport Viewport of this widget..
+		 * @param viewport Viewport of this widget.
 		 */
 		void SetViewport( const SharedPtr<RendererViewport>& viewport );
 
 		/** Get viewport of this widget.
-		 * @return Viewport of this widget..
+		 * @return Viewport of this widget.
 		 */
 		const SharedPtr<RendererViewport>& GetViewport() const;
 
@@ -248,7 +266,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Invalidate implementation (redraw internally).
 		 * Gets called whenever the widget needs to be redrawn, e.g. due to a call
 		 * to Invalidate().
-		 * @return Pointer to new drawable -- ownership is taken by caller.
+		 * @return Pointer to RenderQueue -- ownership is taken by caller.
 		 */
 		virtual RenderQueue* InvalidateImpl() const;
 
