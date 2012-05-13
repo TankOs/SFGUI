@@ -64,7 +64,7 @@ void Container::Refresh() {
 
 void Container::HandleEvent( const sf::Event& event ) {
 	// Ignore event when widget is not visible.
-	if( !IsVisible() ) {
+	if( !IsGloballyVisible() ) {
 		return;
 	}
 
@@ -121,6 +121,16 @@ void Container::HandleAbsolutePositionChange() {
 
 	// Update own drawable position.
 	Widget::HandleAbsolutePositionChange();
+}
+
+void Container::HandleGlobalVisibilityChange() {
+	Widget::HandleGlobalVisibilityChange();
+
+	std::size_t children_size = m_children.size();
+
+	for( std::size_t index = 0; index < children_size; ++index ) {
+		m_children[index]->HandleGlobalVisibilityChange();
+	}
 }
 
 void Container::HandleUpdate( float seconds ) {

@@ -68,6 +68,10 @@ class SFGUI_API Container : public Widget {
 		 */
 		virtual void HandleRemove( const Widget::Ptr& child );
 
+		/** Handle visibility change.
+		 */
+		virtual void HandleGlobalVisibilityChange();
+
 		/** Handle update.
 		 */
 		virtual void HandleUpdate( float seconds );

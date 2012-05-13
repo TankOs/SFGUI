@@ -64,7 +64,7 @@ void Viewport::HandleAbsolutePositionChange() {
 
 void Viewport::HandleEvent( const sf::Event& event ) {
 	// Ignore event when widget is not visible.
-	if( !IsVisible() ) {
+	if( !IsGloballyVisible() ) {
 		return;
 	}
 

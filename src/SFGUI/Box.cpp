@@ -190,7 +190,7 @@ void Box::AllocateChildren() const {
 
 bool Box::IsChildInteresting( const sfg::Widget::PtrConst& child ) const {
 	return
-		child->IsVisible() &&
+		child->IsLocallyVisible() &&
 		(child->GetRequisition().x > 0.f || child->GetAllocation().width > 0.0f) &&
 		(child->GetRequisition().y > 0.f || child->GetAllocation().height > 0.0f)
 	;

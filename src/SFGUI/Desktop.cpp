@@ -52,7 +52,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		Widget::Ptr widget( m_children[index] );
 
 		// Skip widget if not visible.
-		if( !widget->IsVisible() ) {
+		if( !widget->IsLocallyVisible() ) {
 			continue;
 		}
 
