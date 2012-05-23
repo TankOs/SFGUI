@@ -51,8 +51,8 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 	for( std::size_t index = 0; index < m_children.size(); ++index ) {
 		Widget::Ptr widget( m_children[index] );
 
-		// Skip widget if not visible.
-		if( !widget->IsLocallyVisible() ) {
+		// Skip widget if not visible or is insensitive.
+		if( !widget->IsLocallyVisible() || widget->GetState() == Widget::INSENSITIVE ) {
 			continue;
 		}
 

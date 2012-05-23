@@ -246,6 +246,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		return;
 	}
 
+	// Ignore the event if widget is insensitive
+	if ( GetState() == INSENSITIVE ) {
+		return;
+	}
+
 	// Ignore the event if another widget is active.
 	if( !IsActiveWidget() && !IsActiveWidget( PtrConst() ) ) {
 		return;
