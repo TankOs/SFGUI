@@ -77,6 +77,8 @@ void ScrolledWindowViewportExample::Run() {
 	// as well and can only contain 1 child widget.
 	sfg::Box::Ptr viewport_box = sfg::Box::Create( sfg::Box::VERTICAL );
 
+	sf::err() << "Generating random strings, please be patient..." << std::endl;
+
 	// Create some random text.
 	for( int i = 0; i < 200; i++ ) {
 		std::string str;

@@ -9,6 +9,7 @@
 class SampleApp {
 	public:
 		SampleApp();
+		~SampleApp();
 		void Run();
 
 	private:
@@ -118,6 +119,10 @@ SampleApp::SampleApp() :
 	m_background_sprite.setTexture( m_background_texture );
 
 	delete[] pixels;
+}
+
+SampleApp::~SampleApp() {
+	Ouchy::m_ouchies.clear();
 }
 
 void SampleApp::Run() {
@@ -354,15 +359,25 @@ void SampleApp::Run() {
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
 	// Another window
-	sfg::Window::Ptr second_window( sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND ) );
+	sfg::Window::Ptr second_window( sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE ) );
 	second_window->SetId( "second_window" );
-	second_window->SetTitle( "Another window" );
+	second_window->SetTitle( "Resize this window to see ad-hoc wrapping." );
 	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
-	box->Pack( sfg::Label::Create( "Aliquam sed pretium lacus." ), false );
-	box->Pack( sfg::Label::Create( "Nullam placerat mauris vel nulla sagittis pellentesque." ), false );
-	box->Pack( sfg::Label::Create( "Suspendisse in justo dui." ), false );
-	box->Pack( sfg::Label::Create( "Ut dolor massa, gravida eu facilisis convallis, convallis sed odio." ), false );
-	box->Pack( sfg::Label::Create( "Nunc placerat consequat vehicula." ), false );
+
+	sfg::Label::Ptr lipsum = sfg::Label::Create(
+		"Nullam ut ante leo. Quisque consequat condimentum pulvinar. "
+		"Duis a enim sapien, ut vestibulum est. Vestibulum commodo, orci non gravida. "
+		"Aliquam sed pretium lacus. "
+		"Nullam placerat mauris vel nulla sagittis pellentesque. "
+		"Suspendisse in justo dui.\n"
+		"Ut dolor massa, gravida eu facilisis convallis, convallis sed odio.\n"
+		"Nunc placerat consequat vehicula."
+	);
+
+	lipsum->SetRequisition( sf::Vector2f( 400.f, 0.f ) );
+	lipsum->SetLineWrap( true );
+
+	box->Pack( lipsum );
 	second_window->Add( box );
 	second_window->SetPosition( sf::Vector2f( 10.f, 10.f ) );
 	second_window->SetId( "second_window" );

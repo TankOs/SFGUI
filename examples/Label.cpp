@@ -27,7 +27,7 @@ int main() {
 	label = sfg::Label::Create();
 
 	// Set the text of the label.
-	label->SetText( "Hello World!" );
+	label->SetText( "Hello World!\nAnother Line" );
 
 	// Add the label to the window.
 

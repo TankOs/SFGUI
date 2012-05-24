@@ -126,6 +126,8 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 
 	std::size_t length = string.getSize();
 
+	float longest_line = 0.f;
+
 	for( std::size_t index = 0; index < length; ++index ) {
 		sf::Uint32 current_character = string[index];
 
@@ -140,6 +142,7 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 				continue;
 			case L'\n':
 				metrics.y += vertical_spacing;
+				longest_line = std::max( metrics.x, longest_line );
 				metrics.x = 0.f;
 				continue;
 			case L'\v':
@@ -154,6 +157,8 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 		metrics.x += static_cast<float>( glyph.advance );
 		metrics.y = std::max( metrics.y, static_cast<float>( glyph.bounds.height ) );
 	}
+
+	metrics.x = std::max( longest_line, metrics.x );
 
 	return metrics;
 }

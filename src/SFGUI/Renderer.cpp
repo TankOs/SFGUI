@@ -96,8 +96,10 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 	std::size_t length = str.getSize();
 
 	float horizontal_spacing = static_cast<float>( font.getGlyph( L' ', character_size, false ).advance );
-	float vertical_spacing = static_cast<float>( font.getLineSpacing( character_size ) );
-	sf::Vector2f position( std::floor( text.getPosition().x + .5f ), std::floor( text.getPosition().y + static_cast<float>( character_size ) + .5f ) );
+	float vertical_spacing = static_cast<float>( Context::Get().GetEngine().GetFontLineHeight( font, character_size ) );
+	sf::Vector2f start_position( std::floor( text.getPosition().x + .5f ), std::floor( text.getPosition().y + static_cast<float>( character_size ) + .5f ) );
+
+	sf::Vector2f position( start_position );
 
 	const static float tab_spaces = 2.f;
 
@@ -117,7 +119,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 				continue;
 			case L'\n':
 				position.y += vertical_spacing;
-				position.x = 0.f;
+				position.x = start_position.x;
 				continue;
 			case L'\v':
 				position.y += vertical_spacing * tab_spaces;
@@ -169,8 +171,8 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 }
 
 Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
-                                             const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
-                                             const sf::Color& color ) {
+                                     const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
+                                     const sf::Color& color ) {
 	Primitive::Ptr primitive( new Primitive );
 
 	Primitive::Vertex vertex0;
@@ -206,12 +208,12 @@ Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vec
 }
 
 Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vector2f& size, float border_width,
-                                             const sf::Color& color, const sf::Color& border_color, int border_color_shift ) {
-  if( border_width <= 0.f ) {
+                                     const sf::Color& color, const sf::Color& border_color, int border_color_shift ) {
+	if( border_width <= 0.f ) {
 		return CreateRect( position, position + size, color );
-  }
+	}
 
-  Primitive::Ptr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive );
 
 	sf::Color dark_border( border_color );
 	sf::Color light_border( border_color );
@@ -686,7 +688,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, bool force_insert ) {
 		// Check if the image makes intentional use of the alpha channel.
 		if( m_depth_clear_strategy && !( byte_count % 4 ) && ( bytes[ byte_count - 1 ] > alpha_threshold ) && ( bytes[ byte_count - 1 ] < 255 ) ) {
 #ifdef SFGUI_DEBUG
-			std::cerr << "Detected alpha value " << static_cast<int>( bytes[ byte_count - 1 ]  ) << " in texture, disabling depth test.\n";
+			std::cerr << "Detected alpha value " << static_cast<int>( bytes[ byte_count - 1 ] ) << " in texture, disabling depth test.\n";
 #endif
 			m_depth_clear_strategy = NO_DEPTH;
 		}
