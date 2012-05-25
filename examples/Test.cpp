@@ -267,7 +267,7 @@ void SampleApp::Run() {
 	sfg::Separator::Ptr separatorh( sfg::Separator::Create( sfg::Separator::HORIZONTAL ) );
 
 	sfg::Box::Ptr box_image( sfg::Box::Create( sfg::Box::HORIZONTAL ) );
-	box_image->SetSpacing( 5.f );
+	box_image->SetSpacing( 15.f );
 
 	sfg::Fixed::Ptr fixed_container( sfg::Fixed::Create() );
 	sfg::Button::Ptr fixed_button( sfg::Button::Create( L"I'm at (34,61)" ) );
@@ -294,6 +294,18 @@ void SampleApp::Run() {
 	spinner_box->Pack( spinner_toggle, false );
 
 	box_image->Pack( spinner_box, false );
+
+	sfg::Box::Ptr radio_box( sfg::Box::Create( sfg::Box::VERTICAL ) );
+
+	sfg::RadioButton::Ptr radio1( sfg::RadioButton::Create( "Radio 1" ) );
+	sfg::RadioButton::Ptr radio2( sfg::RadioButton::Create( "Radio 2", radio1->GetGroup() ) );
+	sfg::RadioButton::Ptr radio3( sfg::RadioButton::Create( "Radio 3", radio2->GetGroup() ) );
+
+	radio_box->Pack( radio1 );
+	radio_box->Pack( radio2 );
+	radio_box->Pack( radio3 );
+
+	box_image->Pack( radio_box, false );
 
 	sfg::ComboBox::Ptr aligned_combo_box( sfg::ComboBox::Create() );
 	aligned_combo_box->AppendItem( L"I'm way over here" );

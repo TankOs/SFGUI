@@ -13,9 +13,9 @@ function( build_example SAMPLE_NAME SOURCES )
 endfunction()
 
 if( NOT SKIP_ADDT_EXAMPLES )
+	build_example( "HelloWorld" "HelloWorld.cpp" )
 	build_example( "Window" "Window.cpp" )
 	build_example( "Label" "Label.cpp" )
-	build_example( "Button" "Button.cpp" )
 	build_example( "Box" "Box.cpp" )
 	build_example( "Entry" "Entry.cpp" )
 	build_example( "Range" "Range.cpp" )
@@ -31,6 +31,7 @@ if( NOT SKIP_ADDT_EXAMPLES )
 	build_example( "ScrolledWindowViewport" "ScrolledWindowViewport.cpp" )
 	build_example( "Spinner" "Spinner.cpp" )
 	build_example( "Table" "Table.cpp" )
+	build_example( "Buttons" "Buttons.cpp" )
 endif()
 
 build_example( "test" "Test.cpp" )
@@ -42,9 +43,9 @@ install(
 
 set(
 	EXAMPLE_SOURCES
+	HelloWorld.cpp
 	Window.cpp
 	Label.cpp
-	Button.cpp
 	Box.cpp
 	Entry.cpp
 	Range.cpp
@@ -60,6 +61,7 @@ set(
 	ScrolledWindowViewport.cpp
 	Spinner.cpp
 	Table.cpp
+	Buttons.cpp
 )
 
 install(

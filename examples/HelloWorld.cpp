@@ -4,7 +4,7 @@
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 
-class ButtonExample {
+class HelloWorld {
 	public:
 		// Our button click handler.
 		void OnButtonClick();
@@ -19,11 +19,11 @@ class ButtonExample {
 		sfg::Label::Ptr m_label;
 };
 
-void ButtonExample::OnButtonClick() {
+void HelloWorld::OnButtonClick() {
 	m_label->SetText( "Hello SFGUI, pleased to meet you!" );
 }
 
-void ButtonExample::Run() {
+void HelloWorld::Run() {
 	// Create SFML's window.
 	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "Hello world!" );
 
@@ -32,7 +32,7 @@ void ButtonExample::Run() {
 
 	// Create a simple button and connect the click signal.
 	sfg::Button::Ptr button( sfg::Button::Create( "Greet SFGUI!" ) );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &ButtonExample::OnButtonClick, this );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &HelloWorld::OnButtonClick, this );
 
 	// Create a vertical box layouter with 5 pixels spacing and add the label
 	// and button to it.
@@ -79,8 +79,8 @@ void ButtonExample::Run() {
 }
 
 int main() {
-	ButtonExample example;
-	example.Run();
+	HelloWorld hello_world;
+	hello_world.Run();
 
 	return 0;
 }

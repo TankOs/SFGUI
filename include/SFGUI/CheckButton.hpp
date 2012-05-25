@@ -25,7 +25,7 @@ class SFGUI_API CheckButton : public ToggleButton {
 
 		virtual const std::string& GetName() const;
 
-	private:
+	protected:
 		CheckButton();
 
 		RenderQueue* InvalidateImpl() const;

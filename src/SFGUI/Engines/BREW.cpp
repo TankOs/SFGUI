@@ -84,6 +84,16 @@ void BREW::ResetProperties() {
 	SetProperty( "CheckButton:PRELIGHT", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
 	SetProperty( "CheckButton:ACTIVE", "BackgroundColor", sf::Color( 0x56, 0x56, 0x56 ) );
 
+	// RadioButton-specific.
+	SetProperty( "RadioButton", "Spacing", 5.f );
+	SetProperty( "RadioButton", "BoxSize", 14.f );
+	SetProperty( "RadioButton", "CheckSize", 6.f );
+	SetProperty( "RadioButton", "BorderColor", sf::Color( 0x55, 0x57, 0x52 ) );
+	SetProperty( "RadioButton", "BackgroundColor", sf::Color( 0x36, 0x36, 0x36 ) );
+	SetProperty( "RadioButton", "CheckColor", sf::Color( 0x9e, 0x9e, 0x9e ) );
+	SetProperty( "RadioButton:PRELIGHT", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
+	SetProperty( "RadioButton:ACTIVE", "BackgroundColor", sf::Color( 0x56, 0x56, 0x56 ) );
+
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
 	SetProperty( "Entry", "Color", sf::Color::White );

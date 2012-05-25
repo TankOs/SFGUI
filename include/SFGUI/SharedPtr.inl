@@ -196,6 +196,10 @@ SHARED_PTR_INLINE_ATTR bool operator==( const WeakReferenceCount& left, const We
 	return left.m_reference_count == right.m_reference_count;
 }
 
+SHARED_PTR_INLINE_ATTR bool operator<( const WeakReferenceCount& left, const WeakReferenceCount& right ) {
+	return std::less<ReferenceCountBase*>()( left.m_reference_count, right.m_reference_count );
+}
+
 SHARED_PTR_INLINE_ATTR StrongReferenceCount::StrongReferenceCount( const WeakReferenceCount& other ) :
 	m_reference_count( other.m_reference_count )
 {
@@ -397,6 +401,11 @@ SHARED_PTR_INLINE_ATTR void WeakPtr<T>::swap( WeakPtr<T>& other ) {
 	m_pointer = tmp;
 
 	m_reference_count.Swap( other.m_reference_count );
+}
+
+template<typename T, typename U>
+SHARED_PTR_INLINE_ATTR bool operator<( const WeakPtr<T>& left, const WeakPtr<U>& right ) {
+	return left.m_reference_count < right.m_reference_count;
 }
 
 template<typename T>

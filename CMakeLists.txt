@@ -110,6 +110,7 @@ set(
 	${INC_DIR}/SFGUI/Parsers/ThemeParser/Parse.hpp
 	${INC_DIR}/SFGUI/Primitive.hpp
 	${INC_DIR}/SFGUI/ProgressBar.hpp
+	${INC_DIR}/SFGUI/RadioButton.hpp
 	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/Renderer.hpp
 	${INC_DIR}/SFGUI/RendererViewport.hpp
@@ -182,6 +183,7 @@ set(
 	${SRC_DIR}/SFGUI/Parsers/ThemeParser/Parse.cpp
 	${SRC_DIR}/SFGUI/Primitive.cpp
 	${SRC_DIR}/SFGUI/ProgressBar.cpp
+	${SRC_DIR}/SFGUI/RadioButton.cpp
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/Renderer.cpp
 	${SRC_DIR}/SFGUI/RendererViewport.cpp

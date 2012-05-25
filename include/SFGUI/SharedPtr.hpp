@@ -139,6 +139,8 @@ class WeakReferenceCount {
 
 		friend SHARED_PTR_INLINE_ATTR bool operator==( const WeakReferenceCount& left, const WeakReferenceCount& right );
 
+		friend SHARED_PTR_INLINE_ATTR bool operator<( const WeakReferenceCount& left, const WeakReferenceCount& right );
+
 	private:
 		ReferenceCountBase* m_reference_count;
 
@@ -250,6 +252,9 @@ class WeakPtr
 		void reset();
 
 		void swap( WeakPtr<T>& other );
+
+		template<typename U, typename V>
+		friend SHARED_PTR_INLINE_ATTR bool operator<( const WeakPtr<U>& left, const WeakPtr<V>& right );
 
 	private:
 		template<typename U>

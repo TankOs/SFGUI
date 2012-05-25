@@ -28,7 +28,7 @@ class SFGUI_API ToggleButton : public Button {
 		/** Set active.
 		 * @param active Active.
 		 */
-		void SetActive( bool active );
+		virtual void SetActive( bool active );
 
 		/** Check if active.
 		 * @return true if active.
