@@ -66,6 +66,13 @@ else()
 	set( SHARE_TARGET_DIR share/SFGUI )
 endif()
 
+# Make OS X happy.
+if ( APPLE )
+    include_directories( /System/Library/Frameworks/CoreFoundation.framework/Headers )
+    find_library( COREFOUNDATION_LIBRARY CoreFoundation )
+    mark_as_advanced( COREFOUNDATION_LIBRARY )
+endif()
+
 set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
 
 set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
@@ -247,6 +254,10 @@ endif()
 set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
 target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
+
+if ( APPLE )
+    target_link_libraries( sfgui ${COREFOUNDATION_LIBRARY} )
+endif()
 
 ### EXAMPLES ###
 
