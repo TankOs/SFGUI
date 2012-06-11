@@ -233,6 +233,7 @@ class SFGUI_API Renderer {
 
 		bool m_pseudo_texture_loaded;
 
+		bool m_vbo_supported;
 		bool m_fbo_supported;
 };
 

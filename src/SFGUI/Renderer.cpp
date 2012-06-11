@@ -30,14 +30,25 @@ Renderer::Renderer() :
 	m_cull( false ),
 	m_use_fbo( false ),
 	m_pseudo_texture_loaded( false ),
+	m_vbo_supported( false ),
 	m_fbo_supported( false ) {
-	glGenBuffers( 1, &m_vertex_vbo );
-	glGenBuffers( 1, &m_color_vbo );
-	glGenBuffers( 1, &m_texture_vbo );
+
+	if( GLEE_ARB_vertex_buffer_object ) {
+		m_vbo_supported = true;
+
+		glGenBuffersARB( 1, &m_vertex_vbo );
+		glGenBuffersARB( 1, &m_color_vbo );
+		glGenBuffersARB( 1, &m_texture_vbo );
+	}
+	else {
+#ifdef SFGUI_DEBUG
+		std::cerr << "VBO extension unavailable.\n";
+#endif
+	}
 
 	m_default_viewport = CreateViewport();
 
-	if( GLEE_ARB_framebuffer_object ) {
+	if( GLEE_EXT_framebuffer_object || GLEE_ARB_framebuffer_object ) {
 		m_fbo_supported = true;
 	}
 }
@@ -45,9 +56,11 @@ Renderer::Renderer() :
 Renderer::~Renderer() {
 	DestroyFBO();
 
-	glDeleteBuffers( 1, &m_texture_vbo );
-	glDeleteBuffers( 1, &m_color_vbo );
-	glDeleteBuffers( 1, &m_vertex_vbo );
+	if( m_vbo_supported ) {
+		glDeleteBuffersARB( 1, &m_texture_vbo );
+		glDeleteBuffersARB( 1, &m_color_vbo );
+		glDeleteBuffersARB( 1, &m_vertex_vbo );
+	}
 }
 
 Renderer& Renderer::Create() {
@@ -389,6 +402,10 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 }
 
 void Renderer::Display( sf::RenderTarget& target ) {
+	if( !m_vbo_supported ) {
+		return;
+	}
+
 	SetupGL( target );
 
 	if( !m_vbo_synced ) {
@@ -405,13 +422,13 @@ void Renderer::Display( sf::RenderTarget& target ) {
 
 		m_texture_atlas.bind();
 
-		glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
+		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
 		glVertexPointer( 3, GL_FLOAT, 0, 0 );
 
-		glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
+		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
 		glColorPointer( 4, GL_UNSIGNED_BYTE, 0, 0 );
 
-		glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
+		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
 		glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
 
 		// Not needed, constantly kept enabled by SFML... -_-
@@ -488,7 +505,7 @@ void Renderer::Display( sf::RenderTarget& target ) {
 		//glDisableClientState( GL_VERTEX_ARRAY );
 
 		// Needed otherwise SFML will blow up...
-		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 
 		if( m_use_fbo ) {
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
@@ -846,27 +863,27 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 	}
 
 	// Sync vertex data
-	glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
-	glBufferData( GL_ARRAY_BUFFER, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
+	glBufferDataARB( GL_ARRAY_BUFFER_ARB, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW_ARB );
 
 	if( vertex_data.size() > 0 ) {
-		glBufferSubData( GL_ARRAY_BUFFER, 0, vertex_data.size() * sizeof( sf::Vector3f ), &vertex_data[0] );
+		glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, vertex_data.size() * sizeof( sf::Vector3f ), &vertex_data[0] );
 	}
 
 	// Sync color data
-	glBindBuffer( GL_ARRAY_BUFFER, m_color_vbo );
-	glBufferData( GL_ARRAY_BUFFER, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
+	glBufferDataARB( GL_ARRAY_BUFFER_ARB, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW_ARB );
 
 	if( color_data.size() > 0 ) {
-		glBufferSubData( GL_ARRAY_BUFFER, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
+		glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
 	}
 
 	// Sync texture coord data
-	glBindBuffer( GL_ARRAY_BUFFER, m_texture_vbo );
-	glBufferData( GL_ARRAY_BUFFER, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_STATIC_DRAW );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
+	glBufferDataARB( GL_ARRAY_BUFFER_ARB, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_STATIC_DRAW_ARB );
 
 	if( texture_data.size() > 0 ) {
-		glBufferSubData( GL_ARRAY_BUFFER, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
+		glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
 	}
 }
 
