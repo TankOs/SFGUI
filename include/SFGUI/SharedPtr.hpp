@@ -127,6 +127,8 @@ class WeakReferenceCount {
 
 		WeakReferenceCount( const StrongReferenceCount& other );
 
+		WeakReferenceCount( const WeakReferenceCount& other );
+
 		~WeakReferenceCount();
 
 		WeakReferenceCount& operator=( const StrongReferenceCount& other );
@@ -241,6 +243,9 @@ class WeakPtr
 
 		template<typename U>
 		WeakPtr( const SharedPtr<U>& other );
+
+		template<typename U>
+		WeakPtr( const WeakPtr<U>& other );
 
 		template<typename U>
 		WeakPtr& operator=( const SharedPtr<U>& other );

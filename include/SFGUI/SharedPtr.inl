@@ -140,6 +140,14 @@ SHARED_PTR_INLINE_ATTR WeakReferenceCount::WeakReferenceCount( const StrongRefer
 	}
 }
 
+SHARED_PTR_INLINE_ATTR WeakReferenceCount::WeakReferenceCount( const WeakReferenceCount& other ) :
+	m_reference_count( other.m_reference_count )
+{
+	if( m_reference_count ) {
+		m_reference_count->AddWeakReference();
+	}
+}
+
 SHARED_PTR_INLINE_ATTR WeakReferenceCount::~WeakReferenceCount() {
 	if( m_reference_count ) {
 		m_reference_count->RemoveWeakReference();
@@ -367,6 +375,14 @@ template<typename T>
 template<typename U>
 SHARED_PTR_INLINE_ATTR WeakPtr<T>::WeakPtr( const SharedPtr<U>& other ) :
 	m_pointer( other.m_pointer ),
+	m_reference_count( other.m_reference_count )
+{
+}
+
+template<typename T>
+template<typename U>
+SHARED_PTR_INLINE_ATTR WeakPtr<T>::WeakPtr( const WeakPtr<U>& other ) :
+	m_pointer( other.lock().get() ),
 	m_reference_count( other.m_reference_count )
 {
 }

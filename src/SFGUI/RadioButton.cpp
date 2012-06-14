@@ -33,7 +33,7 @@ const SharedPtr<RadioButton::RadioButtonGroup>& RadioButton::GetGroup() const {
 }
 
 void RadioButton::SetGroup( const SharedPtr<RadioButton::RadioButtonGroup>& group ) {
-	WeakPtr<Widget> weak_this( shared_from_this() );
+	WeakPtr<RadioButton> weak_this( StaticPointerCast<RadioButton>( shared_from_this() ) );
 
 	if( m_group ) {
 		m_group->members.erase( weak_this );
@@ -48,12 +48,10 @@ void RadioButton::SetGroup( const SharedPtr<RadioButton::RadioButtonGroup>& grou
 
 void RadioButton::SetActive( bool active ) {
 	if( active && m_group ) {
-		for( std::set< WeakPtr<Widget> >::const_iterator iter = m_group->members.begin(); iter != m_group->members.end(); ++iter ) {
-			SharedPtr<Widget> widget( iter->lock() );
+		for( std::set< WeakPtr<RadioButton> >::const_iterator iter = m_group->members.begin(); iter != m_group->members.end(); ++iter ) {
+			SharedPtr<RadioButton> radio_button( iter->lock() );
 
-			if( widget ) {
-				SharedPtr<RadioButton> radio_button( StaticPointerCast<RadioButton>( widget ) );
-
+			if( radio_button ) {
 				radio_button->SetActive( false );
 			}
 			else {
@@ -63,6 +61,14 @@ void RadioButton::SetActive( bool active ) {
 	}
 
 	ToggleButton::SetActive( active );
+}
+
+void RadioButton::HandleMouseClick( sf::Mouse::Button button, int x, int y ) {
+	if( !IsActive() && ( button == sf::Mouse::Left ) ) {
+		SetActive( true );
+	}
+
+	Button::HandleMouseClick( button, x, y );
 }
 
 const std::string& RadioButton::GetName() const {

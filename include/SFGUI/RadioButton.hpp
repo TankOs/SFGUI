@@ -18,7 +18,7 @@ class SFGUI_API RadioButton : public CheckButton {
 		/** Radio Button group.
 		 */
 		struct RadioButtonGroup {
-			std::set< WeakPtr<Widget> > members;
+			std::set< WeakPtr<RadioButton> > members;
 		};
 
 		/** Create radio button.
@@ -46,6 +46,9 @@ class SFGUI_API RadioButton : public CheckButton {
 		virtual void SetActive( bool active );
 
 		virtual const std::string& GetName() const;
+
+	protected:
+		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y );
 
 	private:
 		RadioButton();
