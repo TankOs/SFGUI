@@ -212,6 +212,7 @@ SHARED_PTR_INLINE_ATTR StrongReferenceCount::StrongReferenceCount( const WeakRef
 	m_reference_count( other.m_reference_count )
 {
 	if( m_reference_count && !m_reference_count->AddStrongReferenceIfExists() ) {
+		//assert( ( "Bad WeakPtr" && 0 ) );
 		m_reference_count = 0;
 	}
 }
@@ -244,10 +245,10 @@ SHARED_PTR_INLINE_ATTR SharedPtr<T>::SharedPtr( U* pointer ) :
 
 template<typename T>
 template<typename U>
-SHARED_PTR_INLINE_ATTR SharedPtr<T>::SharedPtr( const WeakPtr<U>& other) :
+SHARED_PTR_INLINE_ATTR SharedPtr<T>::SharedPtr( const WeakPtr<U>& other ) :
 	m_reference_count( other.m_reference_count )
 {
-	m_pointer = other.m_pointer;
+	m_pointer = m_reference_count.UseCount() ? other.m_pointer : 0;
 }
 
 template<typename T>
