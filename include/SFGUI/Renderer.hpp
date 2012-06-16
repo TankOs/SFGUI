@@ -24,6 +24,14 @@ class SFGUI_API Renderer {
 			DEFAULT = NO_DEPTH //!< Default: No depth testing.
 		};
 
+		enum InvalidateDataset {
+			INVALIDATE_VERTEX = 1 << 0, //!< Vertex data needs a sync.
+			INVALIDATE_COLOR = 1 << 1, //!< Color data needs a sync.
+			INVALIDATE_TEXTURE = 1 << 2, //!< Texture data needs a sync.
+			INVALIDATE_INDEX = 1 << 3, //!< Index data needs a sync.
+			INVALIDATE_ALL = INVALIDATE_VERTEX | INVALIDATE_COLOR | INVALIDATE_TEXTURE | INVALIDATE_INDEX //!< All data needs a sync.
+		};
+
 		/** Create the Renderer singleton instance.
 		 * @return Renderer instance.
 		 */
@@ -136,9 +144,11 @@ class SFGUI_API Renderer {
 		 */
 		void RemovePrimitive( const Primitive::Ptr& primitive );
 
-		/** Invalidate VBO data so it is resynchronized with fresh vertex data.
+		/** Invalidate VBO data so it is resynchronized with fresh data.
+		 * @param datasets The datasets to invalidate. Default: INVALIDATE_ALL
+		 * Bitwise OR of INVALIDATE_VERTEX, INVALIDATE_COLOR, INVALIDATE_TEXTURE or INVALIDATE_INDEX.
 		 */
-		void InvalidateVBO();
+		void InvalidateVBO( unsigned char datasets = INVALIDATE_ALL );
 
 		/** Draw the GUI.
 		 * @param target sf::RenderTarget to draw to.
@@ -170,6 +180,13 @@ class SFGUI_API Renderer {
 		void TuneUseFBO( bool enable );
 
 	private:
+		struct ViewportPair {
+			SharedPtr<RendererViewport> first;
+			unsigned int second;
+			GLuint min_index;
+			GLuint max_index;
+		};
+
 		/** Ctor.
 		 */
 		Renderer();
@@ -189,8 +206,6 @@ class SFGUI_API Renderer {
 		void SetupFBO( unsigned int width, unsigned int height );
 
 		void DestroyFBO();
-
-		typedef std::pair<SharedPtr<RendererViewport>, unsigned int> ViewportPair;
 
 		static SharedPtr<Renderer> m_instance;
 
@@ -217,14 +232,20 @@ class SFGUI_API Renderer {
 		GLuint m_vertex_vbo;
 		GLuint m_color_vbo;
 		GLuint m_texture_vbo;
+		GLuint m_index_vbo;
 
 		GLsizei m_last_vertex_count;
+		GLsizei m_last_index_count;
 
 		std::size_t m_vertex_count;
+		std::size_t m_index_count;
 
 		float m_alpha_threshold;
 
 		unsigned char m_depth_clear_strategy;
+
+		unsigned char m_vbo_sync_type;
+
 		bool m_depth_alternate_flag;
 
 		bool m_vbo_synced;

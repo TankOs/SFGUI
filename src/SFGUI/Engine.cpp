@@ -241,7 +241,7 @@ void Engine::ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, i
 	dark_color.b = static_cast<sf::Uint8>( std::min( 255, std::max( 0, static_cast<int>( dark_color.b ) - offset ) ) );
 }
 
-const std::string* Engine::GetValue( const std::string& property, SharedPtr<const Widget> widget ) const {
+const std::string* Engine::GetValue( const std::string& property, const Widget::PtrConst& widget ) const {
 	// Look for property.
 	PropertyMap::const_iterator prop_iter( m_properties.find( property ) );
 

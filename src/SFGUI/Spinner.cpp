@@ -61,12 +61,13 @@ const std::string& Spinner::GetName() const {
 void Spinner::HandleUpdate( float seconds ) {
 	float duration( Context::Get().GetEngine().GetProperty<float>( "CycleDuration", shared_from_this() ) );
 	float steps( Context::Get().GetEngine().GetProperty<float>( "Steps", shared_from_this() ) );
-	sf::Color color( Context::Get().GetEngine().GetProperty<sf::Color>( "Color", shared_from_this() ) );
-	sf::Color background_color( Context::Get().GetEngine().GetProperty<sf::Color>( "BackgroundColor", shared_from_this() ) );
 
 	m_elapsed_time += seconds;
 
 	if( m_started && ( m_elapsed_time > ( ( duration / steps ) / 1000.f ) ) ) {
+		sf::Color color( Context::Get().GetEngine().GetProperty<sf::Color>( "Color", shared_from_this() ) );
+		sf::Color background_color( Context::Get().GetEngine().GetProperty<sf::Color>( "BackgroundColor", shared_from_this() ) );
+
 		m_elapsed_time = 0.f;
 
 		// We built it... so we can make some useful assumptions.
@@ -99,19 +100,18 @@ void Spinner::HandleUpdate( float seconds ) {
 				static_cast<sf::Uint8>( color.a + alpha_delta * current_stage )
 			);
 
-			vertices[0].color = new_color;
-			vertices[1].color = new_color;
-			vertices[2].color = new_color;
-			vertices[3].color = new_color;
-			vertices[4].color = new_color;
-			vertices[5].color = new_color;
+			std::size_t num_vertices = vertices.size();
+
+			for( std::size_t vertex_index = 0; vertex_index < num_vertices; ++vertex_index ) {
+				vertices[vertex_index].color = new_color;
+			}
 
 			primitive->SetSynced( false );
 
 			current_stage = static_cast<unsigned int>( ( current_stage + 1 ) % primitives_size );
 		}
 
-		Renderer::Get().InvalidateVBO();
+		Renderer::Get().InvalidateVBO( sfg::Renderer::INVALIDATE_COLOR );
 	}
 }
 

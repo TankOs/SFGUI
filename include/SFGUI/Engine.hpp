@@ -240,7 +240,7 @@ class SFGUI_API Engine {
 		typedef std::map<const std::string, SelectorValueList> WidgetNameMap;
 		typedef std::map<const std::string, WidgetNameMap> PropertyMap;
 
-		const std::string* GetValue( const std::string& property, SharedPtr<const Widget> widget ) const;
+		const std::string* GetValue( const std::string& property, const Widget::PtrConst& widget ) const;
 
 		/** Get maximum line height and baseline offset of a font.
 		 * @param font Font.

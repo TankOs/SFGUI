@@ -4,6 +4,7 @@
 #include <SFGUI/SharedPtr.hpp>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/OpenGL.hpp>
 
 namespace sfg {
 
@@ -21,6 +22,12 @@ class SFGUI_API Primitive {
 			sf::Vector2f position;
 			sf::Color color;
 			sf::Vector2f texture_coordinate;
+
+			Vertex();
+
+			Vertex( const Vertex& other );
+
+			bool operator==( const Vertex& other ) const;
 		};
 
 		/** Ctor.
@@ -84,6 +91,11 @@ class SFGUI_API Primitive {
 		 */
 		std::vector<Vertex>& GetVertices();
 
+		/** Get indices in this primitive.
+		 * @return Indices in this primitive.
+		 */
+		const std::vector<GLuint>& GetIndices() const;
+
 		/** Set whether the primitive is synced with the VBO.
 		 * @param synced true to flag that primitive is synced with the VBO.
 		 */
@@ -111,6 +123,7 @@ class SFGUI_API Primitive {
 		int m_level;
 
 		std::vector<Vertex> m_vertices;
+		std::vector<GLuint> m_indices;
 
 		bool m_synced;
 		bool m_visible;

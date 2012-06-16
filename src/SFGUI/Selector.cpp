@@ -453,7 +453,7 @@ std::string Selector::BuildString() const {
 	return str;
 }
 
-bool Selector::operator==( const Selector& other ) {
+bool Selector::operator==( const Selector& other ) const {
 	// Check if valid selectors.
 	if( !m_hash || !other.m_hash ) {
 		return false;

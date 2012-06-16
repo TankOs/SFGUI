@@ -80,7 +80,7 @@ class SFGUI_API Selector {
 		 * @param other Other selector.
 		 * @return true if equal.
 		 */
-		bool operator==( const Selector& other );
+		bool operator==( const Selector& other ) const;
 
 		/** Check if a selector matches to a widget.
 		 * @param widget Widget.

@@ -21,11 +21,16 @@ SharedPtr<Renderer> Renderer::m_instance = SharedPtr<Renderer>();
 
 Renderer::Renderer() :
 	m_frame_buffer( 0 ),
+	m_frame_buffer_texture( 0 ),
+	m_frame_buffer_depth( 0 ),
 	m_display_list( 0 ),
 	m_last_vertex_count( 0 ),
+	m_last_index_count( 0 ),
 	m_vertex_count( 0 ),
+	m_index_count( 0 ),
 	m_alpha_threshold( 0.f ),
 	m_depth_clear_strategy( NO_DEPTH ),
+	m_vbo_sync_type( INVALIDATE_ALL ),
 	m_vbo_synced( false ),
 	m_cull( false ),
 	m_use_fbo( false ),
@@ -39,6 +44,7 @@ Renderer::Renderer() :
 		glGenBuffersARB( 1, &m_vertex_vbo );
 		glGenBuffersARB( 1, &m_color_vbo );
 		glGenBuffersARB( 1, &m_texture_vbo );
+		glGenBuffersARB( 1, &m_index_vbo );
 	}
 	else {
 #ifdef SFGUI_DEBUG
@@ -57,6 +63,7 @@ Renderer::~Renderer() {
 	DestroyFBO();
 
 	if( m_vbo_supported ) {
+		glDeleteBuffersARB( 1, &m_index_vbo );
 		glDeleteBuffersARB( 1, &m_texture_vbo );
 		glDeleteBuffersARB( 1, &m_color_vbo );
 		glDeleteBuffersARB( 1, &m_vertex_vbo );
@@ -431,6 +438,8 @@ void Renderer::Display( sf::RenderTarget& target ) {
 		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
 		glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
 
+		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, m_index_vbo );
+
 		// Not needed, constantly kept enabled by SFML... -_-
 		//glEnableClientState( GL_VERTEX_ARRAY );
 		//glEnableClientState( GL_COLOR_ARRAY );
@@ -487,10 +496,24 @@ void Renderer::Display( sf::RenderTarget& target ) {
 			}
 
 			if( index < scissor_pairs_size - 1 ) {
-				glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_viewport_pairs[index + 1].second - scissor_pair.second );
+				glDrawRangeElements(
+					GL_TRIANGLES,
+					scissor_pair.min_index,
+					scissor_pair.max_index,
+					m_viewport_pairs[index + 1].second - scissor_pair.second,
+					GL_UNSIGNED_INT,
+					reinterpret_cast<GLvoid*>( scissor_pair.second * sizeof( GLuint ) )
+				);
 			}
 			else {
-				glDrawArrays( GL_TRIANGLES, scissor_pair.second, m_last_vertex_count - scissor_pair.second );
+				glDrawRangeElements(
+					GL_TRIANGLES,
+					scissor_pair.min_index,
+					scissor_pair.max_index,
+					m_last_index_count - scissor_pair.second,
+					GL_UNSIGNED_INT,
+					reinterpret_cast<GLvoid*>( scissor_pair.second * sizeof( GLuint ) )
+				);
 			}
 		}
 
@@ -505,29 +528,13 @@ void Renderer::Display( sf::RenderTarget& target ) {
 		//glDisableClientState( GL_VERTEX_ARRAY );
 
 		// Needed otherwise SFML will blow up...
+		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
 		glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
 
 		if( m_use_fbo ) {
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-			glNewList( m_display_list, GL_COMPILE_AND_EXECUTE );
-
-			glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture );
-
-			glBegin( GL_QUADS );
-			glTexCoord2f( 0, 1 );
-			glVertex3i( 0, 0, -10 );
-			glTexCoord2f( 0, 0 );
-			glVertex3i( 0, target.getSize().y, -10 );
-			glTexCoord2f( 1, 0 );
-			glVertex3i( target.getSize().x, target.getSize().y, -10 );
-			glTexCoord2f( 1, 1 );
-			glVertex3i( target.getSize().x, 0, -10 );
-			glEnd();
-
-			glBindTexture( GL_TEXTURE_2D, 0 );
-
-			glEndList();
+			glCallList( m_display_list );
 		}
 	}
 	else {
@@ -567,7 +574,7 @@ void Renderer::SetupGL( sf::RenderTarget& target ) {
 		if( last_width && last_height ) {
 			SetupFBO( last_width, last_height );
 
-			InvalidateVBO();
+			InvalidateVBO( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 		}
 	}
 
@@ -729,7 +736,7 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, bool force_insert ) {
 
 	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( old_image.getSize().y + padding ) );
 
-	InvalidateVBO();
+	InvalidateVBO( INVALIDATE_TEXTURE );
 
 	if( !force_insert ) {
 		m_atlas_offsets[pixels_ptr] = offset;
@@ -761,14 +768,17 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 	std::vector<sf::Vector3f> vertex_data;
 	std::vector<sf::Color> color_data;
 	std::vector<sf::Vector2f> texture_data;
+	std::vector<GLuint> index_data;
 
 	vertex_data.reserve( m_vertex_count );
 	color_data.reserve( m_vertex_count );
 	texture_data.reserve( m_vertex_count );
+	index_data.reserve( m_index_count );
 
 	m_viewport_pairs.clear();
 
 	m_last_vertex_count = 0;
+	m_last_index_count = 0;
 
 	std::size_t primitives_size = m_primitives.size();
 
@@ -782,8 +792,13 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 	int start = static_cast<int>( m_depth_clear_strategy ? primitives_size : 1 );
 	std::size_t end = m_depth_clear_strategy ? 0 : primitives_size + 1;
 
-	RendererViewport::Ptr current_viewport = m_default_viewport;
-	m_viewport_pairs.push_back( ViewportPair( m_default_viewport, 0 ) );
+	ViewportPair default_viewport;
+	default_viewport.first = m_default_viewport;
+	default_viewport.second = 0;
+	default_viewport.min_index = 0;
+	default_viewport.max_index = m_vertex_count - 1;
+
+	m_viewport_pairs.push_back( default_viewport );
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( target.getSize().x ), static_cast<float>( target.getSize().y ) );
 
@@ -798,21 +813,13 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 
 		sf::Vector2f position_transform( primitive->GetPosition() );
 
-		// Check if primitive needs to be rendered in a custom viewport.
 		RendererViewport::Ptr viewport = primitive->GetViewport();
-
-		if( viewport != current_viewport ) {
-			current_viewport = viewport;
-
-			ViewportPair scissor_pair( viewport, m_last_vertex_count );
-
-			m_viewport_pairs.push_back( scissor_pair );
-		}
 
 		bool cull = m_cull;
 
 		sf::FloatRect viewport_rect = window_viewport;
 
+		// Check if primitive needs to be rendered in a custom viewport.
 		if( viewport && ( viewport != m_default_viewport ) ) {
 			sf::Vector2f destination_origin( viewport->GetDestinationOrigin() );
 			sf::Vector2f size( viewport->GetSize() );
@@ -827,8 +834,9 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 			}
 		}
 
-		// Process primitive's vertices.
+		// Process primitive's vertices and indices
 		const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+		const std::vector<GLuint>& indices( primitive->GetIndices() );
 
 		std::size_t vertices_size = vertices.size();
 
@@ -857,34 +865,71 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 			texture_data.resize( m_last_vertex_count );
 		}
 		else {
+			std::size_t indices_size = indices.size();
+
+			for( std::size_t index_index = 0; index_index < indices_size; ++index_index ) {
+				index_data.push_back( m_last_vertex_count + indices[index_index] );
+			}
+
+			if( viewport != m_viewport_pairs.back().first ) {
+				m_viewport_pairs.back().max_index = static_cast<GLuint>( m_last_vertex_count ) - 1;
+
+				ViewportPair scissor_pair;
+				scissor_pair.first = viewport;
+				scissor_pair.second = m_last_index_count;
+				scissor_pair.min_index = static_cast<GLuint>( m_last_vertex_count );
+				scissor_pair.max_index = m_vertex_count - 1;
+
+				m_viewport_pairs.push_back( scissor_pair );
+			}
+
 			m_last_vertex_count += static_cast<GLsizei>( vertices_size );
+			m_last_index_count += static_cast<GLsizei>( indices_size );
 			depth -= depth_delta;
 		}
 	}
 
-	// Sync vertex data
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
-	glBufferDataARB( GL_ARRAY_BUFFER_ARB, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW_ARB );
+	if( m_vbo_sync_type & INVALIDATE_VERTEX ) {
+		// Sync vertex data
+		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
+		glBufferDataARB( GL_ARRAY_BUFFER_ARB, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW_ARB );
 
-	if( vertex_data.size() > 0 ) {
-		glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, vertex_data.size() * sizeof( sf::Vector3f ), &vertex_data[0] );
+		if( vertex_data.size() > 0 ) {
+			glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, vertex_data.size() * sizeof( sf::Vector3f ), &vertex_data[0] );
+		}
 	}
 
-	// Sync color data
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
-	glBufferDataARB( GL_ARRAY_BUFFER_ARB, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW_ARB );
+	if( m_vbo_sync_type & INVALIDATE_COLOR ) {
+		// Sync color data
+		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
+		glBufferDataARB( GL_ARRAY_BUFFER_ARB, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW_ARB );
 
-	if( color_data.size() > 0 ) {
-		glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
+		if( color_data.size() > 0 ) {
+			glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
+		}
 	}
 
-	// Sync texture coord data
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
-	glBufferDataARB( GL_ARRAY_BUFFER_ARB, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_STATIC_DRAW_ARB );
+	if( m_vbo_sync_type & INVALIDATE_TEXTURE ) {
+		// Sync texture coord data
+		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
+		glBufferDataARB( GL_ARRAY_BUFFER_ARB, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_DYNAMIC_DRAW_ARB );
 
-	if( texture_data.size() > 0 ) {
-		glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
+		if( texture_data.size() > 0 ) {
+			glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
+		}
 	}
+
+	if( m_vbo_sync_type & INVALIDATE_INDEX ) {
+		// Sync index data
+		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, m_index_vbo );
+		glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, index_data.size() * sizeof( GLuint ), 0, GL_DYNAMIC_DRAW_ARB );
+
+		if( index_data.size() > 0 ) {
+			glBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, index_data.size() * sizeof( GLuint ), &index_data[0] );
+		}
+	}
+
+	m_vbo_sync_type = 0;
 }
 
 void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
@@ -893,10 +938,13 @@ void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
 	// Check for alpha values in primitive.
 	// Disable depth test if any found.
 	const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+	const std::vector<GLuint>& indices( primitive->GetIndices() );
 
 	std::size_t vertices_size = vertices.size();
+	std::size_t indices_size = indices.size();
 
 	m_vertex_count += vertices_size;
+	m_index_count += indices_size;
 
 	for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
 		const Primitive::Vertex& vertex( vertices[vertex_index] );
@@ -909,7 +957,7 @@ void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
 		}
 	}
 
-	InvalidateVBO();
+	InvalidateVBO( INVALIDATE_ALL );
 }
 
 void Renderer::RemovePrimitive( const Primitive::Ptr& primitive ) {
@@ -925,10 +973,11 @@ void Renderer::RemovePrimitive( const Primitive::Ptr& primitive ) {
 		m_primitives.erase( iter );
 	}
 
-	InvalidateVBO();
+	InvalidateVBO( INVALIDATE_ALL );
 }
 
-void Renderer::InvalidateVBO() {
+void Renderer::InvalidateVBO( unsigned char datasets ) {
+	m_vbo_sync_type |= datasets;
 	m_vbo_synced = false;
 }
 
@@ -938,12 +987,16 @@ void Renderer::SetupFBO( unsigned int width, unsigned int height ) {
 	}
 
 	// Create FBO.
-	glGenFramebuffers( 1, &m_frame_buffer );
+	if( !m_frame_buffer ) {
+		glGenFramebuffers( 1, &m_frame_buffer );
+	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, m_frame_buffer );
 
 	// Create FBO texture object.
-	glGenTextures( 1, &m_frame_buffer_texture );
+	if( !m_frame_buffer_texture ) {
+		glGenTextures( 1, &m_frame_buffer_texture );
+	}
 
 	glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture );
 
@@ -960,7 +1013,9 @@ void Renderer::SetupFBO( unsigned int width, unsigned int height ) {
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_frame_buffer_texture, 0 );
 
 	// Create FBO renderbuffer for depth storage.
-	glGenRenderbuffers( 1, &m_frame_buffer_depth );
+	if( !m_frame_buffer_depth ) {
+		glGenRenderbuffers( 1, &m_frame_buffer_depth );
+	}
 
 	glBindRenderbuffer( GL_RENDERBUFFER, m_frame_buffer_depth );
 	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height );
@@ -984,7 +1039,39 @@ void Renderer::SetupFBO( unsigned int width, unsigned int height ) {
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-	m_display_list = glGenLists( 1 );
+	if( m_use_fbo && !m_display_list ) {
+		m_display_list = glGenLists( 1 );
+
+		// Do not fear the immediate-mode GL here, we only compile this once.
+		glNewList( m_display_list, GL_COMPILE );
+
+		glMatrixMode( GL_PROJECTION );
+		glPushMatrix();
+		glLoadIdentity();
+
+		glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture );
+
+		// Hard to believe, but GL_TRIANGLE_STRIP performs better
+		// in my tests than GL_QUADS, it seems cards might
+		// not always optimize by themselves after all.
+		glBegin( GL_TRIANGLE_STRIP );
+		glTexCoord2s( 1, 1 );
+		glVertex2s( 1, 1 );
+		glTexCoord2s( 0, 1 );
+		glVertex2s( -1, 1 );
+		glTexCoord2s( 1, 0 );
+		glVertex2s( 1, -1 );
+		glTexCoord2s( 0, 0 );
+		glVertex2s( -1, -1 );
+		glEnd();
+
+		glBindTexture( GL_TEXTURE_2D, 0 );
+
+		glPopMatrix();
+		glMatrixMode( GL_TEXTURE );
+
+		glEndList();
+	}
 }
 
 void Renderer::DestroyFBO() {
