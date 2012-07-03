@@ -69,7 +69,7 @@ void DesktopExample::Run() {
 	create_window_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnCreateWindowClick, this );
 
 	// Init.
-	m_desktop.SetProperty( "Button#create_window > Label", "FontSize", 18.f );
+	m_desktop.SetProperty( "Button#create_window", "FontSize", 18.f );
 
 	while( render_window.isOpen() ) {
 		while( render_window.pollEvent( event ) ) {
