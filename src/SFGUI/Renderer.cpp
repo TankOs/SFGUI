@@ -815,8 +815,6 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 
 		RendererViewport::Ptr viewport = primitive->GetViewport();
 
-		bool cull = m_cull;
-
 		sf::FloatRect viewport_rect = window_viewport;
 
 		// Check if primitive needs to be rendered in a custom viewport.
@@ -842,6 +840,8 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 
 		sf::Vector3f position( 0.f, 0.f, depth );
 
+		sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
+
 		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
 			const Primitive::Vertex& vertex( vertices[vertex_index] );
 
@@ -854,12 +854,27 @@ void Renderer::RefreshVBO( sf::RenderTarget& target ) {
 			// Normalize SFML's pixel texture coordinates.
 			texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
 
-			if( m_cull && viewport_rect.contains( position.x, position.y ) ) {
-				cull = false;
+			// Update the bounding rect.
+			if( m_cull ) {
+				if( position.x < bounding_rect.left ) {
+					bounding_rect.width += bounding_rect.left - position.x;
+					bounding_rect.left = position.x;
+				}
+				else if( position.x > bounding_rect.left + bounding_rect.width ) {
+					bounding_rect.width = position.x - bounding_rect.left;
+				}
+
+				if( position.y < bounding_rect.top ) {
+					bounding_rect.height += bounding_rect.top - position.y;
+					bounding_rect.top = position.y;
+				}
+				else if( position.y > bounding_rect.top + bounding_rect.height ) {
+					bounding_rect.height = position.y - bounding_rect.top;
+				}
 			}
 		}
 
-		if( cull ) {
+		if( m_cull && !viewport_rect.intersects( bounding_rect ) ) {
 			vertex_data.resize( m_last_vertex_count );
 			color_data.resize( m_last_vertex_count );
 			texture_data.resize( m_last_vertex_count );
