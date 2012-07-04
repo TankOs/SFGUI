@@ -179,7 +179,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	}
 
 	switch( key ) {
-	case sf::Keyboard::Back: { // backspace
+	case sf::Keyboard::BackSpace: { // backspace
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.erase( m_cursor_position - 1 );
 
