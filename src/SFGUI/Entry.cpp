@@ -343,6 +343,8 @@ std::size_t Entry::GetMaximumLength() const {
 }
 
 void Entry::SetMaximumLength( std::size_t max_length ) {
+	SetCursorPosition( 0 );
+
 	m_max_length = max_length;
 
 	// Truncate text if longer than maximum.
