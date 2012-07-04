@@ -408,7 +408,7 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	return CreateQuad( corner3, corner2, corner1, corner0, color );
 }
 
-void Renderer::Display( sf::RenderTarget& target ) {
+void Renderer::Display( sf::RenderTarget& target ) const {
 	if( !m_vbo_supported ) {
 		return;
 	}
@@ -416,8 +416,19 @@ void Renderer::Display( sf::RenderTarget& target ) {
 	SetupGL( target );
 
 	if( !m_vbo_synced ) {
+		// Disclaimer:
+		// const_cast IS safe to use in ANY non-static method of
+		// Renderer. Because we make sure that the only instance
+		// that can be constructed is the singleton instance and
+		// that the singleton instance is non-const, we don't have
+		// to fear that some member variable is non-mutable. This
+		// is a nice hack to please certain people who require const
+		// methods in the most exotic places without having to declare
+		// half the member variables and methods as mutable. Then
+		// again this might be all wrong...
+
 		// Refresh VBO data if out of sync
-		RefreshVBO( target );
+		const_cast<Renderer*>( this )->RefreshVBO( target );
 	}
 
 	if( !m_use_fbo || !m_vbo_synced ) {
@@ -546,7 +557,7 @@ void Renderer::Display( sf::RenderTarget& target ) {
 	m_vbo_synced = true;
 }
 
-void Renderer::SetupGL( sf::RenderTarget& target ) {
+void Renderer::SetupGL( sf::RenderTarget& target ) const {
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 	glLoadIdentity();
@@ -572,9 +583,9 @@ void Renderer::SetupGL( sf::RenderTarget& target ) {
 		last_height = height;
 
 		if( last_width && last_height ) {
-			SetupFBO( last_width, last_height );
+			const_cast<Renderer*>( this )->SetupFBO( last_width, last_height );
 
-			InvalidateVBO( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
+			const_cast<Renderer*>( this )->InvalidateVBO( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 		}
 	}
 
@@ -592,7 +603,7 @@ void Renderer::SetupGL( sf::RenderTarget& target ) {
 	glEnable( GL_CULL_FACE );
 }
 
-void Renderer::RestoreGL( sf::RenderTarget& target ) {
+void Renderer::RestoreGL( sf::RenderTarget& target ) const {
 	glDisable( GL_CULL_FACE );
 
 	if( m_alpha_threshold > 0.f ) {
@@ -762,7 +773,7 @@ void Renderer::SortPrimitives() {
 	}
 }
 
-void Renderer::RefreshVBO( sf::RenderTarget& target ) {
+void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 	SortPrimitives();
 
 	std::vector<sf::Vector3f> vertex_data;

@@ -153,7 +153,7 @@ class SFGUI_API Renderer {
 		/** Draw the GUI.
 		 * @param target sf::RenderTarget to draw to.
 		 */
-		void Display( sf::RenderTarget& target );
+		void Display( sf::RenderTarget& target ) const;
 
 		/** Enable and select depth testing method.
 		 * WARNING: THIS FEATURE IS BROKEN AND THEREFORE DISABLED UNTIL FURTHER NOTICE.
@@ -191,13 +191,13 @@ class SFGUI_API Renderer {
 		 */
 		Renderer();
 
-		void SetupGL( sf::RenderTarget& target );
+		void SetupGL( sf::RenderTarget& target ) const;
 
-		void RestoreGL( sf::RenderTarget& target );
+		void RestoreGL( sf::RenderTarget& target ) const;
 
 		void SortPrimitives();
 
-		void RefreshVBO( sf::RenderTarget& target );
+		void RefreshVBO( const sf::RenderTarget& target );
 
 		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size );
 
@@ -246,9 +246,9 @@ class SFGUI_API Renderer {
 
 		unsigned char m_vbo_sync_type;
 
-		bool m_depth_alternate_flag;
+		mutable bool m_depth_alternate_flag;
 
-		bool m_vbo_synced;
+		mutable bool m_vbo_synced;
 		bool m_cull;
 		bool m_use_fbo;
 
