@@ -915,43 +915,45 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 		}
 	}
 
-	if( m_vbo_sync_type & INVALIDATE_VERTEX ) {
-		// Sync vertex data
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
-		glBufferDataARB( GL_ARRAY_BUFFER_ARB, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW_ARB );
+	if( !vertex_data.empty() && !color_data.empty() && !texture_data.empty() ) {
+		if( m_vbo_sync_type & INVALIDATE_VERTEX ) {
+			// Sync vertex data
+			glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
+			glBufferDataARB( GL_ARRAY_BUFFER_ARB, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW_ARB );
 
-		if( vertex_data.size() > 0 ) {
-			glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, vertex_data.size() * sizeof( sf::Vector3f ), &vertex_data[0] );
+			if( vertex_data.size() > 0 ) {
+				glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, vertex_data.size() * sizeof( sf::Vector3f ), &vertex_data[0] );
+			}
 		}
-	}
 
-	if( m_vbo_sync_type & INVALIDATE_COLOR ) {
-		// Sync color data
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
-		glBufferDataARB( GL_ARRAY_BUFFER_ARB, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW_ARB );
+		if( m_vbo_sync_type & INVALIDATE_COLOR ) {
+			// Sync color data
+			glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
+			glBufferDataARB( GL_ARRAY_BUFFER_ARB, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW_ARB );
 
-		if( color_data.size() > 0 ) {
-			glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
+			if( color_data.size() > 0 ) {
+				glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
+			}
 		}
-	}
 
-	if( m_vbo_sync_type & INVALIDATE_TEXTURE ) {
-		// Sync texture coord data
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
-		glBufferDataARB( GL_ARRAY_BUFFER_ARB, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_DYNAMIC_DRAW_ARB );
+		if( m_vbo_sync_type & INVALIDATE_TEXTURE ) {
+			// Sync texture coord data
+			glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
+			glBufferDataARB( GL_ARRAY_BUFFER_ARB, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_DYNAMIC_DRAW_ARB );
 
-		if( texture_data.size() > 0 ) {
-			glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
+			if( texture_data.size() > 0 ) {
+				glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
+			}
 		}
-	}
 
-	if( m_vbo_sync_type & INVALIDATE_INDEX ) {
-		// Sync index data
-		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, m_index_vbo );
-		glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, index_data.size() * sizeof( GLuint ), 0, GL_DYNAMIC_DRAW_ARB );
+		if( m_vbo_sync_type & INVALIDATE_INDEX ) {
+			// Sync index data
+			glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, m_index_vbo );
+			glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, index_data.size() * sizeof( GLuint ), 0, GL_DYNAMIC_DRAW_ARB );
 
-		if( index_data.size() > 0 ) {
-			glBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, index_data.size() * sizeof( GLuint ), &index_data[0] );
+			if( index_data.size() > 0 ) {
+				glBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, index_data.size() * sizeof( GLuint ), &index_data[0] );
+			}
 		}
 	}
 
