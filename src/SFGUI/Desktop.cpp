@@ -119,7 +119,6 @@ void Desktop::Add( SharedPtr<Widget> widget ) {
 	RecalculateWidgetLevels();
 
 	widget->Refresh();
-	ResendMouseMoveEvent();
 }
 
 void Desktop::Remove( SharedPtr<Widget> widget ) {
@@ -134,10 +133,6 @@ void Desktop::Remove( SharedPtr<Widget> widget ) {
 	}
 
 	RecalculateWidgetLevels();
-
-	if( m_children.size() ) {
-		ResendMouseMoveEvent();
-	}
 }
 
 void Desktop::RemoveAll() {
@@ -189,8 +184,6 @@ void Desktop::BringToFront( SharedPtr<const Widget> child ) {
 	m_children.push_front( ptr );
 
 	RecalculateWidgetLevels();
-
-	ResendMouseMoveEvent();
 }
 
 void Desktop::SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x, int y ) const {
@@ -199,22 +192,6 @@ void Desktop::SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x, int y ) c
 	fake_event.mouseMove.x = x;
 	fake_event.mouseMove.y = y;
 	widget->HandleEvent( fake_event );
-}
-
-void Desktop::ResendMouseMoveEvent() {
-	sf::Event event;
-	event.type = sf::Event::MouseMoved;
-	event.mouseMove.x = m_last_mouse_pos.x;
-	event.mouseMove.y = m_last_mouse_pos.y;
-
-	sf::Vector2f mouse_pos( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) );
-
-	for( std::size_t index = 0; index < m_children.size(); ++index ) {
-		if( m_children[index]->GetAllocation().contains( mouse_pos ) ) {
-			m_children[index]->HandleEvent( event );
-			break;
-		}
-	}
 }
 
 void Desktop::RecalculateWidgetLevels() {

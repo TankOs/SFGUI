@@ -112,7 +112,6 @@ class SFGUI_API Desktop {
 		typedef std::deque<SharedPtr<Widget> > WidgetsList;
 
 		void SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x = -1337, int y = -1337 ) const;
-		void ResendMouseMoveEvent();
 		void RecalculateWidgetLevels();
 
 		sf::View m_view;
