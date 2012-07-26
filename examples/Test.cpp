@@ -22,6 +22,7 @@ class SampleApp {
 		void OnLoadThemeClick();
 		void OnAdjustmentChange();
 		void OnToggleSpinner();
+		void OnMirrorImageClick();
 
 		// Create an SFGUI. This is required before doing anything with SFGUI.
 		sfg::SFGUI m_sfgui;
@@ -40,6 +41,7 @@ class SampleApp {
 		sfg::ProgressBar::Ptr m_progress;
 		sfg::ProgressBar::Ptr m_progress_vert;
 		sfg::Spinner::Ptr m_spinner;
+		sfg::Image::Ptr m_image;
 
 		sfg::Desktop m_desktop;
 
@@ -275,12 +277,16 @@ void SampleApp::Run() {
 	box_image->Pack( fixed_container, false );
 
 	sf::Image sfgui_logo;
-	sfg::Image::Ptr image = sfg::Image::Create();
+	m_image = sfg::Image::Create();
 
 	if( sfgui_logo.loadFromFile( "data/sfgui.png" ) ) {
-		image->SetImage( sfgui_logo );
-		box_image->Pack( image, false );
+		m_image->SetImage( sfgui_logo );
+		box_image->Pack( m_image, false );
 	}
+
+	sfg::Button::Ptr mirror_image( sfg::Button::Create( L"Mirror Image" ) );
+
+	box_image->Pack( mirror_image, false );
 
 	sfg::Box::Ptr spinner_box( sfg::Box::Create( sfg::Box::VERTICAL ) );
 
@@ -367,6 +373,7 @@ void SampleApp::Run() {
 	btnloadstyle->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnLoadThemeClick, this );
 	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &SampleApp::OnAdjustmentChange, this );
 	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnToggleSpinner, this );
+	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnMirrorImageClick, this );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -539,6 +546,21 @@ void SampleApp::OnToggleSpinner() {
 	else {
 		m_spinner->Stop();
 	}
+}
+
+void SampleApp::OnMirrorImageClick() {
+	sf::Image image = m_image->GetImage();
+
+	for( unsigned int height_index = 0; height_index < image.getSize().y; ++height_index ) {
+		for( unsigned int width_index = 0; width_index < image.getSize().x / 2; ++width_index ) {
+			sf::Color color0 = image.getPixel( width_index, height_index );
+			sf::Color color1 = image.getPixel( image.getSize().x - width_index - 1, height_index );
+			image.setPixel( width_index, height_index, color1 );
+			image.setPixel( image.getSize().x - width_index - 1, height_index, color0 );
+		}
+	}
+
+	m_image->SetImage( image );
 }
 
 int main() {

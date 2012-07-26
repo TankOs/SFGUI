@@ -34,6 +34,30 @@ bool Primitive::Vertex::operator==( const Primitive::Vertex& other ) const {
 	return true;
 }
 
+Primitive::Texture::Texture() :
+	offset( 0.f, 0.f ),
+	size( 0.f, 0.f )
+{
+
+}
+
+Primitive::Texture::~Texture() {
+	if( sfg::Renderer::Exists() ) {
+		sfg::Renderer::Get().UnloadImage( offset );
+	}
+}
+
+void Primitive::Texture::Update( const sf::Image& data ) {
+	if( data.getSize() != size ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "Tried to update texture with mismatching image size.\n";
+#endif
+		return;
+	}
+
+	sfg::Renderer::Get().UpdateImage( offset, data );
+}
+
 Primitive::Primitive() :
 	m_position( sf::Vector2f( 0.f, 0.f ) ),
 	m_layer( 0 ),
@@ -74,6 +98,10 @@ void Primitive::AddVertex( const Vertex& vertex ) {
 
 	m_indices.push_back( vertice_count );
 	m_vertices.push_back( vertex );
+}
+
+void Primitive::AddTexture( const SharedPtr<Texture>& texture ) {
+	m_textures.push_back( texture );
 }
 
 void Primitive::SetPosition( const sf::Vector2f& position ) {
@@ -118,6 +146,10 @@ int Primitive::GetLevel() const {
 
 std::vector<Primitive::Vertex>& Primitive::GetVertices() {
 	return m_vertices;
+}
+
+std::vector<SharedPtr<Primitive::Texture> >& Primitive::GetTextures() {
+	return m_textures;
 }
 
 const std::vector<GLuint>& Primitive::GetIndices() const {

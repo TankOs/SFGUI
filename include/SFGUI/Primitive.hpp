@@ -30,6 +30,18 @@ class SFGUI_API Primitive {
 			bool operator==( const Vertex& other ) const;
 		};
 
+		/** Primitive Texture
+		 */
+		struct Texture {
+			sf::Vector2f offset;
+			sf::Vector2u size;
+
+			void Update( const sf::Image& data );
+
+			Texture();
+			~Texture();
+		};
+
 		/** Ctor.
 		 */
 		Primitive();
@@ -43,6 +55,11 @@ class SFGUI_API Primitive {
 		 * @param vertex Vertex to add.
 		 */
 		void AddVertex( const Vertex& vertex );
+
+		/** Add texture to this primitive.
+		 * @param texture Texture to add.
+		 */
+		void AddTexture( const SharedPtr<Texture>& texture );
 
 		/** Set position of this primitive.
 		 * @param position Position of this primitive.
@@ -91,6 +108,11 @@ class SFGUI_API Primitive {
 		 */
 		std::vector<Vertex>& GetVertices();
 
+		/** Get textures in this primitive.
+		 * @return Textures in this primitive.
+		 */
+		std::vector<SharedPtr<Texture> >& GetTextures();
+
 		/** Get indices in this primitive.
 		 * @return Indices in this primitive.
 		 */
@@ -123,6 +145,7 @@ class SFGUI_API Primitive {
 		int m_level;
 
 		std::vector<Vertex> m_vertices;
+		std::vector<SharedPtr<Texture> > m_textures;
 		std::vector<GLuint> m_indices;
 
 		bool m_synced;

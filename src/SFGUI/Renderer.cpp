@@ -93,6 +93,10 @@ void Renderer::Destroy() {
 	m_instance.reset();
 }
 
+bool Renderer::Exists() {
+	return m_instance;
+}
+
 const RendererViewport::Ptr& Renderer::GetDefaultViewport() {
 	return m_default_viewport;
 }
@@ -355,7 +359,8 @@ Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::V
 }
 
 Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image& image ) {
-	sf::Vector2f offset( LoadImage( image ) );
+	SharedPtr<Primitive::Texture> texture_handle( LoadImage( image ) );
+	sf::Vector2f offset = texture_handle->offset;
 
 	Primitive::Ptr primitive( new Primitive );
 
@@ -385,6 +390,8 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	primitive->AddVertex( vertex2 );
 	primitive->AddVertex( vertex1 );
 	primitive->AddVertex( vertex3 );
+
+	primitive->AddTexture( texture_handle );
 
 	AddPrimitive( primitive );
 
@@ -673,10 +680,10 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 
 	FontID id( face, size );
 
-	std::map<FontID, sf::Vector2f>::iterator iter( m_font_offsets.find( id ) );
+	std::map<FontID, SharedPtr<Primitive::Texture> >::iterator iter( m_fonts.find( id ) );
 
-	if( iter != m_font_offsets.end() ) {
-		return iter->second;
+	if( iter != m_fonts.end() ) {
+		return iter->second->offset;
 	}
 
 	// Make sure all the glyphs we need are loaded.
@@ -686,31 +693,21 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 
 	sf::Image image = font.getTexture( size ).copyToImage();
 
-	sf::Vector2f offset = LoadImage( image, true );
+	SharedPtr<Primitive::Texture> handle = LoadImage( image );
 
-	m_font_offsets[id] = offset;
+	m_fonts[id] = handle;
 
-	return offset;
+	return handle->offset;
 }
 
-sf::Vector2f Renderer::LoadImage( const sf::Image& image, bool force_insert ) {
+SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 	if( !m_pseudo_texture_loaded ) {
 		m_pseudo_texture_loaded = true;
 
 		// Load our "no texture" pseudo-texture.
 		sf::Image pseudo_image;
 		pseudo_image.create( 2, 2, sf::Color::White );
-		LoadImage( pseudo_image );
-	}
-
-	const sf::Uint8* pixels_ptr = image.getPixelsPtr();
-
-	if( !force_insert ) {
-		std::map<const sf::Uint8*, sf::Vector2f>::iterator iter( m_atlas_offsets.find( pixels_ptr ) );
-
-		if( iter != m_atlas_offsets.end() ) {
-			return iter->second;
-		}
+		m_pseudo_texture = LoadImage( pseudo_image );
 	}
 
 	const sf::Uint8* bytes = image.getPixelsPtr();
@@ -719,41 +716,108 @@ sf::Vector2f Renderer::LoadImage( const sf::Image& image, bool force_insert ) {
 	// Disable this check for now.
 	static sf::Uint8 alpha_threshold = 255;
 
-	for ( ; byte_count; --byte_count ) {
-		// Check if the image makes intentional use of the alpha channel.
-		if( m_depth_clear_strategy && !( byte_count % 4 ) && ( bytes[ byte_count - 1 ] > alpha_threshold ) && ( bytes[ byte_count - 1 ] < 255 ) ) {
+	if( m_depth_clear_strategy ) {
+		for ( ; byte_count; --byte_count ) {
+			// Check if the image makes intentional use of the alpha channel.
+			if( !( byte_count % 4 ) && ( bytes[ byte_count - 1 ] > alpha_threshold ) && ( bytes[ byte_count - 1 ] < 255 ) ) {
 #ifdef SFGUI_DEBUG
-			std::cerr << "Detected alpha value " << static_cast<int>( bytes[ byte_count - 1 ] ) << " in texture, disabling depth test.\n";
+				std::cerr << "Detected alpha value " << static_cast<int>( bytes[ byte_count - 1 ] ) << " in texture, disabling depth test.\n";
 #endif
-			m_depth_clear_strategy = NO_DEPTH;
+				m_depth_clear_strategy = NO_DEPTH;
+			}
 		}
 	}
-
-	// Image needs to be loaded into atlas.
-	sf::Image old_image = m_texture_atlas.copyToImage();
-	sf::Image new_image;
 
 	// We insert padding between atlas elements to prevent
 	// texture filtering from screwing up our images.
 	// If 1 pixel isn't enough, increase.
 	const static unsigned int padding = 1;
 
-	new_image.create( std::max( old_image.getSize().x, image.getSize().x ), old_image.getSize().y + image.getSize().y + padding, sf::Color::White );
-	new_image.copy( old_image, 0, 0 );
+	// Look for a nice insertion point for our new texture.
+	// We use first fit and according to theory it is never
+	// worse than double the optimimum size.
+	std::list<TextureNode>::iterator iter = m_textures.begin();
 
-	new_image.copy( image, 0, old_image.getSize().y + padding );
+	float last_occupied_location = 0.f;
 
-	m_texture_atlas.loadFromImage( new_image );
+	for( ; iter != m_textures.end(); ++iter ) {
+		float space_available = iter->offset.y - last_occupied_location;
 
-	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( old_image.getSize().y + padding ) );
+		if( space_available >= static_cast<float>( image.getSize().y + 2 * padding ) ) {
+			// We found a nice spot.
+			break;
+		}
+
+		last_occupied_location = iter->offset.y + static_cast<float>( iter->size.y );
+	}
+
+	if( ( image.getSize().x > m_texture_atlas.getSize().x ) || ( last_occupied_location + static_cast<float>( image.getSize().y ) > static_cast<float>( m_texture_atlas.getSize().y ) ) ) {
+		// Texture atlas needs to be expanded.
+
+		// Image needs to be loaded into atlas.
+		sf::Image old_image = m_texture_atlas.copyToImage();
+		sf::Image new_image;
+
+		new_image.create( std::max( old_image.getSize().x, image.getSize().x ), static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + image.getSize().y + padding, sf::Color::White );
+		new_image.copy( old_image, 0, 0 );
+
+		new_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
+
+		m_texture_atlas.loadFromImage( new_image );
+	}
+
+	sf::Vector2f offset = sf::Vector2f( 0.f, last_occupied_location + static_cast<float>( padding ) );
 
 	InvalidateVBO( INVALIDATE_TEXTURE );
 
-	if( !force_insert ) {
-		m_atlas_offsets[pixels_ptr] = offset;
+	SharedPtr<Primitive::Texture> handle( new Primitive::Texture );
+
+	handle->offset = offset;
+	handle->size = image.getSize();
+
+	TextureNode texture_node;
+	texture_node.offset = offset;
+	texture_node.size = image.getSize();
+
+	m_textures.insert( iter, texture_node );
+
+	return handle;
+}
+
+void Renderer::UnloadImage( const sf::Vector2f& offset ) {
+	for( std::list<TextureNode>::iterator iter = m_textures.begin(); iter != m_textures.end(); ++iter ) {
+		if( iter->offset == offset ) {
+			m_textures.erase( iter );
+			return;
+		}
 	}
 
-	return offset;
+#ifdef SFGUI_DEBUG
+	std::cerr << "Tried to unload non-existant image at (" << offset.x << "," << offset.y << ").\n";
+#endif
+}
+
+void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) {
+	for( std::list<TextureNode>::iterator iter = m_textures.begin(); iter != m_textures.end(); ++iter ) {
+		if( iter->offset == offset ) {
+			if( iter->size != data.getSize() ) {
+#ifdef SFGUI_DEBUG
+				std::cerr << "Tried to update texture with mismatching image size.\n";
+#endif
+				return;
+			}
+
+			sf::Image image = m_texture_atlas.copyToImage();
+			image.copy( data, 0, static_cast<unsigned int>( std::floor( offset.y + .5f ) ) );
+			m_texture_atlas.loadFromImage( image );
+
+			return;
+		}
+	}
+
+#ifdef SFGUI_DEBUG
+	std::cerr << "Tried to update non-existant image at (" << offset.x << "," << offset.y << ").\n";
+#endif
 }
 
 void Renderer::SortPrimitives() {

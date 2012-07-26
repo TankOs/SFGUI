@@ -1,6 +1,7 @@
 #include <SFGUI/Image.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
+#include <SFGUI/Renderer.hpp>
 
 #include <SFML/Graphics/Image.hpp>
 
@@ -22,25 +23,33 @@ Image::Ptr Image::Create( const sf::Image& image ) {
 }
 
 void Image::SetImage( const sf::Image& image ) {
-	if( image.getSize().x && image.getSize().y ) {
-		m_image = image;
-		m_texture.loadFromImage( m_image );
+	if( !image.getSize().x || !image.getSize().y ) {
+		return;
 	}
 
-	RequestResize();
-	Invalidate();
+	if( m_image.getSize() == image.getSize() ) {
+		m_image = image;
+
+		sfg::Renderer::Get().UpdateImage( m_texture_offset, image );
+	}
+	else {
+		m_image = image;
+
+		RequestResize();
+		Invalidate();
+	}
 }
 
 const sf::Image& Image::GetImage() const {
 	return m_image;
 }
 
-const sf::Texture& Image::GetTexture() const {
-	return m_texture;
-}
-
 RenderQueue* Image::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateImageDrawable( DynamicPointerCast<const Image>( shared_from_this() ) );
+	RenderQueue* queue = Context::Get().GetEngine().CreateImageDrawable( DynamicPointerCast<const Image>( shared_from_this() ) );
+
+	m_texture_offset = queue->GetPrimitives()[0]->GetTextures()[0]->offset;
+
+	return queue;
 }
 
 sf::Vector2f Image::CalculateRequisition() {

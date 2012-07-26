@@ -8,6 +8,7 @@
 #include <SFML/OpenGL.hpp>
 #include <vector>
 #include <map>
+#include <list>
 
 namespace sfg {
 
@@ -45,6 +46,11 @@ class SFGUI_API Renderer {
 		/** Destroy the Renderer singleton instance.
 		 */
 		static void Destroy();
+
+		/** Check if a Renderer has been instantiated
+		 * @return true if a Renderer instance exists.
+		 */
+		static bool Exists();
 
 		/** Dtor.
 		 */
@@ -144,6 +150,35 @@ class SFGUI_API Renderer {
 		 */
 		void RemovePrimitive( const Primitive::Ptr& primitive );
 
+		/// @cond
+
+		/** Load a Font at the given size and retrieve the texture atlas offset.
+		 * @param font sf::Font containing the font.
+		 * @param size Size of the font.
+		 * @return Offset into the atlas the font texture is located at.
+		 */
+		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size );
+
+		/** Load an image into the atlas and return a handle to the image.
+		 * @param image sf::Image containing the image data.
+		 * @return Shared handle to the image.
+		 */
+		SharedPtr<Primitive::Texture> LoadImage( const sf::Image& image );
+
+		/** Unload the image at the given offset from the texture atlas.
+		 * @param offset Offset of the image in the texture atlas.
+		 */
+		void UnloadImage( const sf::Vector2f& offset );
+
+		/** Update the image at the given offset.
+		 * The size of the old and new image must match.
+		 * @param offset The offset the image is at in the texture atlas.
+		 * @param data New image data.
+		 */
+		void UpdateImage( const sf::Vector2f& offset, const sf::Image& data );
+
+		/// @endcond
+
 		/** Invalidate VBO data so it is resynchronized with fresh data.
 		 * @param datasets The datasets to invalidate. Default: INVALIDATE_ALL
 		 * Bitwise OR of INVALIDATE_VERTEX, INVALIDATE_COLOR, INVALIDATE_TEXTURE or INVALIDATE_INDEX.
@@ -187,6 +222,11 @@ class SFGUI_API Renderer {
 			GLuint max_index;
 		};
 
+		struct TextureNode {
+			sf::Vector2f offset;
+			sf::Vector2u size;
+		};
+
 		/** Ctor.
 		 */
 		Renderer();
@@ -198,10 +238,6 @@ class SFGUI_API Renderer {
 		void SortPrimitives();
 
 		void RefreshVBO( const sf::RenderTarget& target );
-
-		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size );
-
-		sf::Vector2f LoadImage( const sf::Image& image, bool force_insert = false );
 
 		void SetupFBO( unsigned int width, unsigned int height );
 
@@ -226,8 +262,9 @@ class SFGUI_API Renderer {
 
 		typedef std::pair<void*, unsigned int> FontID;
 
-		std::map<const sf::Uint8*, sf::Vector2f> m_atlas_offsets;
-		std::map<FontID, sf::Vector2f> m_font_offsets;
+		std::list<TextureNode> m_textures;
+		std::map<FontID, SharedPtr<Primitive::Texture> > m_fonts;
+		SharedPtr<Primitive::Texture> m_pseudo_texture;
 
 		GLuint m_vertex_vbo;
 		GLuint m_color_vbo;

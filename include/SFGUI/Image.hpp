@@ -38,11 +38,6 @@ class SFGUI_API Image : public Widget, public Misc {
 		 */
 		const sf::Image& GetImage() const;
 
-		/** Get texture.
-		 * @return sf::Texture.
-		 */
-		const sf::Texture& GetTexture() const;
-
 	protected:
 		/** Ctor.
 		 * @param image sf::Image.
@@ -53,9 +48,8 @@ class SFGUI_API Image : public Widget, public Misc {
 		sf::Vector2f CalculateRequisition();
 
 	private:
-
 		sf::Image m_image;
-		sf::Texture m_texture;
+		mutable sf::Vector2f m_texture_offset;
 };
 
 }
