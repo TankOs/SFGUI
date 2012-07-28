@@ -174,4 +174,12 @@ bool Primitive::IsVisible() const {
 	return m_visible;
 }
 
+void Primitive::SetCustomDrawCallback( const SharedPtr<Signal>& callback ) {
+	m_custom_draw_callback = callback;
+}
+
+const SharedPtr<Signal>& Primitive::GetCustomDrawCallback() const {
+	return m_custom_draw_callback;
+}
+
 }

@@ -2,6 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/SharedPtr.hpp>
+#include <SFGUI/Signal.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
@@ -138,9 +139,20 @@ class SFGUI_API Primitive {
 		 */
 		bool IsVisible() const;
 
+		/** Set the function that should be called to render custom GL content.
+		 * @param callback Signal containing the functions to call.
+		 */
+		void SetCustomDrawCallback( const SharedPtr<Signal>& callback );
+
+		/** Get the Signal containing the functions to call to render custom GL content.
+		 * @return Signal containing the functions to call to render custom GL content.
+		 */
+		const SharedPtr<Signal>& GetCustomDrawCallback() const;
+
 	private:
 		sf::Vector2f m_position;
 		SharedPtr<RendererViewport> m_viewport;
+		SharedPtr<Signal> m_custom_draw_callback;
 		int m_layer;
 		int m_level;
 

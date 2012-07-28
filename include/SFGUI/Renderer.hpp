@@ -140,6 +140,12 @@ class SFGUI_API Renderer {
 		 */
 		Primitive::Ptr CreateLine( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& color = sf::Color::White, float thickness = 1.f );
 
+		/** Create a canvas to draw custom GL stuff on.
+		 * @param callback Signal containing draw routines to call.
+		 * @return New canvas primitive.
+		 */
+		Primitive::Ptr CreateGLCanvas( SharedPtr<Signal> callback );
+
 		/** Register a primitive with the renderer.
 		 * @param primitive Primitive to be registered.
 		 */
@@ -190,6 +196,10 @@ class SFGUI_API Renderer {
 		 */
 		void Display( sf::RenderTarget& target ) const;
 
+		/** Force the renderer to discard its cache's FBO image and redraw.
+		 */
+		void Redraw();
+
 		/** Enable and select depth testing method.
 		 * WARNING: THIS FEATURE IS BROKEN AND THEREFORE DISABLED UNTIL FURTHER NOTICE.
 		 * Renderer::NO_DEPTH To disable depth testing.
@@ -215,11 +225,14 @@ class SFGUI_API Renderer {
 		void TuneUseFBO( bool enable );
 
 	private:
-		struct ViewportPair {
-			SharedPtr<RendererViewport> first;
-			unsigned int second;
+		struct Batch {
+			SharedPtr<RendererViewport> viewport;
+			SharedPtr<Signal> custom_draw_callback;
+			unsigned int start_index;
+			unsigned int index_count;
 			GLuint min_index;
 			GLuint max_index;
+			bool custom_draw;
 		};
 
 		struct TextureNode {
@@ -248,7 +261,7 @@ class SFGUI_API Renderer {
 		std::vector<Primitive::Ptr> m_primitives;
 		std::vector<SharedPtr<RendererViewport> > m_viewports;
 
-		std::vector<ViewportPair> m_viewport_pairs;
+		std::vector<Batch> m_batches;
 
 		SharedPtr<RendererViewport> m_default_viewport;
 
@@ -286,6 +299,9 @@ class SFGUI_API Renderer {
 		mutable bool m_depth_alternate_flag;
 
 		mutable bool m_vbo_synced;
+
+		mutable bool m_force_redraw;
+
 		bool m_cull;
 		bool m_use_fbo;
 

@@ -32,6 +32,7 @@ Renderer::Renderer() :
 	m_depth_clear_strategy( NO_DEPTH ),
 	m_vbo_sync_type( INVALIDATE_ALL ),
 	m_vbo_synced( false ),
+	m_force_redraw( false ),
 	m_cull( false ),
 	m_use_fbo( false ),
 	m_pseudo_texture_loaded( false ),
@@ -415,6 +416,16 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	return CreateQuad( corner3, corner2, corner1, corner0, color );
 }
 
+Primitive::Ptr Renderer::CreateGLCanvas( SharedPtr<Signal> callback ) {
+	Primitive::Ptr primitive( new Primitive );
+
+	primitive->SetCustomDrawCallback( callback );
+
+	AddPrimitive( primitive );
+
+	return primitive;
+}
+
 void Renderer::Display( sf::RenderTarget& target ) const {
 	if( !m_vbo_supported ) {
 		return;
@@ -438,7 +449,7 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 		const_cast<Renderer*>( this )->RefreshVBO( target );
 	}
 
-	if( !m_use_fbo || !m_vbo_synced ) {
+	if( !m_use_fbo || !m_vbo_synced || m_force_redraw ) {
 		// Thanks to color / texture modulation we can draw the entire
 		// frame in a single pass by pseudo-disabling the texturing with
 		// the help of a white texture ( 1.f * something = something ).
@@ -463,7 +474,7 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 		//glEnableClientState( GL_COLOR_ARRAY );
 		//glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-		std::size_t scissor_pairs_size = m_viewport_pairs.size();
+		std::size_t scissor_pairs_size = m_batches.size();
 
 		if( m_use_fbo ) {
 			glBindFramebuffer( GL_FRAMEBUFFER, m_frame_buffer );
@@ -494,44 +505,55 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 		glEnable( GL_SCISSOR_TEST );
 
 		for( std::size_t index = 0; index < scissor_pairs_size; ++index ) {
-			const ViewportPair& scissor_pair = m_viewport_pairs[index];
+			const Batch& batch = m_batches[index];
 
-			RendererViewport::Ptr viewport = scissor_pair.first;
+			RendererViewport::Ptr viewport = batch.viewport;
 
-			if( viewport && ( viewport != m_default_viewport ) ) {
-				sf::Vector2f destination_origin = viewport->GetDestinationOrigin();
-				sf::Vector2f size = viewport->GetSize();
+			if( batch.custom_draw ) {
+				sf::Vector2i destination( viewport->GetDestinationOrigin() );
+				sf::Vector2u size( viewport->GetSize() );
 
-				glScissor(
-					static_cast<int>( destination_origin.x ),
-					target.getSize().y - static_cast<int>( destination_origin.y + size.y ),
-					static_cast<int>( size.x ),
-					static_cast<int>( size.y )
-				);
-			}
-			else {
+				RestoreGL( target );
+				glViewport( destination.x, target.getSize().y - destination.y - size.y, size.x, size.y );
+				glScissor( destination.x, target.getSize().y - destination.y - size.y, size.x, size.y );
+
+				glEnable( GL_SCISSOR_TEST );
+
+				// Draw custom stuff.
+				( *batch.custom_draw_callback )();
+
 				glScissor( 0, 0, target.getSize().x, target.getSize().y );
-			}
+				glViewport( 0, 0, target.getSize().x, target.getSize().y );
+				SetupGL( target );
 
-			if( index < scissor_pairs_size - 1 ) {
-				glDrawRangeElements(
-					GL_TRIANGLES,
-					scissor_pair.min_index,
-					scissor_pair.max_index,
-					m_viewport_pairs[index + 1].second - scissor_pair.second,
-					GL_UNSIGNED_INT,
-					reinterpret_cast<GLvoid*>( scissor_pair.second * sizeof( GLuint ) )
-				);
+				glColor3f( 1.f, 1.f, 1.f );
 			}
 			else {
-				glDrawRangeElements(
-					GL_TRIANGLES,
-					scissor_pair.min_index,
-					scissor_pair.max_index,
-					m_last_index_count - scissor_pair.second,
-					GL_UNSIGNED_INT,
-					reinterpret_cast<GLvoid*>( scissor_pair.second * sizeof( GLuint ) )
-				);
+				if( viewport && ( viewport != m_default_viewport ) ) {
+					sf::Vector2f destination_origin = viewport->GetDestinationOrigin();
+					sf::Vector2f size = viewport->GetSize();
+
+					glScissor(
+						static_cast<int>( destination_origin.x ),
+						target.getSize().y - static_cast<int>( destination_origin.y + size.y ),
+						static_cast<int>( size.x ),
+						static_cast<int>( size.y )
+					);
+				}
+				else {
+					glScissor( 0, 0, target.getSize().x, target.getSize().y );
+				}
+
+				if( batch.index_count ) {
+					glDrawRangeElements(
+						GL_TRIANGLES,
+						batch.min_index,
+						batch.max_index,
+						batch.index_count,
+						GL_UNSIGNED_INT,
+						reinterpret_cast<GLvoid*>( batch.start_index * sizeof( GLuint ) )
+					);
+				}
 			}
 		}
 
@@ -554,6 +576,8 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 
 			glCallList( m_display_list );
 		}
+
+		m_force_redraw = false;
 	}
 	else {
 		glCallList( m_display_list );
@@ -850,7 +874,7 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 	texture_data.reserve( m_vertex_count );
 	index_data.reserve( m_index_count );
 
-	m_viewport_pairs.clear();
+	m_batches.clear();
 
 	m_last_vertex_count = 0;
 	m_last_index_count = 0;
@@ -867,13 +891,14 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 	int start = static_cast<int>( m_depth_clear_strategy ? primitives_size : 1 );
 	std::size_t end = m_depth_clear_strategy ? 0 : primitives_size + 1;
 
-	ViewportPair default_viewport;
-	default_viewport.first = m_default_viewport;
-	default_viewport.second = 0;
-	default_viewport.min_index = 0;
-	default_viewport.max_index = m_vertex_count - 1;
-
-	m_viewport_pairs.push_back( default_viewport );
+	// Default viewport
+	Batch current_batch;
+	current_batch.viewport = m_default_viewport;
+	current_batch.start_index = 0;
+	current_batch.index_count = 0;
+	current_batch.min_index = 0;
+	current_batch.max_index = m_vertex_count - 1;
+	current_batch.custom_draw = false;
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( target.getSize().x ), static_cast<float>( target.getSize().y ) );
 
@@ -907,77 +932,111 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 			}
 		}
 
-		// Process primitive's vertices and indices
-		const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
-		const std::vector<GLuint>& indices( primitive->GetIndices() );
+		const SharedPtr<Signal>& custom_draw_callback( primitive->GetCustomDrawCallback() );
 
-		std::size_t vertices_size = vertices.size();
+		if( custom_draw_callback ) {
+			// Start a new batch.
+			current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+			m_batches.push_back( current_batch );
 
-		sf::Vector3f position( 0.f, 0.f, depth );
+			// Mark current_batch custom draw batch.
+			current_batch.viewport = viewport;
+			current_batch.start_index = 0;
+			current_batch.index_count = 0;
+			current_batch.min_index = 0;
+			current_batch.max_index = 0;
+			current_batch.custom_draw = true;
+			current_batch.custom_draw_callback = custom_draw_callback;
 
-		sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
+			// Start a new batch.
+			m_batches.push_back( current_batch );
 
-		for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
-			const Primitive::Vertex& vertex( vertices[vertex_index] );
-
-			position.x = vertex.position.x + position_transform.x;
-			position.y = vertex.position.y + position_transform.y;
-
-			vertex_data.push_back( position );
-			color_data.push_back( vertex.color );
-
-			// Normalize SFML's pixel texture coordinates.
-			texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
-
-			// Update the bounding rect.
-			if( m_cull ) {
-				if( position.x < bounding_rect.left ) {
-					bounding_rect.width += bounding_rect.left - position.x;
-					bounding_rect.left = position.x;
-				}
-				else if( position.x > bounding_rect.left + bounding_rect.width ) {
-					bounding_rect.width = position.x - bounding_rect.left;
-				}
-
-				if( position.y < bounding_rect.top ) {
-					bounding_rect.height += bounding_rect.top - position.y;
-					bounding_rect.top = position.y;
-				}
-				else if( position.y > bounding_rect.top + bounding_rect.height ) {
-					bounding_rect.height = position.y - bounding_rect.top;
-				}
-			}
-		}
-
-		if( m_cull && !viewport_rect.intersects( bounding_rect ) ) {
-			vertex_data.resize( m_last_vertex_count );
-			color_data.resize( m_last_vertex_count );
-			texture_data.resize( m_last_vertex_count );
+			// Reset current_batch to defaults.
+			current_batch.viewport = m_default_viewport;
+			current_batch.start_index = m_last_index_count;
+			current_batch.index_count = 0;
+			current_batch.min_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+			current_batch.custom_draw = false;
 		}
 		else {
-			std::size_t indices_size = indices.size();
+			// Process primitive's vertices and indices
+			const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+			const std::vector<GLuint>& indices( primitive->GetIndices() );
 
-			for( std::size_t index_index = 0; index_index < indices_size; ++index_index ) {
-				index_data.push_back( m_last_vertex_count + indices[index_index] );
+			std::size_t vertices_size = vertices.size();
+
+			sf::Vector3f position( 0.f, 0.f, depth );
+
+			sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
+
+			for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
+				const Primitive::Vertex& vertex( vertices[vertex_index] );
+
+				position.x = vertex.position.x + position_transform.x;
+				position.y = vertex.position.y + position_transform.y;
+
+				vertex_data.push_back( position );
+				color_data.push_back( vertex.color );
+
+				// Normalize SFML's pixel texture coordinates.
+				texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
+
+				// Update the bounding rect.
+				if( m_cull ) {
+					if( position.x < bounding_rect.left ) {
+						bounding_rect.width += bounding_rect.left - position.x;
+						bounding_rect.left = position.x;
+					}
+					else if( position.x > bounding_rect.left + bounding_rect.width ) {
+						bounding_rect.width = position.x - bounding_rect.left;
+					}
+
+					if( position.y < bounding_rect.top ) {
+						bounding_rect.height += bounding_rect.top - position.y;
+						bounding_rect.top = position.y;
+					}
+					else if( position.y > bounding_rect.top + bounding_rect.height ) {
+						bounding_rect.height = position.y - bounding_rect.top;
+					}
+				}
 			}
 
-			if( viewport != m_viewport_pairs.back().first ) {
-				m_viewport_pairs.back().max_index = static_cast<GLuint>( m_last_vertex_count ) - 1;
-
-				ViewportPair scissor_pair;
-				scissor_pair.first = viewport;
-				scissor_pair.second = m_last_index_count;
-				scissor_pair.min_index = static_cast<GLuint>( m_last_vertex_count );
-				scissor_pair.max_index = m_vertex_count - 1;
-
-				m_viewport_pairs.push_back( scissor_pair );
+			if( m_cull && !viewport_rect.intersects( bounding_rect ) ) {
+				vertex_data.resize( m_last_vertex_count );
+				color_data.resize( m_last_vertex_count );
+				texture_data.resize( m_last_vertex_count );
 			}
+			else {
+				std::size_t indices_size = indices.size();
 
-			m_last_vertex_count += static_cast<GLsizei>( vertices_size );
-			m_last_index_count += static_cast<GLsizei>( indices_size );
-			depth -= depth_delta;
+				for( std::size_t index_index = 0; index_index < indices_size; ++index_index ) {
+					index_data.push_back( m_last_vertex_count + indices[index_index] );
+				}
+
+				// Check if we need to start a new batch.
+				if( viewport != current_batch.viewport ) {
+					current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+					m_batches.push_back( current_batch );
+
+					// Reset current_batch to defaults.
+					current_batch.viewport = viewport;
+					current_batch.start_index = m_last_index_count;
+					current_batch.index_count = 0;
+					current_batch.min_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+					current_batch.custom_draw = false;
+				}
+
+				current_batch.index_count += indices_size;
+
+				m_last_vertex_count += static_cast<GLsizei>( vertices_size );
+				m_last_index_count += static_cast<GLsizei>( indices_size );
+				depth -= depth_delta;
+			}
 		}
 	}
+
+	current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+	m_batches.push_back( current_batch );
 
 	if( !vertex_data.empty() && !color_data.empty() && !texture_data.empty() ) {
 		if( m_vbo_sync_type & INVALIDATE_VERTEX ) {
@@ -1190,6 +1249,10 @@ void Renderer::DestroyFBO() {
 
 		m_frame_buffer = 0;
 	}
+}
+
+void Renderer::Redraw() {
+	m_force_redraw = true;
 }
 
 void Renderer::TuneDepthTest( unsigned char strategy ) {

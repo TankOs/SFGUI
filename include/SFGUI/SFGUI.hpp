@@ -30,6 +30,7 @@
 #include <SFGUI/Notebook.hpp>
 #include <SFGUI/Spinner.hpp>
 #include <SFGUI/ComboBox.hpp>
+#include <SFGUI/GLCanvas.hpp>
 #include <SFGUI/Renderer.hpp>
 
 namespace sfg {

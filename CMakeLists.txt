@@ -29,7 +29,7 @@ find_package( SFML 2.0 QUIET COMPONENTS GRAPHICS WINDOW SYSTEM )
 
 # FindSFML was not run.
 if( NOT DEFINED FIND_SFML_LIB_SUFFIX )
-	set( CMAKE_MODULE_PATH "" CACHE PATH "SFML root directory" )
+	set( CMAKE_MODULE_PATH "" CACHE PATH "Directory containing FindSFML.cmake" )
 	message( FATAL_ERROR "CMake couldn't find FindSFML.cmake. Did you remember to install SFML?\nOptionally, you can set the CMAKE_MODULE_PATH entry to the directory containing FindSFML.cmake.\nFindSFML.cmake will be searched for in there." )
 endif()
 
@@ -100,6 +100,7 @@ set(
 	${INC_DIR}/SFGUI/FileResourceLoader.hpp
 	${INC_DIR}/SFGUI/Fixed.hpp
 	${INC_DIR}/SFGUI/Frame.hpp
+	${INC_DIR}/SFGUI/GLCanvas.hpp
 	${INC_DIR}/SFGUI/Image.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/Misc.hpp
@@ -168,6 +169,7 @@ set(
 	${SRC_DIR}/SFGUI/FileResourceLoader.cpp
 	${SRC_DIR}/SFGUI/Fixed.cpp
 	${SRC_DIR}/SFGUI/Frame.cpp
+	${SRC_DIR}/SFGUI/GLCanvas.cpp
 	${SRC_DIR}/SFGUI/Image.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/Misc.cpp

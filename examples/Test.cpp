@@ -23,6 +23,7 @@ class SampleApp {
 		void OnAdjustmentChange();
 		void OnToggleSpinner();
 		void OnMirrorImageClick();
+		void RenderCustomGL();
 
 		// Create an SFGUI. This is required before doing anything with SFGUI.
 		sfg::SFGUI m_sfgui;
@@ -52,6 +53,8 @@ class SampleApp {
 		sf::Sprite m_background_sprite;
 
 		sf::RenderWindow m_window;
+
+		GLuint m_custom_draw_display_list;
 };
 
 class Ouchy : public sfg::EnableSharedFromThis<Ouchy> {
@@ -88,7 +91,8 @@ void Ouchy::DoOuch() {
 
 SampleApp::SampleApp() :
 	m_desktop(),
-	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) )
+	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) ),
+	m_custom_draw_display_list( 0 )
 {
 	m_background_texture.create( 1024, 768 );
 
@@ -402,6 +406,20 @@ void SampleApp::Run() {
 	second_window->SetId( "second_window" );
 	m_desktop.Add( second_window );
 
+	sfg::Window::Ptr third_window( sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE ) );
+
+	sfg::GLCanvas::Ptr gl_canvas( sfg::GLCanvas::Create() );
+	gl_canvas->SetRequisition( sf::Vector2f( 200.f, 150.f ) );
+	gl_canvas->GetCustomDrawCallbackSignal().Connect( &SampleApp::RenderCustomGL, this );
+	gl_canvas->SetDesiredRefreshRate( 100.f );
+
+	third_window->Add( gl_canvas );
+
+	third_window->SetId( "third_window" );
+	third_window->SetTitle( "Embedded OpenGL drawing" );
+	third_window->SetPosition( sf::Vector2f( 480.f, 20.f ) );
+	m_desktop.Add( third_window );
+
 	// Add window to desktop
 	m_desktop.Add( m_wndmain );
 
@@ -480,6 +498,8 @@ void SampleApp::Run() {
 
 		++m_fps_counter;
 	}
+
+	glDeleteLists( m_custom_draw_display_list, 1 );
 }
 
 void SampleApp::OnAddButtonHClick() {
@@ -561,6 +581,92 @@ void SampleApp::OnMirrorImageClick() {
 	}
 
 	m_image->SetImage( image );
+}
+
+void SampleApp::RenderCustomGL() {
+	static sf::Clock clock;
+
+	glMatrixMode( GL_MODELVIEW );
+	glPushMatrix();
+	glLoadIdentity();
+
+	glTranslatef( 0.f, 0.f, -3.f );
+
+	glRotatef( clock.getElapsedTime().asSeconds() * 50.f, 1.f, 0.f, 0.f );
+	glRotatef( clock.getElapsedTime().asSeconds() * 30.f, 0.f, 1.f, 0.f );
+	glRotatef( clock.getElapsedTime().asSeconds() * 90.f, 0.f, 0.f, 1.f );
+
+	if( !m_custom_draw_display_list ) {
+		m_custom_draw_display_list = glGenLists( 1 );
+
+		glNewList( m_custom_draw_display_list, GL_COMPILE );
+
+		glClear( GL_DEPTH_BUFFER_BIT );
+
+		glEnable( GL_DEPTH_TEST );
+		glDepthMask( GL_TRUE );
+
+		glDisable( GL_TEXTURE_2D );
+
+		glMatrixMode( GL_PROJECTION );
+		glPushMatrix();
+		glLoadIdentity();
+
+		// We set the proper aspect ratio using the dimensions of our GLCanvas.
+		gluPerspective( 90.f, 200.f / 150.f, 1.f, 20.f );
+
+		glBegin( GL_QUADS );
+
+		glColor3f( 0.f, 0.f, 1.f );
+		glVertex3f( -1.f, -1.f, -1.f );
+		glVertex3f( -1.f, 1.f, -1.f );
+		glVertex3f( 1.f, 1.f, -1.f );
+		glVertex3f( 1.f, -1.f, -1.f );
+
+		glColor3f( 0.f, 1.f, 0.f );
+		glVertex3f( -1.f, -1.f, 1.f );
+		glVertex3f( -1.f, 1.f, 1.f );
+		glVertex3f( 1.f, 1.f, 1.f );
+		glVertex3f( 1.f, -1.f, 1.f );
+
+		glColor3f( 0.f, 1.f, 1.f );
+		glVertex3f( -1.f, -1.f, -1.f );
+		glVertex3f( -1.f, 1.f, -1.f );
+		glVertex3f( -1.f, 1.f, 1.f );
+		glVertex3f( -1.f, -1.f, 1.f );
+
+		glColor3f( 1.f, 0.f, 0.f );
+		glVertex3f( 1.f, -1.f, -1.f );
+		glVertex3f( 1.f, 1.f, -1.f );
+		glVertex3f( 1.f, 1.f, 1.f );
+		glVertex3f( 1.f, -1.f, 1.f );
+
+		glColor3f( 1.f, 0.f, 1.f );
+		glVertex3f( -1.f, -1.f, 1.f );
+		glVertex3f( -1.f, -1.f, -1.f );
+		glVertex3f( 1.f, -1.f, -1.f );
+		glVertex3f( 1.f, -1.f, 1.f );
+
+		glColor3f( 1.f, 1.f, 0.f );
+		glVertex3f( -1.f, 1.f, 1.f );
+		glVertex3f( -1.f, 1.f, -1.f );
+		glVertex3f( 1.f, 1.f, -1.f );
+		glVertex3f( 1.f, 1.f, 1.f );
+
+		glEnd();
+
+		glPopMatrix();
+
+		glEnable( GL_TEXTURE_2D );
+		glDisable( GL_DEPTH_TEST );
+
+		glEndList();
+	}
+
+	glCallList( m_custom_draw_display_list );
+
+	glMatrixMode( GL_MODELVIEW );
+	glPopMatrix();
 }
 
 int main() {
