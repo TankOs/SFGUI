@@ -185,7 +185,12 @@ void Widget::Update( float seconds ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
 			m_drawable->SetLevel( m_hierarchy_level );
 			m_drawable->Show( IsGloballyVisible() );
-			m_drawable->SetViewport( m_viewport );
+
+			// We don't want to propagate container viewports for GLCanvases,
+			// they have their own special viewport for GL drawing.
+			if( !m_drawable->GetPrimitives().empty() && !m_drawable->GetPrimitives()[0]->GetCustomDrawCallback() ) {
+				m_drawable->SetViewport( m_viewport );
+			}
 		}
 	}
 

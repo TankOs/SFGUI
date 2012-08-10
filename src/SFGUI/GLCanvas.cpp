@@ -31,8 +31,8 @@ RenderQueue* GLCanvas::InvalidateImpl() const {
 	);
 
 	// Override whatever viewport our parents want us to use.
-	// Yes... we are very naughty aren't we... in more than one way...
-	const_cast<GLCanvas*>( this )->SetViewport( m_custom_viewport );
+	// Yes... we are very naughty aren't we...
+	queue->SetViewport( m_custom_viewport );
 
 	return queue;
 }
