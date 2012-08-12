@@ -1,6 +1,10 @@
 #include <SFGUI/ResourceManager.hpp>
 #include <SFGUI/FileResourceLoader.hpp>
 
+#ifdef SFGUI_INCLUDE_FONT
+#include <SFGUI/DejaVuSansFont.hpp>
+#endif
+
 #include <SFML/Graphics/Font.hpp>
 
 namespace sfg {
@@ -31,34 +35,79 @@ ResourceLoader* ResourceManager::GetLoader( const std::string& id ) {
 }
 
 const sf::Font* ResourceManager::GetFont( const std::string& path ) {
-	if( path.empty() ) {
-		if( m_use_default_font ) {
-			return &sf::Font::getDefaultFont();
-		}
-
-		return NULL;
-	}
-
 	FontMap::const_iterator font_iter( m_fonts.find( path ) );
 
 	if( font_iter != m_fonts.end() ) {
 		return font_iter->second.first;
 	}
 
-	// Try to load.
-	ResourceLoader* loader( GetMatchingLoader( path ) );
-	if( !loader ) {
+	if( path.empty() ) {
 		if( m_use_default_font ) {
-			return &sf::Font::getDefaultFont();
+#ifdef SFGUI_INCLUDE_FONT
+			const sf::Font* font = new sf::Font( LoadDejaVuSansFont() );
+#else
+#ifdef SFGUI_DEBUG
+			std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
+#endif
+			const sf::Font* font = new sf::Font();
+#endif
+			m_fonts[path] = FontPair( font, true );
+
+			return font;
 		}
 
 		return NULL;
 	}
 
+	// Try to load.
+	ResourceLoader* loader( GetMatchingLoader( path ) );
+	if( !loader ) {
+		const sf::Font* font = NULL;
+
+		if( m_use_default_font ) {
+			FontMap::const_iterator font_iter( m_fonts.find( path ) );
+
+			if( font_iter == m_fonts.end() ) {
+#ifdef SFGUI_INCLUDE_FONT
+				font = new sf::Font( LoadDejaVuSansFont() );
+#else
+#ifdef SFGUI_DEBUG
+				std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
+#endif
+				font = new sf::Font();
+#endif
+				m_fonts[path] = FontPair( font, true );
+			}
+			else {
+				font = font_iter->second.first;
+			}
+
+		}
+		return font;
+	}
+
 	const sf::Font* font( loader->LoadFont( GetFilename( path, *loader ) ) );
 
 	if( !font ) {
-		return m_use_default_font ? &sf::Font::getDefaultFont() : NULL;
+		if( m_use_default_font ) {
+			FontMap::const_iterator font_iter( m_fonts.find( path ) );
+
+			if( font_iter == m_fonts.end() ) {
+#ifdef SFGUI_INCLUDE_FONT
+				font = new sf::Font( LoadDejaVuSansFont() );
+#else
+#ifdef SFGUI_DEBUG
+				std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
+#endif
+				font = new sf::Font();
+#endif
+				m_fonts[path] = FontPair( font, true );
+			}
+			else {
+				font = font_iter->second.first;
+			}
+		}
+		return font;
 	}
 
 	// Cache.
@@ -207,6 +256,10 @@ void ResourceManager::CopyFrom( const ResourceManager& other ) {
 			AddTexture( tex_iter->first, *tex_iter->second.first, false );
 		}
 	}
+}
+
+void ResourceManager::SetDefaultFont( const sf::Font& font ) {
+	AddFont( "", font, false );
 }
 
 }

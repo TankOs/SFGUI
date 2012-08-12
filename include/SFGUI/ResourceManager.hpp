@@ -90,6 +90,12 @@ class SFGUI_API ResourceManager {
 		 */
 		void AddTexture( const std::string& path, const sf::Texture& texture, bool managed );
 
+		/** Sets the default font that SFGUI will use if
+		 * you do not specify what font to use for a widget.
+		 * @param font Your default sf::Font. It must stay valid until SFGUI is done with it.
+		 */
+		void SetDefaultFont( const sf::Font& font );
+
 	private:
 		typedef std::map<const std::string, ResourceLoader*> LoaderMap;
 

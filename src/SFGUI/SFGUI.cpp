@@ -12,6 +12,7 @@ SFGUI::SFGUI() {
 
 SFGUI::~SFGUI() {
 	Renderer::Destroy();
+	Context::DestroyDefaultEngine();
 }
 
 void SFGUI::Display( sf::RenderTarget& target ) {

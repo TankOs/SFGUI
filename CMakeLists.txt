@@ -9,7 +9,8 @@ project( SFGUI )
 ### USER INPUT ###
 
 set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
-set( BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
+set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
+set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include a default font (DejaVuSans) that is used automatically if no font is specified." )
 set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
 
 if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS )
@@ -17,7 +18,7 @@ if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS )
 endif()
 
 if( MSVC )
-	set( STATIC_STD_LIBS false CACHE BOOL "True to link the runtime library statically, false to link them dynamically." )
+	set( SFGUI_USE_STATIC_STD_LIBS false CACHE BOOL "True to link the runtime library statically, false to link them dynamically." )
 endif()
 
 # Add SFML's CMake Modules directory from extlibs to module search path for
@@ -44,6 +45,10 @@ if( SFML_STATIC_LIBRARIES )
 	add_definitions( -DSFML_STATIC )
 endif()
 
+if( SFGUI_INCLUDE_FONT )
+	add_definitions( -DSFGUI_INCLUDE_FONT )
+endif()
+
 # Set some useful compile flags.
 if( CMAKE_COMPILER_IS_GNUCXX )
 	if( NOT CMAKE_CXX_FLAGS )
@@ -57,7 +62,7 @@ if( CMAKE_COMPILER_IS_GNUCXX )
 	endif()
 endif()
 
-# Make windows happy.
+# Make Windows happy.
 if( WIN32 )
 	set( BIN_EXTENSION ".exe" )
 	set( SHARE_TARGET_DIR . )
@@ -67,10 +72,10 @@ else()
 endif()
 
 # Make OS X happy.
-if ( APPLE )
-    include_directories( /System/Library/Frameworks/CoreFoundation.framework/Headers )
-    find_library( COREFOUNDATION_LIBRARY CoreFoundation )
-    mark_as_advanced( COREFOUNDATION_LIBRARY )
+if( APPLE )
+	include_directories( /System/Library/Frameworks/CoreFoundation.framework/Headers )
+	find_library( COREFOUNDATION_LIBRARY CoreFoundation )
+	mark_as_advanced( COREFOUNDATION_LIBRARY )
 endif()
 
 set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
@@ -209,6 +214,15 @@ set(
 	${SRC_DIR}/SFGUI/Window.cpp
 )
 
+if( SFGUI_INCLUDE_FONT )
+	set(
+		SOURCES
+		${SOURCES}
+		${INC_DIR}/SFGUI/DejaVuSansFont.hpp
+		${SRC_DIR}/SFGUI/DejaVuSansFont.cpp
+	)
+endif()
+
 include_directories( ${INC_DIR} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
@@ -226,7 +240,7 @@ set(
 set_source_files_properties( ${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c PROPERTIES COMPILE_FLAGS "-w" )
 
 # Static runtime linkage for our favorite compiler.
-if( MSVC AND STATIC_STD_LIBS )
+if( MSVC AND SFGUI_USE_STATIC_STD_LIBS )
 	foreach( flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO )
 		if( ${flag} MATCHES "/MD" )
 			string( REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}" )
@@ -259,8 +273,8 @@ set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
 target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
 
-if ( APPLE )
-    target_link_libraries( sfgui ${COREFOUNDATION_LIBRARY} )
+if( APPLE )
+	target_link_libraries( sfgui ${COREFOUNDATION_LIBRARY} )
 endif()
 
 ### EXAMPLES ###

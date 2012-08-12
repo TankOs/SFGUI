@@ -2,6 +2,8 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/SharedPtr.hpp>
+#include <SFGUI/Engine.hpp>
+#include <SFGUI/Engines/BREW.hpp>
 
 namespace sfg {
 
@@ -44,6 +46,14 @@ class SFGUI_API Context {
 		 */
 		static Engine& GetDefaultEngine();
 
+		/// @cond
+
+		/** Destroy the default rendering engine instance.
+		 */
+		static void DestroyDefaultEngine();
+
+		/// @endcond
+
 		/** Get render engine.
 		 * @return Engine.
 		 */
@@ -70,6 +80,7 @@ class SFGUI_API Context {
 
 	private:
 		static Context* m_active_context;
+		static SharedPtr<eng::BREW> m_default_engine;
 
 		Engine* m_engine;
 		WeakPtr<Widget> m_active_widget;

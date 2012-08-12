@@ -5,6 +5,7 @@
 namespace sfg {
 
 Context* Context::m_active_context( 0 );
+SharedPtr<eng::BREW> Context::m_default_engine;
 
 Context& Context::Get() {
 	if( m_active_context ) {
@@ -43,8 +44,15 @@ Context::~Context() {
 }
 
 Engine& Context::GetDefaultEngine() {
-	static eng::BREW brew;
-	return brew;
+	if( !m_default_engine ) {
+		m_default_engine.reset( new eng::BREW );
+	}
+
+	return *m_default_engine;
+}
+
+void Context::DestroyDefaultEngine() {
+	m_default_engine.reset();
 }
 
 Engine& Context::GetEngine() const {

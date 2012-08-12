@@ -111,7 +111,7 @@ RendererViewport::Ptr Renderer::CreateViewport() {
 Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 	Primitive::Ptr primitive( new Primitive );
 
-	const sf::Font& font = text.getFont();
+	const sf::Font& font = *text.getFont();
 	unsigned int character_size = text.getCharacterSize();
 	sf::Color color = text.getColor();
 
