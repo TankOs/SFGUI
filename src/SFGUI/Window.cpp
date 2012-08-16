@@ -24,6 +24,10 @@ Window::Ptr Window::Create( int style ) {
 }
 
 RenderQueue* Window::InvalidateImpl() const {
+	if( GetChild() ) {
+		GetChild()->SetAllocation( GetClientRect() );
+	}
+
 	return Context::Get().GetEngine().CreateWindowDrawable( DynamicPointerCast<const Window>( shared_from_this() ) );
 }
 
