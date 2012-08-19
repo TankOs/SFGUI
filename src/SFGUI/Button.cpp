@@ -74,7 +74,7 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 		if( press ) {
 			SetState( ACTIVE );
 		}
-		else {
+		else if( GetState() == ACTIVE ) {
 			SetState( PRELIGHT );
 		}
 	}

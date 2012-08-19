@@ -557,7 +557,7 @@ void Widget::HandleMouseClick( sf::Mouse::Button /*button*/, int /*x*/, int /*y*
 }
 
 void Widget::HandleFocusChange( const Widget::Ptr& focused_widget ) {
-	if( focused_widget != shared_from_this() ) {
+	if( ( focused_widget != shared_from_this() ) && ( GetState() == ACTIVE ) ) {
 		SetState( NORMAL );
 	}
 }

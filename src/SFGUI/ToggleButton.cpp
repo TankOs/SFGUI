@@ -44,6 +44,13 @@ void ToggleButton::SetActive( bool active ) {
 
 	m_active = active;
 
+	if( active ) {
+		SetState( SELECTED );
+	}
+	else {
+		SetState( NORMAL );
+	}
+
 	GetSignals().Emit( OnToggle );
 	Invalidate();
 }
