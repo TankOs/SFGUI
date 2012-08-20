@@ -279,7 +279,7 @@ endif()
 
 ### EXAMPLES ###
 
-if( BUILD_EXAMPLES )
+if( SFGUI_BUILD_EXAMPLES )
 	add_subdirectory( "examples" )
 endif()
 
