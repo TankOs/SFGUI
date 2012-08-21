@@ -418,7 +418,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 * mouse_button_down
 		 */
 
-		char m_bitfield;
+		unsigned char m_bitfield;
 
 		mutable bool m_invalidated;
 };

@@ -36,7 +36,7 @@ bool Primitive::Vertex::operator==( const Primitive::Vertex& other ) const {
 
 Primitive::Texture::Texture() :
 	offset( 0.f, 0.f ),
-	size( 0.f, 0.f )
+	size( 0, 0 )
 {
 
 }
