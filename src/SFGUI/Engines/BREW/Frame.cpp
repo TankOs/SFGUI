@@ -26,8 +26,8 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	// Right
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( frame->GetAllocation().width - border_width, line_height / 2.f ),
-			sf::Vector2f( frame->GetAllocation().width - border_width, frame->GetAllocation().height - border_width ),
+			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, line_height / 2.f + border_width / 2.f ),
+			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, frame->GetAllocation().height - border_width ),
 			border_color,
 			border_width
 		)
@@ -36,8 +36,8 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	// Bottom
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( frame->GetAllocation().width, frame->GetAllocation().height - border_width ),
-			sf::Vector2f( 0.f, frame->GetAllocation().height - border_width ),
+			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, frame->GetAllocation().height - border_width ),
+			sf::Vector2f( border_width / 2.f, frame->GetAllocation().height - border_width ),
 			border_color,
 			border_width
 		)
@@ -46,8 +46,8 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	// Left
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( 0.f, frame->GetAllocation().height - border_width ),
-			sf::Vector2f( 0.f, line_height / 2.f ),
+			sf::Vector2f( border_width / 2.f, frame->GetAllocation().height - border_width ),
+			sf::Vector2f( border_width / 2.f, line_height / 2.f + border_width / 2.f ),
 			border_color,
 			border_width
 		)
@@ -66,7 +66,7 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 		label_end_x += ( metrics.x + alignment * ( frame->GetAllocation().width - 2 * line_height - metrics.x ) );
 
 		sf::Text text( frame->GetLabel(), font, font_size );
-		text.setPosition( label_start_x + label_padding, .0f );
+		text.setPosition( label_start_x + label_padding, border_width / 2.f );
 		text.setColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}
@@ -74,8 +74,8 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	// Top Left
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( 0.f, line_height / 2.f ),
-			sf::Vector2f( label_start_x, line_height / 2.f ),
+			sf::Vector2f( border_width / 2.f, line_height / 2.f + border_width / 2.f ),
+			sf::Vector2f( label_start_x - .5f * border_width, line_height / 2.f + border_width / 2.f ),
 			border_color,
 			border_width
 		)
@@ -84,8 +84,8 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 	// Top Right
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( label_end_x, line_height / 2.f ),
-			sf::Vector2f( frame->GetAllocation().width - border_width, line_height / 2.f ),
+			sf::Vector2f( label_end_x + .5f * border_width, line_height / 2.f + border_width / 2.f ),
+			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, line_height / 2.f + border_width / 2.f ),
 			border_color,
 			border_width
 		)

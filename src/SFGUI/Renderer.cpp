@@ -262,8 +262,8 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 
 	Primitive::Ptr line_top(
 		CreateLine(
-			sf::Vector2f( left, top + border_width / 2.f ),
-			sf::Vector2f( right - border_width, top + border_width / 2.f ),
+			sf::Vector2f( left + border_width / 2.f, top + border_width / 2.f ),
+			sf::Vector2f( right - border_width / 2.f, top + border_width / 2.f ),
 			light_border,
 			border_width
 		)
@@ -271,8 +271,8 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 
 	Primitive::Ptr line_right(
 		CreateLine(
-			sf::Vector2f( right - border_width / 2.f, top ),
-			sf::Vector2f( right - border_width / 2.f, bottom - border_width ),
+			sf::Vector2f( right - border_width / 2.f, top + border_width / 2.f ),
+			sf::Vector2f( right - border_width / 2.f, bottom - border_width / 2.f ),
 			dark_border,
 			border_width
 		)
@@ -280,8 +280,8 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 
 	Primitive::Ptr line_bottom(
 		CreateLine(
-			sf::Vector2f( right, bottom - border_width / 2.f ),
-			sf::Vector2f( left + border_width, bottom - border_width / 2.f ),
+			sf::Vector2f( right - border_width / 2.f, bottom - border_width / 2.f ),
+			sf::Vector2f( left + border_width / 2.f, bottom - border_width / 2.f ),
 			dark_border,
 			border_width
 		)
@@ -289,8 +289,8 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 
 	Primitive::Ptr line_left(
 		CreateLine(
-			sf::Vector2f( left + border_width / 2.f, bottom ),
-			sf::Vector2f( left + border_width / 2.f, top + border_width ),
+			sf::Vector2f( left + border_width / 2.f, bottom - border_width / 2.f ),
+			sf::Vector2f( left + border_width / 2.f, top + border_width / 2.f ),
 			light_border,
 			border_width
 		)
@@ -403,15 +403,18 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	// Get vector perpendicular to direction of the line vector.
 	// Vector is rotated CCW 90 degrees and normalized.
 	sf::Vector2f normal( end - begin );
+	sf::Vector2f unrotated_normal( normal );
 	std::swap( normal.x, normal.y );
 	float length = std::sqrt( normal.x * normal.x + normal.y * normal.y );
 	normal.x /= -length;
 	normal.y /= length;
+	unrotated_normal.x /= length;
+	unrotated_normal.y /= length;
 
-	sf::Vector2f corner0( begin + normal * ( thickness * .5f ) );
-	sf::Vector2f corner1( begin - normal * ( thickness * .5f ) );
-	sf::Vector2f corner2( end - normal * ( thickness * .5f ) );
-	sf::Vector2f corner3( end + normal * ( thickness * .5f ) );
+	sf::Vector2f corner0( begin + normal * ( thickness * .5f ) - unrotated_normal * ( thickness * .5f ) );
+	sf::Vector2f corner1( begin - normal * ( thickness * .5f ) - unrotated_normal * ( thickness * .5f ) );
+	sf::Vector2f corner2( end - normal * ( thickness * .5f ) + unrotated_normal * ( thickness * .5f ) );
+	sf::Vector2f corner3( end + normal * ( thickness * .5f ) + unrotated_normal * ( thickness * .5f ) );
 
 	return CreateQuad( corner3, corner2, corner1, corner0, color );
 }

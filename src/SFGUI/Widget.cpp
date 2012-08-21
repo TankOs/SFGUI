@@ -423,7 +423,7 @@ bool Widget::HasFocus() const {
 }
 
 bool Widget::IsMouseInWidget() const {
-	return static_cast<bool>( m_bitfield & static_cast<unsigned char>( 0x10 ) );
+	return ( m_bitfield & static_cast<unsigned char>( 0x10 ) ) != 0;
 }
 
 void Widget::Show( bool show ) {
