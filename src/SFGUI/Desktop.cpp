@@ -21,9 +21,11 @@ void Desktop::UpdateViewRect( const sf::FloatRect& rect ) {
 }
 
 void Desktop::Update( float seconds ) {
+	Context::Activate( m_context );
 	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
 		m_children[index]->Update( seconds );
 	}
+	Context::Deactivate();
 }
 
 void Desktop::HandleEvent( const sf::Event& event ) {
