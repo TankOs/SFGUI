@@ -35,10 +35,12 @@ ResourceLoader* ResourceManager::GetLoader( const std::string& id ) {
 }
 
 const sf::Font* ResourceManager::GetFont( const std::string& path ) {
-	FontMap::const_iterator font_iter( m_fonts.find( path ) );
+	{
+		FontMap::const_iterator font_iter( m_fonts.find( path ) );
 
-	if( font_iter != m_fonts.end() ) {
-		return font_iter->second.first;
+		if( font_iter != m_fonts.end() ) {
+			return font_iter->second.first;
+		}
 	}
 
 	if( path.empty() ) {

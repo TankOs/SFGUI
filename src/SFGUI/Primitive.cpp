@@ -96,7 +96,7 @@ void Primitive::AddVertex( const Vertex& vertex ) {
 		}
 	}
 
-	m_indices.push_back( vertice_count );
+	m_indices.push_back( static_cast<unsigned int>( vertice_count ) );
 	m_vertices.push_back( vertex );
 }
 

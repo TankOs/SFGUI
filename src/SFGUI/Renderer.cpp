@@ -900,7 +900,7 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 	current_batch.start_index = 0;
 	current_batch.index_count = 0;
 	current_batch.min_index = 0;
-	current_batch.max_index = m_vertex_count - 1;
+	current_batch.max_index = static_cast<GLuint>( m_vertex_count - 1 );
 	current_batch.custom_draw = false;
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( target.getSize().x ), static_cast<float>( target.getSize().y ) );
@@ -1029,7 +1029,7 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 					current_batch.custom_draw = false;
 				}
 
-				current_batch.index_count += indices_size;
+				current_batch.index_count += static_cast<unsigned int>( indices_size );
 
 				m_last_vertex_count += static_cast<GLsizei>( vertices_size );
 				m_last_index_count += static_cast<GLsizei>( indices_size );
