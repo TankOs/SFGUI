@@ -36,6 +36,17 @@ void Container::Remove( const Widget::Ptr& widget ) {
 	}
 }
 
+void Container::RemoveAll() {
+	std::size_t num_children = m_children.size();
+
+	for( std::size_t child_idx = 0; child_idx < num_children; ++child_idx ) {
+		HandleRemove( m_children[child_idx] );
+	}
+
+	m_children.clear();
+	RequestResize();
+}
+
 bool Container::IsChild( const Widget::Ptr& widget ) const {
 	std::size_t children_size = m_children.size();
 

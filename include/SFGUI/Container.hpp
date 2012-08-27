@@ -30,6 +30,10 @@ class SFGUI_API Container : public Widget {
 		 */
 		void Remove( const Widget::Ptr& widget );
 
+		/** Remove all children from container.
+		 */
+		void RemoveAll();
+
 		/** Check if a widget is a child of this container.
 		 * @param widget Widget to search for.
 		 */

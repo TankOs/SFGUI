@@ -59,6 +59,7 @@ void Box::HandleRemove( const Widget::Ptr& child ) {
 		m_children.erase( iter );
 	}
 
+	Refresh();
 	AllocateChildren();
 }
 
