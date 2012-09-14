@@ -117,11 +117,11 @@ const sf::Font* ResourceManager::GetFont( const std::string& path ) {
 	return font;
 }
 
-const sf::Texture* ResourceManager::GetTexture( const std::string& path ) {
-	TextureMap::const_iterator texture_iter( m_textures.find( path ) );
+const sf::Image* ResourceManager::GetImage( const std::string& path ) {
+	ImageMap::const_iterator image_iter( m_images.find( path ) );
 
-	if( texture_iter != m_textures.end() ) {
-		return texture_iter->second.first;
+	if( image_iter != m_images.end() ) {
+		return image_iter->second.first;
 	}
 
 	// Try to load.
@@ -130,15 +130,15 @@ const sf::Texture* ResourceManager::GetTexture( const std::string& path ) {
 		return NULL;
 	}
 
-	const sf::Texture* texture( loader->LoadTexture( GetFilename( path, *loader ) ) );
+	const sf::Image* image( loader->LoadImage( GetFilename( path, *loader ) ) );
 
-	if( !texture ) {
+	if( !image ) {
 		return NULL;
 	}
 
 	// Cache.
-	m_textures[path] = TexturePair( texture, true );
-	return texture;
+	m_images[path] = ImagePair( image, true );
+	return image;
 }
 
 ResourceLoader* ResourceManager::GetMatchingLoader( const std::string& path ) {
@@ -185,8 +185,8 @@ void ResourceManager::Clear() {
 		}
 	}
 
-	TextureMap::iterator tex_iter( m_textures.begin() );
-	TextureMap::iterator tex_iter_end( m_textures.end() );
+	ImageMap::iterator tex_iter( m_images.begin() );
+	ImageMap::iterator tex_iter_end( m_images.end() );
 
 	for( ; tex_iter != tex_iter_end; ++tex_iter ) {
 		if( tex_iter->second.second ) {
@@ -196,7 +196,7 @@ void ResourceManager::Clear() {
 
 	m_loaders.clear();
 	m_fonts.clear();
-	m_textures.clear();
+	m_images.clear();
 }
 
 std::string ResourceManager::GetFilename( const std::string& path, const ResourceLoader& loader ) {
@@ -220,14 +220,14 @@ void ResourceManager::AddFont( const std::string& path, const sf::Font& font, bo
 	m_fonts[path] = FontPair( &font, managed );
 }
 
-void ResourceManager::AddTexture( const std::string& path, const sf::Texture& texture, bool managed ) {
-	TextureMap::iterator texture_iter( m_textures.find( path ) );
+void ResourceManager::AddImage( const std::string& path, const sf::Image& image, bool managed ) {
+	ImageMap::iterator image_iter( m_images.find( path ) );
 
-	if( texture_iter != m_textures.end() && texture_iter->second.second ) {
-		delete texture_iter->second.first;
+	if( image_iter != m_images.end() && image_iter->second.second ) {
+		delete image_iter->second.first;
 	}
 
-	m_textures[path] = TexturePair( &texture, managed );
+	m_images[path] = ImagePair( &image, managed );
 }
 
 void ResourceManager::CopyFrom( const ResourceManager& other ) {
@@ -246,16 +246,16 @@ void ResourceManager::CopyFrom( const ResourceManager& other ) {
 		}
 	}
 
-	TextureMap::const_iterator tex_iter( other.m_textures.begin() );
-	TextureMap::const_iterator tex_iter_end( other.m_textures.end() );
+	ImageMap::const_iterator tex_iter( other.m_images.begin() );
+	ImageMap::const_iterator tex_iter_end( other.m_images.end() );
 
 	for( ; tex_iter != tex_iter_end; ++tex_iter ) {
 		if( tex_iter->second.second ) {
-			const sf::Texture* new_texture( new sf::Texture( *tex_iter->second.first ) );
-			AddTexture( tex_iter->first, *new_texture, true );
+			const sf::Image* new_image( new sf::Image( *tex_iter->second.first ) );
+			AddImage( tex_iter->first, *new_image, true );
 		}
 		else {
-			AddTexture( tex_iter->first, *tex_iter->second.first, false );
+			AddImage( tex_iter->first, *tex_iter->second.first, false );
 		}
 	}
 }

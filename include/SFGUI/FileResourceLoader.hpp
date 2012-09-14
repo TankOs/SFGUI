@@ -15,7 +15,7 @@ class SFGUI_API FileResourceLoader : public ResourceLoader {
 		~FileResourceLoader();
 
 		const sf::Font* LoadFont( const std::string& path );
-		const sf::Texture* LoadTexture( const std::string& path );
+		const sf::Image* LoadImage( const std::string& path );
 		const std::string& GetIdentifier() const;
 };
 

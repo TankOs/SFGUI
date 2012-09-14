@@ -1,7 +1,6 @@
 #include <SFGUI/FileResourceLoader.hpp>
 
 #include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Image.hpp>
 
 namespace sfg {
@@ -20,17 +19,15 @@ const sf::Font* FileResourceLoader::LoadFont( const std::string& path ) {
 	return font;
 }
 
-const sf::Texture* FileResourceLoader::LoadTexture( const std::string& path ) {
-	sf::Image image;
+const sf::Image* FileResourceLoader::LoadImage( const std::string& path ) {
+	sf::Image *image( new sf::Image );
 
-	if( !image.loadFromFile( path ) ) {
+	if( !image->loadFromFile( path ) ) {
+		delete image;
 		return NULL;
 	}
 
-	sf::Texture* texture( new sf::Texture );
-	texture->loadFromImage( image );
-
-	return texture;
+	return image;
 }
 
 const std::string& FileResourceLoader::GetIdentifier() const {

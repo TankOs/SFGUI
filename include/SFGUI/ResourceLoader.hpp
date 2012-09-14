@@ -6,7 +6,7 @@
 
 namespace sf {
 class Font;
-class Texture;
+class Image;
 }
 
 namespace sfg {
@@ -30,11 +30,11 @@ class SFGUI_API ResourceLoader {
 		 */
 		virtual const sf::Font* LoadFont( const std::string& path ) = 0;
 
-		/** Load texture.
+		/** Load image.
 		 * @param path Path.
-		 * @return Texture or NULL if failed to load.
+		 * @return Image or NULL if failed to load.
 		 */
-		virtual const sf::Texture* LoadTexture( const std::string& path ) = 0;
+		virtual const sf::Image* LoadImage( const std::string& path ) = 0;
 
 		/** Get identifier.
 		 * @return Identifier.

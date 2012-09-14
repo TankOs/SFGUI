@@ -7,7 +7,7 @@
 
 namespace sf {
 class Font;
-class Texture;
+class Image;
 }
 
 namespace sfg {
@@ -67,12 +67,12 @@ class SFGUI_API ResourceManager {
 		 */
 		const sf::Font* GetFont( const std::string& path );
 
-		/** Get texture.
+		/** Get image.
 		 * Will be loaded if not done so before.
 		 * @param path Path.
-		 * @return Texture or NULL if failed to load.
+		 * @return Image or NULL if failed to load.
 		 */
-		const sf::Texture* GetTexture( const std::string& path );
+		const sf::Image* GetImage( const std::string& path );
 
 		/** Add font.
 		 * A resource with the same path will be replaced.
@@ -82,13 +82,13 @@ class SFGUI_API ResourceManager {
 		 */
 		void AddFont( const std::string& path, const sf::Font& font, bool managed );
 
-		/** Add texture.
+		/** Add image.
 		 * A resource with the same path will be replaced.
 		 * @param path Path (or ID or whatever).
-		 * @param texture Texture to add.
+		 * @param image Image to add.
 		 * @param managed true to manage destruction of resource.
 		 */
-		void AddTexture( const std::string& path, const sf::Texture& texture, bool managed );
+		void AddImage( const std::string& path, const sf::Image& image, bool managed );
 
 		/** Sets the default font that SFGUI will use if
 		 * you do not specify what font to use for a widget.
@@ -100,10 +100,10 @@ class SFGUI_API ResourceManager {
 		typedef std::map<const std::string, ResourceLoader*> LoaderMap;
 
 		typedef std::pair<const sf::Font*, bool> FontPair;
-		typedef std::pair<const sf::Texture*, bool> TexturePair;
+		typedef std::pair<const sf::Image*, bool> ImagePair;
 
 		typedef std::map<const std::string, FontPair> FontMap;
-		typedef std::map<const std::string, TexturePair> TextureMap;
+		typedef std::map<const std::string, ImagePair> ImageMap;
 
 		void CopyFrom( const ResourceManager& other );
 		ResourceLoader* GetMatchingLoader( const std::string& path );
@@ -111,7 +111,7 @@ class SFGUI_API ResourceManager {
 
 		LoaderMap m_loaders;
 		FontMap m_fonts;
-		TextureMap m_textures;
+		ImageMap m_images;
 
 		bool m_use_default_font;
 };
