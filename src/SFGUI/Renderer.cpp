@@ -762,7 +762,7 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 
 	// Look for a nice insertion point for our new texture.
 	// We use first fit and according to theory it is never
-	// worse than double the optimimum size.
+	// worse than double the optimum size.
 	std::list<TextureNode>::iterator iter = m_textures.begin();
 
 	float last_occupied_location = 0.f;
@@ -779,9 +779,7 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 	}
 
 	if( ( image.getSize().x > m_texture_atlas.getSize().x ) || ( last_occupied_location + static_cast<float>( image.getSize().y ) > static_cast<float>( m_texture_atlas.getSize().y ) ) ) {
-		// Texture atlas needs to be expanded.
-
-		// Image needs to be loaded into atlas.
+		// Image is loaded into atlas after expanding texture atlas.
 		sf::Image old_image = m_texture_atlas.copyToImage();
 		sf::Image new_image;
 
@@ -791,6 +789,14 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 		new_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
 
 		m_texture_atlas.loadFromImage( new_image );
+	}
+	else {
+		// Image is loaded into atlas.
+		sf::Image atlas_image = m_texture_atlas.copyToImage();
+
+		atlas_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
+
+		m_texture_atlas.loadFromImage( atlas_image );
 	}
 
 	sf::Vector2f offset = sf::Vector2f( 0.f, last_occupied_location + static_cast<float>( padding ) );

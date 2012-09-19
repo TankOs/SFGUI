@@ -19,7 +19,10 @@ RenderQueue::RenderQueue() :
 
 RenderQueue::~RenderQueue() {
 	while( !m_primitives.empty() ) {
-		Renderer::Get().RemovePrimitive( m_primitives.back() );
+		if( sfg::Renderer::Exists() ) {
+			Renderer::Get().RemovePrimitive( m_primitives.back() );
+		}
+
 		m_primitives.pop_back();
 	}
 }
