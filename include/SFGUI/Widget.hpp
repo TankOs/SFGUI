@@ -233,6 +233,18 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		const SharedPtr<RendererViewport>& GetViewport() const;
 
+		/** Get the Z layer this widget should be rendered in.
+		 * Larger values are rendered later. Default: 0.
+		 * @return Z layer this widget should be rendered in.
+		 */
+		int GetZOrder() const;
+
+		/** Set the Z layer this widget should be rendered in.
+		 * Larger values are rendered later. Default: 0.
+		 * @param z_order Z layer this widget should be rendered in.
+		 */
+		void SetZOrder( int z_order );
+
 		// Signals.
 		static Signal::SignalID OnStateChange; //!< Fired when state changed.
 		static Signal::SignalID OnGainFocus; //!< Fired when focus gained.
@@ -378,6 +390,26 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		static bool HasFocus( PtrConst widget );
 
+		/** Set this widget as the current modal widget.
+		 * Consumes all events.
+		 */
+		void GrabModal();
+
+		/** Unset this widget as the current modal widget.
+		 * Restores normal event propagation.
+		 */
+		void ReleaseModal();
+
+		/** Check if this widget is the modal widget.
+		 * @return true if this widget is the modal widget.
+		 */
+		bool IsModal() const;
+
+		/** Check if a widget is currently a modal widget.
+		 * @return true if a widget is currently a modal widget.
+		 */
+		static bool HasModal();
+
 	private:
 		struct ClassId {
 			std::string id;
@@ -397,10 +429,12 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 
 		static WeakPtr<Widget> m_focus_widget;
 		static WeakPtr<Widget> m_active_widget;
+		static WeakPtr<Widget> m_modal_widget;
 
 		ClassId* m_class_id;
 
 		int m_hierarchy_level;
+		int m_z_order;
 
 		mutable RenderQueue* m_drawable;
 

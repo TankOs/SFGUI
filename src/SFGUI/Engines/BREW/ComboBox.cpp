@@ -51,7 +51,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			combo_box->GetAllocation().height
 		);
 
-		float expanded_height = static_cast<float>( combo_box->GetItemCount() ) * item_size.y;
+		float expanded_height = static_cast<float>( combo_box->GetDisplayedItems() ) * item_size.y;
 
 		// Popup Pane
 		queue->Add(
@@ -66,7 +66,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 		);
 
 		// Labels.
-		for( ComboBox::IndexType item_index = 0; item_index < combo_box->GetItemCount(); ++item_index ) {
+		for( ComboBox::IndexType item_index = combo_box->GetStartItemIndex(); item_index < combo_box->GetStartItemIndex() + combo_box->GetDisplayedItems(); ++item_index ) {
 			if( combo_box->GetItem( item_index ).getSize() == 0 ) {
 				continue;
 			}

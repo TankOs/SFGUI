@@ -1,5 +1,6 @@
 #pragma once
 #include <SFGUI/Bin.hpp>
+#include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/SharedPtr.hpp>
 #include <SFML/System/String.hpp>
 #include <vector>
@@ -79,6 +80,16 @@ class SFGUI_API ComboBox : public Bin {
 		 */
 		IndexType GetItemCount() const;
 
+		/** Get number of items that are displayed at once when popup is opened.
+		 * @return Number of items that are displayed at once when popup is opened.
+		 */
+		IndexType GetDisplayedItems() const;
+
+		/** Get index of the first item to be displayed in the popup.
+		 * @return Get index of the first item to be displayed in the popup.
+		 */
+		IndexType GetStartItemIndex() const;
+
 		/** Get text of specific item.
 		 * @param index Item index.
 		 * @return Item text or empty if index is invalid.
@@ -107,13 +118,17 @@ class SFGUI_API ComboBox : public Bin {
 		void HandleMouseLeave( int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y );
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleStateChange( State old_state );
+		virtual void HandleUpdate( float seconds );
+		void ChangeStartEntry();
 
-		mutable RenderQueue* m_queue;
+		Scrollbar::Ptr m_scrollbar;
 
 		bool m_active;
 		IndexType m_active_item;
 		IndexType m_highlighted_item;
 		std::vector<sf::String> m_entries;
+		IndexType m_start_entry;
 };
 
 }

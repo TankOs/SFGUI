@@ -260,10 +260,15 @@ void SampleApp::Run() {
 	boxtoolbar2->Pack( m_scale, false );
 
 	m_combo_box = sfg::ComboBox::Create();
-	m_combo_box->AppendItem( "Item 0" );
-	m_combo_box->AppendItem( "Item 1" );
-	m_combo_box->AppendItem( "Item 2" );
-	m_combo_box->AppendItem( "Item 3" );
+
+	for( int index = 0; index < 30; ++index ) {
+		std::stringstream sstr;
+
+		sstr << "Item " << index;
+
+		m_combo_box->AppendItem( sstr.str() );
+	}
+
 	boxtoolbar2->Pack( m_combo_box, true );
 
 	sfg::Frame::Ptr frame2( sfg::Frame::Create( L"Toolbar 2" ) );

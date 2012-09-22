@@ -224,6 +224,11 @@ class SFGUI_API Renderer {
 		 */
 		void TuneUseFBO( bool enable );
 
+		/** Get the size of the window the last time the GUI was displayed.
+		 * @return Size of the window the last time the GUI was displayed.
+		 */
+		const sf::Vector2u& GetWindowSize() const;
+
 	private:
 		struct Batch {
 			SharedPtr<RendererViewport> viewport;
@@ -291,6 +296,8 @@ class SFGUI_API Renderer {
 		std::size_t m_index_count;
 
 		float m_alpha_threshold;
+
+		mutable sf::Vector2u m_last_window_size;
 
 		unsigned char m_depth_clear_strategy;
 

@@ -29,6 +29,7 @@ Renderer::Renderer() :
 	m_vertex_count( 0 ),
 	m_index_count( 0 ),
 	m_alpha_threshold( 0.f ),
+	m_last_window_size( 0, 0 ),
 	m_depth_clear_strategy( NO_DEPTH ),
 	m_vbo_sync_type( INVALIDATE_ALL ),
 	m_vbo_synced( false ),
@@ -602,28 +603,24 @@ void Renderer::SetupGL( sf::RenderTarget& target ) const {
 
 	// When SFML dies (closes) it sets these to 0 for some reason.
 	// That then causes glOrtho errors.
-	unsigned int width = target.getSize().x;
-	unsigned int height = target.getSize().y;
+	sf::Vector2u window_size = target.getSize();
 
 	// SFML doesn't seem to bother updating the OpenGL viewport when
 	// it's window resizes and nothing is drawn directly through SFML...
-	static unsigned int last_width = 0;
-	static unsigned int last_height = 0;
 
-	if( ( last_width != width ) || ( last_height != height ) ) {
-		glViewport( 0, 0, static_cast<GLsizei>( width ), static_cast<GLsizei>( height ) );
+	if( m_last_window_size != window_size ) {
+		glViewport( 0, 0, static_cast<GLsizei>( window_size.x ), static_cast<GLsizei>( window_size.y ) );
 
-		last_width = width;
-		last_height = height;
+		m_last_window_size = window_size;
 
-		if( last_width && last_height ) {
-			const_cast<Renderer*>( this )->SetupFBO( last_width, last_height );
+		if( window_size.x && window_size.y ) {
+			const_cast<Renderer*>( this )->SetupFBO( window_size.x, window_size.y );
 
 			const_cast<Renderer*>( this )->InvalidateVBO( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 		}
 	}
 
-	glOrtho( 0.0f, static_cast<GLdouble>( width ? width : 1 ), static_cast<GLdouble>( height ? height : 1 ), 0.0f, -1.0f, 64.0f );
+	glOrtho( 0.0f, static_cast<GLdouble>( window_size.x ? window_size.x : 1 ), static_cast<GLdouble>( window_size.y ? window_size.y : 1 ), 0.0f, -1.0f, 64.0f );
 
 	glMatrixMode( GL_TEXTURE );
 	glPushMatrix();
@@ -1328,6 +1325,10 @@ void Renderer::TuneUseFBO( bool enable ) {
 	}
 
 	m_use_fbo = enable && m_fbo_supported;
+}
+
+const sf::Vector2u& Renderer::GetWindowSize() const {
+	return m_last_window_size;
 }
 
 }

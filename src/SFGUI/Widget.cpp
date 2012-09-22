@@ -34,6 +34,7 @@ Signal::SignalID Widget::OnText = 0;
 
 WeakPtr<Widget> Widget::m_focus_widget;
 WeakPtr<Widget> Widget::m_active_widget;
+WeakPtr<Widget> Widget::m_modal_widget;
 
 Widget::Widget() :
 	Object(),
@@ -42,6 +43,7 @@ Widget::Widget() :
 	m_custom_requisition( 0 ),
 	m_class_id( 0 ),
 	m_hierarchy_level( 0 ),
+	m_z_order( 0 ),
 	m_drawable( 0 ),
 	m_bitfield( static_cast<unsigned char>( 0xe1 ) ),
 	m_invalidated( true )
@@ -184,6 +186,7 @@ void Widget::Update( float seconds ) {
 		if( m_drawable ) {
 			m_drawable->SetPosition( GetAbsolutePosition() );
 			m_drawable->SetLevel( m_hierarchy_level );
+			m_drawable->SetZOrder( m_z_order );
 			m_drawable->Show( IsGloballyVisible() );
 
 			// We don't want to propagate container viewports for GLCanvases,
@@ -258,6 +261,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 	// Ignore the event if another widget is active.
 	if( !IsActiveWidget() && !IsActiveWidget( PtrConst() ) ) {
+		return;
+	}
+
+	// Ignore the event if another widget is modal.
+	if( HasModal() && !IsModal() ) {
 		return;
 	}
 
@@ -617,6 +625,18 @@ const RendererViewport::Ptr& Widget::GetViewport() const {
 	return m_viewport;
 }
 
+int Widget::GetZOrder() const {
+	return m_z_order;
+}
+
+void Widget::SetZOrder( int z_order ) {
+	m_z_order = z_order;
+
+	if( m_drawable ) {
+		m_drawable->SetZOrder( z_order );
+	}
+}
+
 void Widget::HandleViewportUpdate() {
 	if( m_drawable ) {
 		m_drawable->SetViewport( m_viewport );
@@ -641,6 +661,42 @@ bool Widget::IsActiveWidget( PtrConst widget ) {
 	}
 
 	return false;
+}
+
+void Widget::GrabModal() {
+	if( m_modal_widget.lock() ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "SFGUI warning: Tried to grab modal while existing widget has it.\n";
+#endif
+
+		return;
+	}
+
+	m_modal_widget = shared_from_this();
+}
+
+void Widget::ReleaseModal() {
+	if( m_modal_widget.lock() == shared_from_this() ) {
+		m_modal_widget.reset();
+
+		return;
+	}
+
+#ifdef SFGUI_DEBUG
+	std::cerr << "SFGUI warning: Tried to release modal although current widget not modal.\n";
+#endif
+}
+
+bool Widget::IsModal() const {
+	if( m_modal_widget.lock() == shared_from_this() ) {
+		return true;
+	}
+
+	return false;
+}
+
+bool Widget::HasModal() {
+	return m_modal_widget.lock();
 }
 
 }
