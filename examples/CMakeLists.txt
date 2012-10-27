@@ -39,6 +39,7 @@ build_example( "SpinButton" "SpinButton.cpp" )
 build_example( "Canvas" "Canvas.cpp" )
 build_example( "CustomWidget" "CustomWidget.cpp" )
 build_example( "SFGUI-Test" "Test.cpp" )
+build_example( "Bob" "Bob.cpp" )
 
 # Copy data directory to build cache directory to be able to run examples from
 # there. Useful for testing stuff.

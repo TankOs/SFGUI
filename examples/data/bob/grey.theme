@@ -1,0 +1,14 @@
+/* Default theme of the Bob engine */
+
+* {
+	FontSize: 14;
+	FontName: data/bob/LiberationSerif-Regular.ttf;
+}
+
+Window {
+	Image: data/bob/window.png;
+}
+
+Button {
+	Image: data/bob/box.png;
+}
