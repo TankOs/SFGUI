@@ -19,16 +19,30 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
 	float title_size( GetFontLineHeight( title_font, title_font_size ) + 2 * title_padding );
 
-	const sf::Image *image( GetResourceManager().GetImage( GetProperty<std::string>( "Image", window ) ) );
-	if( image == NULL )
+	if( !window->HasStyle( Window::TITLEBAR ) ) {
+		title_size = 0;
+	}
+
+	std::string area_image_path;
+
+	if( title_size > 0 ){
+		area_image_path = GetProperty<std::string>( "AreaImage", window );
+	}
+	else {
+		area_image_path = GetProperty<std::string>( "Image", window );
+	}
+
+	const sf::Image *area_image( GetResourceManager().GetImage( area_image_path ) );
+	if( area_image == NULL )
 		return queue;
 
-	SharedPtr< Primitive::Texture > texture_handle( sfg::Renderer::Get().LoadImage( *image ) );
+	SharedPtr< Primitive::Texture > texture_handle( sfg::Renderer::Get().LoadImage( *area_image ) );
 
-	if(texture_handle != 0){
+	if( texture_handle != 0 ){
 		bob::Spritebox windowSpritebox;
-		windowSpritebox.SetTexture(texture_handle);
-		windowSpritebox.SetDimension(sf::Vector2i( static_cast<int>(window->GetAllocation().width), static_cast<int>(window->GetAllocation().height)));
+		windowSpritebox.SetTexture( texture_handle );
+		windowSpritebox.SetPosition( sf::Vector2f( 0, title_size ) );
+		windowSpritebox.SetDimension( sf::Vector2i( static_cast<int>( window->GetAllocation().width ), static_cast<int>( window->GetAllocation().height - title_size ) ) );
 
 		Primitive::Ptr primitive = windowSpritebox.ConstructPrimitive();
 
@@ -36,11 +50,24 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 		queue->Add( primitive );
 	}
 
-	if( !window->HasStyle( Window::TITLEBAR ) ) {
-		title_size = 0;
-	}
-
 	if( title_size > 0 ) {
+		const sf::Image *titlebar_image( GetResourceManager().GetImage( GetProperty<std::string>( "TitleBarImage", window ) ) );
+		if( titlebar_image == NULL )
+			return queue;
+
+		texture_handle = sfg::Renderer::Get().LoadImage( *titlebar_image );
+
+		if(texture_handle != 0){
+			bob::Spritebox windowSpritebox;
+			windowSpritebox.SetTexture( texture_handle );
+			windowSpritebox.SetDimension(sf::Vector2i( static_cast<int>( window->GetAllocation().width ), static_cast<int>( title_size ) ) );
+
+			Primitive::Ptr primitive = windowSpritebox.ConstructPrimitive();
+
+			Renderer::Get().AddPrimitive( primitive );
+			queue->Add( primitive );
+		}
+
 		// Find out visible text, count in "...".
 		float avail_width( window->GetAllocation().width - 2.f * title_padding );
 

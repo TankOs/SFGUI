@@ -10,6 +10,7 @@ namespace bob {
 Spritebox::Spritebox( sf::Vector2i dimension ) :
     m_subRect( sf::Vector2i( 0, 0 ), dimension ),
 	m_dimension( dimension ),
+	m_position( 0, 0 ),
 	m_texture()
 {
 }
@@ -17,6 +18,7 @@ Spritebox::Spritebox( sf::Vector2i dimension ) :
 Spritebox::Spritebox( SharedPtr< Primitive::Texture > texture, sf::Vector2i dimension ) :
 	m_subRect( sf::Vector2i( 0, 0 ), dimension ),
 	m_dimension( dimension ),
+	m_position( 0, 0 ),
 	m_texture()
 {
 	SetTexture(texture);
@@ -60,6 +62,16 @@ const sf::Vector2i &Spritebox::GetDimension() const
     return m_dimension;
 }
 
+void Spritebox::SetPosition( const sf::Vector2f &vec )
+{
+	m_position = vec;
+}
+
+const sf::Vector2f &Spritebox::GetPosition() const
+{
+	return m_position;
+}
+
 Primitive::Ptr Spritebox::ConstructPrimitive() const
 {
 	Primitive::Ptr primitive( new Primitive );
@@ -98,10 +110,10 @@ Primitive::Ptr Spritebox::ConstructPrimitive() const
 
     for( unsigned int x = 0; x < 3; ++x ){
         for( unsigned int y = 0; y < 3; ++y ){
-			vertex0.position = sf::Vector2f( coords[x].x,   coords[y].y );
-			vertex1.position = sf::Vector2f( coords[x].x,   coords[y+1].y );
-			vertex2.position = sf::Vector2f( coords[x+1].x, coords[y].y );
-			vertex3.position = sf::Vector2f( coords[x+1].x, coords[y+1].y );
+			vertex0.position = sf::Vector2f( coords[x].x,   coords[y].y )   + m_position;
+			vertex1.position = sf::Vector2f( coords[x].x,   coords[y+1].y ) + m_position;
+			vertex2.position = sf::Vector2f( coords[x+1].x, coords[y].y )   + m_position;
+			vertex3.position = sf::Vector2f( coords[x+1].x, coords[y+1].y ) + m_position;
 
 			vertex0.texture_coordinate = sf::Vector2f( texStartCoord.x +  static_cast<float>( x )   * texStep.x, texStartCoord.y + static_cast<float>( y )   * texStep.y );
 			vertex1.texture_coordinate = sf::Vector2f( texStartCoord.x +  static_cast<float>( x )   * texStep.x, texStartCoord.y + static_cast<float>( y+1 ) * texStep.y );

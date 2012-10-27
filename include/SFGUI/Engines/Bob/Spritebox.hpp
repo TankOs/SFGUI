@@ -50,19 +50,27 @@ class SFGUI_API Spritebox {
 		 */
 		const sf::IntRect &GetSubRect() const;
 
-		/** Set the dimension of the Spritebox.
-		 * Note that it's not the actual size of the box(if you scale the drawable).
-		 * Scaling the drawable won't affect the set dimension.
+		/** Set the dimension of the spritebox.
 		 * @param vec New dimension.
 		 */
 		void SetDimension( const sf::Vector2i &vec );
-
 
 		/** Get the dimension of the spritebox.
 		 * @return Dimension of the box.
 		 * @see SetDimension()
 		 */
 		const sf::Vector2i &GetDimension() const;
+
+		/** Set the position of the spritebox.
+		 * @param vec New position.
+		 */
+		void SetPosition( const sf::Vector2f &vec );
+
+		/** Get the position of the spritebox.
+		 * @return Position of the box.
+		 * @see SetPosition()
+		 */
+		const sf::Vector2f &GetPosition() const;
 
 		/** Get the bounding rectangle of the Spritebox.
 		 * The returned rectangle is in global coordinates.
@@ -76,8 +84,9 @@ class SFGUI_API Spritebox {
 		Primitive::Ptr ConstructPrimitive() const;
 
 	private:
-		sf::IntRect   m_subRect;
-		sf::Vector2i  m_dimension;
+		sf::IntRect  m_subRect;
+		sf::Vector2i m_dimension;
+		sf::Vector2f m_position;
 
 		SharedPtr< Primitive::Texture > m_texture;
 };
