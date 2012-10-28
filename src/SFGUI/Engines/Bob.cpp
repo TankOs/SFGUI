@@ -45,6 +45,7 @@ void Bob::ResetProperties() {
 
 	SetProperty( "Window", "Gap", 10.f );
 	SetProperty( "Window", "TitlePadding", 5.f );
+	SetProperty( "Window", "HandleSize", 10.f );
 
 	SetProperty( "Button", "Spacing", 5.f );
 }

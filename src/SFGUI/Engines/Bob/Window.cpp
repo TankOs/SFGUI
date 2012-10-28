@@ -23,31 +23,48 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 		title_size = 0;
 	}
 
-	std::string area_image_path;
+	if( window->HasStyle( Window::BACKGROUND ) ) {
+		std::string area_image_path;
+		if( title_size > 0 ){
+			area_image_path = GetProperty<std::string>( "AreaImage", window );
+		}
+		else {
+			area_image_path = GetProperty<std::string>( "Image", window );
+		}
 
-	if( title_size > 0 ){
-		area_image_path = GetProperty<std::string>( "AreaImage", window );
+		const sf::Image *area_image( GetResourceManager().GetImage( area_image_path ) );
+		if( area_image == NULL )
+			return queue;
+
+		SharedPtr< Primitive::Texture > texture_handle( sfg::Renderer::Get().LoadImage( *area_image ) );
+
+		if( texture_handle != 0 ){
+			bob::Spritebox windowSpritebox;
+			windowSpritebox.SetTexture( texture_handle );
+			windowSpritebox.SetPosition( sf::Vector2f( 0, title_size ) );
+			windowSpritebox.SetDimension( sf::Vector2i( static_cast<int>( window->GetAllocation().width ), static_cast<int>( window->GetAllocation().height - title_size ) ) );
+
+			Primitive::Ptr primitive = windowSpritebox.ConstructPrimitive();
+
+			Renderer::Get().AddPrimitive( primitive );
+			queue->Add( primitive );
+		}
 	}
-	else {
-		area_image_path = GetProperty<std::string>( "Image", window );
-	}
 
-	const sf::Image *area_image( GetResourceManager().GetImage( area_image_path ) );
-	if( area_image == NULL )
-		return queue;
-
-	SharedPtr< Primitive::Texture > texture_handle( sfg::Renderer::Get().LoadImage( *area_image ) );
-
-	if( texture_handle != 0 ){
-		bob::Spritebox windowSpritebox;
-		windowSpritebox.SetTexture( texture_handle );
-		windowSpritebox.SetPosition( sf::Vector2f( 0, title_size ) );
-		windowSpritebox.SetDimension( sf::Vector2i( static_cast<int>( window->GetAllocation().width ), static_cast<int>( window->GetAllocation().height - title_size ) ) );
-
-		Primitive::Ptr primitive = windowSpritebox.ConstructPrimitive();
-
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
+	if( window->HasStyle( Window::RESIZE ) ) {
+		const sf::Image *handle_image( GetResourceManager().GetImage( GetProperty<std::string>( "HandleImage", window ) ) );
+		if( handle_image != NULL ){
+			queue->Add(
+				Renderer::Get().CreateImage(
+					sf::FloatRect( window->GetAllocation().width  - handle_image->getSize().x,
+					               window->GetAllocation().height - handle_image->getSize().y,
+					               handle_image->getSize().x,
+								   handle_image->getSize().y
+					),
+					*handle_image
+				)
+			);
+		}
 	}
 
 	if( title_size > 0 ) {
@@ -55,7 +72,7 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 		if( titlebar_image == NULL )
 			return queue;
 
-		texture_handle = sfg::Renderer::Get().LoadImage( *titlebar_image );
+		SharedPtr< Primitive::Texture > texture_handle = sfg::Renderer::Get().LoadImage( *titlebar_image );
 
 		if(texture_handle != 0){
 			bob::Spritebox windowSpritebox;

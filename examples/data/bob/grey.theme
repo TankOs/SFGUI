@@ -9,6 +9,9 @@ Window {
 	Image: data/bob/window.png;
 	AreaImage: data/bob/window_area.png;
 	TitleBarImage: data/bob/window_title_bar.png;
+	
+	HandleImage: data/bob/window_handle.png;
+	HandleSize: 10;
 }
 
 Button {
