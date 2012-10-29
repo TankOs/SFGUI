@@ -19,7 +19,7 @@ RenderQueue* Bob::CreateButtonDrawable( SharedPtr<const Button> button ) const {
 	if( image == NULL )
 		return queue;
 
-	SharedPtr< Primitive::Texture > texture_handle( sfg::Renderer::Get().LoadImage( *image ) );
+	SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( image ) );
 	spritebox.SetTexture( texture_handle );
 
 	Primitive::Ptr primitive = spritebox.ConstructPrimitive();
@@ -39,7 +39,7 @@ RenderQueue* Bob::CreateButtonDrawable( SharedPtr<const Button> button ) const {
 		metrics.y = GetFontLineHeight( font, font_size );
 
 		sf::Text text( button->GetLabel(), font, font_size );
-		sfg::Widget::PtrConst child( button->GetChild() );
+		Widget::PtrConst child( button->GetChild() );
 
 		if( !child ) {
 			text.setPosition(

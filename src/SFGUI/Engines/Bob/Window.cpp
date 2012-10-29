@@ -36,7 +36,7 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 		if( area_image == NULL )
 			return queue;
 
-		SharedPtr< Primitive::Texture > texture_handle( sfg::Renderer::Get().LoadImage( *area_image ) );
+		SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( area_image ) );
 
 		if( texture_handle != 0 ){
 			bob::Spritebox windowSpritebox;
@@ -56,10 +56,10 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 		if( handle_image != NULL ){
 			queue->Add(
 				Renderer::Get().CreateImage(
-					sf::FloatRect( window->GetAllocation().width  - handle_image->getSize().x,
-					               window->GetAllocation().height - handle_image->getSize().y,
-					               handle_image->getSize().x,
-								   handle_image->getSize().y
+					sf::FloatRect( window->GetAllocation().width  - static_cast<float>( handle_image->getSize().x ),
+								   window->GetAllocation().height - static_cast<float>( handle_image->getSize().y ),
+					               static_cast<float>( handle_image->getSize().x ),
+								   static_cast<float>( handle_image->getSize().y )
 					),
 					*handle_image
 				)
@@ -72,7 +72,7 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 		if( titlebar_image == NULL )
 			return queue;
 
-		SharedPtr< Primitive::Texture > texture_handle = sfg::Renderer::Get().LoadImage( *titlebar_image );
+		SharedPtr< Primitive::Texture > texture_handle = m_texture_manager.GetTexture( titlebar_image );
 
 		if(texture_handle != 0){
 			bob::Spritebox windowSpritebox;

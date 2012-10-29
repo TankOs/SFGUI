@@ -2,6 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Engine.hpp>
+#include <SFGUI/Engines/Bob/TextureManager.hpp>
 
 namespace sfg {
 class RenderQueue;
@@ -37,6 +38,8 @@ class SFGUI_API Bob : public Engine {
 		RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const;
 		RenderQueue* CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const;
 		RenderQueue* CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbutton ) const;
+	private:
+		mutable bob::TextureManager m_texture_manager;
 };
 
 }
