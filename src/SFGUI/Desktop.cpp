@@ -120,7 +120,14 @@ void Desktop::Add( SharedPtr<Widget> widget ) {
 
 	RecalculateWidgetLevels();
 
+
+	// Activate context.
+	Context::Activate( m_context );
+
 	widget->Refresh();
+
+	// Restore previous context.
+	Context::Deactivate();
 }
 
 void Desktop::Remove( SharedPtr<Widget> widget ) {
