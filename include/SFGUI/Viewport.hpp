@@ -62,6 +62,11 @@ class SFGUI_API Viewport : public Bin {
 		 */
 		virtual void HandleAbsolutePositionChange();
 
+		/** Get requisition of the child widget of the Viewport if present.
+		 * @return requisition of the child widget of the Viewport or (0.f, 0.f) if not present.
+		 */
+		sf::Vector2f GetChildRequisition();
+
 	protected:
 		sf::Vector2f CalculateRequisition();
 

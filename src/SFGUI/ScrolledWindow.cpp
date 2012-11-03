@@ -148,7 +148,21 @@ sf::Vector2f ScrolledWindow::CalculateRequisition() {
 	float scrollbar_spacing( Context::Get().GetEngine().GetProperty<float>( "ScrollbarSpacing", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
-	return sf::Vector2f( scrollbar_width + scrollbar_spacing + border_width, scrollbar_width + scrollbar_spacing + border_width );
+	sf::Vector2f requisition( scrollbar_width + scrollbar_spacing + border_width, scrollbar_width + scrollbar_spacing + border_width );
+
+	sfg::Viewport::Ptr viewport( GetViewport() );
+
+	if( viewport ) {
+		if( GetScrollbarPolicy() & HORIZONTAL_NEVER ) {
+			requisition += sf::Vector2f( viewport->GetChildRequisition().x, 0.f );
+		}
+
+		if( GetScrollbarPolicy() & VERTICAL_NEVER ) {
+			requisition += sf::Vector2f( 0.f, viewport->GetChildRequisition().y );
+		}
+	}
+
+	return requisition;
 }
 
 void ScrolledWindow::RecalculateAdjustments() const {

@@ -195,4 +195,12 @@ void Viewport::UpdateView() {
 	);
 }
 
+sf::Vector2f Viewport::GetChildRequisition() {
+	if( GetChild() ) {
+		return GetChild()->GetRequisition();
+	}
+
+	return sf::Vector2f( 0.f, 0.f );
+}
+
 }
