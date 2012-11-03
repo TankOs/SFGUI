@@ -215,4 +215,13 @@ void Desktop::RecalculateWidgetLevels() {
 	}
 }
 
+bool Desktop::SetProperties( const std::string& properties ) {
+	if( !m_context.GetEngine().SetProperties( properties ) ) {
+		return false;
+	}
+
+	Refresh();
+	return true;
+}
+
 }

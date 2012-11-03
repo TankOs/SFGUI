@@ -245,6 +245,9 @@ const std::string* Engine::GetValue( const std::string& property, const Widget::
 	// Look for property.
 	PropertyMap::const_iterator prop_iter( m_properties.find( property ) );
 
+	const std::string* value = 0;
+	int score = -1;
+
 	if( prop_iter != m_properties.end() ) {
 		WidgetNameMap::const_iterator name_iter;
 
@@ -258,8 +261,13 @@ const std::string* Engine::GetValue( const std::string& property, const Widget::
 
 				for( std::size_t index = 0; index < selector_value_list_size; ++index ) {
 					if( name_iter->second[index].first->Matches( widget ) ) {
-						// Found, return value.
-						return &name_iter->second[index].second;
+						// Found, check if it is better than current best.
+						int new_score = name_iter->second[index].first->GetScore();
+
+						if( new_score > score ) {
+							value = &name_iter->second[index].second;
+							score = new_score;
+						}
 					}
 				}
 			}
@@ -273,14 +281,19 @@ const std::string* Engine::GetValue( const std::string& property, const Widget::
 
 			for( std::size_t index = 0; index < selector_value_list_size; ++index ) {
 				if( name_iter->second[index].first->Matches( widget ) ) {
-					// Found, return value.
-					return &name_iter->second[index].second;
+					// Found, check if it is better than current best.
+					int new_score = name_iter->second[index].first->GetScore();
+
+					if( new_score > score ) {
+						value = &name_iter->second[index].second;
+						score = new_score;
+					}
 				}
 			}
 		}
 	}
 
-	return 0;
+	return value;
 }
 
 ResourceManager& Engine::GetResourceManager() const {
@@ -310,6 +323,73 @@ bool Engine::SetProperty( const sfg::Selector::Ptr& selector, const std::string&
 
 	// Insert at top to get highest priority.
 	list.insert( list.begin(), SelectorValuePair( selector, value ) );
+
+	return true;
+}
+
+bool Engine::SetProperties( const std::string& properties ) {
+	parser::theme::Theme theme = parser::theme::ParseString( properties );
+
+	if( theme.empty() ) {
+		return false;
+	}
+
+	std::size_t num_rules = theme.size();
+
+	// Iterate over all rules
+	for( std::size_t rule_index = 0; rule_index < num_rules; ++rule_index ) {
+		std::size_t num_simple_selectors = theme[ rule_index ].m_selector.m_simple_selectors.size();
+
+		Selector::Ptr selector;
+
+		// Iterate over all simple selectors
+		for( std::size_t simple_selector_index = 0; simple_selector_index < num_simple_selectors; ++simple_selector_index ) {
+			int hierarchy = Selector::ROOT;
+
+			if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == ">" ) {
+				hierarchy = Selector::CHILD;
+			}
+			else if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == " " ) {
+				hierarchy = Selector::DESCENDANT;
+			}
+			else if( theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_combinator == "," ) {
+				// Grouping combinator detected. Stop eating simple selectors and set the properties now.
+				std::size_t num_declarations = theme[ rule_index ].m_declarations.size();
+
+				// Iterate over all declarations
+				for( std::size_t declaration_index = 0; declaration_index < num_declarations; ++declaration_index ) {
+					std::string property_name = theme[ rule_index ].m_declarations[ declaration_index ].m_property_name;
+					std::string property_value = theme[ rule_index ].m_declarations[ declaration_index ].m_property_value;
+
+					// Finally set the property
+					SetProperty( selector, property_name, property_value );
+				}
+
+				// Reset the current simple selector to be the root of a new chain.
+				selector = Selector::Ptr();
+			}
+
+			selector = Selector::Create(
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_type_selector,
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_id_selector,
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_class_selector,
+				theme[ rule_index ].m_selector.m_simple_selectors[ simple_selector_index ].m_state_selector,
+				hierarchy,
+				selector
+			);
+		}
+
+		std::size_t num_declarations = theme[ rule_index ].m_declarations.size();
+
+		// Iterate over all declarations
+		for( std::size_t declaration_index = 0; declaration_index < num_declarations; ++declaration_index ) {
+			std::string property_name = theme[ rule_index ].m_declarations[ declaration_index ].m_property_name;
+			std::string property_value = theme[ rule_index ].m_declarations[ declaration_index ].m_property_value;
+
+			// Finally set the property
+			SetProperty( selector, property_name, property_value );
+		}
+	}
 
 	return true;
 }

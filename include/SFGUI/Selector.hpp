@@ -26,12 +26,6 @@ class SFGUI_API Selector {
 		};
 
 		/** Create selector.
-		 * @param str String to parse.
-		 * @return Selector or NULL in case of a parser error.
-		 */
-		static Ptr Create( const std::string& str );
-
-		/** Create selector.
 		 * @param widget Widget string.
 		 * @param id ID string.
 		 * @param class_ Class string.
@@ -88,18 +82,19 @@ class SFGUI_API Selector {
 		 */
 		bool Matches( const Widget::PtrConst& widget ) const;
 
+		/** Get score of this selector.
+		 * Score calculation is based on W3 specification.
+		 * The selector with the highest score gets used by the engine.
+		 * @return Score of this selector.
+		 */
+		int GetScore() const;
+
 	private:
 		typedef std::runtime_error ParserException;
 
 		Selector();
 		Selector( const Selector& other );
 		Selector& operator=( const Selector& other );
-
-		static std::string ParseWidget( std::string::const_iterator& begin, const std::string::const_iterator& end );
-		static std::string ParseId( std::string::const_iterator& begin, const std::string::const_iterator& end );
-		static std::string ParseClass( std::string::const_iterator& begin, const std::string::const_iterator& end );
-		static int ParseState( std::string::const_iterator& begin, const std::string::const_iterator& end );
-		static void EatWhitespace( std::string::const_iterator& begin, const std::string::const_iterator& end );
 
 		Ptr m_parent;
 

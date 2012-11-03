@@ -1,6 +1,8 @@
 #include <SFGUI/Selector.hpp>
 #include <SFGUI/Container.hpp>
 
+#include <cctype>
+
 namespace sfg {
 
 Selector::Selector() :
@@ -41,95 +43,6 @@ Selector& Selector::operator=( const Selector& other ) {
 	return *this;
 }
 
-Selector::Ptr Selector::Create( const std::string& str ) {
-	std::string::const_iterator str_iter( str.begin() );
-	bool parse_next( true );
-	Ptr selector;
-
-	int hierarchy_type = ROOT;
-
-	while( parse_next ) {
-		// Eat any whitespace before the current simple selector.
-		EatWhitespace( str_iter, str.end() );
-
-		// Check bounds.
-		if( str_iter == str.end() ) {
-			break;
-		}
-
-		// If it's not the first simple selector, check for combinator.
-		if( selector ) {
-			if( *str_iter == '>' ) {
-				hierarchy_type = CHILD;
-
-				// Skip combinator.
-				++str_iter;
-
-				// Eat any whitespace after the '>'.
-				EatWhitespace( str_iter, str.end() );
-			}
-			else {
-				hierarchy_type = DESCENDANT;
-			}
-
-			// Check bounds.
-			if( str_iter == str.end() ) {
-				return Ptr();
-			}
-		}
-
-		Ptr next( new Selector );
-
-		try {
-			next->m_widget = ParseWidget( str_iter, str.end() );
-			next->m_id = ParseId( str_iter, str.end() );
-			next->m_class = ParseClass( str_iter, str.end() );
-			next->m_state = ParseState( str_iter, str.end() );
-		}
-		catch( const ParserException& /*e*/ ) {
-			return Ptr();
-		}
-
-		next->m_hierarchy_type = hierarchy_type;
-
-		// If it's the first simple selector, set it as current root.
-		if( !selector ) {
-			selector = next;
-			continue;
-		}
-		else {
-			// If it's not the first, parent the current root.
-			next->m_parent = selector;
-			selector = next;
-		}
-	}
-
-	// If there's no selector yet, it means we want to reach ALL widgets, which
-	// is perfectly fine.
-	// binary1248 says: Actually, we want this case to be handled by the wildcard
-	// which means if there is no selector, no widget (wildcard) was parsed
-	// and the input is invalid.
-	if( !selector ) {
-		//selector = Ptr( new Selector );
-		return Ptr();
-	}
-
-	// Hash.
-	std::size_t hash = static_cast<std::size_t>( 2166136261UL );
-
-	std::string selector_string = selector->BuildString();
-	std::size_t length = selector_string.length();
-
-	for ( ; length; --length ) {
-		hash ^= static_cast<std::size_t>( selector_string[ length - 1 ] );
-		hash *= static_cast<std::size_t>( 16777619UL );
-	}
-
-	selector->m_hash = hash;
-
-	return selector;
-}
-
 Selector::Ptr Selector::Create( const std::string& widget, const std::string& id, const std::string& class_, const std::string& state, int hierarchy, Ptr parent ) {
 	Ptr selector( new Selector );
 
@@ -137,22 +50,28 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 	selector->m_id = id;
 	selector->m_class = class_;
 
-	if( state == "NORMAL" ) {
+	std::string uppercase_state( state );
+
+	for( std::size_t index = 0; index < uppercase_state.size(); ++index ) {
+		uppercase_state[index] = static_cast<char>( toupper( uppercase_state[index] ) );
+	}
+
+	if( uppercase_state == "NORMAL" ) {
 		selector->m_state = Widget::NORMAL;
 	}
-	else if( state == "ACTIVE" ) {
+	else if( uppercase_state == "ACTIVE" ) {
 		selector->m_state = Widget::ACTIVE;
 	}
-	else if( state == "PRELIGHT" ) {
+	else if( uppercase_state == "PRELIGHT" ) {
 		selector->m_state = Widget::PRELIGHT;
 	}
-	else if( state == "SELECTED" ) {
+	else if( uppercase_state == "SELECTED" ) {
 		selector->m_state = Widget::SELECTED;
 	}
-	else if( state == "INSENSITIVE" ) {
+	else if( uppercase_state == "INSENSITIVE" ) {
 		selector->m_state = Widget::INSENSITIVE;
 	}
-	else if( !state.empty() ) {
+	else if( !uppercase_state.empty() ) {
 		throw( ParserException( "Invalid state: " + state ) );
 	}
 
@@ -176,195 +95,6 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 	selector->m_hash = hash;
 
 	return selector;
-}
-
-std::string Selector::ParseWidget( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
-	std::string token;
-
-	for( ; begin != end; ++begin ) {
-		// Check for ID, class and state delimiters.
-		if( *begin == '#' || *begin == '.' || *begin == ':' || *begin == '>' ) {
-			return token;
-		}
-
-		// Check for whitespace.
-		if( *begin == ' ' ) {
-			EatWhitespace( begin, end );
-			return token;
-		}
-
-		// Check for valid char.
-		if(
-			(*begin < 'a' || *begin > 'z') &&
-			(*begin < 'A' || *begin > 'Z') &&
-			(*begin != '*' )
-			// TODO: Handle the cases where letters and asterisks (or multiple asterisks) get mixed together.
-		) {
-			throw( ParserException( std::string( "Invalid character for widget name: " ) + *begin ) );
-		}
-
-		token += *begin;
-	}
-
-	return token;
-}
-
-std::string Selector::ParseId( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
-	std::string token;
-
-	// Check bounds.
-	if( begin == end ) {
-		return "";
-	}
-
-	// Check for delimiter.
-	if( *begin != '#' ) {
-		return "";
-	}
-
-	// Skip delimiter.
-	++begin;
-
-	for( ; begin != end; ++begin ) {
-		// Check for class and state delimiters.
-		if( *begin == '.' || *begin == ':' || *begin == '>' ) {
-			return token;
-		}
-
-		// Check for whitespace.
-		if( *begin == ' ' ) {
-			EatWhitespace( begin, end );
-			return token;
-		}
-
-		// Check for valid char.
-		if(
-			(*begin < 'a' || *begin > 'z') &&
-			(*begin < 'A' || *begin > 'Z') &&
-			(*begin < '0' || *begin > '9') &&
-			(*begin != '_') &&
-			(*begin != '-')
-		) {
-			throw( ParserException( std::string( "Invalid character for ID: " ) + *begin ) );
-		}
-
-		token += *begin;
-	}
-
-	return token;
-}
-
-std::string Selector::ParseClass( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
-	std::string token;
-
-	// Check bounds.
-	if( begin == end ) {
-		return "";
-	}
-
-	// Check for delimiter.
-	if( *begin != '.' ) {
-		return "";
-	}
-
-	// Skip delimiter.
-	++begin;
-
-	for( ; begin != end; ++begin ) {
-		// Check for state delimiters.
-		if( *begin == ':' || *begin == '>' ) {
-			return token;
-		}
-
-		// Check for whitespace.
-		if( *begin == ' ' ) {
-			EatWhitespace( begin, end );
-			return token;
-		}
-
-		// Check for valid char.
-		if(
-			(*begin < 'a' || *begin > 'z') &&
-			(*begin < 'A' || *begin > 'Z') &&
-			(*begin < '0' || *begin > '9') &&
-			(*begin != '_') &&
-			(*begin != '-')
-		) {
-			throw( ParserException( std::string( "Invalid character for class: " ) + *begin ) );
-		}
-
-		token += *begin;
-	}
-
-	return token;
-}
-
-int Selector::ParseState( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
-	std::string token;
-
-	// Check bounds.
-	if( begin == end ) {
-		return -1;
-	}
-
-	// Check for delimiter.
-	if( *begin != ':' ) {
-		return -1;
-	}
-
-	// Skip delimiter.
-	++begin;
-
-	for( ; begin != end; ++begin ) {
-		// If there's whitespace, the state is complete. Check for delimiter or end of string.
-		if( *begin == ' ' ) {
-			EatWhitespace( begin, end );
-
-			if( begin == end || *begin == '>' ) {
-				break;
-			}
-
-			// Another stuff follows after whitespace, this shouldn't happen.
-			throw( ParserException( "Expected '>' or end of string for state." ) );
-		}
-
-		// Check for valid char.
-		if(
-			(*begin < 'a' || *begin > 'z') &&
-			(*begin < 'A' || *begin > 'Z')
-		) {
-			throw( ParserException( std::string( "Invalid character for state: " ) + *begin ) );
-		}
-
-		token += *begin;
-	}
-
-	// Check state string.
-	if( token == "NORMAL" ) {
-		return Widget::NORMAL;
-	}
-	else if( token == "ACTIVE" ) {
-		return Widget::ACTIVE;
-	}
-	else if( token == "PRELIGHT" ) {
-		return Widget::PRELIGHT;
-	}
-	else if( token == "SELECTED" ) {
-		return Widget::SELECTED;
-	}
-	else if( token == "INSENSITIVE" ) {
-		return Widget::INSENSITIVE;
-	}
-
-	throw( ParserException( "Invalid state: " + token ) );
-}
-
-void Selector::EatWhitespace( std::string::const_iterator& begin, const std::string::const_iterator& end ) {
-	for( ; begin != end; ++begin ) {
-		if( *begin != ' ' ) {
-			return;
-		}
-	}
 }
 
 const std::string& Selector::GetWidgetName() const {
@@ -471,7 +201,7 @@ bool Selector::Matches( const Widget::PtrConst& widget ) const {
 
 	// Check if current stage is a pass...
 	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && m_state == -1 ) || // Wildcard
-		 ( ( m_widget.empty() || m_widget == widget->GetName() ) && //
+		 ( ( m_widget.empty() || !m_widget.compare("*") || m_widget == widget->GetName() ) && //
 		 ( m_id.empty() || m_id == widget->GetId() ) && // Selector and widget match
 		 ( m_class.empty() || m_class  == widget->GetClass() ) && //
 		 ( m_state == (-1) || m_state  == widget->GetState() ) ) ) { //
@@ -503,6 +233,21 @@ bool Selector::Matches( const Widget::PtrConst& widget ) const {
 
 	// Not wildcard and doesn't match, fail... :(
 	return false;
+}
+
+int Selector::GetScore() const {
+	int score = 0;
+
+	score += ( ( GetWidgetName().empty() || ( GetWidgetName() == "*" ) ) ? 0 : 1 );
+	score += ( ( GetState() == -1 ) ? 0 : 1 );
+	score += ( GetClass().empty() ? 0 : 100 );
+	score += ( GetId().empty() ? 0 : 10000 );
+
+	if( ( m_hierarchy_type != ROOT ) && GetParent() ) {
+		score += GetParent()->GetScore();
+	}
+
+	return score;
 }
 
 }

@@ -43,7 +43,7 @@ void ThemeGrammar::PushSimpleSelector() {
 	struct SimpleSelector simple_selector;
 
 	if( m_types.empty() ) {
-		simple_selector.m_type_selector = "";
+		simple_selector.m_type_selector = "*";
 	}
 	else {
 		simple_selector.m_type_selector = m_types.top().str();

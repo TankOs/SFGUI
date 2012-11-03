@@ -2,21 +2,6 @@
 #include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
-#include <SFGUI/Window.hpp>
-#include <SFGUI/Button.hpp>
-#include <SFGUI/Entry.hpp>
-#include <SFGUI/Scale.hpp>
-#include <SFGUI/Scrollbar.hpp>
-#include <SFGUI/ScrolledWindow.hpp>
-#include <SFGUI/ToggleButton.hpp>
-#include <SFGUI/CheckButton.hpp>
-#include <SFGUI/ProgressBar.hpp>
-#include <SFGUI/Separator.hpp>
-#include <SFGUI/Frame.hpp>
-#include <SFGUI/Image.hpp>
-#include <SFGUI/Notebook.hpp>
-#include <SFGUI/Spinner.hpp>
-#include <SFGUI/ComboBox.hpp>
 
 #include <SFML/Graphics/ConvexShape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -38,7 +23,7 @@ void BREW::ResetProperties() {
 	// Set defaults.
 	SetProperty( "*", "Color", sf::Color( 0xc6, 0xcb, 0xc4 ) );
 	SetProperty( "*", "FontSize", 12 );
-	SetProperty( "*", "FontName", "" ); // Uses SFML's default font when empty.
+	SetProperty( "*", "FontName", "Default" ); // Use default SFGUI font when available.
 	SetProperty( "*", "BackgroundColor", sf::Color( 0x46, 0x46, 0x46 ) );
 	SetProperty( "*", "BorderColor", sf::Color( 0x66, 0x66, 0x66 ) );
 	SetProperty( "*", "BorderColorShift", 0x20 );

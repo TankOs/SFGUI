@@ -204,9 +204,14 @@ class SFGUI_API Engine {
 		 * @param property Property.
 		 * @param value Value.
 		 * @return true on success, false when: Invalid selector or invalid property.
-		 * @throws BadValue when value couldn't be converted to string.
 		 */
 		bool SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const std::string& value );
+
+		/** Set multiple properties at once.
+		 * @param properties CSS-like rule declarations.
+		 * @return true on success, false when: rule could not be parsed.
+		 */
+		bool SetProperties( const std::string& properties );
 
 		/** Get property.
 		 * @param property Name of property.

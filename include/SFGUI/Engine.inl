@@ -41,9 +41,11 @@ T Engine::GetProperty( const std::string& property, SharedPtr<const Widget> widg
 
 template <typename T>
 bool Engine::SetProperty( const std::string& selector, const std::string& property, const T& value ) {
-	sfg::Selector::Ptr selector_object( sfg::Selector::Create( selector ) );
+	std::stringstream properties;
 
-	return SetProperty( selector_object, property, value );
+	properties << selector << " {\n\t" << property << ": " << value << ";\n}";
+
+	return SetProperties( properties.str() );
 }
 
 template <typename T>

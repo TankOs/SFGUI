@@ -48,6 +48,12 @@ class SFGUI_API Desktop {
 		template <typename T>
 		bool SetProperty( const std::string& selector, const std::string& property, const T& value );
 
+		/** Set multiple properties at once.
+		 * @param properties CSS-like rule declarations.
+		 * @return true on success, false when: rule could not be parsed.
+		 */
+		bool SetProperties( const std::string& properties );
+
 		/** Get property.
 		 * @param property Name of property.
 		 * @param widget Widget to be used for building the property path.

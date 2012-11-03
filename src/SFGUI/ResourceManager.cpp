@@ -43,7 +43,7 @@ const sf::Font* ResourceManager::GetFont( const std::string& path ) {
 		}
 	}
 
-	if( path.empty() ) {
+	if( path == "Default" ) {
 		if( m_use_default_font ) {
 #ifdef SFGUI_INCLUDE_FONT
 			const sf::Font* font = new sf::Font( LoadDejaVuSansFont() );
@@ -142,7 +142,7 @@ const sf::Image* ResourceManager::GetImage( const std::string& path ) {
 }
 
 ResourceLoader* ResourceManager::GetMatchingLoader( const std::string& path ) {
-	if( path.empty() ) {
+	if( path.empty() || ( path == "Default" ) ) {
 		return NULL;
 	}
 

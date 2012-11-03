@@ -435,10 +435,17 @@ void SampleApp::Run() {
 
 	// Set properties.
 	m_desktop.SetProperty( "Button#close:Normal", "Color", sf::Color::Yellow );
-	m_desktop.SetProperty( "Button#close", "FontName", "data/linden_hill.otf" );
-	m_desktop.SetProperty( "Button#close", "FontSize", 15.f );
-	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontName", "custom_font" );
-	m_desktop.SetProperty( "Window#second_window > Box > Label", "FontSize", 18.f );
+	// #close is sufficient since there is only 1 widget with this id
+	m_desktop.SetProperty( "#close", "FontName", "data/linden_hill.otf" );
+	m_desktop.SetProperty( "#close", "FontSize", 15.f );
+
+	// Multiple properties can be set at once to save calls.
+	m_desktop.SetProperties(
+		"Window#second_window > Box > Label {"
+		"	FontName: custom_font;"
+		"	FontSize: 18;"
+		"}"
+	);
 
 	m_fps_counter = 0;
 	m_fps_clock.restart();
