@@ -125,6 +125,8 @@ Notebook::IndexType Notebook::InsertPage( const Widget::Ptr& child, const Widget
 
 		SetCurrentPage( GetCurrentPage() );
 
+		RecalculateSize();
+
 		return GetPageCount() - 1;
 	}
 
@@ -140,6 +142,8 @@ Notebook::IndexType Notebook::InsertPage( const Widget::Ptr& child, const Widget
 	if( GetCurrentPage() >= position ) {
 		NextPage();
 	}
+
+	RecalculateSize();
 
 	return position;
 }
