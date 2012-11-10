@@ -23,6 +23,7 @@ class DesktopExample {
 		sfg::Desktop m_desktop;
 		sfg::Window::Ptr m_window;
 		sfg::Button::Ptr m_button;
+		sfg::Entry::Ptr m_entry;
 };
 
 const unsigned int DesktopExample::SCREEN_WIDTH = 800;
@@ -61,13 +62,23 @@ void DesktopExample::Run() {
 	sfg::Label::Ptr intro_label( sfg::Label::Create( "The brand new Bob-Engine!" ) );
 	m_button = sfg::Button::Create( "Switch Engines" );
 
+	m_entry = sfg::Entry::Create( L"Type Something" );
+	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
+
 	// Layout.
+	sfg::Box::Ptr widget_box( sfg::Box::Create( sfg::Box::HORIZONTAL, 5.f) );
+	widget_box->Pack( m_button, true );
+	widget_box->Pack( m_entry, true );
+
 	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );
-	main_box->Pack( m_button, false );
+	main_box->Pack( widget_box, false );
+
 
 	m_window->Add( main_box );
 	m_desktop.Add( m_window );
+
+	m_window->SetPosition( sf::Vector2f( 100.f, 100.f) );
 
 	// Signals.
 	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnButtonClick, this );

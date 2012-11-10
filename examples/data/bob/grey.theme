@@ -25,3 +25,7 @@ Button:PRELIGHT {
 Button:ACTIVE {
 	Image: data/bob/box_active.png;
 }
+
+Entry {
+	Image: data/bob/entry.png;
+}

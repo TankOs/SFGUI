@@ -42,12 +42,16 @@ void Bob::ResetProperties() {
 	SetProperty( "*", "BackgroundColor", sf::Color::White );
 	SetProperty( "*", "Padding", 5.f );
 
-
+	// Window-specific
 	SetProperty( "Window", "Gap", 10.f );
 	SetProperty( "Window", "TitlePadding", 5.f );
 	SetProperty( "Window", "HandleSize", 10.f );
 
+	// Button-specific
 	SetProperty( "Button", "Spacing", 5.f );
+
+	// Entry-specific
+	SetProperty( "Entry", "Thickness", 1.f );
 }
 
 }
