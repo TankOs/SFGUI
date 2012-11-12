@@ -234,6 +234,8 @@ void Widget::SetParent( const Widget::Ptr& parent ) {
 	m_parent = cont;
 
 	SetHierarchyLevel( parent->GetHierarchyLevel() + 1 );
+
+	HandleAbsolutePositionChange();
 }
 
 void Widget::SetPosition( const sf::Vector2f& position ) {

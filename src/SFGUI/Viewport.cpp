@@ -60,6 +60,10 @@ void Viewport::HandleAbsolutePositionChange() {
 			std::floor( position.y + .5f )
 		)
 	);
+
+	// Send AbsolutePositionChange notifications to children so they can
+	// perform necessary actions e.g. GLCanvas.
+	Container::HandleAbsolutePositionChange();
 }
 
 void Viewport::HandleEvent( const sf::Event& event ) {

@@ -1,5 +1,6 @@
 #include <SFGUI/GLCanvas.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/Container.hpp>
 #include <cmath>
 
 namespace sfg {
@@ -57,10 +58,40 @@ void GLCanvas::HandleSizeChange() {
 void GLCanvas::HandleAbsolutePositionChange() {
 	sf::Vector2f position = Widget::GetAbsolutePosition();
 
+	Container::PtrConst parent = GetParent();
+
+	sf::Vector2f parent_position( 0.f, 0.f );
+
+	while( parent ) {
+		if( parent->GetName() == "Viewport" ) {
+			// Try to get the first ancestor of the viewport that is not a viewport itself.
+			// Add up all allocations while searching.
+			Container::PtrConst viewport_parent = parent->GetParent();
+
+			while( viewport_parent && viewport_parent->GetName() == "Viewport" ) {
+				parent_position += sf::Vector2f( viewport_parent->GetAllocation().left, viewport_parent->GetAllocation().top );
+
+				viewport_parent = viewport_parent->GetParent();
+			}
+
+			if( !viewport_parent || ( viewport_parent->GetName() == "Viewport" ) ) {
+				parent_position = sf::Vector2f( 0.f, 0.f );
+				break;
+			}
+
+			parent_position += viewport_parent->GetAbsolutePosition();
+			parent_position += sf::Vector2f( parent->GetAllocation().left, parent->GetAllocation().top );
+
+			break;
+		}
+
+		parent = parent->GetParent();
+	}
+
 	m_custom_viewport->SetDestinationOrigin(
 		sf::Vector2f(
-			std::floor( position.x + .5f ),
-			std::floor( position.y + .5f )
+			std::floor( parent_position.x + position.x + .5f ),
+			std::floor( parent_position.y + position.y + .5f )
 		)
 	);
 
