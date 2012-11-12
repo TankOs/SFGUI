@@ -1,6 +1,40 @@
-cmake_minimum_required( VERSION 2.8 )
+# This script locates the SFGUI library
+# ------------------------------------
+#
+# Usage
+# -----
+#
+# By default, the dynamic version of SFGUI will be found. To find the static one instead,
+# you must set the SFGUI_STATIC_LIBRARIES variable to TRUE before calling find_package( SFGUI ).
+# In case you want to static link, SFGUI_STATIC will also be defined by this script.
+# example:
+#
+# set( SFGUI_STATIC_LIBRARIES TRUE )
+# find_package( SFGUI )
+#
+# If SFGUI is not installed in a standard path, you can use the SFGUIDIR CMake (or environment) variable
+# to tell CMake where SFGUI is.
+#
+# Output
+# ------
+#
+# This script defines the following variables:
+# - SFGUI_LIBRARY_DEBUG:   the path to the debug library
+# - SFGUI_LIBRARY_RELEASE: the path to the release library
+# - SFGUI_LIBRARY:         the path to the library to link to
+# - SFGUI_FOUND:           true if the SFGUI library is found
+# - SFGUI_INCLUDE_DIR:     the path where SFGUI headers are located (the directory containing the SFGUI/Config.hpp file)
+#
+# Example
+# -------
+#
+# find_package( SFGUI REQUIRED )
+# include_directories( ${SFGUI_INCLUDE_DIR} )
+# add_executable( myapp ... )
+# target_link_libraries( myapp ${SFGUI_LIBRARY} ... )
+#
 
-set( SFGUI_FOUND FALSE )
+set( SFGUI_FOUND false )
 
 if( SFGUI_STATIC_LIBRARIES )
 	set( SFGUI_SUFFIX "-s" )
@@ -18,6 +52,7 @@ find_path(
 		/usr
 		/usr/local
 		${SFGUIDIR}
+		$ENV{SFGUIDIR}
 )
 
 find_library(
@@ -61,5 +96,6 @@ endif()
 if( NOT SFGUI_INCLUDE_DIR OR NOT SFGUI_LIBRARY )
 	message( FATAL_ERROR "SFGUI not found." )
 else()
+	set( SFGUI_FOUND true )
 	message( "SFGUI found: ${SFGUI_INCLUDE_DIR}" )
 endif()

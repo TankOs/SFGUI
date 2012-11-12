@@ -10,6 +10,7 @@ project( SFGUI )
 
 set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
 set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
+set( SFGUI_BUILD_DOC false CACHE BOOL "Generate the SFGUI API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include a default font (DejaVuSans) that is used automatically if no font is specified." )
 set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
 
@@ -281,6 +282,12 @@ endif()
 
 if( SFGUI_BUILD_EXAMPLES )
 	add_subdirectory( "examples" )
+endif()
+
+### DOCUMENTATION ###
+
+if( SFGUI_BUILD_DOC )
+	add_subdirectory( "doc" )
 endif()
 
 ### INSTALL TARGETS ###
