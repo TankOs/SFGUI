@@ -27,7 +27,7 @@ add_custom_target(
 if( WINDOWS )
 	set( INSTALL_MISC_DIR "." )
 elseif( UNIX )
-	set( INSTALL_MISC_DIR "share/SFML" )
+	set( INSTALL_MISC_DIR "share/SFGUI" )
 endif()
 
 install(
