@@ -24,6 +24,7 @@ class DesktopExample {
 		sfg::Window::Ptr m_window;
 		sfg::Button::Ptr m_button;
 		sfg::Entry::Ptr m_entry;
+		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
 };
@@ -70,6 +71,10 @@ void DesktopExample::Run() {
 	m_scrollbar = sfg::Scrollbar::Create();
 	m_scrollbar->SetRange( .0f, 100.f );
 
+	m_scale = sfg::Scale::Create();
+	m_scale->SetAdjustment( m_scrollbar->GetAdjustment() );
+	m_scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
+
 	sfg::Box::Ptr m_scrolled_window_box = sfg::Box::Create( sfg::Box::VERTICAL );
 	for( int i = 0; i < 10; i++ ) {
 		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
@@ -90,6 +95,7 @@ void DesktopExample::Run() {
 	sfg::Box::Ptr widget_box( sfg::Box::Create( sfg::Box::HORIZONTAL, 5.f) );
 	widget_box->Pack( m_button, true );
 	widget_box->Pack( m_entry, true );
+	widget_box->Pack( m_scale, true );
 
 	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );

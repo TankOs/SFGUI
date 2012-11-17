@@ -48,6 +48,10 @@ void Bob::ResetProperties() {
 	// Entry-specific
 	SetProperty( "Entry", "Thickness", 1.f );
 
+	// Scale-specific
+	SetProperty( "Scale", "SliderLength", 15.f );
+	SetProperty( "Scale", "TroughWidth", 5.f );
+
 	// Scrollbar-specific.
 	SetProperty( "Scrollbar", "StepperSpeed", 10.f );
 	SetProperty( "Scrollbar", "StepperRepeatDelay", 300 );

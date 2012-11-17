@@ -5,15 +5,6 @@
 	FontName: data/bob/LiberationSerif-Regular.ttf;
 }
 
-Window {
-	Image: data/bob/window.png;
-	AreaImage: data/bob/window_area.png;
-	TitleBarImage: data/bob/window_title_bar.png;
-	
-	HandleImage: data/bob/window_handle.png;
-	HandleSize: 10;
-}
-
 Button {
 	Image: data/bob/box.png;
 }
@@ -30,6 +21,11 @@ Entry {
 	Image: data/bob/entry.png;
 }
 
+Scale {
+	TroughImage: data/bob/scale_trough.png;
+	SliderImage: data/bob/slider.png;
+}
+
 Scrollbar {
 	ArrowImage: data/bob/arrow.png;
 	StepperImage: data/bob/scrollbar_box.png;
@@ -41,4 +37,13 @@ Scrollbar {
 ScrolledWindow {
 	Image: data/bob/window.png;
 	BorderWidth: 3;
+}
+
+Window {
+	Image: data/bob/window.png;
+	AreaImage: data/bob/window_area.png;
+	TitleBarImage: data/bob/window_title_bar.png;
+	
+	HandleImage: data/bob/window_handle.png;
+	HandleSize: 10;
 }
