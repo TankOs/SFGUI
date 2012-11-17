@@ -29,3 +29,16 @@ Button:ACTIVE {
 Entry {
 	Image: data/bob/entry.png;
 }
+
+Scrollbar {
+	ArrowImage: data/bob/arrow.png;
+	StepperImage: data/bob/scrollbar_box.png;
+	StepperPressedImage: data/bob/scrollbar_box_active.png;
+	TroughImage: data/bob/trough.png;
+	SliderImage: data/bob/slider.png;
+}
+
+ScrolledWindow {
+	Image: data/bob/window.png;
+	BorderWidth: 3;
+}

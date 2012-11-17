@@ -24,6 +24,8 @@ class DesktopExample {
 		sfg::Window::Ptr m_window;
 		sfg::Button::Ptr m_button;
 		sfg::Entry::Ptr m_entry;
+		sfg::Scrollbar::Ptr m_scrollbar;
+		sfg::ScrolledWindow::Ptr m_scrolled_window;
 };
 
 const unsigned int DesktopExample::SCREEN_WIDTH = 800;
@@ -65,6 +67,25 @@ void DesktopExample::Run() {
 	m_entry = sfg::Entry::Create( L"Type Something" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 
+	m_scrollbar = sfg::Scrollbar::Create();
+	m_scrollbar->SetRange( .0f, 100.f );
+
+	sfg::Box::Ptr m_scrolled_window_box = sfg::Box::Create( sfg::Box::VERTICAL );
+	for( int i = 0; i < 10; i++ ) {
+		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
+		for( int j = 0; j < 20; j++ ) {
+			box->Pack( sfg::Button::Create( L"One button among many" ), true );
+		}
+
+		m_scrolled_window_box->Pack( box, false );
+	}
+
+	m_scrolled_window = sfg::ScrolledWindow::Create();
+	m_scrolled_window->SetRequisition( sf::Vector2f( 250.f, 100.f ) );
+	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HORIZONTAL_AUTOMATIC | sfg::ScrolledWindow::VERTICAL_AUTOMATIC );
+	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TOP_LEFT );
+	m_scrolled_window->AddWithViewport( m_scrolled_window_box );
+
 	// Layout.
 	sfg::Box::Ptr widget_box( sfg::Box::Create( sfg::Box::HORIZONTAL, 5.f) );
 	widget_box->Pack( m_button, true );
@@ -72,7 +93,9 @@ void DesktopExample::Run() {
 
 	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );
+	main_box->Pack( m_scrollbar, false );
 	main_box->Pack( widget_box, false );
+	main_box->Pack( m_scrolled_window );
 
 
 	m_window->Add( main_box );
@@ -82,6 +105,8 @@ void DesktopExample::Run() {
 
 	// Signals.
 	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnButtonClick, this );
+
+	sf::Clock clock;
 
 	while( render_window.isOpen() ) {
 		while( render_window.pollEvent( event ) ) {
@@ -106,9 +131,14 @@ void DesktopExample::Run() {
 			}
 		}
 
-		m_desktop.Update( 0.f );
+		float elapsed_time = clock.getElapsedTime().asSeconds();
+		clock.restart();
+		m_desktop.Update( elapsed_time );
+
 		render_window.clear();
+
 		m_sfgui.Display( render_window );
+
 		render_window.display();
 	}
 }

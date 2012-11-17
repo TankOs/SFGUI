@@ -38,6 +38,10 @@ class SFGUI_API Bob : public Engine {
 		RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const;
 		RenderQueue* CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const;
 		RenderQueue* CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbutton ) const;
+
+	protected:
+		Primitive::Ptr CreateArrow( const sf::FloatRect& rect, unsigned int rotation, const sf::Image *image ) const;
+
 	private:
 		mutable bob::TextureManager m_texture_manager;
 };

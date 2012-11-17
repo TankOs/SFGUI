@@ -42,16 +42,26 @@ void Bob::ResetProperties() {
 	SetProperty( "*", "BackgroundColor", sf::Color::White );
 	SetProperty( "*", "Padding", 5.f );
 
-	// Window-specific
-	SetProperty( "Window", "Gap", 10.f );
-	SetProperty( "Window", "TitlePadding", 5.f );
-	SetProperty( "Window", "HandleSize", 10.f );
-
 	// Button-specific
 	SetProperty( "Button", "Spacing", 5.f );
 
 	// Entry-specific
 	SetProperty( "Entry", "Thickness", 1.f );
+
+	// Scrollbar-specific.
+	SetProperty( "Scrollbar", "StepperSpeed", 10.f );
+	SetProperty( "Scrollbar", "StepperRepeatDelay", 300 );
+	SetProperty( "Scrollbar", "SliderMinimumLength", 15.f );
+
+	// ScrolledWindow-specific
+	SetProperty( "ScrolledWindow", "ScrollbarWidth", 20.f );
+	SetProperty( "ScrolledWindow", "ScrollbarSpacing", 5.f );
+	SetProperty( "ScrolledWindow", "BorderWidth", 0.f );
+
+	// Window-specific
+	SetProperty( "Window", "Gap", 10.f );
+	SetProperty( "Window", "TitlePadding", 5.f );
+	SetProperty( "Window", "HandleSize", 10.f );
 }
 
 }
