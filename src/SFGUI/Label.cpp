@@ -116,8 +116,10 @@ void Label::WrapText() {
 					}
 				}
 
-				wrapped_text += line.substr( 0, last_space );
-				line = line.substr( last_space );
+				if( last_space != std::basic_string<sf::Uint32>::npos ) {
+					wrapped_text += line.substr( 0, last_space );
+					line = line.substr( last_space );
+				}
 
 				if( !line.empty() ) {
 					wrapped_text += L'\n';
