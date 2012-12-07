@@ -2,6 +2,7 @@
 #include <SFGUI/Parsers/ThemeParser/Parse.hpp>
 
 #include <SFML/Graphics/Text.hpp>
+#include <fstream>
 #include <sstream>
 #include <cmath>
 
@@ -163,8 +164,8 @@ sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& f
 	return metrics;
 }
 
-bool Engine::LoadThemeFromFile( const std::string& filename ) {
-	parser::theme::Theme theme = parser::theme::ParseFile( filename );
+bool Engine::LoadThemeFromString( const std::string& data ) {
+	parser::theme::Theme theme = parser::theme::ParseString( data );
 
 	if( theme.empty() ) {
 		return false;
@@ -228,6 +229,21 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 	}
 
 	return true;
+}
+
+bool Engine::LoadThemeFromFile( const std::string& filename ) {
+	std::ifstream in( filename.c_str() );
+
+	if( !in.good() ) {
+		return false;
+	}
+
+	std::string data(
+		(std::istreambuf_iterator<char>( in )),
+		(std::istreambuf_iterator<char>())
+	);
+
+	return LoadThemeFromString( data );
 }
 
 void Engine::ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, int offset ) const {

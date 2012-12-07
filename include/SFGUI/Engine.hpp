@@ -227,6 +227,12 @@ class SFGUI_API Engine {
 		 */
 		bool LoadThemeFromFile( const std::string& filename );
 
+		/** Load a theme from string.
+		 * @param data Theme data.
+		 * @return true on success, false otherwise.
+		 */
+		bool LoadThemeFromString( const std::string& data );
+
 		/** Shift the given border colors to make them lighter and darker.
 		 * @param light_color Color of the lighter border.
 		 * @param dark_color Color of the darker border.
