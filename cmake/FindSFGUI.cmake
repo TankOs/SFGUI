@@ -65,6 +65,7 @@ find_library(
 		/usr
 		/usr/local
 		${SFGUIDIR}
+		$ENV{SFGUIDIR}
 )
 
 find_library(
@@ -77,6 +78,7 @@ find_library(
 		/usr
 		/usr/local
 		${SFGUIDIR}
+		$ENV{SFGUIDIR}
 )
 
 if( SFGUI_LIBRARY_RELEASE AND SFGUI_LIBRARY_DEBUG )
