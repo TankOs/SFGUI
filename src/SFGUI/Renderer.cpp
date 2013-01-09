@@ -460,7 +460,7 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 		// Further, we stick all referenced textures into our giant atlas
 		// so we don't have to rebind during the draw.
 
-		m_texture_atlas.bind();
+		sf::Texture::bind( &m_texture_atlas );
 
 		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
 		glVertexPointer( 3, GL_FLOAT, 0, 0 );
