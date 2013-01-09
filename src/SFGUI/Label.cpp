@@ -79,14 +79,14 @@ void Label::WrapText() {
 	std::basic_string<sf::Uint32> wrapped_text;
 	std::basic_string<sf::Uint32> text( m_text.begin(), m_text.end() );
 
-	while( !text.empty() ) {
-		// Get a line.
-		std::basic_string<sf::Uint32> line = text;
+	std::basic_string<sf::Uint32> line;
 
+	while( !text.empty() ) {
 		std::size_t next_newline = text.find( L'\n' );
 
+		line = text.substr( 0, next_newline );
+
 		if( next_newline != std::basic_string<sf::Uint32>::npos ) {
-			line = text.substr( 0, next_newline );
 			text = text.substr( next_newline + 1 );
 		}
 		else {
@@ -98,7 +98,7 @@ void Label::WrapText() {
 		}
 
 		// Check if line needs to be wrapped.
-		if( Context::Get().GetEngine().GetTextMetrics( sf::String( line ), font, font_size ).x <= GetAllocation().width ) {
+		if( Context::Get().GetEngine().GetTextMetrics( line, font, font_size ).x <= GetAllocation().width ) {
 			wrapped_text += line;
 		}
 		else {
@@ -106,7 +106,7 @@ void Label::WrapText() {
 			while( !line.empty() ) {
 				std::size_t last_space = line.size();
 
-				while( Context::Get().GetEngine().GetTextMetrics( sf::String( line.substr( 0, last_space ) ), font, font_size ).x > GetAllocation().width ) {
+				while( Context::Get().GetEngine().GetTextMetrics( line.substr( 0, last_space ), font, font_size ).x > GetAllocation().width ) {
 					last_space = line.find_last_of( L' ', last_space - 1 );
 
 					if( last_space == std::basic_string<sf::Uint32>::npos ) {

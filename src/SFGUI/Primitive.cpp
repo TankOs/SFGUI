@@ -58,7 +58,7 @@ void Primitive::Texture::Update( const sf::Image& data ) {
 	sfg::Renderer::Get().UpdateImage( offset, data );
 }
 
-Primitive::Primitive() :
+Primitive::Primitive( std::size_t vertex_reserve ) :
 	m_position( sf::Vector2f( 0.f, 0.f ) ),
 	m_layer( 0 ),
 	m_level( 0 ),
@@ -66,16 +66,27 @@ Primitive::Primitive() :
 	m_visible( true )
 {
 	m_viewport = Renderer::Get().GetDefaultViewport();
+
+	if( vertex_reserve > 0 ) {
+		m_vertices.reserve( vertex_reserve );
+	}
 }
 
 void Primitive::Add( Primitive& primitive ) {
 	const std::vector<Vertex>& vertices( primitive.GetVertices() );
 	const std::vector<GLuint>& indices( primitive.GetIndices() );
 
+	std::size_t vertex_count = vertices.size();
 	std::size_t index_count = indices.size();
 
+	std::size_t current_index = m_vertices.size();
+
+	for( std::size_t vertex_index = 0; vertex_index < vertex_count; ++vertex_index ) {
+		m_vertices.push_back( vertices[vertex_index] );
+	}
+
 	for( std::size_t index_index = 0; index_index < index_count; ++index_index ) {
-		AddVertex( vertices[ indices[index_index] ] );
+		m_indices.push_back( current_index + indices[index_index] );
 	}
 }
 
@@ -180,6 +191,21 @@ void Primitive::SetCustomDrawCallback( const SharedPtr<Signal>& callback ) {
 
 const SharedPtr<Signal>& Primitive::GetCustomDrawCallback() const {
 	return m_custom_draw_callback;
+}
+
+void Primitive::Clear() {
+	m_vertices.clear();
+	m_textures.clear();
+	m_indices.clear();
+
+	m_position = sf::Vector2f( 0.f, 0.f );
+	m_layer = 0;
+	m_level = 0;
+	m_synced = false;
+	m_visible = true;
+
+	m_viewport = Renderer::Get().GetDefaultViewport();
+	m_custom_draw_callback.reset();
 }
 
 }

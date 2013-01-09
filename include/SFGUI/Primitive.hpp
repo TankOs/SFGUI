@@ -44,8 +44,9 @@ class SFGUI_API Primitive {
 		};
 
 		/** Ctor.
+		 * @param Optional parameter hinting at how many vertices will be added to this primitive.
 		 */
-		Primitive();
+		Primitive( std::size_t vertex_reserve = 0 );
 
 		/** Merge another primitive into this primitive.
 		 * @param primitive Primitive to merge into this primitive.
@@ -148,6 +149,11 @@ class SFGUI_API Primitive {
 		 * @return Signal containing the functions to call to render custom GL content.
 		 */
 		const SharedPtr<Signal>& GetCustomDrawCallback() const;
+
+		/** Reset the primitive back to its default state.
+		 * This clears all vertices, textures, indices and any other saved values.
+		 */
+		void Clear();
 
 	private:
 		sf::Vector2f m_position;

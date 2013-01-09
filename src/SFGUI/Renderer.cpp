@@ -110,8 +110,6 @@ RendererViewport::Ptr Renderer::CreateViewport() {
 }
 
 Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
-	Primitive::Ptr primitive( new Primitive );
-
 	const sf::Font& font = *text.getFont();
 	unsigned int character_size = text.getCharacterSize();
 	sf::Color color = text.getColor();
@@ -130,6 +128,10 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 	const static float tab_spaces = 2.f;
 
 	sf::Uint32 previous_character = 0;
+
+	Primitive::Ptr primitive( new Primitive( length * 4 ) );
+
+	Primitive character_primitive( 4 );
 
 	for( std::size_t index = 0; index < length; ++index ) {
 		sf::Uint32 current_character = str[index];
@@ -179,12 +181,16 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 		vertex2.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.left + texture_rect.width, texture_rect.top );
 		vertex3.texture_coordinate = atlas_offset + sf::Vector2f( texture_rect.left + texture_rect.width, texture_rect.top + texture_rect.height );
 
-		primitive->AddVertex( vertex0 );
-		primitive->AddVertex( vertex1 );
-		primitive->AddVertex( vertex2 );
-		primitive->AddVertex( vertex2 );
-		primitive->AddVertex( vertex1 );
-		primitive->AddVertex( vertex3 );
+		character_primitive.Clear();
+
+		character_primitive.AddVertex( vertex0 );
+		character_primitive.AddVertex( vertex1 );
+		character_primitive.AddVertex( vertex2 );
+		character_primitive.AddVertex( vertex2 );
+		character_primitive.AddVertex( vertex1 );
+		character_primitive.AddVertex( vertex3 );
+
+		primitive->Add( character_primitive );
 
 		position.x += static_cast<float>( glyph.advance );
 
@@ -199,7 +205,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
                                      const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
                                      const sf::Color& color ) {
-	Primitive::Ptr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive( 4 ) );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -239,7 +245,7 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 		return CreateRect( position, position + size, color );
 	}
 
-	Primitive::Ptr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive( 20 ) );
 
 	sf::Color dark_border( border_color );
 	sf::Color light_border( border_color );
@@ -333,7 +339,7 @@ Primitive::Ptr Renderer::CreateRect( const sf::FloatRect& rect, const sf::Color&
 }
 
 Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color ) {
-	Primitive::Ptr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive( 3 ) );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -364,7 +370,7 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	SharedPtr<Primitive::Texture> texture_handle( LoadImage( image ) );
 	sf::Vector2f offset = texture_handle->offset;
 
-	Primitive::Ptr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive( 4 ) );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;

@@ -173,6 +173,14 @@ class SFGUI_API Engine {
 		 * @param font_size Font size.
 		 * @return Metrics.
 		 */
+		sf::Vector2f GetTextMetrics( const std::basic_string<sf::Uint32>& string, const sf::Font& font, unsigned int font_size ) const;
+
+		/** Get metrics of a text string.
+		 * @param string String.
+		 * @param font Font.
+		 * @param font_size Font size.
+		 * @return Metrics.
+		 */
 		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Clear all properties.
