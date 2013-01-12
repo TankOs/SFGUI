@@ -135,6 +135,7 @@ set(
 	${INC_DIR}/SFGUI/SharedPtr.inl
 	${INC_DIR}/SFGUI/Signal.hpp
 	${INC_DIR}/SFGUI/Signal.inl
+	${INC_DIR}/SFGUI/SpinButton.hpp
 	${INC_DIR}/SFGUI/Spinner.hpp
 	${INC_DIR}/SFGUI/Table.hpp
 	${INC_DIR}/SFGUI/TableCell.hpp
@@ -168,6 +169,7 @@ set(
 	${SRC_DIR}/SFGUI/Engines/BREW/Scrollbar.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW/ScrolledWindow.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW/Separator.cpp
+	${SRC_DIR}/SFGUI/Engines/BREW/SpinButton.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW/Spinner.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW/ToggleButton.cpp
 	${SRC_DIR}/SFGUI/Engines/BREW/Window.cpp
@@ -205,6 +207,7 @@ set(
 	${SRC_DIR}/SFGUI/Separator.cpp
 	${SRC_DIR}/SFGUI/SFGUI.cpp
 	${SRC_DIR}/SFGUI/Signal.cpp
+	${SRC_DIR}/SFGUI/SpinButton.cpp
 	${SRC_DIR}/SFGUI/Spinner.cpp
 	${SRC_DIR}/SFGUI/Table.cpp
 	${SRC_DIR}/SFGUI/TableCell.cpp

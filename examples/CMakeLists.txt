@@ -33,6 +33,7 @@ if( NOT SKIP_ADDT_EXAMPLES )
 	build_example( "Table" "Table.cpp" )
 	build_example( "Buttons" "Buttons.cpp" )
 	build_example( "ProgressBar" "ProgressBar.cpp" )
+	build_example( "SpinButton" "SpinButton.cpp" )
 endif()
 
 build_example( "test" "Test.cpp" )
@@ -64,6 +65,7 @@ set(
 	Table.cpp
 	Buttons.cpp
 	ProgressBar.cpp
+	SpinButton.cpp
 )
 
 install(

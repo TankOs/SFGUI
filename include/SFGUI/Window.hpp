@@ -28,7 +28,7 @@ class SFGUI_API Window : public Bin {
 		 */
 		virtual ~Window();
 
-		/** Create widget.
+		/** Create window.
 		 * @param style Style the Window should have. Defaults to TopLevel.
 		 */
 		static Ptr Create( int style = TOPLEVEL );

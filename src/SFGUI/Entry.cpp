@@ -127,7 +127,7 @@ void Entry::RecalculateVisibleString() const {
 	// While the string is too long for the given space keep chopping off characters
 	// on the right end of the string until the cursor is reached, then start
 	// chopping off characters on the left side of the string.
-	while( !string.empty() && (GetAllocation().width > 0) && (length > GetAllocation().width - (2.f * text_padding)) ) {
+	while( !string.empty() && (GetAllocation().width - m_text_margin > 0) && (length > GetAllocation().width - m_text_margin - (2.f * text_padding)) ) {
 		if( ( m_cursor_position - m_visible_offset ) < string.size() ) {
 			string = string.substr( 0, string.size() - 1 );
 		}
@@ -199,7 +199,8 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			m_elapsed_time = 0.f;
 			m_cursor_status = true;
 
-			GetSignals().Emit( OnTextChanged );		}
+			GetSignals().Emit( OnTextChanged );
+		}
 	} break;
 	case sf::Keyboard::Delete: {
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < m_string.getSize() ) ) {
@@ -353,6 +354,10 @@ void Entry::SetMaximumLength( std::size_t max_length ) {
 		RecalculateVisibleString();
 		GetSignals().Emit( OnTextChanged );
 	}
+}
+
+void Entry::SetTextMargin( float margin ) {
+	m_text_margin = margin;
 }
 
 }

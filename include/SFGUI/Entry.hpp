@@ -90,14 +90,26 @@ class SFGUI_API Entry : public Widget {
 		static Signal::SignalID OnTextChanged; //!< Fired when the text changes.
 
 	protected:
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
-
-	private:
 		/** Ctor.
 		 */
 		Entry();
 
+		/** Set right hand side margin that the entry should reserve for derived widgets.
+		 * @param margin Margin to reserve.
+		 */
+		void SetTextMargin( float margin );
+
+		RenderQueue* InvalidateImpl() const;
+		sf::Vector2f CalculateRequisition();
+
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual void HandleUpdate( float seconds );
+		virtual void HandleTextEvent( sf::Uint32 character );
+		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual void HandleSizeChange();
+		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
+
+	private:
 		/** Get closest cursor position to x coordinate.
 		 * @param mouse_pos_x x coordinate.
 		 * @return Closest cursor position.
@@ -115,12 +127,6 @@ class SFGUI_API Entry : public Widget {
 
 		virtual void HandleMouseEnter( int x, int y );
 		virtual void HandleMouseLeave( int x, int y );
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual void HandleTextEvent( sf::Uint32 character );
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
-		virtual void HandleUpdate( float seconds );
-		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
-		virtual void HandleSizeChange();
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;
@@ -138,6 +144,8 @@ class SFGUI_API Entry : public Widget {
 		std::size_t m_cursor_position;
 
 		float m_elapsed_time;
+
+		float m_text_margin;
 
 		mutable bool m_cursor_status;
 };

@@ -322,6 +322,15 @@ void SampleApp::Run() {
 
 	box_image->Pack( radio_box, false );
 
+	sfg::SpinButton::Ptr spinbutton( sfg::SpinButton::Create( scrollbar->GetAdjustment() ) );
+	spinbutton->SetRequisition( sf::Vector2f( 80.f, 0.f ) );
+	spinbutton->SetDigits( 3 );
+
+	sfg::Box::Ptr spinbutton_box( sfg::Box::Create( sfg::Box::VERTICAL ) );
+	spinbutton_box->Pack( spinbutton, false, false );
+
+	box_image->Pack( spinbutton_box, false, false );
+
 	sfg::ComboBox::Ptr aligned_combo_box( sfg::ComboBox::Create() );
 	aligned_combo_box->AppendItem( L"I'm way over here" );
 	aligned_combo_box->AppendItem( L"Me too" );
@@ -383,6 +392,9 @@ void SampleApp::Run() {
 	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &SampleApp::OnAdjustmentChange, this );
 	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnToggleSpinner, this );
 	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnMirrorImageClick, this );
+
+	spinbutton->SetValue( 20.f );
+	spinbutton->GetAdjustment()->SetMinorStep( .8f );
 
 	m_wndmain->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 

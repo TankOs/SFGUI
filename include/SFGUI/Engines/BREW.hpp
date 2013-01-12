@@ -40,6 +40,7 @@ class SFGUI_API BREW : public Engine {
 		RenderQueue* CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) const;
 		RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const;
 		RenderQueue* CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const;
+		RenderQueue* CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbutton ) const;
 
 	private:
 		static RenderQueue* CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );

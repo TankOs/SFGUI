@@ -143,6 +143,15 @@ void BREW::ResetProperties() {
 	SetProperty( "ComboBox", "ItemPadding", 4.f );
 	SetProperty( "ComboBox:PRELIGHT", "BackgroundColor", sf::Color( 0x65, 0x67, 0x62 ) );
 	SetProperty( "ComboBox:ACTIVE", "BackgroundColor", sf::Color( 0x55, 0x55, 0x55 ) );
+
+	// SpinButton-specific.
+	SetProperty( "SpinButton", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
+	SetProperty( "SpinButton", "Color", sf::Color::White );
+	SetProperty( "SpinButton", "StepperAspectRatio", 1.2f );
+	SetProperty( "SpinButton", "StepperBackgroundColor", sf::Color( 0x68, 0x6a, 0x65 ) );
+	SetProperty( "SpinButton", "StepperArrowColor", sf::Color( 0xd9, 0xdc, 0xd5 ) );
+	SetProperty( "SpinButton", "StepperSpeed", 10.f );
+	SetProperty( "SpinButton", "StepperRepeatDelay", 500 );
 }
 
 RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {

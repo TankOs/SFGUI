@@ -39,7 +39,7 @@ class SFGUI_API Range : public Widget {
 		 */
 		float GetValue() const;
 
-		/** Set Adjustment valueof this Range widget.
+		/** Set the value of this Range widget.
 		 * @param new_value new value of this Range widget.
 		 */
 		void SetValue( float new_value );

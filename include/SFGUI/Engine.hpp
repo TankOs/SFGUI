@@ -38,6 +38,7 @@ class Image;
 class Notebook;
 class Spinner;
 class ComboBox;
+class SpinButton;
 
 /** Abstract base class for widget rendering.
  */
@@ -144,6 +145,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const = 0;
+
+		/** Create drawable for spinbutton widgets.
+		 * @param spinbutton Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual RenderQueue* CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbutton ) const = 0;
 
 		/** Get maximum line height.
 		 * @param font Font.
