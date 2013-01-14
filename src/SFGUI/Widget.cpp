@@ -4,6 +4,7 @@
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Context.hpp>
 #include <cmath>
+#include <limits>
 
 namespace sfg {
 
@@ -277,13 +278,23 @@ void Widget::HandleEvent( const sf::Event& event ) {
 	Container::Ptr parent( m_parent.lock() );
 
 	switch( event.type ) {
+		case sf::Event::MouseLeft:
+			if( IsMouseInWidget() ) {
+				SetMouseInWidget( false );
+
+				GetSignals().Emit( OnMouseLeave );
+				HandleMouseLeave( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+			}
+
+			HandleMouseMoveEvent( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+			break;
+
 		case sf::Event::MouseMoved:
 			// Check if pointer inside of widget's allocation.
 			if( GetAllocation().contains( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) ) ) {
 				// Check for enter event.
 				if( !IsMouseInWidget() ) {
-					// Flip the mouse_in bit.
-					m_bitfield ^= static_cast<unsigned char>( 0x10 );
+					SetMouseInWidget( true );
 
 					GetSignals().Emit( OnMouseEnter );
 					HandleMouseEnter( event.mouseMove.x, event.mouseMove.y );
@@ -292,8 +303,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 				GetSignals().Emit( OnMouseMove );
 			}
 			else if( IsMouseInWidget() ) { // Check for leave event.
-				// Flip the mouse_in bit.
-				m_bitfield ^= static_cast<unsigned char>( 0x10 );
+				SetMouseInWidget( false );
 
 				GetSignals().Emit( OnMouseLeave );
 				HandleMouseLeave( event.mouseMove.x, event.mouseMove.y );
@@ -303,12 +313,8 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			break;
 
 		case sf::Event::MouseButtonPressed:
-			if( ( ( m_bitfield & static_cast<unsigned char>( 0xe0 ) ) == static_cast<unsigned char>( 0xe0 ) ) && IsMouseInWidget() ) {
-				// Clear the mouse_button_down bits to 0s.
-				m_bitfield &= static_cast<unsigned char>( 0x1f );
-
-				// Set the mouse_button_down bits.
-				m_bitfield |= static_cast<unsigned char>( event.mouseButton.button << 5 );
+			if( !IsMouseButtonDown() && IsMouseInWidget() ) {
+				SetMouseButtonDown( event.mouseButton.button );
 			}
 
 			HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
@@ -326,9 +332,8 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 		case sf::Event::MouseButtonReleased:
 			// Only process as a click when mouse button has been pressed inside the widget before.
-			if( ( ( m_bitfield & 0xe0 ) >> 5 ) == event.mouseButton.button ) {
-				// Set the mouse_button_down bits to 111 (none).
-				m_bitfield |= static_cast<unsigned char>( 0xe0 );
+			if( IsMouseButtonDown( event.mouseButton.button ) ) {
+				SetMouseButtonDown();
 
 				// When released inside the widget, the event can be considered a click.
 				if( IsMouseInWidget() ) {
@@ -438,6 +443,42 @@ bool Widget::HasFocus() const {
 
 bool Widget::IsMouseInWidget() const {
 	return ( m_bitfield & static_cast<unsigned char>( 0x10 ) ) != 0;
+}
+
+void Widget::SetMouseInWidget( bool in_widget ) {
+	m_bitfield |= static_cast<unsigned char>( 0x10 );
+
+	if( !in_widget ) {
+		m_bitfield ^= static_cast<unsigned char>( 0x10 );
+	}
+}
+
+bool Widget::IsMouseButtonDown( sf::Mouse::Button button ) const {
+	// Check if no button is down.
+	if( ( m_bitfield & static_cast<unsigned char>( 0xe0 ) ) == static_cast<unsigned char>( 0xe0 ) ) {
+		return false;
+	}
+	else if( button == sf::Mouse::ButtonCount ) {
+		// Check if any button is down if requested.
+		return true;
+	}
+
+	return ( ( ( m_bitfield & 0xe0 ) >> 5 ) == button );
+}
+
+void Widget::SetMouseButtonDown( sf::Mouse::Button button ) {
+	// Clear the mouse_button_down bits to 0s.
+	m_bitfield &= static_cast<unsigned char>( 0x1f );
+
+	if( button == sf::Mouse::ButtonCount ) {
+		// Set the mouse_button_down bits to "no button down".
+		m_bitfield |= static_cast<unsigned char>( 0xe0 );
+
+		return;
+	}
+
+	// Set the mouse_button_down bits.
+	m_bitfield |= static_cast<unsigned char>( button << 5 );
 }
 
 void Widget::Show( bool show ) {

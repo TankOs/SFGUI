@@ -292,6 +292,22 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		bool IsMouseInWidget() const;
 
+		/** Set whether the mouse is in the widget or not.
+		 * @param in_widget true if mouse should be in widget.
+		 */
+		void SetMouseInWidget( bool in_widget );
+
+		/** Check if the given mouse button is down
+		 * @param button Given mouse button. Defaults to check if ANY button is down.
+		 * @return true if the given mouse button is down.
+		 */
+		bool IsMouseButtonDown( sf::Mouse::Button button = sf::Mouse::ButtonCount ) const;
+
+		/** Set whether the given mouse button is down.
+		 * @param button Given mouse button. Defaults to clear button down state for all buttons.
+		 */
+		void SetMouseButtonDown( sf::Mouse::Button button = sf::Mouse::ButtonCount );
+
 		// Internal handling methods.
 
 		/** Handle mouse move event.
