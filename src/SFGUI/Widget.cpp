@@ -37,6 +37,8 @@ WeakPtr<Widget> Widget::m_focus_widget;
 WeakPtr<Widget> Widget::m_active_widget;
 WeakPtr<Widget> Widget::m_modal_widget;
 
+std::vector<Widget*> Widget::m_root_widgets;
+
 Widget::Widget() :
 	Object(),
 	m_allocation( 0.f, 0.f, 0.f, 0.f ),
@@ -50,9 +52,22 @@ Widget::Widget() :
 	m_invalidated( true )
 {
 	m_viewport = Renderer::Get().GetDefaultViewport();
+
+	// Register this as a root widget initially.
+	m_root_widgets.push_back( this );
 }
 
 Widget::~Widget() {
+	if( !m_parent.lock() ) {
+		// If this widget is an orphan, we assume it is
+		// a root widget and try to de-register it.
+		std::vector<Widget*>::iterator iter( std::find( m_root_widgets.begin(), m_root_widgets.end(), this ) );
+
+		if( iter != m_root_widgets.end() ) {
+			m_root_widgets.erase( iter );
+		}
+	}
+
 	delete m_drawable;
 	delete m_custom_requisition;
 	delete m_class_id;
@@ -222,11 +237,11 @@ RenderQueue* Widget::InvalidateImpl() const {
 void Widget::SetParent( const Widget::Ptr& parent ) {
 	Container::Ptr cont( DynamicPointerCast<Container>( parent ) );
 
-	if( !cont ) {
+	Container::Ptr oldparent = m_parent.lock();
+
+	if( cont == oldparent ) {
 		return;
 	}
-
-	Container::Ptr oldparent = m_parent.lock();
 
 	if( oldparent ) {
 		oldparent->Remove( shared_from_this() );
@@ -234,7 +249,24 @@ void Widget::SetParent( const Widget::Ptr& parent ) {
 
 	m_parent = cont;
 
-	SetHierarchyLevel( parent->GetHierarchyLevel() + 1 );
+	std::vector<Widget*>::iterator iter( std::find( m_root_widgets.begin(), m_root_widgets.end(), this ) );
+
+	if( parent ) {
+		// If this widget has a parent, it is no longer a root widget.
+		if( iter != m_root_widgets.end() ) {
+			m_root_widgets.erase( iter );
+		}
+
+		SetHierarchyLevel( parent->GetHierarchyLevel() + 1 );
+	}
+	else {
+		// If this widget does not have a parent, it becomes a root widget.
+		if( iter == m_root_widgets.end() ) {
+			m_root_widgets.push_back( this );
+		}
+
+		SetHierarchyLevel( 0 );
+	}
 
 	HandleAbsolutePositionChange();
 }
@@ -550,6 +582,8 @@ void Widget::SetId( const std::string& id ) {
 	}
 
 	m_class_id->id = id;
+
+	Refresh();
 }
 
 std::string Widget::GetId() const {
@@ -570,6 +604,8 @@ void Widget::SetClass( const std::string& cls ) {
 	}
 
 	m_class_id->class_ = cls;
+
+	Refresh();
 }
 
 std::string Widget::GetClass() const {
@@ -578,6 +614,112 @@ std::string Widget::GetClass() const {
 	}
 
 	return m_class_id->class_;
+}
+
+Widget::Ptr SearchContainerForId( Container::PtrConst container, const std::string& id ) {
+	if( !container ) {
+		return Widget::Ptr();
+	}
+
+	Container::WidgetsList children = container->GetChildren();
+	std::size_t children_size = children.size();
+
+	for( std::size_t children_index = 0; children_index < children_size; ++children_index ) {
+		if( children[children_index]->GetId() == id ) {
+			return children[children_index];
+		}
+
+		Container::Ptr child_container( DynamicPointerCast<Container>( children[children_index] ) );
+
+		if( child_container ) {
+			Widget::Ptr widget = SearchContainerForId( child_container, id );
+
+			if( widget ) {
+				return widget;
+			}
+		}
+	}
+
+	return Widget::Ptr();
+}
+
+Widget::Ptr Widget::GetWidgetById( const std::string& id ) {
+	std::size_t root_widgets_size = m_root_widgets.size();
+
+	for( std::size_t root_widgets_index = 0; root_widgets_index < root_widgets_size; ++root_widgets_index ) {
+		if( m_root_widgets[root_widgets_index]->GetId() == id ) {
+			return m_root_widgets[root_widgets_index]->shared_from_this();
+		}
+
+		Container::Ptr container( DynamicPointerCast<Container>( m_root_widgets[root_widgets_index]->shared_from_this() ) );
+
+		if( container ) {
+			Widget::Ptr widget = SearchContainerForId( container, id );
+
+			if( widget ) {
+				return widget;
+			}
+		}
+	}
+
+	return Widget::Ptr();
+}
+
+Widget::WidgetsList SearchContainerForClass( Container::PtrConst container, const std::string& class_name ) {
+	Widget::WidgetsList result;
+
+	if( !container ) {
+		return result;
+	}
+
+	Container::WidgetsList children = container->GetChildren();
+	std::size_t children_size = children.size();
+
+	for( std::size_t children_index = 0; children_index < children_size; ++children_index ) {
+		if( children[children_index]->GetClass() == class_name ) {
+			result.push_back( children[children_index] );
+		}
+
+		Container::Ptr child_container( DynamicPointerCast<Container>( children[children_index] ) );
+
+		if( child_container ) {
+			Widget::WidgetsList child_result = SearchContainerForClass( child_container, class_name );
+
+			// Splice the 2 vectors.
+			if( !child_result.empty() ) {
+				result.reserve( child_result.size() );
+				result.insert( result.end(), child_result.begin(), child_result.end() );
+			}
+		}
+	}
+
+	return result;
+}
+
+Widget::WidgetsList Widget::GetWidgetsByClass( const std::string& class_name ) {
+	WidgetsList result;
+
+	std::size_t root_widgets_size = m_root_widgets.size();
+
+	for( std::size_t root_widgets_index = 0; root_widgets_index < root_widgets_size; ++root_widgets_index ) {
+		if( m_root_widgets[root_widgets_index]->GetClass() == class_name ) {
+			result.push_back( m_root_widgets[root_widgets_index]->shared_from_this() );
+		}
+
+		Container::Ptr container( DynamicPointerCast<Container>( m_root_widgets[root_widgets_index]->shared_from_this() ) );
+
+		if( container ) {
+			WidgetsList container_result = SearchContainerForClass( container, class_name );
+
+			// Splice the 2 vectors.
+			if( !container_result.empty() ) {
+				result.reserve( container_result.size() );
+				result.insert( result.end(), container_result.begin(), container_result.end() );
+			}
+		}
+	}
+
+	return result;
 }
 
 void Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
@@ -638,6 +780,14 @@ void Widget::Refresh() {
 	RequestResize();
 
 	Invalidate();
+}
+
+void Widget::RefreshAll() {
+	std::size_t root_widgets_size = m_root_widgets.size();
+
+	for( std::size_t index = 0; index < root_widgets_size; ++index ) {
+		m_root_widgets[index]->Refresh();
+	}
 }
 
 void Widget::HandleRequisitionChange() {
@@ -744,6 +894,10 @@ bool Widget::IsModal() const {
 
 bool Widget::HasModal() {
 	return m_modal_widget.lock();
+}
+
+const std::vector<Widget*>& Widget::GetRootWidgets() {
+	return m_root_widgets;
 }
 
 }

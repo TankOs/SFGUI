@@ -18,6 +18,9 @@ BREW::BREW() :
 }
 
 void BREW::ResetProperties() {
+	// Disable automatic widget refreshing while we set all these properties.
+	SetAutoRefresh( false );
+
 	ClearProperties();
 
 	// Set defaults.
@@ -152,6 +155,9 @@ void BREW::ResetProperties() {
 	SetProperty( "SpinButton", "StepperArrowColor", sf::Color( 0xd9, 0xdc, 0xd5 ) );
 	SetProperty( "SpinButton", "StepperSpeed", 10.f );
 	SetProperty( "SpinButton", "StepperRepeatDelay", 500 );
+
+	// (Re)Enable automatic widget refreshing after we are done setting all these properties.
+	SetAutoRefresh( true );
 }
 
 RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {

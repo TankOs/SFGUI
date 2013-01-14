@@ -30,20 +30,22 @@ void Container::Remove( const Widget::Ptr& widget ) {
 
 	if( iter != m_children.end() ) {
 		m_children.erase( iter );
-		RequestResize();
-
+		widget->SetParent( Widget::Ptr() );
 		HandleRemove( widget );
+
+		RequestResize();
 	}
 }
 
 void Container::RemoveAll() {
-	std::size_t num_children = m_children.size();
+	while( !m_children.empty() ) {
+		Widget::Ptr widget = m_children.back();
 
-	for( std::size_t child_idx = 0; child_idx < num_children; ++child_idx ) {
-		HandleRemove( m_children[child_idx] );
+		m_children.pop_back();
+		widget->SetParent( Widget::Ptr() );
+		HandleRemove( widget );
 	}
 
-	m_children.clear();
 	RequestResize();
 }
 

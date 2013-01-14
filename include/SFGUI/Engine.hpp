@@ -260,6 +260,16 @@ class SFGUI_API Engine {
 		 */
 		ResourceManager& GetResourceManager() const;
 
+	protected:
+		/** Ctor.
+		 */
+		Engine();
+
+		/** Call this to enable or disable automatic widget refreshing.
+		 * @param enable true to enable automatic widget refreshing.
+		 */
+		void SetAutoRefresh( bool enable );
+
 	private:
 		typedef std::pair<Selector::PtrConst, std::string> SelectorValuePair;
 		typedef std::vector<SelectorValuePair> SelectorValueList;
@@ -278,6 +288,8 @@ class SFGUI_API Engine {
 		PropertyMap m_properties;
 
 		mutable ResourceManager m_resource_manager;
+
+		bool m_auto_refresh;
 };
 
 }

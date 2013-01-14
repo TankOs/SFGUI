@@ -57,6 +57,11 @@ std::istream& operator>>( std::istream& stream, Color& color ) {
 
 namespace sfg {
 
+Engine::Engine() :
+	m_auto_refresh( false )
+{
+}
+
 Engine::~Engine() {
 }
 
@@ -390,6 +395,10 @@ bool Engine::SetProperty( const sfg::Selector::Ptr& selector, const std::string&
 	// Insert at top to get highest priority.
 	list.insert( list.begin(), SelectorValuePair( selector, value ) );
 
+	if( m_auto_refresh ) {
+		Widget::RefreshAll();
+	}
+
 	return true;
 }
 
@@ -457,11 +466,19 @@ bool Engine::SetProperties( const std::string& properties ) {
 		}
 	}
 
+	if( m_auto_refresh ) {
+		Widget::RefreshAll();
+	}
+
 	return true;
 }
 
 void Engine::ClearProperties() {
 	m_properties.clear();
+}
+
+void Engine::SetAutoRefresh( bool enable ) {
+	m_auto_refresh = enable;
 }
 
 }

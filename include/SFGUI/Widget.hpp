@@ -20,6 +20,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 	public:
 		typedef SharedPtr<Widget> Ptr; //!< Shared pointer.
 		typedef SharedPtr<const Widget> PtrConst; //!< Shared pointer.
+		typedef std::vector<Widget::Ptr> WidgetsList;
 
 		/** Widget state.
 		 */
@@ -208,10 +209,26 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		std::string GetClass() const;
 
+		/** Get all widgets with the specified ID.
+		 * @param id ID the widget should have.
+		 * @return Widget::Ptr of the first found widget with the specified ID or Widget::Ptr() if none found.
+		 */
+		static Widget::Ptr GetWidgetById( const std::string& id );
+
+		/** Get all widgets with the specified class.
+		 * @param class_name Class the widget should have.
+		 * @return sfg::Widget::WidgetsList of all found widgets with the specified class. Empty if none found.
+		 */
+		static WidgetsList GetWidgetsByClass( const std::string& class_name );
+
 		/** Refresh.
 		 * Invalidate the widget and request resize.
 		 */
 		virtual void Refresh();
+
+		/** Refreshes all root widgets, which should refresh all widgets in the hierarchy.
+		 */
+		static void RefreshAll();
 
 		/** Set hierarchy level of this widget.
 		 * @param level New hierarchy level of this widget.
@@ -435,6 +452,8 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		static void SetActiveWidget( Ptr widget );
 		static bool IsActiveWidget( PtrConst widget );
 
+		static const std::vector<Widget*>& GetRootWidgets();
+
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;
 		sf::Vector2f* m_custom_requisition;
@@ -446,6 +465,8 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		static WeakPtr<Widget> m_focus_widget;
 		static WeakPtr<Widget> m_active_widget;
 		static WeakPtr<Widget> m_modal_widget;
+
+		static std::vector<Widget*> m_root_widgets;
 
 		ClassId* m_class_id;
 
