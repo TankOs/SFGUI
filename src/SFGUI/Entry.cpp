@@ -19,6 +19,7 @@ Entry::Entry() :
 	m_max_length( 0 ),
 	m_cursor_position( 0 ),
 	m_elapsed_time( 0.f ),
+	m_text_margin( 0.f ),
 	m_cursor_status( false )
 {
 }
