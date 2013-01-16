@@ -319,6 +319,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			}
 
 			HandleMouseMoveEvent( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+
+			SetMouseButtonDown();
+			HandleMouseButtonEvent( sf::Mouse::Left, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+			HandleMouseButtonEvent( sf::Mouse::Right, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+
 			break;
 
 		case sf::Event::MouseMoved:

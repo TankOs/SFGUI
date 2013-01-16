@@ -1,6 +1,7 @@
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
+#include <limits>
 
 namespace sfg {
 
@@ -230,7 +231,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 }
 
 void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
-	if( !m_dragging ) {
+	if( !m_dragging || ( x == std::numeric_limits<int>::min() ) || ( y == std::numeric_limits<int>::min() ) ) {
 		return;
 	}
 
