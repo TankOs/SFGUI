@@ -4,9 +4,9 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>
 
-class DesktopExample {
+class BobExample {
 	public:
-		DesktopExample();
+		BobExample();
 
 		void Run();
 
@@ -31,17 +31,17 @@ class DesktopExample {
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
 };
 
-const unsigned int DesktopExample::SCREEN_WIDTH = 800;
-const unsigned int DesktopExample::SCREEN_HEIGHT = 600;
+const unsigned int BobExample::SCREEN_WIDTH = 800;
+const unsigned int BobExample::SCREEN_HEIGHT = 600;
 
 int main() {
-	DesktopExample app;
+	BobExample app;
 	app.Run();
 
 	return 0;
 }
 
-DesktopExample::DesktopExample() :
+BobExample::BobExample() :
 	m_engine_name("Bob"),
 	m_desktop(),
 	m_window( sfg::Window::Create() )
@@ -53,7 +53,7 @@ DesktopExample::DesktopExample() :
 	m_desktop.LoadThemeFromFile( "data/bob/grey.theme" );
 }
 
-void DesktopExample::Run() {
+void BobExample::Run() {
 	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "SFGUI Desktop Example" );
 	sf::Event event;
 
@@ -116,8 +116,8 @@ void DesktopExample::Run() {
 	m_window->SetPosition( sf::Vector2f( 100.f, 100.f) );
 
 	// Signals.
-	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnButtonClick, this );
-	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &DesktopExample::OnAdjustmentChange, this );
+	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &BobExample::OnButtonClick, this );
+	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &BobExample::OnAdjustmentChange, this );
 
 	sf::Clock clock;
 
@@ -156,11 +156,11 @@ void DesktopExample::Run() {
 	}
 }
 
-void DesktopExample::OnAdjustmentChange() {
+void BobExample::OnAdjustmentChange() {
 	m_progress->SetFraction( m_scale->GetValue() / 100.f );;
 }
 
-void DesktopExample::OnButtonClick() {
+void BobExample::OnButtonClick() {
 	if( m_engine_name == "Bob" ){
 		m_engine_name = "Brew";
 		m_desktop.UseEngine< sfg::eng::BREW >();
