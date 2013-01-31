@@ -21,6 +21,12 @@ Entry {
 	Image: data/bob/entry.png;
 }
 
+ProgressBar {
+	BackgroundImage: data/bob/progressbar_background.png;
+	BarImage: data/bob/progressbar_bar.png;
+	BarPadding: 2;
+}
+
 Scale {
 	TroughImage: data/bob/scale_trough.png;
 	SliderImage: data/bob/slider.png;

@@ -17,6 +17,7 @@ class DesktopExample {
 		std::string m_engine_name;
 
 		void OnButtonClick();
+		void OnAdjustmentChange();
 
 		sfg::SFGUI m_sfgui;
 
@@ -24,6 +25,7 @@ class DesktopExample {
 		sfg::Window::Ptr m_window;
 		sfg::Button::Ptr m_button;
 		sfg::Entry::Ptr m_entry;
+		sfg::ProgressBar::Ptr m_progress;
 		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
@@ -68,6 +70,9 @@ void DesktopExample::Run() {
 	m_entry = sfg::Entry::Create( L"Type Something" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 
+	m_progress = sfg::ProgressBar::Create( sfg::ProgressBar::HORIZONTAL );
+	m_progress->SetRequisition( sf::Vector2f( 0.f, 20.f ) );
+
 	m_scrollbar = sfg::Scrollbar::Create();
 	m_scrollbar->SetRange( .0f, 100.f );
 
@@ -100,6 +105,7 @@ void DesktopExample::Run() {
 	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );
 	main_box->Pack( m_scrollbar, false );
+	main_box->Pack( m_progress, false );
 	main_box->Pack( widget_box, false );
 	main_box->Pack( m_scrolled_window );
 
@@ -111,6 +117,7 @@ void DesktopExample::Run() {
 
 	// Signals.
 	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnButtonClick, this );
+	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &DesktopExample::OnAdjustmentChange, this );
 
 	sf::Clock clock;
 
@@ -149,6 +156,10 @@ void DesktopExample::Run() {
 	}
 }
 
+void DesktopExample::OnAdjustmentChange() {
+	m_progress->SetFraction( m_scale->GetValue() / 100.f );;
+}
+
 void DesktopExample::OnButtonClick() {
 	if( m_engine_name == "Bob" ){
 		m_engine_name = "Brew";
@@ -163,3 +174,4 @@ void DesktopExample::OnButtonClick() {
 		m_desktop.LoadThemeFromFile( "data/bob/grey.theme" );
 	}
 }
+

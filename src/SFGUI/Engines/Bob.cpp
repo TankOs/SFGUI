@@ -48,6 +48,9 @@ void Bob::ResetProperties() {
 	// Entry-specific
 	SetProperty( "Entry", "Thickness", 1.f );
 
+	// ProgressBar-specific.
+	SetProperty( "ProgressBar", "BarPadding", 1.f);
+
 	// Scale-specific
 	SetProperty( "Scale", "SliderLength", 15.f );
 	SetProperty( "Scale", "TroughWidth", 5.f );
