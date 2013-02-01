@@ -13,20 +13,9 @@ RenderQueue* Bob::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progre
 	RenderQueue* queue( new RenderQueue );
 
 	//Background
-	bob::Spritebox background_box;
-	background_box.SetDimension( sf::Vector2i( static_cast<int>( progress_bar->GetAllocation().width ), static_cast<int>( progress_bar->GetAllocation().height ) ) );
-
-	const sf::Image *image( GetResourceManager().GetImage( GetProperty<std::string>( "BackgroundImage", progress_bar ) ) );
-	if( image == NULL )
-		return queue;
-
-	SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( image ) );
-	background_box.SetTexture( texture_handle );
-
-	Primitive::Ptr primitive = background_box.ConstructPrimitive();
-
-	Renderer::Get().AddPrimitive( primitive );
-	queue->Add( primitive );
+	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, progress_bar->GetAllocation().width, progress_bar->GetAllocation().height ),
+								 GetResourceManager().GetImage( GetProperty<std::string>( "BackgroundImage", progress_bar ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
 	//Bar
 	if( progress_bar->GetFraction() > 0.f ) {
@@ -46,22 +35,9 @@ RenderQueue* Bob::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progre
 			bar_position.y = std::floor( progress_bar->GetAllocation().height + 0.5f) - std::floor( bar_dimension.y + 0.5f ) - padding;
 		}
 
-		bob::Spritebox bar_box;
-
-		bar_box.SetDimension( static_cast<sf::Vector2i>( bar_dimension ) );
-		bar_box.SetPosition( bar_position );
-
-		const sf::Image *bar_image( GetResourceManager().GetImage( GetProperty<std::string>( "BarImage", progress_bar ) ) );
-		if( image == NULL )
-			return queue;
-
-		texture_handle = m_texture_manager.GetTexture( bar_image );
-		bar_box.SetTexture( texture_handle );
-
-		primitive = bar_box.ConstructPrimitive();
-
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
+		queue->Add( CreateSpritebox( sf::FloatRect( bar_position, bar_dimension ),
+									 GetResourceManager().GetImage( GetProperty<std::string>( "BarImage", progress_bar ) ),
+									 UintRect( 0, 0, 0, 0 ) ) );
 	}
 
 	return queue;

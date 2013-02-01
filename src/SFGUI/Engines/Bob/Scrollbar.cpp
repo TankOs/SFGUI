@@ -51,65 +51,29 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 	}
 
 	// Trough
-	const sf::Image *trough_image( GetResourceManager().GetImage(GetProperty<std::string>( "TroughImage", scrollbar ) ) );
-	if(trough_image != NULL){
-		bob::Spritebox spritebox;
-		spritebox.SetDimension( sf::Vector2i( static_cast<sf::Vector2i>( trough_dimension ) ) );
-		spritebox.SetPosition( trough_position );
+	queue->Add( CreateSpritebox( sf::FloatRect( trough_position, trough_dimension ),
+								 GetResourceManager().GetImage( GetProperty<std::string>( "TroughImage", scrollbar ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
-		SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( trough_image ) );
-		spritebox.SetTexture( texture_handle );
-
-		Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
-	}
-
-	// Steppers
-	const sf::Image *stepper_image;
-
-	// Decrease
+	// Decrease-stepper
+	std::string stepper_image_property("StepperImage");
 	if(scrollbar->IsDecreaseStepperPressed()){
-		stepper_image = GetResourceManager().GetImage( GetProperty<std::string>( "StepperPressedImage", scrollbar ) );
-	} else {
-		stepper_image = GetResourceManager().GetImage( GetProperty<std::string>( "StepperImage", scrollbar ) );
+		stepper_image_property = "StepperPressedImage";
 	}
 
-	if(stepper_image != NULL){
-		bob::Spritebox spritebox;
-		spritebox.SetDimension( static_cast<sf::Vector2i>( stepper_dimension ) );
-		spritebox.SetPosition( decrease_position );
+	queue->Add( CreateSpritebox( sf::FloatRect( decrease_position, stepper_dimension ),
+								 GetResourceManager().GetImage( GetProperty<std::string>( stepper_image_property, scrollbar ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
-		SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( stepper_image ) );
-		spritebox.SetTexture( texture_handle );
-
-		Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
+	// Increase-stepper
+	stepper_image_property = "StepperImage";
+	if(scrollbar->IsDecreaseStepperPressed()){
+		stepper_image_property = "StepperPressedImage";
 	}
 
-	// Increase
-	if(scrollbar->IsIncreaseStepperPressed()){
-		stepper_image = GetResourceManager().GetImage( GetProperty<std::string>( "StepperPressedImage", scrollbar ) );
-	} else {
-		stepper_image = GetResourceManager().GetImage( GetProperty<std::string>( "StepperImage", scrollbar ) );
-	}
-
-	if(stepper_image != NULL){
-		bob::Spritebox spritebox;
-		spritebox.SetDimension( static_cast<sf::Vector2i>( stepper_dimension ) );
-		spritebox.SetPosition( increase_position );
-
-		SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( stepper_image ) );
-		spritebox.SetTexture( texture_handle );
-
-		Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
-	}
+	queue->Add( CreateSpritebox( sf::FloatRect( increase_position, stepper_dimension ),
+								 GetResourceManager().GetImage( GetProperty<std::string>( stepper_image_property, scrollbar ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
 	// Arrows
 	const sf::Image *arrow_image( GetResourceManager().GetImage( GetProperty<std::string>( "ArrowImage", scrollbar ) ) );
@@ -138,20 +102,9 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 	}
 
 	// Slider
-	const sf::Image *slider_image(GetResourceManager().GetImage(GetProperty<std::string>("SliderImage", scrollbar)));
-	if(stepper_image != NULL){
-		bob::Spritebox spritebox;
-		spritebox.SetDimension( sf::Vector2i( static_cast<int>(slider_rect.width),  static_cast<int>(slider_rect.height) ) );
-		spritebox.SetPosition(  sf::Vector2f( slider_rect.left, slider_rect.top ) );
-
-		SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( slider_image ) );
-		spritebox.SetTexture( texture_handle );
-
-		Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
-	}
+	queue->Add( CreateSpritebox( slider_rect,
+								 GetResourceManager().GetImage( GetProperty<std::string>( "SliderImage", scrollbar ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
 	return queue;
 }

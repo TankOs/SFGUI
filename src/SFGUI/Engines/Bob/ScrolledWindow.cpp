@@ -11,20 +11,11 @@ RenderQueue* Bob::CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> 
 
 	RenderQueue* queue( new RenderQueue );
 
-	const sf::Image *window_image( GetResourceManager().GetImage(GetProperty<std::string>( "Image", scrolled_window ) ) );
-	if(window_image != NULL){
-		bob::Spritebox spritebox;
-		spritebox.SetDimension( sf::Vector2i( static_cast<int>( scrolled_window->GetContentAllocation().width  + 2 * border_width ),
-											  static_cast<int>( scrolled_window->GetContentAllocation().height + 2 * border_width ) ) );
-
-		SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( window_image ) );
-		spritebox.SetTexture( texture_handle );
-
-		Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
-	}
+	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f,
+												scrolled_window->GetContentAllocation().width  + 2 * border_width,
+												scrolled_window->GetContentAllocation().height + 2 * border_width ),
+								 GetResourceManager().GetImage( GetProperty<std::string>( "Image", scrolled_window ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
 	return queue;
 }

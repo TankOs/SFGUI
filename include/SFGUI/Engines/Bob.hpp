@@ -9,6 +9,8 @@ class RenderQueue;
 
 namespace eng {
 
+typedef sf::Rect< unsigned int > UintRect;
+
 /** Bob (Blitter OBject) -- Bitmap Rendering Engine.
  */
 class SFGUI_API Bob : public Engine {
@@ -41,6 +43,7 @@ class SFGUI_API Bob : public Engine {
 
 	protected:
 		Primitive::Ptr CreateArrow( const sf::FloatRect& rect, unsigned int rotation, const sf::Image *image ) const;
+		Primitive::Ptr CreateSpritebox( const sf::FloatRect& rect, const sf::Image *image, UintRect sub_rect ) const;
 
 	private:
 		mutable bob::TextureManager m_texture_manager;

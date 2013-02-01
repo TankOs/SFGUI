@@ -28,30 +28,14 @@ RenderQueue* Bob::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	}
 
 	// Trough
-	const sf::Image *trough_image( GetResourceManager().GetImage( GetProperty<std::string>( "TroughImage", scale ) ) );
-	if( trough_image != NULL ){
-		bob::Spritebox spritebox;
-		spritebox.SetDimension( static_cast<sf::Vector2i>( trough_dimension ) );
-		spritebox.SetPosition( trough_position );
-		spritebox.SetTexture( m_texture_manager.GetTexture( trough_image ) );
-
-		Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
-	}
+	queue->Add( CreateSpritebox( sf::FloatRect( trough_position, trough_dimension ),
+								 GetResourceManager().GetImage( GetProperty<std::string>( "TroughImage", scale ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
 	// Slider
-	const sf::Image *slider_image( GetResourceManager().GetImage( GetProperty<std::string>( "SliderImage", scale ) ) );
-	if(slider_image != NULL){
-		bob::Spritebox spritebox;
-		spritebox.SetDimension( sf::Vector2i( static_cast<int>( slider_rect.width ), static_cast<int>( slider_rect.height ) ) );
-		spritebox.SetPosition( sf::Vector2f( std::floor( slider_rect.left + 0.5f ), std::floor( slider_rect.top + 0.5f ) ) );
-		spritebox.SetTexture( m_texture_manager.GetTexture( slider_image ) );
-
-		Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-		Renderer::Get().AddPrimitive( primitive );
-		queue->Add( primitive );
-	}
+	queue->Add( CreateSpritebox( slider_rect,
+								 GetResourceManager().GetImage( GetProperty<std::string>( "SliderImage", scale ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
 	return queue;
 }

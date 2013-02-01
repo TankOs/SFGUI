@@ -19,20 +19,9 @@ RenderQueue* Bob::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	RenderQueue* queue( new RenderQueue );
 
 	//Spritebox
-	bob::Spritebox spritebox;
-	spritebox.SetDimension( sf::Vector2i( static_cast<int>( entry->GetAllocation().width ), static_cast<int>( entry->GetAllocation().height ) ) );
-
-	const sf::Image *image( GetResourceManager().GetImage( GetProperty<std::string>( "Image", entry ) ) );
-	if( image == NULL )
-		return queue;
-
-	SharedPtr< Primitive::Texture > texture_handle( m_texture_manager.GetTexture( image ) );
-	spritebox.SetTexture( texture_handle );
-
-	Primitive::Ptr primitive = spritebox.ConstructPrimitive();
-
-	Renderer::Get().AddPrimitive( primitive );
-	queue->Add( primitive );
+	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().width, entry->GetAllocation().height ),
+								 GetResourceManager().GetImage( GetProperty<std::string>( "Image", entry ) ),
+								 UintRect( 0, 0, 0, 0 ) ) );
 
 	float line_height = GetFontLineHeight( font, font_size );
 	sf::Text vis_label( entry->GetVisibleText(), font, font_size );
