@@ -30,12 +30,12 @@ RenderQueue* Bob::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
 	// Trough
 	queue->Add( CreateSpritebox( sf::FloatRect( trough_position, trough_dimension ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "TroughImage", scale ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "TroughSubRect", scale ) ) );
 
 	// Slider
 	queue->Add( CreateSpritebox( slider_rect,
 								 GetResourceManager().GetImage( GetProperty<std::string>( "SliderImage", scale ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "SliderSubRect", scale ) ) );
 
 	return queue;
 }

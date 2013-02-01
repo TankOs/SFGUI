@@ -21,7 +21,7 @@ RenderQueue* Bob::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	//Spritebox
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().width, entry->GetAllocation().height ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "Image", entry ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "SubRect", entry ) ) );
 
 	float line_height = GetFontLineHeight( font, font_size );
 	sf::Text vis_label( entry->GetVisibleText(), font, font_size );

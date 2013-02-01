@@ -31,7 +31,7 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 
 		queue->Add( CreateSpritebox( sf::FloatRect( 0.f, title_size, window->GetAllocation().width, window->GetAllocation().height - title_size ),
 									 GetResourceManager().GetImage( GetProperty<std::string>( area_image_property, window ) ),
-									 UintRect( 0, 0, 0, 0 ) ) );
+									 GetProperty<UintRect>( "AreaSubRect", window ) ) );
 
 	}
 
@@ -54,7 +54,7 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 	if( title_size > 0 ) {
 		queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, window->GetAllocation().width, title_size ),
 									 GetResourceManager().GetImage( GetProperty<std::string>( "TitleBarImage", window ) ),
-									 UintRect( 0, 0, 0, 0 ) ) );
+									 GetProperty<UintRect>( "TitleBarSubRect", window ) ) );
 
 		// Find out visible text, count in "...".
 		float avail_width( window->GetAllocation().width - 2.f * title_padding );

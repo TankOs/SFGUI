@@ -3,6 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Engines/Bob/TextureManager.hpp>
+#include <SFGUI/Engines/Bob/StreamOperators.hpp>
 
 namespace sfg {
 class RenderQueue;

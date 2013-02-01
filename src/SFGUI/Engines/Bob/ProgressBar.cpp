@@ -15,7 +15,7 @@ RenderQueue* Bob::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progre
 	//Background
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, progress_bar->GetAllocation().width, progress_bar->GetAllocation().height ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "BackgroundImage", progress_bar ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "BackgroundSubRect", progress_bar ) ) );
 
 	//Bar
 	if( progress_bar->GetFraction() > 0.f ) {
@@ -37,7 +37,7 @@ RenderQueue* Bob::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progre
 
 		queue->Add( CreateSpritebox( sf::FloatRect( bar_position, bar_dimension ),
 									 GetResourceManager().GetImage( GetProperty<std::string>( "BarImage", progress_bar ) ),
-									 UintRect( 0, 0, 0, 0 ) ) );
+									 GetProperty<UintRect>( "BarSubRect", progress_bar ) ) );
 	}
 
 	return queue;

@@ -15,7 +15,7 @@ RenderQueue* Bob::CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> 
 												scrolled_window->GetContentAllocation().width  + 2 * border_width,
 												scrolled_window->GetContentAllocation().height + 2 * border_width ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "Image", scrolled_window ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "SubRect", scrolled_window ) ) );
 
 	return queue;
 }

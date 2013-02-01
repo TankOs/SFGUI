@@ -53,7 +53,7 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 	// Trough
 	queue->Add( CreateSpritebox( sf::FloatRect( trough_position, trough_dimension ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "TroughImage", scrollbar ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "TroughSubRect", scrollbar ) ) );
 
 	// Decrease-stepper
 	std::string stepper_image_property("StepperImage");
@@ -63,7 +63,7 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 
 	queue->Add( CreateSpritebox( sf::FloatRect( decrease_position, stepper_dimension ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( stepper_image_property, scrollbar ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "StepperSubRect", scrollbar ) ) );
 
 	// Increase-stepper
 	stepper_image_property = "StepperImage";
@@ -73,7 +73,7 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 
 	queue->Add( CreateSpritebox( sf::FloatRect( increase_position, stepper_dimension ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( stepper_image_property, scrollbar ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "StepperSubRect", scrollbar ) ) );
 
 	// Arrows
 	const sf::Image *arrow_image( GetResourceManager().GetImage( GetProperty<std::string>( "ArrowImage", scrollbar ) ) );
@@ -104,7 +104,7 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 	// Slider
 	queue->Add( CreateSpritebox( slider_rect,
 								 GetResourceManager().GetImage( GetProperty<std::string>( "SliderImage", scrollbar ) ),
-								 UintRect( 0, 0, 0, 0 ) ) );
+								 GetProperty<UintRect>( "SliderSubRect", scrollbar ) ) );
 
 	return queue;
 }

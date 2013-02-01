@@ -41,6 +41,7 @@ void Bob::ResetProperties() {
 	SetProperty( "*", "FontName", "" ); // Uses SFGUI's default font when empty.
 	SetProperty( "*", "BackgroundColor", sf::Color::White );
 	SetProperty( "*", "Padding", 5.f );
+	SetProperty( "*", "SubRect", UintRect( 0, 0, 0, 0 ) );
 
 	// Button-specific
 	SetProperty( "Button", "Spacing", 5.f );
@@ -53,12 +54,17 @@ void Bob::ResetProperties() {
 
 	// Scale-specific
 	SetProperty( "Scale", "SliderLength", 15.f );
+	SetProperty( "Scale", "SliderSubRect", UintRect( 0, 0, 0, 0 ) );
 	SetProperty( "Scale", "TroughWidth", 5.f );
+	SetProperty( "Scale", "TroughSubRect", UintRect( 0, 0, 0, 0 ) );
 
 	// Scrollbar-specific.
 	SetProperty( "Scrollbar", "StepperSpeed", 10.f );
 	SetProperty( "Scrollbar", "StepperRepeatDelay", 300 );
+	SetProperty( "Scrollbar", "StepperSubRect", UintRect( 0, 0, 0, 0 ) );
 	SetProperty( "Scrollbar", "SliderMinimumLength", 15.f );
+	SetProperty( "Scrollbar", "SliderSubRect", UintRect( 0, 0, 0, 0 ) );
+	SetProperty( "Scrollbar", "TroughSubRect", UintRect( 0, 0, 0, 0 ) );
 
 	// ScrolledWindow-specific
 	SetProperty( "ScrolledWindow", "ScrollbarWidth", 20.f );
@@ -68,6 +74,7 @@ void Bob::ResetProperties() {
 	// Window-specific
 	SetProperty( "Window", "Gap", 10.f );
 	SetProperty( "Window", "TitlePadding", 5.f );
+	SetProperty( "Window", "WindowSubRect", UintRect( 0, 0, 0, 0 ) );
 	SetProperty( "Window", "HandleSize", 10.f );
 }
 
@@ -110,8 +117,7 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, const sf::Image 
     coords[2] = dimension - step;
     coords[3] = dimension;
 
-    sf::Vector2f texStartCoord( float_sub_rect.left / static_cast<float>( texture->size.x ),
-							    float_sub_rect.top  / static_cast<float>( texture->size.y ) );
+    sf::Vector2f texStartCoord( float_sub_rect.left ,float_sub_rect.top );
 
 	texStartCoord += texture->offset;
 
