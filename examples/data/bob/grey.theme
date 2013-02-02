@@ -17,6 +17,23 @@ Button:ACTIVE {
 	Image: data/bob/box_active.png;
 }
 
+CheckButton {
+	BoxSize: 18;
+	CheckSize: 6;
+	Spacing: 5;
+	
+	Image: data/bob/box.png;
+	CheckImage: data/bob/check.png;
+}
+
+CheckButton:PRELIGHT {
+	Image: data/bob/box_prelight.png;
+}
+
+CheckButton:ACTIVE {
+	Image: data/bob/box_active.png;
+}
+
 Entry {
 	Image: data/bob/entry.png;
 }

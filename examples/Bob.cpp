@@ -24,6 +24,7 @@ class BobExample {
 		sfg::Desktop m_desktop;
 		sfg::Window::Ptr m_window;
 		sfg::Button::Ptr m_button;
+		sfg::CheckButton::Ptr m_check_button;
 		sfg::Entry::Ptr m_entry;
 		sfg::ProgressBar::Ptr m_progress;
 		sfg::Scale::Ptr m_scale;
@@ -62,13 +63,15 @@ void BobExample::Run() {
 
 	//// Main window ////
 	// Widgets.
-	m_window->SetTitle( "SFGUI Bob Example" );
+	m_window->SetTitle( L"SFGUI Bob Example" );
 
-	sfg::Label::Ptr intro_label( sfg::Label::Create( "The brand new Bob-Engine!" ) );
-	m_button = sfg::Button::Create( "Switch Engines" );
+	sfg::Label::Ptr intro_label( sfg::Label::Create( L"The brand new Bob-Engine!" ) );
+	m_button = sfg::Button::Create( L"Switch Engines" );
 
 	m_entry = sfg::Entry::Create( L"Type Something" );
 	m_entry->SetRequisition( sf::Vector2f( 100.f, .0f ) );
+
+	m_check_button = sfg::CheckButton::Create( L"Look, a check-box!" );
 
 	m_progress = sfg::ProgressBar::Create( sfg::ProgressBar::HORIZONTAL );
 	m_progress->SetRequisition( sf::Vector2f( 0.f, 20.f ) );
@@ -101,6 +104,7 @@ void BobExample::Run() {
 	widget_box->Pack( m_button, true );
 	widget_box->Pack( m_entry, true );
 	widget_box->Pack( m_scale, true );
+	widget_box->Pack( m_check_button, true );
 
 	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );
@@ -118,6 +122,8 @@ void BobExample::Run() {
 	// Signals.
 	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &BobExample::OnButtonClick, this );
 	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &BobExample::OnAdjustmentChange, this );
+
+	m_scrollbar->SetValue( 30.f );
 
 	sf::Clock clock;
 

@@ -26,6 +26,12 @@ void Bob::ResetProperties() {
 	// Button-specific
 	SetProperty( "Button", "Spacing", 5.f );
 
+	// CheckButton-specific.
+	SetProperty( "CheckButton", "Spacing", 5.f );
+	SetProperty( "CheckButton", "BoxSize", 15.f );
+	SetProperty( "CheckButton", "SubRect", UintRect( 0, 0, 0, 0 ) );
+	SetProperty( "CheckButton", "CheckSubRect", UintRect( 0, 0, 0, 0 ) );
+
 	// Entry-specific
 	SetProperty( "Entry", "Thickness", 1.f );
 
