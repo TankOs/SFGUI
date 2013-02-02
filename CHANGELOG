@@ -1,7 +1,28 @@
-0.0.1 (2013-01-09)
+Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
-	* FIX: Compatible to latest SFML commit.
+0.1.0 (2013-02-02)
+------------------
+
+Enhancements:
+	- Implemented SpinButton widget.
+	- Optimized primitive construction and label resizing.
+
+Fixes:
+	- Mouse leaving SFML window causing a very very long scroll action with
+	  scrollbars, resulting in lag.
+	- Uninitialized text margin variable in entry widget.
+	- Widgets not automatically refreshing when a property is changed after their
+	  drawables are constructed.
+	- Widgets not automatically refreshing when their ID or class is changed.
+	- sf::Event::MouseEntered and sf::Event::MouseLeft not being handled
+	  properly.
+
+0.0.1 (2013-01-09)
+------------------
+
+	- FIX: Compatible to latest SFML commit.
 
 0.0.0 (2013-01-04)
+------------------
 
-	* First release.
+	- First release.
