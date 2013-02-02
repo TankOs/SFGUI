@@ -134,5 +134,49 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, const sf::Image 
     return primitive;
 }
 
+Primitive::Ptr Bob::CreateArrow( const sf::FloatRect& rect, unsigned int rotation, const sf::Image *image ) const {
+	SharedPtr<Primitive::Texture> texture_handle( m_texture_manager.GetTexture( image ) );
+	sf::Vector2f offset = texture_handle->offset;
+
+	Primitive::Ptr primitive( new Primitive );
+
+	Primitive::Vertex v0, v1, v2, v3;
+
+	v0.position = sf::Vector2f( rect.left, rect.top );
+	v1.position = sf::Vector2f( rect.left, rect.top +  rect.height );
+	v2.position = sf::Vector2f( rect.left  + rect.width, rect.top + rect.height );
+	v3.position = sf::Vector2f( rect.left  + rect.width, rect.top );
+
+	v0.color = sf::Color::White;
+	v1.color = sf::Color::White;
+	v2.color = sf::Color::White;
+	v3.color = sf::Color::White;
+
+	sf::Vector2f texture_coordinates[4] = {
+		sf::Vector2f( 0.f, 0.f ),
+		sf::Vector2f( 0.f, static_cast<float>( image->getSize().y ) ),
+		sf::Vector2f( static_cast<float>( image->getSize().x ), static_cast<float>( image->getSize().y ) ),
+		sf::Vector2f( static_cast<float>( image->getSize().x ), 0.f )
+	};
+
+	v0.texture_coordinate = offset + texture_coordinates[ rotation % 4 ];
+	v1.texture_coordinate = offset + texture_coordinates[ ( rotation + 1 ) % 4 ];
+	v2.texture_coordinate = offset + texture_coordinates[ ( rotation + 2 ) % 4 ];
+	v3.texture_coordinate = offset + texture_coordinates[ ( rotation + 3 ) % 4 ];
+
+	primitive->AddVertex( v0 );
+	primitive->AddVertex( v1 );
+	primitive->AddVertex( v3 );
+	primitive->AddVertex( v3 );
+	primitive->AddVertex( v1 );
+	primitive->AddVertex( v2 );
+
+	primitive->AddTexture( texture_handle );
+
+	Renderer::Get().AddPrimitive( primitive );
+
+	return primitive;
+}
+
 }
 }
