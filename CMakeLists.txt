@@ -28,13 +28,13 @@ endif()
 # Set default compile flags.
 if( CMAKE_COMPILER_IS_GNUCXX )
 	if( NOT CMAKE_CXX_FLAGS )
-		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic -std=c++11" CACHE STRING "C++ compiler flags" FORCE )
-		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic -std=c++11" CACHE STRING "C compiler flags" FORCE )
+		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
+		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
 	endif()
 
 	if( NOT CMAKE_CXX_FLAGS_DEBUG )
-		set( CMAKE_CXX_FLAGS_DEBUG "-g -O0 -std=c++11" CACHE STRING "C++ compiler flags (debug)" FORCE )
-		set( CMAKE_C_FLAGS_DEBUG "-g -O0 -std=c++11" CACHE STRING "C++ compiler flags (debug)" FORCE )
+		set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
+		set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
 	endif()
 endif()
 
