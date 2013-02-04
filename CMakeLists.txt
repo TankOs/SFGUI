@@ -12,54 +12,29 @@ set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
 set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate the SFGUI API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include a default font (DejaVuSans) that is used automatically if no font is specified." )
-set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
-
-if( SFML_STATIC_LIBRARIES AND BUILD_SHARED_LIBS )
-	message( FATAL_ERROR "If you link to SFML statically you MUST link to SFGUI statically too." )
-endif()
-
-if( MSVC )
-	set( SFGUI_USE_STATIC_STD_LIBS false CACHE BOOL "True to link the runtime library statically, false to link them dynamically." )
-endif()
 
 # Add SFML's CMake Modules directory from extlibs to module search path for
 # finding FindSFML.cmake more easily.
 set( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/extlibs/SFML/cmake/Modules/;${CMAKE_MODULE_PATH}" )
 
+# Find packages.
 find_package( OpenGL REQUIRED )
-find_package( SFML 2.0 QUIET COMPONENTS GRAPHICS WINDOW SYSTEM )
-
-# FindSFML was not run.
-if( NOT DEFINED FIND_SFML_LIB_SUFFIX )
-	set( CMAKE_MODULE_PATH "" CACHE PATH "Directory containing FindSFML.cmake" )
-	message( FATAL_ERROR "CMake couldn't find FindSFML.cmake. Did you remember to install SFML?\nOptionally, you can set the CMAKE_MODULE_PATH entry to the directory containing FindSFML.cmake.\nFindSFML.cmake will be searched for in there." )
-endif()
-
-# FindSFML couldn't find SFML.
-if( NOT SFML_FOUND )
-	set( SFML_ROOT "" CACHE PATH "SFML root directory" )
-	message( FATAL_ERROR "CMake couldn't find SFML. Set the SFML_ROOT entry to SFML's root directory (containing \"include\" and \"lib\" directories)." )
-endif()
-
-if( SFML_STATIC_LIBRARIES )
-	# Even though FindSFML sets -DSFML_STATIC itself, better safe than sorry.
-	add_definitions( -DSFML_STATIC )
-endif()
+find_package( SFML 2.0 REQUIRED COMPONENTS GRAPHICS WINDOW SYSTEM )
 
 if( SFGUI_INCLUDE_FONT )
 	add_definitions( -DSFGUI_INCLUDE_FONT )
 endif()
 
-# Set some useful compile flags.
+# Set default compile flags.
 if( CMAKE_COMPILER_IS_GNUCXX )
 	if( NOT CMAKE_CXX_FLAGS )
-		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
-		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
+		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic -std=c++11" CACHE STRING "C++ compiler flags" FORCE )
+		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic -std=c++11" CACHE STRING "C compiler flags" FORCE )
 	endif()
 
 	if( NOT CMAKE_CXX_FLAGS_DEBUG )
-		set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
-		set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
+		set( CMAKE_CXX_FLAGS_DEBUG "-g -O0 -std=c++11" CACHE STRING "C++ compiler flags (debug)" FORCE )
+		set( CMAKE_C_FLAGS_DEBUG "-g -O0 -std=c++11" CACHE STRING "C++ compiler flags (debug)" FORCE )
 	endif()
 endif()
 
@@ -243,15 +218,6 @@ set(
 
 set_source_files_properties( ${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c PROPERTIES COMPILE_FLAGS "-w" )
 
-# Static runtime linkage for our favorite compiler.
-if( MSVC AND SFGUI_USE_STATIC_STD_LIBS )
-	foreach( flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO )
-		if( ${flag} MATCHES "/MD" )
-			string( REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}" )
-		endif()
-	endforeach()
-endif()
-
 # Add the library.
 if( BUILD_SHARED_LIBS )
 	add_library( sfgui SHARED ${SOURCES} )
@@ -275,9 +241,10 @@ endif()
 # Tell the compiler to export when necessary.
 set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
-target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
-
-if( APPLE )
+# Link to dependencies on Windows.
+if( WIN32 )
+	target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
+elseif( APPLE )
 	target_link_libraries( sfgui ${COREFOUNDATION_LIBRARY} )
 endif()
 

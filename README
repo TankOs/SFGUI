@@ -1,12 +1,8 @@
                                      SFGUI
                              GUI library for SFML 2
 
-										(c) Stefan Schindler, 2012 (BoxBox.org)
-										 zlib license (see LICENSE for details)
-
-
-IMPORTANT: SFGUI is heavily under development. Keep in mind that code which is
-actively being developed may fail on your system or behave strangely.
+                        © Stefan Schindler (BoxBox.org)
+                     zlib license (see LICENSE for details)
 
 
 1. INSTALLING
@@ -24,7 +20,7 @@ To build, perform the following steps:
 
   - cmake .
   - make install (as root)
-  - ldconfig (as root)
+  - On Linux: ldconfig (as root)
 
 
 2. USING SFGUI IN OWN PROJECTS
@@ -44,7 +40,7 @@ to your project's CMakeLists.txt file:
   target_link_libraries( my_program ... ${SFGUI_LIBRARY} )
 
 In case CMake can't find your SFGUI installation, you can still specify the
-path manually by setting the SFGUIDIR CMake variable.
+path manually by setting the SFGUI_ROOT CMake variable.
 
 Keep in mind that you still have to link to SFML 2.0 (at least system, windows
 and graphics).
@@ -55,7 +51,7 @@ and graphics).
 You can find the API documentation in the doc sub-directory. Create it with
 Doxygen (http://www.stack.nl/~dimitri/doxygen/).
 
-It's also available online on the website: http://sfgui.sfml-dev.de/doxygen/
+It's also available online at http://sfgui.sfml-dev.de/doxygen/
 
 
 4. CONTRIBUTING/CONTACT

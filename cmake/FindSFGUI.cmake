@@ -1,38 +1,36 @@
-# This script locates the SFGUI library
-# ------------------------------------
+# This script locates the SFGUI library.
 #
-# Usage
-# -----
+# USAGE
 #
-# By default, the dynamic version of SFGUI will be found. To find the static one instead,
-# you must set the SFGUI_STATIC_LIBRARIES variable to TRUE before calling find_package( SFGUI ).
-# In case you want to static link, SFGUI_STATIC will also be defined by this script.
-# example:
+# By default, the dynamic version of SFGUI will be found. To find the static
+# one instead, you must set the SFGUI_STATIC_LIBRARIES variable to TRUE before
+# calling find_package( SFGUI ). In that case SFGUI_STATIC will also be defined
+# by this script. Example:
 #
 # set( SFGUI_STATIC_LIBRARIES TRUE )
 # find_package( SFGUI )
 #
-# If SFGUI is not installed in a standard path, you can use the SFGUIDIR CMake (or environment) variable
-# to tell CMake where SFGUI is.
+# If SFGUI is not installed in a standard path, you can use the SFGUIDIR or
+# SFGUI_ROOT CMake (or environment) variables to tell CMake where to look for
+# SFGUI.
 #
-# Output
-# ------
+#
+# OUTPUT
 #
 # This script defines the following variables:
-# - SFGUI_LIBRARY_DEBUG:   the path to the debug library
-# - SFGUI_LIBRARY_RELEASE: the path to the release library
-# - SFGUI_LIBRARY:         the path to the library to link to
-# - SFGUI_FOUND:           true if the SFGUI library is found
-# - SFGUI_INCLUDE_DIR:     the path where SFGUI headers are located (the directory containing the SFGUI/Config.hpp file)
+#   - SFGUI_LIBRARY_DEBUG:   the path to the debug library
+#   - SFGUI_LIBRARY_RELEASE: the path to the release library
+#   - SFGUI_LIBRARY:         the path to the library to link to
+#   - SFGUI_FOUND:           true if the SFGUI library is found
+#   - SFGUI_INCLUDE_DIR:     the path where SFGUI headers are located (the directory containing the SFGUI/Config.hpp file)
 #
-# Example
-# -------
+#
+# EXAMPLE
 #
 # find_package( SFGUI REQUIRED )
 # include_directories( ${SFGUI_INCLUDE_DIR} )
 # add_executable( myapp ... )
 # target_link_libraries( myapp ${SFGUI_LIBRARY} ... )
-#
 
 set( SFGUI_FOUND false )
 
@@ -52,7 +50,9 @@ find_path(
 		/usr
 		/usr/local
 		${SFGUIDIR}
+		${SFGUI_ROOT}
 		$ENV{SFGUIDIR}
+		$ENV{SFGUI_ROOT}
 )
 
 find_library(
@@ -65,7 +65,9 @@ find_library(
 		/usr
 		/usr/local
 		${SFGUIDIR}
+		${SFGUI_ROOT}
 		$ENV{SFGUIDIR}
+		$ENV{SFGUI_ROOT}
 )
 
 find_library(
@@ -78,7 +80,9 @@ find_library(
 		/usr
 		/usr/local
 		${SFGUIDIR}
+		${SFGUI_ROOT}
 		$ENV{SFGUIDIR}
+		$ENV{SFGUI_ROOT}
 )
 
 if( SFGUI_LIBRARY_RELEASE AND SFGUI_LIBRARY_DEBUG )

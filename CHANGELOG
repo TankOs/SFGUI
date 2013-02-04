@@ -1,28 +1,35 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
-0.1.0 (2013-02-02)
-------------------
+0.1.0
 
 Enhancements:
-	- Implemented SpinButton widget.
-	- Optimized primitive construction and label resizing.
+  - Implemented SpinButton widget.
+  - Optimized primitive construction and label resizing.
+  - Linking to dependencies skipped for Linux systems.
+  - Removed (too) specific settings regarding the linker (no more linking to
+    static runtime libraries and SFML static linking settings).
+  - Examples' data directory copied to CMake build cache directory for easier
+    testing when developing.
+  - SFGUI_ROOT is now the preferred way of given an extra search path when
+    looking for SFGUI through find_package(). The old SFGUIDIR is still
+    available.
 
 Fixes:
-	- Mouse leaving SFML window causing a very very long scroll action with
-	  scrollbars, resulting in lag.
-	- Uninitialized text margin variable in entry widget.
-	- Widgets not automatically refreshing when a property is changed after their
-	  drawables are constructed.
-	- Widgets not automatically refreshing when their ID or class is changed.
-	- sf::Event::MouseEntered and sf::Event::MouseLeft not being handled
-	  properly.
+  - Mouse leaving SFML window causing a very very long scroll action with
+    scrollbars, resulting in lag.
+  - Uninitialized text margin variable in entry widget.
+  - Widgets not automatically refreshing when a property is changed after their
+    drawables are constructed.
+  - Widgets not automatically refreshing when their ID or class is changed.
+  - sf::Event::MouseEntered and sf::Event::MouseLeft not being handled
+    properly.
 
-0.0.1 (2013-01-09)
-------------------
 
-	- FIX: Compatible to latest SFML commit.
+0.0.1
 
-0.0.0 (2013-01-04)
-------------------
+  - FIX: Compatible to latest SFML commit.
 
-	- First release.
+
+0.0.0
+
+  - First release.

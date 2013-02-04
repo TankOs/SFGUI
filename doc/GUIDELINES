@@ -9,58 +9,20 @@ consistent as possible.
 
 2. COMMITS/CONTRIBUTIONS TO THE REPOSITORY
 
-We're very thankful for every patch, commit or contribution for SFGUI. The
-upstream repository at GitHub got frequented in the past, because whole
-histories of contributor's commits were applied to master.
+SFGUI's repository follows the version branch workflow: The master branch
+always contains commits of the latest stable release. Development happens in
+branches that are labeled by the next version number.
 
-So here are some rules to follow so that your commits are applied:
+Example: If version 0.0.0 is current, master contains 0.0.0's commits. If 0.1.0
+will be the next version, then development commits can be found in the branch
+with the same name.
 
-- Before sending in a pull request, rebase your work to the current master's
-  HEAD. You can do this by invoking "git pull --rebase origin master" (make
-  sure you're locally in your master branch). Another possible way is "git
-  fetch origin", then "git rebase origin/master".
+When sending in patches, make sure to use "git format-patch" or give us access
+to your Git repository, so that we can pull from it.
 
-- Squash your commits before requesting a pull! That means combine all your
-  single commits of your contribution into bigger commits (preferably one big
-  commit, but this depends on the changes).
-
-- Just to make it clear: Try to avoid the merge workflow.
-
-Here's an example of a typical session:
-
-- Checkout a separate branch:
-
-    git checkout -b cool_feature
-
-- Program and do some commits.
-
-- Now someone has pushed new commits to upstream's master. Because you want
-  those new changes to be in your cool_feature branch too, REBASE your commits on
-  top of them:
-  
-    git pull --rebase origin master
-  
-  (this may require you to solve some merge conflicts; be sure to read Git's
-  output!!!).
-
-- Program and do some commits, again. Done with the new feature, now it's time
-  to prepare it for a pull request.
-
-- At first make sure all your commits are really applied ON TOP OF HEAD of
-  origin's master:
-  
-    git pull --rebase origin master
-
-- Checkout master and merge the branch:
-
-    git checkout master
-    git merge cool_feature
-
-- Squash away unnecessary commits by combining them:
-
-    git rebase -i origin/master
-
-- Send pull request.
+A real advantage for us is if you rebase your commits onto our latest commits
+for the next version. This minimizes the merge effort we might have to spend
+when applying your patch.
 
 
 3. CODE STYLE
