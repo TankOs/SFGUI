@@ -29,7 +29,7 @@ add_custom_target(
 	WORKING_DIRECTORY ${DOXYGEN_INPUT_DIR}
 )
 
-if( WINDOWS )
+if( WIN32 )
 	set( INSTALL_MISC_DIR "./doc" )
 elseif( UNIX )
 	set( INSTALL_MISC_DIR "share/doc/SFGUI" )
