@@ -16,14 +16,10 @@ endif()
 
 find_package( Doxygen REQUIRED )
 
-# set the input and output documentation paths
-set(DOXYGEN_INPUT_DIR ${PROJECT_SOURCE_DIR})
-set(DOXYGEN_OUTPUT_DIR ${PROJECT_BINARY_DIR}/doc)
-
-
-# configure the source Doxyfile by copying it and replacing all @variables@
-set(DOXYGEN_CONFIGURED_INPUT ${DOXYGEN_OUTPUT_DIR}/doxyfile)
-configure_file(${DOXYGEN_INPUT_DIR}/doc/Doxyfile ${DOXYGEN_CONFIGURED_INPUT} @ONLY)
+# Configure Doxygen.
+set( DOXYGEN_OUTPUT_DIR ${PROJECT_BINARY_DIR}/doc )
+set( DOXYGEN_CONFIGURED_INPUT ${DOXYGEN_OUTPUT_DIR}/Doxyfile )
+configure_file( ${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${DOXYGEN_CONFIGURED_INPUT} @ONLY )
 
 add_custom_target(
 	doc ALL
@@ -34,13 +30,13 @@ add_custom_target(
 )
 
 if( WINDOWS )
-	set( INSTALL_MISC_DIR "." )
+	set( INSTALL_MISC_DIR "./doc" )
 elseif( UNIX )
-	set( INSTALL_MISC_DIR "share/SFGUI" )
+	set( INSTALL_MISC_DIR "share/doc/SFGUI" )
 endif()
 
 install(
 	DIRECTORY "${PROJECT_BINARY_DIR}/doc/html"
-	DESTINATION "${INSTALL_MISC_DIR}/doc"
+	DESTINATION "${INSTALL_MISC_DIR}"
 	COMPONENT doc
 )
