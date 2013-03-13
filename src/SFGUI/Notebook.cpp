@@ -149,11 +149,44 @@ Notebook::IndexType Notebook::InsertPage( const Widget::Ptr& child, const Widget
 }
 
 void Notebook::RemovePage( IndexType page_number ) {
-	if( ( page_number < 0 ) || ( page_number >= GetPageCount() ) ) {
-		m_children.pop_back();
+	if( GetPageCount() <= 1 ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "SFGUI warning: Cannot remove the only remaining page of a Notebook.\n";
+#endif
+		return;
 	}
 
-	m_children.erase( m_children.begin() + page_number );
+	if( page_number == GetCurrentPage() ) {
+		// We need to change the page before removing.
+		if( page_number == GetPageCount() - 1 ) {
+			// If the requested page is the last one, flip to previous page.
+			PreviousPage();
+		}
+		else {
+			// Else flip to the next page.
+			NextPage();
+		}
+	}
+
+	if( ( page_number < 0 ) || ( page_number >= GetPageCount() ) ) {
+		Remove( m_children.back().child );
+	}
+	else {
+		Remove( ( m_children.begin() + page_number )->child );
+	}
+
+	RecalculateSize();
+
+	// Correct m_current_page if the removed page was before the current page.
+	// It can't be the current page because we took care of that already.
+	if( page_number < GetCurrentPage() ) {
+		m_current_page--;
+	}
+
+	// The same for the displayed tabs
+	m_first_tab = std::max( m_first_tab - 1, 0 );
+
+	Invalidate();
 }
 
 Notebook::IndexType Notebook::GetPageOf( const Widget::Ptr& widget ) const {
@@ -468,6 +501,7 @@ void Notebook::HandleRemove( const Widget::Ptr& child ) {
 	IndexType page_number = GetPageOf( child );
 
 	if( page_number >= 0 ) {
+		Remove( ( m_children.begin() + GetPageOf( child ) )->tab_label );
 		m_children.erase( m_children.begin() + GetPageOf( child ) );
 	}
 

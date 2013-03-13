@@ -272,6 +272,7 @@ class WeakPtr
 		WeakReferenceCount m_reference_count;
 };
 
+/// @cond
 /** Interface to enable a class to access it's own shared instance.
  */
 template<typename T>
@@ -288,6 +289,7 @@ class EnableSharedFromThis : public NonCopyable
 	private:
 		mutable WeakPtr<T> m_weak_pointer;
 };
+/// @endcond
 
 }
 

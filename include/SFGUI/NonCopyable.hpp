@@ -4,6 +4,7 @@
 
 namespace sfg {
 
+/// @cond
 /** NonCopyable interface.
  * Prevents derivates from being copied/assigned.
  */
@@ -16,5 +17,6 @@ class SFGUI_API NonCopyable {
 		NonCopyable( const NonCopyable& );
 		const NonCopyable& operator=( const NonCopyable& );
 };
+/// @endcond
 
 }
