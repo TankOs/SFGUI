@@ -29,12 +29,33 @@ class SFGUI_API Box : public Container {
 
 		virtual const std::string& GetName() const;
 
-		/** Add a widget to the box.
+		/** Add a widget to the end of the box.
+		 * Alias to PackEnd(...) for backward compatibility.
 		 * @param widget Widget.
 		 * @param expand Expand widget to highest possible size.
 		 * @param fill Fill calculated size.
 		 */
 		void Pack( const Widget::Ptr& widget, bool expand = true, bool fill = true );
+
+		/** Add a widget to the start of the box.
+		 * @param widget Widget.
+		 * @param expand Expand widget to highest possible size.
+		 * @param fill Fill calculated size.
+		 */
+		void PackStart( const Widget::Ptr& widget, bool expand = true, bool fill = true );
+
+		/** Add a widget to the end of the box.
+		 * @param widget Widget.
+		 * @param expand Expand widget to highest possible size.
+		 * @param fill Fill calculated size.
+		 */
+		void PackEnd( const Widget::Ptr& widget, bool expand = true, bool fill = true );
+
+		/** Reorder a child to a new location within the box.
+		 * @param widget Child to reorder.
+		 * @param position Position to reorder to. 0 for the start, size - 1 or greater for the end.
+		 */
+		void ReorderChild( const Widget::Ptr& widget, std::size_t position );
 
 		/** Set spacing.
 		 * @param spacing Spacing.

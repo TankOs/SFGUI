@@ -1,6 +1,7 @@
 #include <SFGUI/Box.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
+#include <iterator>
 
 namespace sfg {
 
@@ -21,7 +22,7 @@ const std::string& Box::GetName() const {
 	return name;
 }
 
-void Box::Pack( const Widget::Ptr& widget, bool expand, bool fill ) {
+void Box::PackEnd( const Widget::Ptr& widget, bool expand, bool fill ) {
 	if( IsChild( widget ) ) {
 		return;
 	}
@@ -30,6 +31,39 @@ void Box::Pack( const Widget::Ptr& widget, bool expand, bool fill ) {
 	// HandleAdd() method recognized the widget as a correctly packed one.
 	m_children.push_back( ChildInfo( widget, expand, fill ) );
 	Add( widget );
+}
+
+void Box::PackStart( const Widget::Ptr& widget, bool expand, bool fill ) {
+	if( IsChild( widget ) ) {
+		return;
+	}
+
+	// It's important to create the ChildInfo object first, so that the
+	// HandleAdd() method recognized the widget as a correctly packed one.
+	m_children.push_front( ChildInfo( widget, expand, fill ) );
+	Add( widget );
+}
+
+void Box::Pack( const Widget::Ptr& widget, bool expand, bool fill ) {
+	PackEnd( widget, expand, fill );
+}
+
+void Box::ReorderChild( const Widget::Ptr& widget, std::size_t position ) {
+	ChildrenCont::iterator iter( std::find( m_children.begin(), m_children.end(), widget ) );
+
+	if( iter == m_children.end() ) {
+		return;
+	}
+
+	position = std::min( position, m_children.size() - 1 );
+
+	ChildrenCont::iterator insertion_point( m_children.begin() );
+	std::advance( insertion_point, position );
+	m_children.insert( insertion_point, *iter );
+	m_children.erase( iter );
+
+	Refresh();
+	AllocateChildren();
 }
 
 void Box::HandleAdd( const Widget::Ptr& child ) {
