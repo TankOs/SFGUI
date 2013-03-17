@@ -281,7 +281,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		static Signal::SignalID OnMouseRightRelease; //!< Fired when right button released.
 
 		static Signal::SignalID OnLeftClick; //!< Fired when left button clicked.
-		static Signal::SignalID OnRightClick; //!< Fired when left button clicked.
+		static Signal::SignalID OnRightClick; //!< Fired when right button clicked.
 
 		static Signal::SignalID OnKeyPress; //!< Fired when a key is pressed while State == Active.
 		static Signal::SignalID OnKeyRelease; //!< Fired when a key is released while State == Active.
