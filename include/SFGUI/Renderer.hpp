@@ -233,6 +233,7 @@ class SFGUI_API Renderer {
 		struct Batch {
 			SharedPtr<RendererViewport> viewport;
 			SharedPtr<Signal> custom_draw_callback;
+			std::size_t atlas_page;
 			unsigned int start_index;
 			unsigned int index_count;
 			GLuint min_index;
@@ -270,7 +271,7 @@ class SFGUI_API Renderer {
 
 		SharedPtr<RendererViewport> m_default_viewport;
 
-		sf::Texture m_texture_atlas;
+		std::vector<sf::Texture*> m_texture_atlas;
 
 		GLuint m_frame_buffer;
 		GLuint m_frame_buffer_texture;
@@ -298,6 +299,8 @@ class SFGUI_API Renderer {
 		float m_alpha_threshold;
 
 		mutable sf::Vector2u m_last_window_size;
+
+		unsigned int m_max_texture_size;
 
 		unsigned char m_depth_clear_strategy;
 

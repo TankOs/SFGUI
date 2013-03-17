@@ -30,6 +30,7 @@ Renderer::Renderer() :
 	m_index_count( 0 ),
 	m_alpha_threshold( 0.f ),
 	m_last_window_size( 0, 0 ),
+	m_max_texture_size( 0 ),
 	m_depth_clear_strategy( NO_DEPTH ),
 	m_vbo_sync_type( INVALIDATE_ALL ),
 	m_vbo_synced( false ),
@@ -39,6 +40,10 @@ Renderer::Renderer() :
 	m_pseudo_texture_loaded( false ),
 	m_vbo_supported( false ),
 	m_fbo_supported( false ) {
+
+	// Make sure we have a valid GL context before messing around
+	// with GLee or else it will report missing extensions sometimes.
+	sf::Context context;
 
 	if( GLEE_ARB_vertex_buffer_object ) {
 		m_vbo_supported = true;
@@ -59,9 +64,16 @@ Renderer::Renderer() :
 	if( GLEE_EXT_framebuffer_object || GLEE_ARB_framebuffer_object ) {
 		m_fbo_supported = true;
 	}
+
+	m_max_texture_size = sf::Texture::getMaximumSize();
 }
 
 Renderer::~Renderer() {
+	while( !m_texture_atlas.empty() ) {
+		delete m_texture_atlas.back();
+		m_texture_atlas.pop_back();
+	}
+
 	DestroyFBO();
 
 	if( m_vbo_supported ) {
@@ -466,8 +478,6 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 		// Further, we stick all referenced textures into our giant atlas
 		// so we don't have to rebind during the draw.
 
-		sf::Texture::bind( &m_texture_atlas );
-
 		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
 		glVertexPointer( 3, GL_FLOAT, 0, 0 );
 
@@ -514,6 +524,12 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 
 		glEnable( GL_SCISSOR_TEST );
 
+		std::size_t current_atlas_page = 0;
+
+		if( !m_texture_atlas.empty() ) {
+			sf::Texture::bind( m_texture_atlas[0] );
+		}
+
 		for( std::size_t index = 0; index < scissor_pairs_size; ++index ) {
 			const Batch& batch = m_batches[index];
 
@@ -555,6 +571,12 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 				}
 
 				if( batch.index_count ) {
+					if( batch.atlas_page != current_atlas_page ) {
+						current_atlas_page = batch.atlas_page;
+
+						sf::Texture::bind( m_texture_atlas[current_atlas_page] );
+					}
+
 					glDrawRangeElements(
 						GL_TRIANGLES,
 						batch.min_index,
@@ -740,6 +762,13 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 		m_pseudo_texture = LoadImage( pseudo_image );
 	}
 
+	if( ( image.getSize().x > m_max_texture_size ) || ( image.getSize().x > m_max_texture_size ) ) {
+#ifdef SFGUI_DEBUG
+		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
+#endif
+		return SharedPtr<Primitive::Texture>( new Primitive::Texture );
+	}
+
 	const sf::Uint8* bytes = image.getPixelsPtr();
 	std::size_t byte_count = image.getSize().x * image.getSize().y * 4;
 
@@ -781,9 +810,21 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 		last_occupied_location = iter->offset.y + static_cast<float>( iter->size.y );
 	}
 
-	if( ( image.getSize().x > m_texture_atlas.getSize().x ) || ( last_occupied_location + static_cast<float>( image.getSize().y ) > static_cast<float>( m_texture_atlas.getSize().y ) ) ) {
+	std::size_t current_page = static_cast<unsigned int>( last_occupied_location ) / m_max_texture_size;
+	last_occupied_location = static_cast<float>( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size );
+
+	if( m_texture_atlas.empty() || ( ( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size ) + image.getSize().y > m_max_texture_size ) ) {
+		// We need a new atlas page.
+		m_texture_atlas.push_back( new sf::Texture() );
+
+		current_page = m_texture_atlas.size() - 1;
+
+		last_occupied_location = 0.f;
+	}
+
+	if( ( image.getSize().x > m_texture_atlas[current_page]->getSize().x ) || ( last_occupied_location + static_cast<float>( image.getSize().y ) > static_cast<float>( m_texture_atlas[current_page]->getSize().y ) ) ) {
 		// Image is loaded into atlas after expanding texture atlas.
-		sf::Image old_image = m_texture_atlas.copyToImage();
+		sf::Image old_image = m_texture_atlas[current_page]->copyToImage();
 		sf::Image new_image;
 
 		new_image.create( std::max( old_image.getSize().x, image.getSize().x ), static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + image.getSize().y + padding, sf::Color::White );
@@ -791,18 +832,18 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 
 		new_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
 
-		m_texture_atlas.loadFromImage( new_image );
+		m_texture_atlas[current_page]->loadFromImage( new_image );
 	}
 	else {
 		// Image is loaded into atlas.
-		sf::Image atlas_image = m_texture_atlas.copyToImage();
+		sf::Image atlas_image = m_texture_atlas[current_page]->copyToImage();
 
 		atlas_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
 
-		m_texture_atlas.loadFromImage( atlas_image );
+		m_texture_atlas[current_page]->loadFromImage( atlas_image );
 	}
 
-	sf::Vector2f offset = sf::Vector2f( 0.f, last_occupied_location + static_cast<float>( padding ) );
+	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( current_page * m_max_texture_size ) + last_occupied_location + static_cast<float>( padding ) );
 
 	InvalidateVBO( INVALIDATE_TEXTURE );
 
@@ -843,9 +884,11 @@ void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) 
 				return;
 			}
 
-			sf::Image image = m_texture_atlas.copyToImage();
-			image.copy( data, 0, static_cast<unsigned int>( std::floor( offset.y + .5f ) ) );
-			m_texture_atlas.loadFromImage( image );
+			std::size_t page = static_cast<std::size_t>( offset.y ) / m_max_texture_size;
+
+			sf::Image image = m_texture_atlas[page]->copyToImage();
+			image.copy( data, 0, static_cast<unsigned int>( std::floor( offset.y + .5f ) ) % m_max_texture_size );
+			m_texture_atlas[page]->loadFromImage( image );
 
 			return;
 		}
@@ -893,9 +936,6 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 
 	std::size_t primitives_size = m_primitives.size();
 
-	// Used to normalize texture coordinates.
-	sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas.getSize().x ), 1.f / static_cast<float>( m_texture_atlas.getSize().y ) );
-
 	// Depth test vars
 	float depth = -4.f;
 	float depth_delta = 4.f / static_cast<float>( primitives_size );
@@ -906,6 +946,7 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 	// Default viewport
 	Batch current_batch;
 	current_batch.viewport = m_default_viewport;
+	current_batch.atlas_page = 0;
 	current_batch.start_index = 0;
 	current_batch.index_count = 0;
 	current_batch.min_index = 0;
@@ -926,6 +967,8 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 		sf::Vector2f position_transform( primitive->GetPosition() );
 
 		RendererViewport::Ptr viewport = primitive->GetViewport();
+
+		std::size_t atlas_page = 0;
 
 		sf::FloatRect viewport_rect = window_viewport;
 
@@ -990,8 +1033,13 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 				vertex_data.push_back( position );
 				color_data.push_back( vertex.color );
 
+				atlas_page = static_cast<unsigned int>( vertex.texture_coordinate.y ) / m_max_texture_size;
+
+				// Used to normalize texture coordinates.
+				sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas[atlas_page]->getSize().x ), 1.f / static_cast<float>( m_texture_atlas[atlas_page]->getSize().y ) );
+
 				// Normalize SFML's pixel texture coordinates.
-				texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, vertex.texture_coordinate.y * normalizer.y ) );
+				texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, static_cast<float>( static_cast<unsigned int>( vertex.texture_coordinate.y ) % m_max_texture_size ) * normalizer.y ) );
 
 				// Update the bounding rect.
 				if( m_cull ) {
@@ -1026,12 +1074,13 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 				}
 
 				// Check if we need to start a new batch.
-				if( viewport != current_batch.viewport ) {
+				if( ( viewport != current_batch.viewport ) || ( atlas_page != current_batch.atlas_page ) ) {
 					current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
 					m_batches.push_back( current_batch );
 
 					// Reset current_batch to defaults.
 					current_batch.viewport = viewport;
+					current_batch.atlas_page = atlas_page;
 					current_batch.start_index = m_last_index_count;
 					current_batch.index_count = 0;
 					current_batch.min_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
