@@ -813,7 +813,7 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 	std::size_t current_page = static_cast<unsigned int>( last_occupied_location ) / m_max_texture_size;
 	last_occupied_location = static_cast<float>( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size );
 
-	if( m_texture_atlas.empty() || ( ( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size ) + image.getSize().y > m_max_texture_size ) ) {
+	if( m_texture_atlas.empty() || ( ( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size ) + image.getSize().y + 2 * padding > m_max_texture_size ) ) {
 		// We need a new atlas page.
 		m_texture_atlas.push_back( new sf::Texture() );
 
