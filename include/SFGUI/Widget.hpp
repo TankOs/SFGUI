@@ -492,6 +492,7 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		unsigned char m_bitfield;
 
 		mutable bool m_invalidated;
+		mutable bool m_parent_notified;
 };
 
 }

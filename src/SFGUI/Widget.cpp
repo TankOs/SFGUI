@@ -195,6 +195,7 @@ const sf::FloatRect& Widget::GetAllocation() const {
 void Widget::Update( float seconds ) {
 	if( m_invalidated ) {
 		m_invalidated = false;
+		m_parent_notified = false;
 
 		delete m_drawable;
 		m_drawable = InvalidateImpl();
@@ -217,16 +218,18 @@ void Widget::Update( float seconds ) {
 }
 
 void Widget::Invalidate() const {
-	if( m_invalidated ) {
-		return;
+	if( !m_invalidated ) {
+		m_invalidated = true;
 	}
 
-	m_invalidated = true;
+	if( !m_parent_notified ) {
+		Container::PtrConst parent = m_parent.lock();
 
-	Container::PtrConst parent = m_parent.lock();
+		if( parent ) {
+			m_parent_notified = true;
 
-	if( parent ) {
-		parent->HandleChildInvalidate( static_cast<Widget::PtrConst>( shared_from_this() ) );
+			parent->HandleChildInvalidate( static_cast<Widget::PtrConst>( shared_from_this() ) );
+		}
 	}
 }
 
