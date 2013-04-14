@@ -2,6 +2,7 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Engines/BREW.hpp>
+#include <limits>
 
 namespace sfg {
 
@@ -130,7 +131,7 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 }
 
 void Scale::HandleMouseMoveEvent( int x, int y ) {
-	if( !m_dragging ) {
+	if( !m_dragging || ( x == std::numeric_limits<int>::min() ) || ( y == std::numeric_limits<int>::min() ) ) {
 		return;
 	}
 
