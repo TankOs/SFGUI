@@ -1,6 +1,7 @@
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Context.hpp>
+#include <limits>
 
 namespace sfg {
 
@@ -187,6 +188,10 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 }
 
 void Window::HandleMouseMoveEvent( int x, int y ) {
+	if( ( x == std::numeric_limits<int>::min() ) || ( y == std::numeric_limits<int>::min() ) ) {
+		return;
+	}
+
 	if( m_dragging ) {
 		SetPosition(
 			sf::Vector2f(
