@@ -262,6 +262,11 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 */
 		void SetZOrder( int z_order );
 
+		/** Check if a widget is currently a modal widget.
+		 * @return true if a widget is currently a modal widget.
+		 */
+		static bool HasModal();
+
 		// Signals.
 		static Signal::SignalID OnStateChange; //!< Fired when state changed.
 		static Signal::SignalID OnGainFocus; //!< Fired when focus gained.
@@ -437,11 +442,6 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		 * @return true if this widget is the modal widget.
 		 */
 		bool IsModal() const;
-
-		/** Check if a widget is currently a modal widget.
-		 * @return true if a widget is currently a modal widget.
-		 */
-		static bool HasModal();
 
 	private:
 		struct ClassId {

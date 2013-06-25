@@ -61,10 +61,12 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		bool is_inside( widget->GetAllocation().contains( position ) );
 
 		// If the event is a mouse button press, check if we need to focus another widget.
+		// If there is a modal widget, skip reordering.
 		if(
 			index > 0 &&
 			event.type == sf::Event::MouseButtonPressed &&
-			is_inside
+			is_inside &&
+			!Widget::HasModal()
 		) {
 			m_children.erase( m_children.begin() + index );
 			m_children.push_front( widget );
