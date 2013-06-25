@@ -49,7 +49,8 @@ Widget::Widget() :
 	m_z_order( 0 ),
 	m_drawable( 0 ),
 	m_bitfield( static_cast<unsigned char>( 0xe1 ) ),
-	m_invalidated( true )
+	m_invalidated( true ),
+	m_parent_notified( false )
 {
 	m_viewport = Renderer::Get().GetDefaultViewport();
 
