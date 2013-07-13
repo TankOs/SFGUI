@@ -309,4 +309,16 @@ void Table::HandleRequisitionChange() {
 	AllocateChildren();
 }
 
+void Table::HandleRemove( const Widget::Ptr& child ) {
+	TableCellList::iterator cell_iter( m_cells.begin() );
+	TableCellList::iterator cell_iter_end( m_cells.end() );
+
+	for( ; cell_iter != cell_iter_end; ++cell_iter ) {
+		if( cell_iter->child == child ) {
+			m_cells.erase( cell_iter );
+			return;
+		}
+	}
+}
+
 }

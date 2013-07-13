@@ -79,6 +79,7 @@ class SFGUI_API Table : public Container {
 
 		virtual void HandleSizeChange();
 		virtual void HandleRequisitionChange();
+		virtual void HandleRemove( const Widget::Ptr& child );
 
 		TableCellList m_cells;
 		TableOptionsArray m_columns;
