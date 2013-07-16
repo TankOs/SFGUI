@@ -304,7 +304,7 @@ struct VoidToDefaultVoid<void> { typedef DefaultVoid type; };
 #endif
 
 // The size of a single inheritance member function pointer.
-const int SINGLE_MEMFUNCPTR_SIZE = sizeof(void (GenericClass::*)());
+const int SINGLE_MEMFUNCPTR_SIZE = static_cast<int>( sizeof(void (GenericClass::*)()) );
 
 //						SimplifyMemFunc< >::Convert()
 //
