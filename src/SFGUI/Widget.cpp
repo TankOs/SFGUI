@@ -772,7 +772,9 @@ void Widget::HandleLocalVisibilityChange() {
 }
 
 void Widget::HandleGlobalVisibilityChange() {
-	if( GetState() == PRELIGHT ) {
+	State state = GetState();
+
+	if( ( state == PRELIGHT ) || ( state == ACTIVE ) ) {
 		SetState( NORMAL );
 	}
 
