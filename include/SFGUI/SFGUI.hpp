@@ -30,7 +30,7 @@
 #include <SFGUI/Notebook.hpp>
 #include <SFGUI/Spinner.hpp>
 #include <SFGUI/ComboBox.hpp>
-#include <SFGUI/GLCanvas.hpp>
+#include <SFGUI/Canvas.hpp>
 #include <SFGUI/SpinButton.hpp>
 #include <SFGUI/Renderer.hpp>
 
@@ -48,11 +48,23 @@ class SFGUI_API SFGUI {
 		 */
 		~SFGUI();
 
-		/** Draw the GUI.
+		/** Draw the GUI to an sf::Window.
 		 * Just a wrapper for the renderer.
-		 * @param target sf::RenderTarget to draw to.
+		 * @param target sf::Window to draw to.
 		 */
-		void Display( sf::RenderTarget& target );
+		void Display( sf::Window& target );
+
+		/** Draw the GUI to an sf::RenderWindow.
+		 * Just a wrapper for the renderer.
+		 * @param target sf::RenderWindow to draw to.
+		 */
+		void Display( sf::RenderWindow& target );
+
+		/** Draw the GUI to an sf::RenderTexture.
+		 * Just a wrapper for the renderer.
+		 * @param target sf::RenderTexture to draw to.
+		 */
+		void Display( sf::RenderTexture& target );
 
 		/** Enable and select alpha testing threshold.
 		 * Just a wrapper for the renderer.

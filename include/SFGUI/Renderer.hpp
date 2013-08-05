@@ -191,10 +191,20 @@ class SFGUI_API Renderer {
 		 */
 		void InvalidateVBO( unsigned char datasets = INVALIDATE_ALL );
 
-		/** Draw the GUI.
-		 * @param target sf::RenderTarget to draw to.
+		/** Draw the GUI to an sf::Window.
+		 * @param target sf::Window to draw to.
 		 */
-		void Display( sf::RenderTarget& target ) const;
+		void Display( sf::Window& target ) const;
+
+		/** Draw the GUI to an sf::RenderWindow.
+		 * @param target sf::RenderWindow to draw to.
+		 */
+		void Display( sf::RenderWindow& target ) const;
+
+		/** Draw the GUI to an sf::RenderTexture.
+		 * @param target sf::RenderTexture to draw to.
+		 */
+		void Display( sf::RenderTexture& target ) const;
 
 		/** Force the renderer to discard its cache's FBO image and redraw.
 		 */
@@ -250,13 +260,17 @@ class SFGUI_API Renderer {
 		 */
 		Renderer();
 
-		void SetupGL( sf::RenderTarget& target ) const;
+		void DisplayImpl() const;
 
-		void RestoreGL( sf::RenderTarget& target ) const;
+		void SetupGL() const;
+
+		void RestoreGL() const;
+
+		void WipeStateCache( sf::RenderTarget& target ) const;
 
 		void SortPrimitives();
 
-		void RefreshVBO( const sf::RenderTarget& target );
+		void RefreshVBO();
 
 		void SetupFBO( unsigned int width, unsigned int height );
 
@@ -298,6 +312,7 @@ class SFGUI_API Renderer {
 
 		float m_alpha_threshold;
 
+		mutable sf::Vector2u m_window_size;
 		mutable sf::Vector2u m_last_window_size;
 
 		unsigned int m_max_texture_size;

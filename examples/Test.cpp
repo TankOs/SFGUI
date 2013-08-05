@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <sstream>
+#include <cmath>
 
 class SampleApp {
 	public:
@@ -24,6 +25,7 @@ class SampleApp {
 		void OnToggleSpinner();
 		void OnMirrorImageClick();
 		void RenderCustomGL();
+		void RenderCustomSFML();
 
 		// Create an SFGUI. This is required before doing anything with SFGUI.
 		sfg::SFGUI m_sfgui;
@@ -43,6 +45,8 @@ class SampleApp {
 		sfg::ProgressBar::Ptr m_progress_vert;
 		sfg::Spinner::Ptr m_spinner;
 		sfg::Image::Ptr m_image;
+		sfg::Canvas::Ptr m_gl_canvas;
+		sfg::Canvas::Ptr m_sfml_canvas;
 
 		sfg::Desktop m_desktop;
 
@@ -51,6 +55,7 @@ class SampleApp {
 
 		sf::Texture m_background_texture;
 		sf::Sprite m_background_sprite;
+		sf::Sprite m_canvas_sprite;
 
 		sf::RenderWindow m_window;
 
@@ -425,17 +430,31 @@ void SampleApp::Run() {
 
 	sfg::Window::Ptr third_window( sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE ) );
 
-	sfg::GLCanvas::Ptr gl_canvas( sfg::GLCanvas::Create() );
-	gl_canvas->SetRequisition( sf::Vector2f( 200.f, 150.f ) );
-	gl_canvas->GetCustomDrawCallbackSignal().Connect( &SampleApp::RenderCustomGL, this );
-	gl_canvas->SetDesiredRefreshRate( 100.f );
+	m_gl_canvas = sfg::Canvas::Create( true );
+	m_gl_canvas->SetRequisition( sf::Vector2f( 200.f, 150.f ) );
 
-	third_window->Add( gl_canvas );
+	third_window->Add( m_gl_canvas );
 
 	third_window->SetId( "third_window" );
 	third_window->SetTitle( "Embedded OpenGL drawing" );
 	third_window->SetPosition( sf::Vector2f( 480.f, 20.f ) );
 	m_desktop.Add( third_window );
+
+	sf::Texture texture;
+	texture.loadFromImage( sfgui_logo );
+	m_canvas_sprite.setTexture( texture );
+
+	sfg::Window::Ptr fourth_window( sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE ) );
+
+	m_sfml_canvas = sfg::Canvas::Create();
+	m_sfml_canvas->SetRequisition( sf::Vector2f( static_cast<float>( texture.getSize().x ), static_cast<float>( texture.getSize().y ) ) );
+
+	fourth_window->Add( m_sfml_canvas );
+
+	fourth_window->SetId( "fourth_window" );
+	fourth_window->SetTitle( "Embedded SFML drawing" );
+	fourth_window->SetPosition( sf::Vector2f( 760.f, 20.f ) );
+	m_desktop.Add( fourth_window );
 
 	// Add window to desktop
 	m_desktop.Add( m_wndmain );
@@ -488,6 +507,21 @@ void SampleApp::Run() {
 		if( microseconds > 5000 ) {
 			m_desktop.Update( static_cast<float>( microseconds ) / 1000000.f );
 			clock.restart();
+
+			// Only refresh canvas contents every 5ms too
+			m_gl_canvas->Bind();
+			m_gl_canvas->Clear( sf::Color( 0, 0, 0, 0 ), true );
+			RenderCustomGL();
+			m_gl_canvas->Display();
+			m_gl_canvas->Unbind();
+
+			m_sfml_canvas->Bind();
+			m_sfml_canvas->Clear( sf::Color( 0, 0, 0, 0 ) );
+			RenderCustomSFML();
+			m_sfml_canvas->Display();
+			m_sfml_canvas->Unbind();
+
+			m_window.setActive( true );
 		}
 
 		m_sfgui.Display( m_window );
@@ -620,12 +654,12 @@ void SampleApp::RenderCustomGL() {
 	glRotatef( clock.getElapsedTime().asSeconds() * 30.f, 0.f, 1.f, 0.f );
 	glRotatef( clock.getElapsedTime().asSeconds() * 90.f, 0.f, 0.f, 1.f );
 
+	glViewport( 0, 0, static_cast<int>( std::floor( m_gl_canvas->GetAllocation().width + .5f ) ), static_cast<int>( std::floor( m_gl_canvas->GetAllocation().height + .5f ) ) );
+
 	if( !m_custom_draw_display_list ) {
 		m_custom_draw_display_list = glGenLists( 1 );
 
 		glNewList( m_custom_draw_display_list, GL_COMPILE );
-
-		glClear( GL_DEPTH_BUFFER_BIT );
 
 		glEnable( GL_DEPTH_TEST );
 		glDepthMask( GL_TRUE );
@@ -636,8 +670,8 @@ void SampleApp::RenderCustomGL() {
 		glPushMatrix();
 		glLoadIdentity();
 
-		// We set the proper aspect ratio using the dimensions of our GLCanvas.
-		gluPerspective( 90.f, 200.f / 150.f, 1.f, 20.f );
+		// We set the proper aspect ratio using the dimensions of our Canvas.
+		gluPerspective( 90.f, m_gl_canvas->GetAllocation().width / m_gl_canvas->GetAllocation().height, 1.f, 20.f );
 
 		glBegin( GL_QUADS );
 
@@ -691,6 +725,12 @@ void SampleApp::RenderCustomGL() {
 
 	glMatrixMode( GL_MODELVIEW );
 	glPopMatrix();
+
+	glViewport( 0, 0, m_window.getSize().x, m_window.getSize().y );
+}
+
+void SampleApp::RenderCustomSFML() {
+	m_sfml_canvas->Draw( m_canvas_sprite );
 }
 
 int main() {

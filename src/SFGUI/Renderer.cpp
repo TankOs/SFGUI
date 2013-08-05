@@ -29,6 +29,7 @@ Renderer::Renderer() :
 	m_vertex_count( 0 ),
 	m_index_count( 0 ),
 	m_alpha_threshold( 0.f ),
+	m_window_size( 0, 0 ),
 	m_last_window_size( 0, 0 ),
 	m_max_texture_size( 0 ),
 	m_depth_clear_strategy( NO_DEPTH ),
@@ -448,12 +449,57 @@ Primitive::Ptr Renderer::CreateGLCanvas( SharedPtr<Signal> callback ) {
 	return primitive;
 }
 
-void Renderer::Display( sf::RenderTarget& target ) const {
+void Renderer::Display( sf::Window& target ) const {
+	m_window_size = target.getSize();
+
+	target.setActive( true );
+
+	glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
+	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
+
+	// Since we have no idea what the attribute environment
+	// of the user looks like, we need to pretend to be SFML
+	// by setting up it's GL attribute environment.
+	glEnable( GL_TEXTURE_2D );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_COLOR_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
+	DisplayImpl();
+
+	glPopAttrib();
+	glPopClientAttrib();
+}
+
+void Renderer::Display( sf::RenderWindow& target ) const {
+	m_window_size = target.getSize();
+
+	target.setActive( true );
+
+	DisplayImpl();
+
+	WipeStateCache( target );
+}
+
+void Renderer::Display( sf::RenderTexture& target ) const {
+	m_window_size = target.getSize();
+
+	target.setActive( true );
+
+	DisplayImpl();
+
+	WipeStateCache( target );
+}
+
+void Renderer::DisplayImpl() const {
 	if( !m_vbo_supported ) {
 		return;
 	}
 
-	SetupGL( target );
+	SetupGL();
 
 	if( !m_vbo_synced ) {
 		// Disclaimer:
@@ -468,7 +514,7 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 		// again this might be all wrong...
 
 		// Refresh VBO data if out of sync
-		const_cast<Renderer*>( this )->RefreshVBO( target );
+		const_cast<Renderer*>( this )->RefreshVBO();
 	}
 
 	if( !m_use_fbo || !m_vbo_synced || m_force_redraw ) {
@@ -539,20 +585,16 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 				sf::Vector2i destination( viewport->GetDestinationOrigin() );
 				sf::Vector2u size( viewport->GetSize() );
 
-				RestoreGL( target );
-				glViewport( destination.x, target.getSize().y - destination.y - size.y, size.x, size.y );
-				glScissor( destination.x, target.getSize().y - destination.y - size.y, size.x, size.y );
+				glViewport( destination.x, m_window_size.y - destination.y - size.y, size.x, size.y );
 
-				glEnable( GL_SCISSOR_TEST );
-
-				// Draw custom stuff.
+				// Draw canvas.
 				( *batch.custom_draw_callback )();
 
-				glScissor( 0, 0, target.getSize().x, target.getSize().y );
-				glViewport( 0, 0, target.getSize().x, target.getSize().y );
-				SetupGL( target );
+				glViewport( 0, 0, m_window_size.x, m_window_size.y );
 
-				glColor3f( 1.f, 1.f, 1.f );
+				if( !m_texture_atlas.empty() ) {
+					sf::Texture::bind( m_texture_atlas[current_atlas_page] );
+				}
 			}
 			else {
 				if( viewport && ( viewport != m_default_viewport ) ) {
@@ -561,13 +603,13 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 
 					glScissor(
 						static_cast<int>( destination_origin.x ),
-						target.getSize().y - static_cast<int>( destination_origin.y + size.y ),
+						m_window_size.y - static_cast<int>( destination_origin.y + size.y ),
 						static_cast<int>( size.x ),
 						static_cast<int>( size.y )
 					);
 				}
 				else {
-					glScissor( 0, 0, target.getSize().x, target.getSize().y );
+					glScissor( 0, 0, m_window_size.x, m_window_size.y );
 				}
 
 				if( batch.index_count ) {
@@ -615,12 +657,12 @@ void Renderer::Display( sf::RenderTarget& target ) const {
 		glCallList( m_display_list );
 	}
 
-	RestoreGL( target );
-
 	m_vbo_synced = true;
+
+	RestoreGL();
 }
 
-void Renderer::SetupGL( sf::RenderTarget& target ) const {
+void Renderer::SetupGL() const {
 	glMatrixMode( GL_MODELVIEW );
 	glPushMatrix();
 	glLoadIdentity();
@@ -629,26 +671,25 @@ void Renderer::SetupGL( sf::RenderTarget& target ) const {
 	glPushMatrix();
 	glLoadIdentity();
 
-	// When SFML dies (closes) it sets these to 0 for some reason.
+	// When SFML dies (closes) it sets the window size to 0 for some reason.
 	// That then causes glOrtho errors.
-	sf::Vector2u window_size = target.getSize();
 
 	// SFML doesn't seem to bother updating the OpenGL viewport when
 	// it's window resizes and nothing is drawn directly through SFML...
 
-	if( m_last_window_size != window_size ) {
-		glViewport( 0, 0, static_cast<GLsizei>( window_size.x ), static_cast<GLsizei>( window_size.y ) );
+	if( m_last_window_size != m_window_size ) {
+		glViewport( 0, 0, static_cast<GLsizei>( m_window_size.x ), static_cast<GLsizei>( m_window_size.y ) );
 
-		m_last_window_size = window_size;
+		m_last_window_size = m_window_size;
 
-		if( window_size.x && window_size.y ) {
-			const_cast<Renderer*>( this )->SetupFBO( window_size.x, window_size.y );
+		if( m_window_size.x && m_window_size.y ) {
+			const_cast<Renderer*>( this )->SetupFBO( m_window_size.x, m_window_size.y );
 
 			const_cast<Renderer*>( this )->InvalidateVBO( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 		}
 	}
 
-	glOrtho( 0.0f, static_cast<GLdouble>( window_size.x ? window_size.x : 1 ), static_cast<GLdouble>( window_size.y ? window_size.y : 1 ), 0.0f, -1.0f, 64.0f );
+	glOrtho( 0.0f, static_cast<GLdouble>( m_window_size.x ? m_window_size.x : 1 ), static_cast<GLdouble>( m_window_size.y ? m_window_size.y : 1 ), 0.0f, -1.0f, 64.0f );
 
 	glMatrixMode( GL_TEXTURE );
 	glPushMatrix();
@@ -662,7 +703,7 @@ void Renderer::SetupGL( sf::RenderTarget& target ) const {
 	glEnable( GL_CULL_FACE );
 }
 
-void Renderer::RestoreGL( sf::RenderTarget& target ) const {
+void Renderer::RestoreGL() const {
 	glDisable( GL_CULL_FACE );
 
 	if( m_alpha_threshold > 0.f ) {
@@ -677,7 +718,9 @@ void Renderer::RestoreGL( sf::RenderTarget& target ) const {
 
 	glMatrixMode( GL_MODELVIEW );
 	glPopMatrix();
+}
 
+void Renderer::WipeStateCache( sf::RenderTarget& target ) const {
 	// Make SFML disable it's **************** vertex cache without us
 	// having to call ResetGLStates() and disturbing OpenGL needlessly.
 	// This would be sooo much easier if we could somehow set
@@ -916,7 +959,7 @@ void Renderer::SortPrimitives() {
 	}
 }
 
-void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
+void Renderer::RefreshVBO() {
 	SortPrimitives();
 
 	std::vector<sf::Vector3f> vertex_data;
@@ -953,7 +996,7 @@ void Renderer::RefreshVBO( const sf::RenderTarget& target ) {
 	current_batch.max_index = static_cast<GLuint>( m_vertex_count - 1 );
 	current_batch.custom_draw = false;
 
-	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( target.getSize().x ), static_cast<float>( target.getSize().y ) );
+	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
 
 	for( std::size_t primitive_index = start; primitive_index != end; primitive_index += direction ) {
 		Primitive* primitive = m_primitives[primitive_index - 1].get();

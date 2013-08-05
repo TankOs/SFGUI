@@ -62,7 +62,7 @@ void Viewport::HandleAbsolutePositionChange() {
 	);
 
 	// Send AbsolutePositionChange notifications to children so they can
-	// perform necessary actions e.g. GLCanvas.
+	// perform necessary actions e.g. Canvas.
 	Container::HandleAbsolutePositionChange();
 }
 

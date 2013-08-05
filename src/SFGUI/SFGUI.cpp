@@ -15,7 +15,15 @@ SFGUI::~SFGUI() {
 	Context::DestroyDefaultEngine();
 }
 
-void SFGUI::Display( sf::RenderTarget& target ) {
+void SFGUI::Display( sf::Window& target ) {
+	Renderer::Get().Display( target );
+}
+
+void SFGUI::Display( sf::RenderWindow& target ) {
+	Renderer::Get().Display( target );
+}
+
+void SFGUI::Display( sf::RenderTexture& target ) {
 	Renderer::Get().Display( target );
 }
 

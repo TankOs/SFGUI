@@ -81,7 +81,7 @@ set(
 	${INC_DIR}/SFGUI/FileResourceLoader.hpp
 	${INC_DIR}/SFGUI/Fixed.hpp
 	${INC_DIR}/SFGUI/Frame.hpp
-	${INC_DIR}/SFGUI/GLCanvas.hpp
+	${INC_DIR}/SFGUI/Canvas.hpp
 	${INC_DIR}/SFGUI/Image.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/Misc.hpp
@@ -152,7 +152,7 @@ set(
 	${SRC_DIR}/SFGUI/FileResourceLoader.cpp
 	${SRC_DIR}/SFGUI/Fixed.cpp
 	${SRC_DIR}/SFGUI/Frame.cpp
-	${SRC_DIR}/SFGUI/GLCanvas.cpp
+	${SRC_DIR}/SFGUI/Canvas.cpp
 	${SRC_DIR}/SFGUI/Image.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/Misc.cpp
@@ -230,7 +230,7 @@ if( BUILD_SHARED_LIBS )
 	endif()
 else()
 	add_definitions( -DSFGUI_STATIC )
-	
+
 	add_library( sfgui ${SOURCES} )
 
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -s-d )

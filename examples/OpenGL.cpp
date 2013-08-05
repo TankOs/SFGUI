@@ -6,13 +6,19 @@
 const float PI = 3.14159265f;
 
 int main() {
-	sf::RenderWindow render_window( sf::VideoMode( 800, 600 ), "SFGUI with OpenGL example", sf::Style::Titlebar | sf::Style::Close );
-
-	// We have to do this because we don't use SFML to draw.
-	render_window.resetGLStates();
+	// An sf::Window for raw OpenGL rendering.
+	sf::Window app_window( sf::VideoMode( 800, 600 ), "SFGUI with OpenGL example", sf::Style::Titlebar | sf::Style::Close );
 
 	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
+
+	// Set the SFML Window's context back to the active one. SFGUI creates
+	// a temporary context on creation that is set active.
+	app_window.setActive();
+
+	// Initial OpenGL setup.
+	// We have to set up our own OpenGL viewport because we are using an sf::Window.
+	glViewport( 0, 0, app_window.getSize().x, app_window.getSize().y );
 
 	sfg::Scale::Ptr red_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
 	sfg::Scale::Ptr green_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
@@ -46,10 +52,6 @@ int main() {
 	green_scale->SetValue( .5f );
 	blue_scale->SetValue( .8f );
 
-	//window->SetAllocation( sf::FloatRect( 0.f, 0.f, 300.f, 400.f ) );
-
-	render_window.setActive();
-
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 	gluPerspective( 90.f, 800.f / 600.f, .1f, 100.f );
@@ -61,10 +63,10 @@ int main() {
 
 	sf::Clock clock;
 
-	while( render_window.isOpen() ) {
-		while( render_window.pollEvent( event ) ) {
+	while( app_window.isOpen() ) {
+		while( app_window.pollEvent( event ) ) {
 			if( event.type == sf::Event::Closed ) {
-				render_window.close();
+				app_window.close();
 			}
 			else {
 				desktop.HandleEvent( event );
@@ -82,7 +84,7 @@ int main() {
 			angle_scale->SetValue( angle );
 		}
 
-		render_window.clear();
+		glClear( GL_COLOR_BUFFER_BIT );
 
 		glMatrixMode( GL_MODELVIEW );
 
@@ -98,14 +100,12 @@ int main() {
 		glVertex3f( 1.f, 1.f, 0.f );
 		glEnd();
 
-		desktop.Update( 0.f );
+		desktop.Update( clock.restart().asSeconds() );
 
-		// SFML rendering.
-		render_window.pushGLStates();
-		sfgui.Display( render_window );
-		render_window.popGLStates();
+		// SFGUI rendering.
+		sfgui.Display( app_window );
 
-		render_window.display();
+		app_window.display();
 
 		clock.restart();
 	}
