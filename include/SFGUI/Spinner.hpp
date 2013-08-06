@@ -36,6 +36,11 @@ class SFGUI_API Spinner : public Widget {
 		 */
 		bool Started() const;
 
+		/** Get current stage of the Spinner in the range of [0;steps-1].
+		 * @return state of the Spinner in the range of [0;steps-1].
+		 */
+		unsigned int GetStage() const;
+
 	protected:
 		/** Ctor.
 		 */
