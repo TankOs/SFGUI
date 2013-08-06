@@ -455,7 +455,7 @@ void Renderer::Display( sf::Window& target ) const {
 	target.setActive( true );
 
 	glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
-	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
+	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT );
 
 	// Since we have no idea what the attribute environment
 	// of the user looks like, we need to pretend to be SFML
@@ -754,6 +754,10 @@ void Renderer::WipeStateCache( sf::RenderTarget& target ) const {
 	// This is to make it forget it's cached viewport.
 	// Seriously... caching the viewport? Come on...
 	memset( reinterpret_cast<char*>( &target ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ) + 1, 1, 1 );
+
+	// Since we wiped SFML's cache of its bound texture, we
+	// should make sure that it stays coherent with reality :).
+	sf::Texture::bind( 0 );
 }
 
 sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
