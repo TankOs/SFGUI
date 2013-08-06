@@ -1,5 +1,50 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
+0.1.1
+
+Enhancements:
+  - Compatibility to SFML 2.1.
+  - Reimplemented sfg::Canvas.
+  - Rewrote sfg::Renderer::Display() interface to allow sf::Windows to be used
+    as targets for GUI rendering as well.
+  - Added support for multiple pages in the texture atlas to support
+    arbitrarily many images and image sizes (that themselves would fit on the
+    GPU of course)
+  - Added PackStart, PackEnd and ReorderChild to Box to make using it easier.
+
+Fixes:
+  - Made sure to restore coherency between wiped states cache and OpenGL
+    texture binding by unbinding any bound textures after wiping the cache.
+  - Moved spinner RenderQueue update logic into Engine-side code to decouple
+    the Widget from it's Engine implementation and make it easier for custom
+    Engines to be written for it.
+  - Changed CMakeLists.txt to accept SFML 2.x instead of only 2.0.
+  - Fixed hiding ACTIVE widgets getting them stuck in ACTIVE state, blocking
+    all future events from reaching other widgets.
+  - Fixed appending and prepending text to an Entry not properly invalidating
+    it.
+  - Fixed removing child from table not removing associated cell entry.
+  - Changed found message type in FindSFGUI.cmake to STATUS to prevent people
+    from being unnecessarily surprised when something worked. #636
+  - Fixed clicking on combobox drop-down menu causing window reordering when
+    the menu reached over the edge of the parent window onto another window.
+    The Desktop now only considers reordering when there is no modal widget
+    active. #628
+  - Fixed Window not properly ignoring invalid mouse move values. #607
+  - Fixed m_parent_notified being uninitialised on first use in Widget. #638
+  - Added missing "out of window" check when handling MouseMove events in
+    sfg::Scale.
+  - Fixed not taking into account padding when determining if the Renderer
+    needs to create a new atlas page.
+  - Fixed child widgets not notifying tentative parents of the child's
+    invalidation if the invalidation took place before it was added to the
+    parent and the next update cycle.
+  - Added explicit sf::Context construction before querying GLee for supported
+    extensions to fix special cases where no sf::Context is available yet thus
+    making GLee report wrong extension information.
+  - Fixed broken behavior when removing a page from a Notebook, now warns when
+    trying to remove the last page of the notebook
+
 0.1.0
 
 Enhancements:
