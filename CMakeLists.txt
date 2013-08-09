@@ -98,6 +98,8 @@ set(
 	${INC_DIR}/SFGUI/Range.hpp
 	${INC_DIR}/SFGUI/Renderer.hpp
 	${INC_DIR}/SFGUI/RendererViewport.hpp
+	${INC_DIR}/SFGUI/Renderers/VertexArrayRenderer.hpp
+	${INC_DIR}/SFGUI/Renderers/VertexBufferRenderer.hpp
 	${INC_DIR}/SFGUI/RenderQueue.hpp
 	${INC_DIR}/SFGUI/ResourceLoader.hpp
 	${INC_DIR}/SFGUI/ResourceManager.hpp
@@ -174,6 +176,8 @@ set(
 	${SRC_DIR}/SFGUI/Range.cpp
 	${SRC_DIR}/SFGUI/Renderer.cpp
 	${SRC_DIR}/SFGUI/RendererViewport.cpp
+	${SRC_DIR}/SFGUI/Renderers/VertexArrayRenderer.cpp
+	${SRC_DIR}/SFGUI/Renderers/VertexBufferRenderer.cpp
 	${SRC_DIR}/SFGUI/RenderQueue.cpp
 	${SRC_DIR}/SFGUI/ResourceLoader.cpp
 	${SRC_DIR}/SFGUI/ResourceManager.cpp

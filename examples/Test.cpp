@@ -1,6 +1,7 @@
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Renderer.hpp>
+#include <SFGUI/Renderers/VertexBufferRenderer.hpp>
+#include <SFGUI/Renderers/VertexArrayRenderer.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
@@ -24,6 +25,7 @@ class SampleApp {
 		void OnAdjustmentChange();
 		void OnToggleSpinner();
 		void OnMirrorImageClick();
+		void OnSwitchRendererClick();
 		void RenderCustomGL();
 		void RenderCustomSFML();
 
@@ -143,9 +145,15 @@ void SampleApp::Run() {
 	//m_window.EnableVerticalSync( true );
 
 	// Tune Renderer
-	m_sfgui.TuneUseFBO( true );
-	m_sfgui.TuneAlphaThreshold( .2f );
-	m_sfgui.TuneCull( true );
+	if( m_sfgui.GetRenderer().GetName() == "Vertex Buffer Renderer" ) {
+		static_cast<sfg::VertexBufferRenderer*>( &m_sfgui.GetRenderer() )->TuneUseFBO( true );
+		static_cast<sfg::VertexBufferRenderer*>( &m_sfgui.GetRenderer() )->TuneAlphaThreshold( .2f );
+		static_cast<sfg::VertexBufferRenderer*>( &m_sfgui.GetRenderer() )->TuneCull( true );
+	}
+	else if( m_sfgui.GetRenderer().GetName() == "Vertex Array Renderer" ) {
+		static_cast<sfg::VertexArrayRenderer*>( &m_sfgui.GetRenderer() )->TuneAlphaThreshold( .2f );
+		static_cast<sfg::VertexArrayRenderer*>( &m_sfgui.GetRenderer() )->TuneCull( true );
+	}
 
 	// Create widgets.
 	m_wndmain = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE );
@@ -276,6 +284,10 @@ void SampleApp::Run() {
 
 	boxtoolbar2->Pack( m_combo_box, true );
 
+	sfg::Button::Ptr switch_renderer( sfg::Button::Create( "Switch Renderer" ) );
+
+	boxtoolbar2->Pack( switch_renderer, false );
+
 	sfg::Frame::Ptr frame2( sfg::Frame::Create( L"Toolbar 2" ) );
 	frame2->Add( boxtoolbar2 );
 	frame2->SetAlignment( sf::Vector2f( .8f, .0f ) );
@@ -397,6 +409,7 @@ void SampleApp::Run() {
 	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &SampleApp::OnAdjustmentChange, this );
 	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnToggleSpinner, this );
 	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnMirrorImageClick, this );
+	switch_renderer->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SampleApp::OnSwitchRendererClick, this );
 
 	spinbutton->SetValue( 20.f );
 	spinbutton->GetAdjustment()->SetMinorStep( .8f );
@@ -639,6 +652,28 @@ void SampleApp::OnMirrorImageClick() {
 	}
 
 	m_image->SetImage( image );
+}
+
+void SampleApp::OnSwitchRendererClick() {
+	if( ( sfg::Renderer::Get().GetName() == "Vertex Array Renderer" ) && sfg::VertexBufferRenderer::IsAvailable() ) {
+		sfg::SharedPtr<sfg::VertexBufferRenderer> renderer( new sfg::VertexBufferRenderer );
+
+		sfg::Renderer::Set( renderer );
+
+		renderer->TuneUseFBO( true );
+		renderer->TuneAlphaThreshold( .2f );
+		renderer->TuneCull( true );
+	}
+	else {
+		sfg::SharedPtr<sfg::VertexArrayRenderer> renderer( new sfg::VertexArrayRenderer );
+
+		sfg::Renderer::Set( renderer );
+
+		renderer->TuneAlphaThreshold( .2f );
+		renderer->TuneCull( true );
+	}
+
+	m_desktop.Refresh();
 }
 
 void SampleApp::RenderCustomGL() {

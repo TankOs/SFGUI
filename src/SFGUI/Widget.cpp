@@ -207,9 +207,9 @@ void Widget::Update( float seconds ) {
 			m_drawable->SetZOrder( m_z_order );
 			m_drawable->Show( IsGloballyVisible() );
 
-			// We don't want to propagate container viewports for GLCanvases,
-			// they have their own special viewport for GL drawing.
-			if( !m_drawable->GetPrimitives().empty() && !m_drawable->GetPrimitives()[0]->GetCustomDrawCallback() ) {
+			// We don't want to propagate container viewports for Canvases,
+			// they have their own special viewport for drawing.
+			if( m_drawable->GetPrimitives().empty() || !m_drawable->GetPrimitives()[0]->GetCustomDrawCallback() ) {
 				m_drawable->SetViewport( m_viewport );
 			}
 		}

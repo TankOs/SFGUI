@@ -45,7 +45,7 @@ void RenderQueue::Add( Primitive::Ptr primitive ) {
 	primitive->SetViewport( m_viewport );
 	primitive->SetVisible( m_show );
 
-	Renderer::Get().InvalidateVBO( sfg::Renderer::INVALIDATE_ALL );
+	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
 }
 
 const sf::Vector2f& RenderQueue::GetPosition() const {
@@ -65,7 +65,7 @@ void RenderQueue::SetPosition( const sf::Vector2f& position ) {
 		m_primitives[index]->SetPosition( position );
 	}
 
-	Renderer::Get().InvalidateVBO( sfg::Renderer::INVALIDATE_VERTEX );
+	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_VERTEX );
 }
 
 const std::vector<Primitive::Ptr>& RenderQueue::GetPrimitives() const {
@@ -85,7 +85,7 @@ void RenderQueue::SetZOrder( int z_order ) {
 		m_primitives[index]->SetLayer( z_order );
 	}
 
-	Renderer::Get().InvalidateVBO( sfg::Renderer::INVALIDATE_ALL );
+	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
 }
 
 void RenderQueue::Show( bool show ) {
@@ -97,7 +97,7 @@ void RenderQueue::Show( bool show ) {
 		m_primitives[index]->SetVisible( show );
 	}
 
-	Renderer::Get().InvalidateVBO( sfg::Renderer::INVALIDATE_ALL );
+	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
 }
 
 void RenderQueue::SetLevel( int level ) {
@@ -109,7 +109,7 @@ void RenderQueue::SetLevel( int level ) {
 		m_primitives[index]->SetLevel( level );
 	}
 
-	Renderer::Get().InvalidateVBO( sfg::Renderer::INVALIDATE_ALL );
+	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
 }
 
 void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
@@ -121,7 +121,7 @@ void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
 		m_primitives[index]->SetViewport( m_viewport );
 	}
 
-	Renderer::Get().InvalidateVBO( sfg::Renderer::INVALIDATE_ALL );
+	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
 }
 
 const RendererViewport::Ptr& RenderQueue::GetViewport() const {

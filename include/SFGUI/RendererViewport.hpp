@@ -47,6 +47,18 @@ class RendererViewport {
 		 */
 		const sf::Vector2f& GetSize() const;
 
+		/** Equality operator.
+		 * @param other RendererViewport to compare with.
+		 * @return true if both RendererViewports represent the same viewport area.
+		 */
+		bool operator==( const RendererViewport& other ) const;
+
+		/** Inequality operator.
+		 * @param other RendererViewport to compare with.
+		 * @return false if both RendererViewports represent the same viewport area.
+		 */
+		bool operator!=( const RendererViewport& other ) const;
+
 	private:
 		sf::Vector2f m_source_origin;
 		sf::Vector2f m_destination_origin;

@@ -14,17 +14,10 @@ namespace sfg {
 
 class RendererViewport;
 
-/** SFGUI VBO renderer.
+/** SFGUI Renderer interface.
  */
 class SFGUI_API Renderer {
 	public:
-		enum DepthClearStrategy {
-			NO_DEPTH = 0, //!< No depth testing.
-			CLEAR_DEPTH = 1 << 0, //!< Depth testing using glClear().
-			ALTERNATE_DEPTH = 1 << 1, //!< Depth testing alternating between GL_LESS and GL_GREATER.
-			DEFAULT = NO_DEPTH //!< Default: No depth testing.
-		};
-
 		enum InvalidateDataset {
 			INVALIDATE_VERTEX = 1 << 0, //!< Vertex data needs a sync.
 			INVALIDATE_COLOR = 1 << 1, //!< Color data needs a sync.
@@ -34,6 +27,7 @@ class SFGUI_API Renderer {
 		};
 
 		/** Create the Renderer singleton instance.
+		 * SFGUI will automatically detect what is the best renderer for your given hardware.
 		 * @return Renderer instance.
 		 */
 		static Renderer& Create();
@@ -42,6 +36,11 @@ class SFGUI_API Renderer {
 		 * @return Renderer instance.
 		 */
 		static Renderer& Get();
+
+		/** Set the Renderer singleton instance.
+		 * @param Renderer instance.
+		 */
+		static void Set( const SharedPtr<Renderer>& renderer );
 
 		/** Destroy the Renderer singleton instance.
 		 */
@@ -54,7 +53,7 @@ class SFGUI_API Renderer {
 
 		/** Dtor.
 		 */
-		~Renderer();
+		virtual ~Renderer();
 
 		/** Get default viewport that covers the entire window.
 		 * @return Default viewport that covers the entire window.
@@ -185,11 +184,11 @@ class SFGUI_API Renderer {
 
 		/// @endcond
 
-		/** Invalidate VBO data so it is resynchronized with fresh data.
+		/** Invalidate renderer datasets so they are resynchronized with fresh data.
 		 * @param datasets The datasets to invalidate. Default: INVALIDATE_ALL
 		 * Bitwise OR of INVALIDATE_VERTEX, INVALIDATE_COLOR, INVALIDATE_TEXTURE or INVALIDATE_INDEX.
 		 */
-		void InvalidateVBO( unsigned char datasets = INVALIDATE_ALL );
+		void Invalidate( unsigned char datasets = INVALIDATE_ALL );
 
 		/** Draw the GUI to an sf::Window.
 		 * @param target sf::Window to draw to.
@@ -210,36 +209,19 @@ class SFGUI_API Renderer {
 		 */
 		void Redraw();
 
-		/** Enable and select depth testing method.
-		 * WARNING: THIS FEATURE IS BROKEN AND THEREFORE DISABLED UNTIL FURTHER NOTICE.
-		 * Renderer::NO_DEPTH To disable depth testing.
-		 * Renderer::CLEAR_DEPTH To enable depth testing and running glClear() every frame.
-		 * Renderer::ALTERNATE_DEPTH To enable depth testing and alternate between GL_LESS and GL_GREATER instead of clearing the depth buffer every frame. Use this only if you don't use the depth buffer yourself.
-		 * @param strategy Depth buffer strategy to use (default: NO_DEPTH).
-		 */
-		void TuneDepthTest( unsigned char strategy );
-
-		/** Enable and select alpha testing threshold.
-		 * @param alpha_threshold Threshold at which fragments will get discarded if their alpha value is less than or equal to. Set to 0.f to disable.
-		 */
-		void TuneAlphaThreshold( float alpha_threshold );
-
-		/** Enable or disable CPU driven face culling.
-		 * @param enable true to enable, false to disable.
-		 */
-		void TuneCull( bool enable );
-
-		/** Enable or disable FBO GUI caching.
-		 * @param enable true to enable, false to disable.
-		 */
-		void TuneUseFBO( bool enable );
-
 		/** Get the size of the window the last time the GUI was displayed.
 		 * @return Size of the window the last time the GUI was displayed.
 		 */
 		const sf::Vector2u& GetWindowSize() const;
 
-	private:
+		/** Get name of the Renderer.
+		 * The name of a Renderer is a descriptive name of the Renderer itself. E.g.
+		 * "Vertex Buffer Renderer" for the VertexBufferRenderer.
+		 * @return Name of the Renderer.
+		 */
+		virtual const std::string& GetName() const = 0;
+
+	protected:
 		struct Batch {
 			SharedPtr<RendererViewport> viewport;
 			SharedPtr<Signal> custom_draw_callback;
@@ -256,84 +238,51 @@ class SFGUI_API Renderer {
 			sf::Vector2u size;
 		};
 
+		typedef std::pair<void*, unsigned int> FontID;
+
 		/** Ctor.
 		 */
 		Renderer();
 
-		void DisplayImpl() const;
+		virtual void InvalidateImpl( unsigned char datasets );
 
+		virtual void InvalidateWindow();
+
+		virtual void DisplayImpl() const = 0;
+
+		void SortPrimitives();
+
+		std::vector<Primitive::Ptr> m_primitives;
+		std::vector<sf::Texture*> m_texture_atlas;
+
+		SharedPtr<RendererViewport> m_default_viewport;
+
+		std::size_t m_vertex_count;
+		std::size_t m_index_count;
+
+		mutable sf::Vector2u m_window_size;
+
+		unsigned int m_max_texture_size;
+
+		mutable bool m_force_redraw;
+
+	private:
 		void SetupGL() const;
 
 		void RestoreGL() const;
 
 		void WipeStateCache( sf::RenderTarget& target ) const;
 
-		void SortPrimitives();
-
-		void RefreshVBO();
-
-		void SetupFBO( unsigned int width, unsigned int height );
-
-		void DestroyFBO();
+		std::list<TextureNode> m_textures;
+		std::map<FontID, SharedPtr<Primitive::Texture> > m_fonts;
 
 		static SharedPtr<Renderer> m_instance;
 
-		std::vector<Primitive::Ptr> m_primitives;
-		std::vector<SharedPtr<RendererViewport> > m_viewports;
-
-		std::vector<Batch> m_batches;
-
-		SharedPtr<RendererViewport> m_default_viewport;
-
-		std::vector<sf::Texture*> m_texture_atlas;
-
-		GLuint m_frame_buffer;
-		GLuint m_frame_buffer_texture;
-		GLuint m_frame_buffer_depth;
-
-		GLuint m_display_list;
-
-		typedef std::pair<void*, unsigned int> FontID;
-
-		std::list<TextureNode> m_textures;
-		std::map<FontID, SharedPtr<Primitive::Texture> > m_fonts;
 		SharedPtr<Primitive::Texture> m_pseudo_texture;
 
-		GLuint m_vertex_vbo;
-		GLuint m_color_vbo;
-		GLuint m_texture_vbo;
-		GLuint m_index_vbo;
-
-		GLsizei m_last_vertex_count;
-		GLsizei m_last_index_count;
-
-		std::size_t m_vertex_count;
-		std::size_t m_index_count;
-
-		float m_alpha_threshold;
-
-		mutable sf::Vector2u m_window_size;
 		mutable sf::Vector2u m_last_window_size;
 
-		unsigned int m_max_texture_size;
-
-		unsigned char m_depth_clear_strategy;
-
-		unsigned char m_vbo_sync_type;
-
-		mutable bool m_depth_alternate_flag;
-
-		mutable bool m_vbo_synced;
-
-		mutable bool m_force_redraw;
-
-		bool m_cull;
-		bool m_use_fbo;
-
 		bool m_pseudo_texture_loaded;
-
-		bool m_vbo_supported;
-		bool m_fbo_supported;
 };
 
 }

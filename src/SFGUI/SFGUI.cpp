@@ -27,16 +27,8 @@ void SFGUI::Display( sf::RenderTexture& target ) {
 	Renderer::Get().Display( target );
 }
 
-void SFGUI::TuneAlphaThreshold( float alpha_threshold ) {
-	Renderer::Get().TuneAlphaThreshold( alpha_threshold );
-}
-
-void SFGUI::TuneCull( bool enable ) {
-	Renderer::Get().TuneCull( enable );
-}
-
-void SFGUI::TuneUseFBO( bool enable ) {
-	Renderer::Get().TuneUseFBO( enable );
+Renderer& SFGUI::GetRenderer() {
+	return Renderer::Get();
 }
 
 bool SFGUI::IsAlive() {
