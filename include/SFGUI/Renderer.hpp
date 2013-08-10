@@ -67,7 +67,6 @@ class SFGUI_API Renderer {
 
 		/** Create and register a new text primitive with the renderer.
 		 * @param text sf::Text describing the text to be drawn.
-		 * @param background_color_hint Background color hint for pre-blending.
 		 * @return New text primitive.
 		 */
 		Primitive::Ptr CreateText( const sf::Text& text );
@@ -122,13 +121,17 @@ class SFGUI_API Renderer {
 		 */
 		Primitive::Ptr CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color = sf::Color::White );
 
-		/** Create and register a new image primitive with the renderer.
-		 * @param rect sf::FloatRect describing the rect in which the image should be drawn.
-		 * @param image sf::Image containing the image to draw.
-		 * @param background_color_hint Background color hint for pre-blending.
-		 * @return New image primitive.
+		/** Create and register a new sprite primitive with the renderer.
+		 * Sprite primitives are primitives that have a bound texture that
+		 * was manually loaded prior to creation of the primitive. Subrects
+		 * can also be specified to use only portions of the passed texture.
+		 * @param rect sf::FloatRect describing the rect in which the sprite should be drawn.
+		 * @param texture Texture loaded previously with LoadImage.
+		 * @param subrect Subrectangle for specifying smaller regions of the texture to use. (0,0,0,0) to use whole texture.
+		 * @param rotation_turns Turns to rotate the texture by in COUNTERCLOCKWISE direction. 1 turn is 90 degrees, -1 turn is -90 degrees etc. 0 to not rotate.
+		 * @return New sprite primitive.
 		 */
-		Primitive::Ptr CreateImage( const sf::FloatRect& rect, const sf::Image& image );
+		Primitive::Ptr CreateSprite( const sf::FloatRect& rect, const Primitive::Texture::Ptr& texture, const sf::FloatRect& subrect = sf::FloatRect( 0.f, 0.f, 0.f, 0.f ), int rotation_turns = 0 );
 
 		/** Create and register a new line primitive with the renderer.
 		 * @param begin Starting point of the line.
@@ -164,11 +167,18 @@ class SFGUI_API Renderer {
 		 */
 		sf::Vector2f LoadFont( const sf::Font& font, unsigned int size );
 
-		/** Load an image into the atlas and return a handle to the image.
-		 * @param image sf::Image containing the image data.
-		 * @return Shared handle to the image.
+		/** Load an sf::Texture into the atlas and return a handle to the allocated texture.
+		 * This merely copies the data from the origin sf::Texture into the atlas.
+		 * @param texture sf::Texture containing the texture data.
+		 * @return Shared handle to the allocated texture.
 		 */
-		SharedPtr<Primitive::Texture> LoadImage( const sf::Image& image );
+		Primitive::Texture::Ptr LoadTexture( const sf::Texture& texture );
+
+		/** Load an sf::Image into the atlas and return a handle to the allocated texture.
+		 * @param image sf::Image containing the image data.
+		 * @return Shared handle to the allocated texture.
+		 */
+		Primitive::Texture::Ptr LoadTexture( const sf::Image& image );
 
 		/** Unload the image at the given offset from the texture atlas.
 		 * @param offset Offset of the image in the texture atlas.
@@ -274,11 +284,11 @@ class SFGUI_API Renderer {
 		void WipeStateCache( sf::RenderTarget& target ) const;
 
 		std::list<TextureNode> m_textures;
-		std::map<FontID, SharedPtr<Primitive::Texture> > m_fonts;
+		std::map<FontID, Primitive::Texture::Ptr> m_fonts;
 
 		static SharedPtr<Renderer> m_instance;
 
-		SharedPtr<Primitive::Texture> m_pseudo_texture;
+		Primitive::Texture::Ptr m_pseudo_texture;
 
 		mutable sf::Vector2u m_last_window_size;
 

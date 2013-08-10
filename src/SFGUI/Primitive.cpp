@@ -159,7 +159,7 @@ std::vector<Primitive::Vertex>& Primitive::GetVertices() {
 	return m_vertices;
 }
 
-std::vector<SharedPtr<Primitive::Texture> >& Primitive::GetTextures() {
+std::vector<Primitive::Texture::Ptr>& Primitive::GetTextures() {
 	return m_textures;
 }
 

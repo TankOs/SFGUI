@@ -338,9 +338,8 @@ Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::V
 	return primitive;
 }
 
-Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image& image ) {
-	SharedPtr<Primitive::Texture> texture_handle( LoadImage( image ) );
-	sf::Vector2f offset = texture_handle->offset;
+Primitive::Ptr Renderer::CreateSprite( const sf::FloatRect& rect, const Primitive::Texture::Ptr& texture, const sf::FloatRect& subrect, int rotation_turns ) {
+	sf::Vector2f offset = texture->offset;
 
 	Primitive::Ptr primitive( new Primitive( 4 ) );
 
@@ -359,10 +358,34 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	vertex2.color = sf::Color( 255, 255, 255, 255 );
 	vertex3.color = sf::Color( 255, 255, 255, 255 );
 
-	vertex0.texture_coordinate = offset + sf::Vector2f( 0.f, 0.f );
-	vertex1.texture_coordinate = offset + sf::Vector2f( 0.f, static_cast<float>( image.getSize().y ) );
-	vertex2.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getSize().x ), 0.f );
-	vertex3.texture_coordinate = offset + sf::Vector2f( static_cast<float>( image.getSize().x ), static_cast<float>( image.getSize().y ) );
+	sf::Vector2f coords[4];
+
+	if( ( subrect.left != 0.f ) || ( subrect.top != 0.f ) || ( subrect.width != 0.f ) || ( subrect.height != 0.f ) ) {
+		coords[0] = offset + sf::Vector2f( std::floor( subrect.left + .5f ), std::floor( subrect.top + .5f ) );
+		coords[3] = offset + sf::Vector2f( std::floor( subrect.left + .5f ), std::floor( subrect.top + .5f ) ) + sf::Vector2f( 0.f, std::floor( subrect.height + .5f ) );
+		coords[1] = offset + sf::Vector2f( std::floor( subrect.left + .5f ), std::floor( subrect.top + .5f ) ) + sf::Vector2f( std::floor( subrect.width + .5f ), 0.f );
+		coords[2] = offset + sf::Vector2f( std::floor( subrect.left + .5f ), std::floor( subrect.top + .5f ) ) + sf::Vector2f( std::floor( subrect.width + .5f ), std::floor( subrect.height + .5f ) );
+	}
+	else {
+		coords[0] = offset + sf::Vector2f( 0.f, 0.f );
+		coords[3] = offset + sf::Vector2f( 0.f, static_cast<float>( texture->size.y ) );
+		coords[1] = offset + sf::Vector2f( static_cast<float>( texture->size.x ), 0.f );
+		coords[2] = offset + sf::Vector2f( static_cast<float>( texture->size.x ), static_cast<float>( texture->size.y ) );
+	}
+
+	// Get rotation_turns into the range [0;3].
+	for( ; rotation_turns < 0; rotation_turns += 4 );
+	for( ; rotation_turns > 3; rotation_turns -= 4 );
+
+	// Perform the circular shift.
+	if( rotation_turns != 0 ) {
+		std::rotate( coords, coords + rotation_turns, coords + 4 );
+	}
+
+	vertex0.texture_coordinate = coords[0];
+	vertex1.texture_coordinate = coords[3];
+	vertex2.texture_coordinate = coords[1];
+	vertex3.texture_coordinate = coords[2];
 
 	primitive->AddVertex( vertex0 );
 	primitive->AddVertex( vertex1 );
@@ -371,7 +394,7 @@ Primitive::Ptr Renderer::CreateImage( const sf::FloatRect& rect, const sf::Image
 	primitive->AddVertex( vertex1 );
 	primitive->AddVertex( vertex3 );
 
-	primitive->AddTexture( texture_handle );
+	primitive->AddTexture( texture );
 
 	AddPrimitive( primitive );
 
@@ -572,7 +595,7 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 
 	FontID id( face, size );
 
-	std::map<FontID, SharedPtr<Primitive::Texture> >::iterator iter( m_fonts.find( id ) );
+	std::map<FontID, Primitive::Texture::Ptr >::iterator iter( m_fonts.find( id ) );
 
 	if( iter != m_fonts.end() ) {
 		return iter->second->offset;
@@ -585,28 +608,32 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 
 	sf::Image image = font.getTexture( size ).copyToImage();
 
-	SharedPtr<Primitive::Texture> handle = LoadImage( image );
+	Primitive::Texture::Ptr handle = LoadTexture( image );
 
 	m_fonts[id] = handle;
 
 	return handle->offset;
 }
 
-SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
+Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Texture& texture ) {
+	return LoadTexture( texture.copyToImage() );
+}
+
+Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 	if( !m_pseudo_texture_loaded ) {
 		m_pseudo_texture_loaded = true;
 
 		// Load our "no texture" pseudo-texture.
 		sf::Image pseudo_image;
 		pseudo_image.create( 2, 2, sf::Color::White );
-		m_pseudo_texture = LoadImage( pseudo_image );
+		m_pseudo_texture = LoadTexture( pseudo_image );
 	}
 
 	if( ( image.getSize().x > m_max_texture_size ) || ( image.getSize().x > m_max_texture_size ) ) {
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
 #endif
-		return SharedPtr<Primitive::Texture>( new Primitive::Texture );
+		return Primitive::Texture::Ptr( new Primitive::Texture );
 	}
 
 	// We insert padding between atlas elements to prevent
@@ -669,7 +696,7 @@ SharedPtr<Primitive::Texture> Renderer::LoadImage( const sf::Image& image ) {
 
 	Invalidate( INVALIDATE_TEXTURE );
 
-	SharedPtr<Primitive::Texture> handle( new Primitive::Texture );
+	Primitive::Texture::Ptr handle( new Primitive::Texture );
 
 	handle->offset = offset;
 	handle->size = image.getSize();

@@ -34,6 +34,8 @@ class SFGUI_API Primitive {
 		/** Primitive Texture
 		 */
 		struct Texture {
+			typedef SharedPtr<Texture> Ptr; //!< Shared pointer.
+
 			sf::Vector2f offset;
 			sf::Vector2u size;
 
