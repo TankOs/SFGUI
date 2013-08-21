@@ -16,10 +16,6 @@ Desktop::~Desktop() {
 	delete m_engine;
 }
 
-void Desktop::UpdateViewRect( const sf::FloatRect& rect ) {
-	m_view.reset( rect );
-}
-
 void Desktop::Update( float seconds ) {
 	Context::Activate( m_context );
 	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {

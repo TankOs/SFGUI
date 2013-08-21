@@ -505,9 +505,6 @@ void SampleApp::Run() {
 			if( event.type == sf::Event::Closed ) {
 				m_window.close();
 			}
-			else if( event.type == sf::Event::Resized ) {
-				m_desktop.UpdateViewRect( sf::FloatRect( 0.f, 0.f, static_cast<float>( event.size.width ), static_cast<float>( event.size.height ) ) );
-			}
 
 			m_desktop.HandleEvent( event );
 		}

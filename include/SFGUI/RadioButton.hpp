@@ -17,14 +17,30 @@ class SFGUI_API RadioButton : public CheckButton {
 
 		/** Radio Button group.
 		 */
-		struct RadioButtonGroup {
-			std::set< WeakPtr<RadioButton> > members;
+		class RadioButtonGroup {
+			public:
+				typedef SharedPtr<RadioButtonGroup> Ptr; //!< Shared pointer.
+				typedef SharedPtr<const RadioButtonGroup> PtrConst; //!< Shared pointer to const.
+
+				/** Create radio button group.
+				 */
+				static Ptr Create();
+
+				/** Get the members of this radio button group.
+				 * @return members of this radio button group.
+				 */
+				std::set< WeakPtr<RadioButton> >& GetMembers();
+
+			private:
+				RadioButtonGroup();
+
+				std::set< WeakPtr<RadioButton> > m_members;
 		};
 
 		/** Create radio button.
 		 * @param label Label.
 		 */
-		static Ptr Create( const sf::String& label, const SharedPtr<RadioButtonGroup>& group = SharedPtr<RadioButtonGroup>() );
+		static Ptr Create( const sf::String& label, const RadioButtonGroup::Ptr& group = RadioButtonGroup::Ptr() );
 
 		/** Dtor.
 		 */
@@ -33,12 +49,12 @@ class SFGUI_API RadioButton : public CheckButton {
 		/** Get the group of this RadioButton.
 		 * @return Group of this RadioButton.
 		 */
-		const SharedPtr<RadioButtonGroup>& GetGroup() const;
+		const RadioButtonGroup::Ptr& GetGroup() const;
 
 		/** Set the group of this RadioButton.
 		 * @param group New group.
 		 */
-		void SetGroup( const SharedPtr<RadioButtonGroup>& group );
+		void SetGroup( const RadioButtonGroup::Ptr& group );
 
 		/** Set active.
 		 * @param active Active.
@@ -53,7 +69,7 @@ class SFGUI_API RadioButton : public CheckButton {
 	private:
 		RadioButton();
 
-		SharedPtr<RadioButtonGroup> m_group;
+		RadioButtonGroup::Ptr m_group;
 };
 
 }

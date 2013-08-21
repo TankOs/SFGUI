@@ -104,11 +104,6 @@ class SFGUI_API Desktop {
 		 */
 		Engine& GetEngine();
 
-		/** Update view's rect.
-		 * @param rect Rect.
-		 */
-		void UpdateViewRect( const sf::FloatRect& rect );
-
 		/** Bring child to front.
 		 * @param child Child.
 		 */
@@ -119,8 +114,6 @@ class SFGUI_API Desktop {
 
 		void SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x = -1337, int y = -1337 ) const;
 		void RecalculateWidgetLevels();
-
-		sf::View m_view;
 
 		mutable Context m_context;
 		Engine* m_engine;

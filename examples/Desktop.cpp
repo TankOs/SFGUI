@@ -79,16 +79,6 @@ void DesktopExample::Run() {
 			) {
 				render_window.close();
 			}
-			else if( event.type == sf::Event::Resized ) {
-				m_desktop.UpdateViewRect(
-					sf::FloatRect(
-						0,
-						0,
-						static_cast<float>( render_window.getSize().x ),
-						static_cast<float>( render_window.getSize().y )
-					)
-				);
-			}
 			else {
 				m_desktop.HandleEvent( event );
 			}
