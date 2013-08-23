@@ -72,19 +72,19 @@ sf::Vector2f Engine::GetFontHeightProperties( const sf::Font& font, unsigned int
 
 	// Get the font face that Laurent tries to hide from us.
 	struct FontStruct {
+		void* library;
 		void* font_face; // Authentic SFML comment: implementation details
 		void* unused1;
 		int* unused2;
+		std::string family;
 
 		// Since maps allocate everything non-contiguously on the heap we can use void* instead of Page here.
 		mutable std::map<unsigned int, void*> unused3;
 		mutable std::vector<sf::Uint8> unused4;
 	};
 
-	void* face;
-
 	// All your font face are belong to us too.
-	memcpy( &face, reinterpret_cast<const char*>( &font ) + sizeof( sf::Font ) - sizeof( FontStruct ), sizeof( void* ) );
+	void* face = reinterpret_cast<const FontStruct&>( font ).font_face;
 
 	std::pair<void*, unsigned int> id( face, font_size );
 
