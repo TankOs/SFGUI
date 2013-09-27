@@ -30,6 +30,7 @@ class BobExample {
 		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
+		sfg::Spinner::Ptr m_spinner;
 };
 
 const unsigned int BobExample::SCREEN_WIDTH = 800;
@@ -83,6 +84,10 @@ void BobExample::Run() {
 	m_scale->SetAdjustment( m_scrollbar->GetAdjustment() );
 	m_scale->SetRequisition( sf::Vector2f( 100.f, .0f ) );
 
+	m_spinner = sfg::Spinner::Create();
+	m_spinner->SetRequisition( sf::Vector2f( 40.f, 20.f ) );
+	m_spinner->Start();
+
 	sfg::Box::Ptr m_scrolled_window_box = sfg::Box::Create( sfg::Box::VERTICAL );
 	for( int i = 0; i < 10; i++ ) {
 		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
@@ -105,6 +110,7 @@ void BobExample::Run() {
 	widget_box->Pack( m_entry, true );
 	widget_box->Pack( m_scale, true );
 	widget_box->Pack( m_check_button, true );
+	widget_box->Pack( m_spinner, true );
 
 	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );

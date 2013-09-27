@@ -62,6 +62,12 @@ ScrolledWindow {
 	BorderWidth: 3;
 }
 
+Spinner {
+	Image: data/bob/spinner.png;
+	Steps: 8;
+	CycleDuration: 800;
+}
+
 Window {
 	Image: data/bob/window.png;
 	AreaImage: data/bob/window_area.png;

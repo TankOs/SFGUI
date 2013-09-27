@@ -57,6 +57,10 @@ void Bob::ResetProperties() {
 	SetProperty( "ScrolledWindow", "ScrollbarSpacing", 5.f );
 	SetProperty( "ScrolledWindow", "BorderWidth", 0.f );
 
+	// Spinner-specific.
+	SetProperty( "Spinner", "CycleDuration", 1000.f );
+	SetProperty( "Spinner", "Steps", 60 );
+
 	// Window-specific
 	SetProperty( "Window", "Gap", 10.f );
 	SetProperty( "Window", "TitlePadding", 5.f );
@@ -66,7 +70,7 @@ void Bob::ResetProperties() {
 
 Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, const sf::Image *image, UintRect sub_rect ) const
 {
-	Primitive::Ptr primitive( new Primitive );
+	Primitive::Ptr primitive( new Primitive( 6 * 3 * 3 ) );
 
 	if( image == NULL )
 		return primitive;
