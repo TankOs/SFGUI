@@ -56,9 +56,7 @@ void VertexArrayRenderer::DisplayImpl() const {
 
 	std::size_t current_atlas_page = 0;
 
-	if( !m_texture_atlas.empty() ) {
-		sf::Texture::bind( m_texture_atlas[0] );
-	}
+	sf::Texture::bind( m_texture_atlas[0] );
 
 	for( std::size_t index = 0; index < scissor_pairs_size; ++index ) {
 		const Batch& batch = m_batches[index];
@@ -76,9 +74,7 @@ void VertexArrayRenderer::DisplayImpl() const {
 
 			glViewport( 0, 0, m_window_size.x, m_window_size.y );
 
-			if( !m_texture_atlas.empty() ) {
-				sf::Texture::bind( m_texture_atlas[current_atlas_page] );
-			}
+			sf::Texture::bind( m_texture_atlas[current_atlas_page] );
 		}
 		else {
 			if( viewport && ( ( *viewport ) != ( *m_default_viewport ) ) ) {

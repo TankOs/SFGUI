@@ -17,13 +17,17 @@ Renderer::Renderer() :
 	m_window_size( 0, 0 ),
 	m_max_texture_size( 0 ),
 	m_force_redraw( false ),
-	m_last_window_size( 0, 0 ),
-	m_pseudo_texture_loaded( false ) {
+	m_last_window_size( 0, 0 ) {
 	// Needed to determine maximum texture size.
 	sf::Context context;
 
 	m_default_viewport = CreateViewport();
 	m_max_texture_size = sf::Texture::getMaximumSize();
+
+	// Load our "no texture" pseudo-texture.
+	sf::Image pseudo_image;
+	pseudo_image.create( 2, 2, sf::Color::White );
+	m_pseudo_texture = LoadTexture( pseudo_image );
 }
 
 Renderer::~Renderer() {
@@ -620,15 +624,6 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Texture& texture ) {
 }
 
 Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
-	if( !m_pseudo_texture_loaded ) {
-		m_pseudo_texture_loaded = true;
-
-		// Load our "no texture" pseudo-texture.
-		sf::Image pseudo_image;
-		pseudo_image.create( 2, 2, sf::Color::White );
-		m_pseudo_texture = LoadTexture( pseudo_image );
-	}
-
 	if( ( image.getSize().x > m_max_texture_size ) || ( image.getSize().x > m_max_texture_size ) ) {
 #ifdef SFGUI_DEBUG
 		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
