@@ -245,7 +245,7 @@ set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 if( WIN32 )
 	target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
 elseif( APPLE )
-	target_link_libraries( sfgui ${COREFOUNDATION_LIBRARY} )
+  target_link_libraries( sfgui ${SFML_LIBRARIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 endif()
 
 ### EXAMPLES ###
