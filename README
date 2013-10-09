@@ -15,10 +15,17 @@ major platforms.
 
 To build, perform the following steps:
 
+Linux & Windows
+
   - cmake .
   - make install (as root)
   - On Linux: ldconfig (as root)
 
+On Mac
+  - git submodule init
+  - git submodule update
+  - cmake .
+  - make install (as root)
 
 2. USING SFGUI IN OWN PROJECTS
 

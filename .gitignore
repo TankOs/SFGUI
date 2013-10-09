@@ -3,3 +3,17 @@
 *.os
 *.so
 /doc/html/
+
+# ignore cmake related (created) files
+CMakeCache*
+CMakeFiles*
+cmake_install.cmake
+MakeFile
+
+# ignore examples
+examples*
+
+# ignore lib
+lib*
+
+install_manifest.txt
