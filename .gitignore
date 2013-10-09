@@ -9,4 +9,11 @@ CMakeCache*
 CMakeFiles*
 cmake_install.cmake
 MakeFile
-examples/MakeFile*
+
+# ignore examples
+examples*
+
+# ignore lib
+lib*
+
+install_manifest.txt
