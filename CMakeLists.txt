@@ -25,7 +25,7 @@ if( SFGUI_INCLUDE_FONT )
 	add_definitions( -DSFGUI_INCLUDE_FONT )
 endif()
 
-if(CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
   set( CMAKE_CXX_FLAGS "-stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wunused-parameter -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
   set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
 elseif( CMAKE_COMPILER_IS_GNUCXX )
