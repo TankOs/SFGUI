@@ -26,18 +26,18 @@ if( SFGUI_INCLUDE_FONT )
 endif()
 
 if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
-  set( CMAKE_CXX_FLAGS "-stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wunused-parameter -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
-  set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
+	set( CMAKE_CXX_FLAGS "-stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wunused-parameter -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
+	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
 elseif( CMAKE_COMPILER_IS_GNUCXX )
-  if( NOT CMAKE_CXX_FLAGS )
-    set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
-    set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
-  endif()
+	if( NOT CMAKE_CXX_FLAGS )
+		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
+		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
+	endif()
 
-  if( NOT CMAKE_CXX_FLAGS_DEBUG )
-    set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
-    set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
-  endif()
+	if( NOT CMAKE_CXX_FLAGS_DEBUG )
+		set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
+		set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
+	endif()
 endif()
 
 # Make Windows happy.
@@ -249,9 +249,9 @@ set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
 # Link to dependencies on Windows.
 if( WIN32 )
-	target_link_libraries( sfgui ${SFML_GRAPHICS_LIBRARY} ${SFML_WINDOW_LIBRARY} ${SFML_SYSTEM_LIBRARY} ${OPENGL_gl_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${OPENGL_gl_LIBRARY} )
 elseif( APPLE )
-  target_link_libraries( sfgui ${SFML_LIBRARIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 endif()
 
 ### EXAMPLES ###
