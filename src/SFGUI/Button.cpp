@@ -4,14 +4,6 @@
 
 namespace sfg {
 
-Button::Button() :
-	Bin()
-{
-}
-
-Button::~Button() {
-}
-
 Button::Ptr Button::Create( const sf::String& label ) {
 	Button::Ptr ptr( new Button );
 
@@ -20,8 +12,8 @@ Button::Ptr Button::Create( const sf::String& label ) {
 	return ptr;
 }
 
-RenderQueue* Button::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateButtonDrawable( DynamicPointerCast<const Button>( shared_from_this() ) );
+std::unique_ptr<RenderQueue> Button::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateButtonDrawable( std::dynamic_pointer_cast<const Button>( shared_from_this() ) );
 }
 
 void Button::SetLabel( const sf::String& label ) {
@@ -40,7 +32,7 @@ void Button::SetImage( const Image::Ptr& image ) {
 }
 
 const Image::Ptr Button::GetImage() const {
-	return StaticPointerCast<Image>( GetChild() );
+	return std::static_pointer_cast<Image>( GetChild() );
 }
 
 void Button::ClearImage() {
@@ -50,21 +42,21 @@ void Button::ClearImage() {
 }
 
 void Button::HandleMouseEnter( int /*x*/, int /*y*/ ) {
-	if( GetState() == NORMAL ) {
-		SetState( PRELIGHT );
+	if( GetState() == State::NORMAL ) {
+		SetState( State::PRELIGHT );
 	}
 }
 
 void Button::HandleMouseLeave( int /*x*/, int /*y*/ ) {
-	if( GetState() == PRELIGHT ) {
-		SetState( NORMAL );
+	if( GetState() == State::PRELIGHT ) {
+		SetState( State::NORMAL );
 	}
 }
 
 void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
 	if( !IsMouseInWidget() ) {
-		if( GetState() == ACTIVE ) {
-			SetState( NORMAL );
+		if( GetState() == State::ACTIVE ) {
+			SetState( State::NORMAL );
 		}
 
 		return;
@@ -72,10 +64,10 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 
 	if( button == sf::Mouse::Left ) {
 		if( press ) {
-			SetState( ACTIVE );
+			SetState( State::ACTIVE );
 		}
-		else if( GetState() == ACTIVE ) {
-			SetState( PRELIGHT );
+		else if( GetState() == State::ACTIVE ) {
+			SetState( State::PRELIGHT );
 		}
 	}
 }
@@ -87,7 +79,7 @@ sf::Vector2f Button::CalculateRequisition() {
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
-	sf::Vector2f requisition = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
+	auto requisition = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
 	requisition.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	requisition.x += 2 * padding;
@@ -114,7 +106,7 @@ void Button::HandleAdd( const Widget::Ptr& child ) {
 	Bin::HandleAdd( child );
 
 	if( GetChild() && GetChild()->GetName() != "Image" ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Only an Image can be added to a Button.\n";
 #endif
 
@@ -127,7 +119,7 @@ void Button::HandleSizeChange() {
 }
 
 void Button::AllocateChild() {
-	Widget::Ptr child = GetChild();
+	auto child = GetChild();
 
 	if( !child ) {
 		return;
@@ -143,7 +135,7 @@ void Button::AllocateChild() {
 	allocation.width = child->GetRequisition().x;
 	allocation.height -= border_width * 2.f + padding * 2.f;
 
-	if( GetState() == ACTIVE ) {
+	if( GetState() == State::ACTIVE ) {
 		allocation.left += border_width;
 		allocation.top += border_width;
 	}

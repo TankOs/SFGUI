@@ -2,14 +2,6 @@
 
 namespace sfg {
 
-Container::Container() :
-	Widget()
-{
-}
-
-Container::~Container() {
-}
-
 void Container::Add( const Widget::Ptr& widget ) {
 	if( IsChild( widget ) ) {
 		return;
@@ -39,7 +31,7 @@ void Container::Remove( const Widget::Ptr& widget ) {
 
 void Container::RemoveAll() {
 	while( !m_children.empty() ) {
-		Widget::Ptr widget = m_children.back();
+		auto widget = m_children.back();
 
 		m_children.pop_back();
 		widget->SetParent( Widget::Ptr() );
@@ -50,10 +42,8 @@ void Container::RemoveAll() {
 }
 
 bool Container::IsChild( const Widget::Ptr& widget ) const {
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		if( m_children[index] == widget ) {
+	for( const auto& child : m_children ) {
+		if( child == widget ) {
 			return true;
 		}
 	}
@@ -66,10 +56,8 @@ const Container::WidgetsList& Container::GetChildren() const {
 }
 
 void Container::Refresh() {
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->Refresh();
+	for( const auto& child : m_children ) {
+		child->Refresh();
 	}
 
 	Widget::Refresh();
@@ -98,11 +86,9 @@ void Container::HandleEvent( const sf::Event& event ) {
 		local_event.mouseButton.y -= static_cast<int>( GetAllocation().top );
 	}
 
-	std::size_t children_size = m_children.size();
-
 	// Pass event to children.
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->HandleEvent( local_event );
+	for( const auto& child : m_children ) {
+		child->HandleEvent( local_event );
 	}
 
 	// Process event for own widget.
@@ -117,7 +103,7 @@ void Container::HandleRemove( const Widget::Ptr& /*child*/ ) {
 }
 
 void Container::HandleChildInvalidate( const Widget::PtrConst& child ) const {
-	Container::PtrConst parent = GetParent();
+	auto parent = GetParent();
 
 	if( parent ) {
 		parent->HandleChildInvalidate( child );
@@ -125,11 +111,9 @@ void Container::HandleChildInvalidate( const Widget::PtrConst& child ) const {
 }
 
 void Container::HandleAbsolutePositionChange() {
-	std::size_t children_size = m_children.size();
-
 	// Update children's drawable positions.
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->HandleAbsolutePositionChange();
+	for( const auto& child : m_children ) {
+		child->HandleAbsolutePositionChange();
 	}
 
 	// Update own drawable position.
@@ -139,38 +123,30 @@ void Container::HandleAbsolutePositionChange() {
 void Container::HandleGlobalVisibilityChange() {
 	Widget::HandleGlobalVisibilityChange();
 
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->HandleGlobalVisibilityChange();
+	for( const auto& child : m_children ) {
+		child->HandleGlobalVisibilityChange();
 	}
 }
 
 void Container::HandleUpdate( float seconds ) {
 	Widget::HandleUpdate( seconds );
 
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->Update( seconds );
+	for( const auto& child : m_children ) {
+		child->Update( seconds );
 	}
 }
 
 void Container::HandleSetHierarchyLevel() {
 	Widget::HandleSetHierarchyLevel();
 
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->SetHierarchyLevel( GetHierarchyLevel() + 1 );
+	for( const auto& child : m_children ) {
+		child->SetHierarchyLevel( GetHierarchyLevel() + 1 );
 	}
 }
 
 void Container::HandleViewportUpdate() {
-	std::size_t children_size = m_children.size();
-
-	for( std::size_t index = 0; index < children_size; ++index ) {
-		m_children[index]->SetViewport( GetViewport() );
+	for( const auto& child : m_children ) {
+		child->SetViewport( GetViewport() );
 	}
 
 	Widget::HandleViewportUpdate();

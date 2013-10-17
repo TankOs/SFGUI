@@ -1,21 +1,20 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFGUI/Signal.hpp>
+#include <SFGUI/RendererViewport.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
 namespace sfg {
 
-class RendererViewport;
-
 /** Renderer primitive.
  */
 class SFGUI_API Primitive {
 	public:
-		typedef SharedPtr<Primitive> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<Primitive> Ptr; //!< Shared pointer.
 
 		/** Primitive vertex
 		 */
@@ -34,19 +33,18 @@ class SFGUI_API Primitive {
 		/** Primitive Texture
 		 */
 		struct Texture {
-			typedef SharedPtr<Texture> Ptr; //!< Shared pointer.
+			typedef std::shared_ptr<Texture> Ptr; //!< Shared pointer.
 
 			sf::Vector2f offset;
 			sf::Vector2u size;
 
 			void Update( const sf::Image& data );
 
-			Texture();
 			~Texture();
 		};
 
 		/** Ctor.
-		 * @param Optional parameter hinting at how many vertices will be added to this primitive.
+		 * @param vertex_reserve Optional parameter hinting at how many vertices will be added to this primitive.
 		 */
 		Primitive( std::size_t vertex_reserve = 0 );
 
@@ -63,7 +61,7 @@ class SFGUI_API Primitive {
 		/** Add texture to this primitive.
 		 * @param texture Texture to add.
 		 */
-		void AddTexture( const SharedPtr<Texture>& texture );
+		void AddTexture( const Texture::Ptr& texture );
 
 		/** Set position of this primitive.
 		 * @param position Position of this primitive.
@@ -78,12 +76,12 @@ class SFGUI_API Primitive {
 		/** Set viewport this primitive should be drawn in.
 		 * @param viewport Viewport this primitive should be drawn in.
 		 */
-		void SetViewport( const SharedPtr<RendererViewport>& viewport );
+		void SetViewport( const RendererViewport::Ptr& viewport );
 
 		/** Get viewport this primitive is drawn in.
 		 * @return Viewport this primitive is drawn in.
 		 */
-		const SharedPtr<RendererViewport>& GetViewport() const;
+		const RendererViewport::Ptr& GetViewport() const;
 
 		/** Set draw layer of this primitive.
 		 * @param layer Draw layer of this primitive.
@@ -115,7 +113,7 @@ class SFGUI_API Primitive {
 		/** Get textures in this primitive.
 		 * @return Textures in this primitive.
 		 */
-		std::vector<SharedPtr<Texture> >& GetTextures();
+		std::vector<Texture::Ptr>& GetTextures();
 
 		/** Get indices in this primitive.
 		 * @return Indices in this primitive.
@@ -145,12 +143,12 @@ class SFGUI_API Primitive {
 		/** Set the function that should be called to render custom GL content.
 		 * @param callback Signal containing the functions to call.
 		 */
-		void SetCustomDrawCallback( const SharedPtr<Signal>& callback );
+		void SetCustomDrawCallback( const std::shared_ptr<Signal>& callback );
 
 		/** Get the Signal containing the functions to call to render custom GL content.
 		 * @return Signal containing the functions to call to render custom GL content.
 		 */
-		const SharedPtr<Signal>& GetCustomDrawCallback() const;
+		const std::shared_ptr<Signal>& GetCustomDrawCallback() const;
 
 		/** Reset the primitive back to its default state.
 		 * This clears all vertices, textures, indices and any other saved values.
@@ -159,13 +157,13 @@ class SFGUI_API Primitive {
 
 	private:
 		sf::Vector2f m_position;
-		SharedPtr<RendererViewport> m_viewport;
-		SharedPtr<Signal> m_custom_draw_callback;
+		std::shared_ptr<RendererViewport> m_viewport;
+		std::shared_ptr<Signal> m_custom_draw_callback;
 		int m_layer;
 		int m_level;
 
 		std::vector<Vertex> m_vertices;
-		std::vector<SharedPtr<Texture> > m_textures;
+		std::vector<std::shared_ptr<Texture> > m_textures;
 		std::vector<GLuint> m_indices;
 
 		bool m_synced;

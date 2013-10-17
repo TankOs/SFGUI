@@ -7,17 +7,17 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", progress_bar ) );
-	sf::Color bar_border_color( GetProperty<sf::Color>( "BarBorderColor", progress_bar ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", progress_bar ) );
-	sf::Color progress_color( GetProperty<sf::Color>( "BarColor", progress_bar ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", progress_bar ) );
-	int bar_border_color_shift( GetProperty<int>( "BarBorderColorShift", progress_bar ) );
-	float border_width( GetProperty<float>( "BorderWidth", progress_bar ) );
-	float bar_border_width( GetProperty<float>( "BarBorderWidth", progress_bar ) );
+std::unique_ptr<RenderQueue> BREW::CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", progress_bar );
+	auto bar_border_color = GetProperty<sf::Color>( "BarBorderColor", progress_bar );
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", progress_bar );
+	auto progress_color = GetProperty<sf::Color>( "BarColor", progress_bar );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", progress_bar );
+	auto bar_border_color_shift = GetProperty<int>( "BarBorderColorShift", progress_bar );
+	auto border_width = GetProperty<float>( "BorderWidth", progress_bar );
+	auto bar_border_width = GetProperty<float>( "BarBorderWidth", progress_bar );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Pane.
 	queue->Add(
@@ -34,7 +34,7 @@ RenderQueue* BREW::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progr
 	if( progress_bar->GetFraction() > 0.f ) {
 		sf::FloatRect bar_rect;
 
-		if( progress_bar->GetOrientation() == ProgressBar::HORIZONTAL ) {
+		if( progress_bar->GetOrientation() == ProgressBar::Orientation::HORIZONTAL ) {
 			float frac_width( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().width * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(

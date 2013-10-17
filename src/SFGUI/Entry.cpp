@@ -32,8 +32,8 @@ Entry::Ptr Entry::Create( const sf::String& text ) {
 	return ptr;
 }
 
-RenderQueue* Entry::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateEntryDrawable( DynamicPointerCast<const Entry>( shared_from_this() ) );
+std::unique_ptr<RenderQueue> Entry::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateEntryDrawable( std::dynamic_pointer_cast<const Entry>( shared_from_this() ) );
 }
 
 void Entry::SetText( const sf::String& text ) {
@@ -61,7 +61,7 @@ void Entry::SetCursorPosition( std::size_t new_position ) {
 		return;
 	}
 
-	int delta = static_cast<int>( new_position ) - static_cast<int>( m_cursor_position );
+	auto delta = static_cast<int>( new_position ) - static_cast<int>( m_cursor_position );
 	MoveCursor( delta );
 }
 
@@ -85,13 +85,13 @@ std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 
 	std::basic_string<sf::Uint32> string( m_visible_string.begin(), m_visible_string.end() );
 
-	float text_start = GetAllocation().left + text_padding;
-	float last_delta = std::fabs( text_start - static_cast<float>( mouse_pos_x ) );
+	auto text_start = GetAllocation().left + text_padding;
+	auto last_delta = std::fabs( text_start - static_cast<float>( mouse_pos_x ) );
 	std::size_t cursor_position = 0;
 
 	for( cursor_position = 0; cursor_position < string.size(); cursor_position++ ) {
-		float text_length = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, cursor_position + 1 ), font, font_size ).x;
-		float new_delta = std::fabs( text_start + text_length - static_cast<float>( mouse_pos_x ) );
+		auto text_length = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, cursor_position + 1 ), font, font_size ).x;
+		auto new_delta = std::fabs( text_start + text_length - static_cast<float>( mouse_pos_x ) );
 		if( new_delta < last_delta ) {
 			last_delta = new_delta;
 		}
@@ -123,7 +123,7 @@ void Entry::RecalculateVisibleString() const {
 		string.replace( 0, string.size(), string.size(), m_text_placeholder );
 	}
 
-	float length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
+	auto length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
 
 	// While the string is too long for the given space keep chopping off characters
 	// on the right end of the string until the cursor is reached, then start
@@ -185,7 +185,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			m_string.erase( m_cursor_position - 1 );
 
 			// Store old number of visible characters.
-			std::size_t old_num_visible_chars = m_visible_string.getSize();
+			auto old_num_visible_chars = m_visible_string.getSize();
 
 			MoveCursor( -1 );
 			RecalculateVisibleString();
@@ -208,7 +208,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			m_string.erase( m_cursor_position );
 
 			// Store old number of visible characters.
-			std::size_t old_num_visible_chars = m_visible_string.getSize();
+			auto old_num_visible_chars = m_visible_string.getSize();
 
 			RecalculateVisibleString();
 
@@ -249,13 +249,13 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 
 void Entry::HandleMouseEnter( int /*x*/, int /*y*/ ) {
 	if( !HasFocus() ) {
-		SetState( PRELIGHT );
+		SetState( State::PRELIGHT );
 	}
 }
 
 void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	if( !HasFocus() ) {
-		SetState( NORMAL );
+		SetState( State::NORMAL );
 	}
 }
 
@@ -314,7 +314,7 @@ sf::Vector2f Entry::CalculateRequisition() {
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
-	float line_height = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
+	auto line_height = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	return sf::Vector2f( 2 * (border_width + text_padding), line_height + 2 * ( border_width + text_padding ) );
 }

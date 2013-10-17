@@ -1,8 +1,8 @@
 #pragma once
 #include <SFGUI/Container.hpp>
-#include <SFGUI/SharedPtr.hpp>
-
+#include <memory>
 #include <deque>
+#include <cstdint>
 
 namespace sfg {
 
@@ -10,17 +10,17 @@ namespace sfg {
  */
 class SFGUI_API Notebook : public Container {
 	public:
-		typedef SharedPtr<Notebook> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Notebook> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Notebook> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Notebook> PtrConst; //!< Shared pointer.
 		typedef int IndexType; ///< Type for tab indices.
 
 		/** Tab Position
 		 */
-		enum TabPosition {
-			TOP = 1 << 0,
-			BOTTOM = 1 << 1,
-			LEFT = 1 << 2,
-			RIGHT = 1 << 3
+		enum class TabPosition : std::uint8_t {
+			TOP = 0,
+			BOTTOM,
+			LEFT,
+			RIGHT
 		};
 
 		/** Create notebook.
@@ -28,7 +28,7 @@ class SFGUI_API Notebook : public Container {
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Appends a new page at the end of the Notebook.
 		 * @param child Widget in the new page.
@@ -173,8 +173,8 @@ class SFGUI_API Notebook : public Container {
 		 */
 		Notebook();
 
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		struct ChildLabelPair {
@@ -207,7 +207,7 @@ class SFGUI_API Notebook : public Container {
 		IndexType m_first_tab;
 		IndexType m_num_displayed_tabs;
 
-		unsigned char m_tab_position;
+		TabPosition m_tab_position;
 
 		float m_elapsed_time;
 

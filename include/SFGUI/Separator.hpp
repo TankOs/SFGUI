@@ -1,7 +1,7 @@
 #pragma once
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -9,12 +9,12 @@ namespace sfg {
  */
 class SFGUI_API Separator : public Widget {
 	public:
-		typedef SharedPtr<Separator> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Separator> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Separator> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Separator> PtrConst; //!< Shared pointer.
 
 		/** Separator orientation.
 		 */
-		enum Orientation {
+		enum class Orientation : std::uint8_t {
 			HORIZONTAL = 0, //!< Horizontal separator.
 			VERTICAL //!< Vertical separator.
 		};
@@ -23,9 +23,9 @@ class SFGUI_API Separator : public Widget {
 		 * @param orientation Orientation.
 		 * @return Separator widget.
 		 */
-		static Ptr Create( Orientation orientation = HORIZONTAL );
+		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Get the orientation of this separator widget
 		 * @return orientation of this separator widget
@@ -33,13 +33,13 @@ class SFGUI_API Separator : public Widget {
 		Orientation GetOrientation() const;
 
 	protected:
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		/** Ctor.
 		 */
-		Separator( Orientation orientation = HORIZONTAL );
+		Separator( Orientation orientation = Orientation::HORIZONTAL );
 
 		Orientation m_orientation;
 };

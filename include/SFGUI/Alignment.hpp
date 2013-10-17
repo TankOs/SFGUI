@@ -1,7 +1,7 @@
 #pragma once
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Misc.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -9,15 +9,15 @@ namespace sfg {
  */
 class SFGUI_API Alignment : public Bin, public Misc {
 	public:
-		typedef SharedPtr<Alignment> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Alignment> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Alignment> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Alignment> PtrConst; //!< Shared pointer.
 
 		/** Create alignment.
 		 * @return Alignment.
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Set scale
 		 * @param scale Scale (0..1 for x and y).
@@ -34,7 +34,7 @@ class SFGUI_API Alignment : public Bin, public Misc {
 		 */
 		Alignment();
 
-		sf::Vector2f CalculateRequisition();
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		void HandleSizeChange();

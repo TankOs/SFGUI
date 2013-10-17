@@ -8,23 +8,24 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbutton ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", spinbutton ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", spinbutton ) );
-	sf::Color text_color( GetProperty<sf::Color>( "Color", spinbutton ) );
-	sf::Color cursor_color( GetProperty<sf::Color>( "Color", spinbutton ) );
-	float text_padding( GetProperty<float>( "Padding", spinbutton ) );
-	float cursor_thickness( GetProperty<float>( "Thickness", spinbutton ) );
-	float border_width( GetProperty<float>( "BorderWidth", spinbutton ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", spinbutton ) );
-	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", spinbutton ) ) );
-	const unsigned int& font_size( GetProperty<unsigned int>( "FontSize", spinbutton ) );
-	float stepper_aspect_ratio( GetProperty<float>( "StepperAspectRatio", spinbutton ) );
-	sf::Color stepper_color( GetProperty<sf::Color>( "StepperBackgroundColor", spinbutton ) );
-	sf::Color stepper_border_color( GetProperty<sf::Color>( "BorderColor", spinbutton ) );
-	sf::Color stepper_arrow_color( GetProperty<sf::Color>( "StepperArrowColor", spinbutton ) );
+std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<const SpinButton> spinbutton ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", spinbutton );
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", spinbutton );
+	auto text_color = GetProperty<sf::Color>( "Color", spinbutton );
+	auto cursor_color = GetProperty<sf::Color>( "Color", spinbutton );
+	auto text_padding = GetProperty<float>( "Padding", spinbutton );
+	auto cursor_thickness = GetProperty<float>( "Thickness", spinbutton );
+	auto border_width = GetProperty<float>( "BorderWidth", spinbutton );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", spinbutton );
+	const auto& font_name = GetProperty<std::string>( "FontName", spinbutton );
+	const auto& font = GetResourceManager().GetFont( font_name );
+	auto font_size = GetProperty<unsigned int>( "FontSize", spinbutton );
+	auto stepper_aspect_ratio = GetProperty<float>( "StepperAspectRatio", spinbutton );
+	auto stepper_color = GetProperty<sf::Color>( "StepperBackgroundColor", spinbutton );
+	auto stepper_border_color = GetProperty<sf::Color>( "BorderColor", spinbutton );
+	auto stepper_arrow_color = GetProperty<sf::Color>( "StepperArrowColor", spinbutton );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Pane.
 	queue->Add(
@@ -38,7 +39,7 @@ RenderQueue* BREW::CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbut
 		)
 	);
 
-	float button_width = ( spinbutton->GetAllocation().height / 2.f ) * stepper_aspect_ratio;
+	auto button_width = ( spinbutton->GetAllocation().height / 2.f ) * stepper_aspect_ratio;
 
 	// Up Stepper.
 	queue->Add(
@@ -84,8 +85,8 @@ RenderQueue* BREW::CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbut
 		)
 	);
 
-	float line_height = GetFontLineHeight( font, font_size );
-	sf::Text vis_label( spinbutton->GetVisibleText(), font, font_size );
+	auto line_height = GetFontLineHeight( *font, font_size );
+	sf::Text vis_label( spinbutton->GetVisibleText(), *font, font_size );
 	vis_label.setColor( text_color );
 	vis_label.setPosition( text_padding, spinbutton->GetAllocation().height / 2.f - line_height / 2.f );
 
@@ -99,7 +100,7 @@ RenderQueue* BREW::CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbut
 		}
 
 		// Get metrics.
-		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
+		sf::Vector2f metrics( GetTextMetrics( cursor_string, *font, font_size ) );
 
 		queue->Add(
 			Renderer::Get().CreateRect(

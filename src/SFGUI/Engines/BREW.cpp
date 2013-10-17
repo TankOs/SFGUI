@@ -11,8 +11,7 @@
 namespace sfg {
 namespace eng {
 
-BREW::BREW() :
-	Engine()
+BREW::BREW()
 {
 	ResetProperties();
 }
@@ -160,10 +159,10 @@ void BREW::ResetProperties() {
 	SetAutoRefresh( true );
 }
 
-RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
+std::unique_ptr<RenderQueue> BREW::CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color ) {
 	border_width = std::floor( border_width + .5f );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Top
 	queue->Add(
@@ -208,14 +207,14 @@ RenderQueue* BREW::CreateBorder( const sf::FloatRect& rect, float border_width, 
 	return queue;
 }
 
-RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& background_color, float border_width, const sf::Color& border_color, int border_color_shift ) {
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& background_color, float border_width, const sf::Color& border_color, int border_color_shift ) {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Align rect to pixels
-	float left = std::floor( rect.left + .5f );
-	float top = std::floor( rect.top + .5f );
-	float width = std::floor( rect.width + .5f );
-	float height = std::floor( rect.height + .5f );
+	auto left = std::floor( rect.left + .5f );
+	auto top = std::floor( rect.top + .5f );
+	auto width = std::floor( rect.width + .5f );
+	auto height = std::floor( rect.height + .5f );
 
 	queue->Add(
 		Renderer::Get().CreatePane(
@@ -231,14 +230,14 @@ RenderQueue* BREW::CreateSlider( const sf::FloatRect& rect, sf::Color& backgroun
 	return queue;
 }
 
-RenderQueue* BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& background_color, float border_width, const sf::Color& border_color, int border_color_shift, bool pressed ) {
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> BREW::CreateStepper( const sf::FloatRect& rect, sf::Color& background_color, float border_width, const sf::Color& border_color, int border_color_shift, bool pressed ) {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Align rect to pixels
-	float left = std::floor( rect.left + .5f );
-	float top = std::floor( rect.top + .5f );
-	float width = std::floor( rect.width + .5f );
-	float height = std::floor( rect.height + .5f );
+	auto left = std::floor( rect.left + .5f );
+	auto top = std::floor( rect.top + .5f );
+	auto width = std::floor( rect.width + .5f );
+	auto height = std::floor( rect.height + .5f );
 
 	if( pressed ) {
 		border_color_shift = -border_color_shift;

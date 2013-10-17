@@ -2,9 +2,10 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Bin.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/String.hpp>
+#include <cstdint>
 
 namespace sfg {
 
@@ -12,10 +13,10 @@ namespace sfg {
  */
 class SFGUI_API Window : public Bin {
 	public:
-		typedef SharedPtr<Window> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Window> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Window> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Window> PtrConst; //!< Shared pointer.
 
-		enum Style {
+		enum Style : std::uint8_t {
 			NO_STYLE = 0, //!< Transparent window.
 			TITLEBAR = 1 << 0, //!< Titlebar.
 			BACKGROUND = 1 << 1, //!< Background.
@@ -24,16 +25,12 @@ class SFGUI_API Window : public Bin {
 			TOPLEVEL = TITLEBAR | BACKGROUND | RESIZE //!< Toplevel window.
 		};
 
-		/** Dtor.
-		 */
-		virtual ~Window();
-
 		/** Create window.
 		 * @param style Style the Window should have. Defaults to TopLevel.
 		 */
-		static Ptr Create( int style = TOPLEVEL );
+		static Ptr Create( std::uint8_t style = Style::TOPLEVEL );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Set window title.
 		 * @param title Title.
@@ -54,12 +51,12 @@ class SFGUI_API Window : public Bin {
 		 * Can be a combination of Window::Style values.
 		 * @param style New style.
 		 */
-		void SetStyle( int style );
+		void SetStyle( std::uint8_t style );
 
 		/** Get window style.
 		 * @return Window style.
 		 */
-		int GetStyle() const;
+		std::uint8_t GetStyle() const;
 
 		/** Check if the window has a specific style.
 		 * @param style Style to check.
@@ -71,11 +68,11 @@ class SFGUI_API Window : public Bin {
 		/** Constructor.
 		 * @param style Window style.
 		 */
-		Window( int style );
+		Window( std::uint8_t style );
 
-		virtual RenderQueue* InvalidateImpl() const;
+		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
-		sf::Vector2f CalculateRequisition();
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		void HandleSizeChange();
@@ -86,7 +83,7 @@ class SFGUI_API Window : public Bin {
 		sf::Vector2f m_drag_offset;
 
 		sf::String m_title;
-		int m_style;
+		std::uint8_t m_style;
 
 		bool m_dragging;
 		bool m_resizing;

@@ -40,14 +40,14 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 		 */
 		void TuneUseFBO( bool enable );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 	protected:
-		virtual void InvalidateImpl( unsigned char datasets );
+		virtual void InvalidateImpl( unsigned char datasets ) override;
 
-		virtual void InvalidateWindow();
+		virtual void InvalidateWindow() override;
 
-		virtual void DisplayImpl() const;
+		virtual void DisplayImpl() const override;
 
 	private:
 		void InvalidateVBO( unsigned char datasets );

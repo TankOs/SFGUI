@@ -1,7 +1,7 @@
 #pragma once
 #include <SFGUI/Entry.hpp>
 #include <SFGUI/Adjustment.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFML/System/String.hpp>
 #include <SFML/System/Clock.hpp>
 
@@ -11,8 +11,8 @@ namespace sfg {
  */
 class SFGUI_API SpinButton : public Entry {
 	public:
-		typedef SharedPtr<SpinButton> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const SpinButton> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<SpinButton> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const SpinButton> PtrConst; //!< Shared pointer.
 
 		/** Create SpinButton.
 		 * An adjustment object will be created automatically.
@@ -29,7 +29,7 @@ class SFGUI_API SpinButton : public Entry {
 		 */
 		static Ptr Create( const Adjustment::Ptr& adjustment );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Check if decrease stepper is pressed
 		 * @return true if decrease stepper is pressed
@@ -72,8 +72,8 @@ class SFGUI_API SpinButton : public Entry {
 		void SetStep( float step );
 
 		/** Set the range of this SpinButton widget
-		 * @param min New minimum.
-		 * @param max New maximum.
+		 * @param minimum New minimum.
+		 * @param maximum New maximum.
 		 */
 		void SetRange( float minimum, float maximum );
 
@@ -98,8 +98,8 @@ class SFGUI_API SpinButton : public Entry {
 		static Signal::SignalID OnValueChanged; //!< Fired when the value changes.
 
 	protected:
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		/** Ctor.
@@ -109,12 +109,12 @@ class SFGUI_API SpinButton : public Entry {
 		void UpdateTextFromAdjustment();
 		void UpdateAdjustmentFromText();
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual void HandleUpdate( float seconds );
-		virtual void HandleTextEvent( sf::Uint32 character );
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
-		virtual void HandleSizeChange();
-		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		virtual void HandleUpdate( float seconds ) override;
+		virtual void HandleTextEvent( sf::Uint32 character ) override;
+		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
+		virtual void HandleSizeChange() override;
+		virtual void HandleFocusChange( const Widget::Ptr& focused_widget ) override;
 
 		Adjustment::Ptr m_adjustment;
 

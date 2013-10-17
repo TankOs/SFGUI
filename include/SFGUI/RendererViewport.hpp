@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 
@@ -11,7 +11,7 @@ namespace sfg {
  */
 class RendererViewport {
 	public:
-		typedef SharedPtr<RendererViewport> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<RendererViewport> Ptr; //!< Shared pointer.
 
 		/** Ctor.
 		 */

@@ -6,7 +6,7 @@
 
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/View.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <string>
 #include <deque>
 
@@ -25,14 +25,6 @@ class Widget;
  */
 class SFGUI_API Desktop {
 	public:
-		/** Ctor.
-		 */
-		Desktop();
-
-		/** Dtor.
-		 */
-		~Desktop();
-
 		/** Use a custom engine.
 		 */
 		template <class T>
@@ -60,7 +52,7 @@ class SFGUI_API Desktop {
 		 * @return Value or T() in case property doesn't exist.
 		 */
 		template <typename T>
-		T GetProperty( const std::string& property, SharedPtr<const Widget> widget = SharedPtr<const Widget>() ) const;
+		T GetProperty( const std::string& property, std::shared_ptr<const Widget> widget = std::shared_ptr<const Widget>() ) const;
 
 		/** Update
 		 * @param seconds Elapsed time in seconds.
@@ -76,12 +68,12 @@ class SFGUI_API Desktop {
 		 * The added widget will be the new top widget.
 		 * @param widget Widget.
 		 */
-		void Add( SharedPtr<Widget> widget );
+		void Add( std::shared_ptr<Widget> widget );
 
 		/** Remove widget.
 		 * @param widget Widget.
 		 */
-		void Remove( SharedPtr<Widget> widget );
+		void Remove( std::shared_ptr<Widget> widget );
 
 		/** Remove all widgets.
 		 */
@@ -107,19 +99,19 @@ class SFGUI_API Desktop {
 		/** Bring child to front.
 		 * @param child Child.
 		 */
-		void BringToFront( SharedPtr<const Widget> child );
+		void BringToFront( std::shared_ptr<const Widget> child );
 
 	private:
-		typedef std::deque<SharedPtr<Widget> > WidgetsList;
+		typedef std::deque<std::shared_ptr<Widget> > WidgetsList;
 
-		void SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x = -1337, int y = -1337 ) const;
+		void SendFakeMouseMoveEvent( std::shared_ptr<Widget> widget, int x = -1337, int y = -1337 ) const;
 		void RecalculateWidgetLevels();
 
 		mutable Context m_context;
-		Engine* m_engine;
+		std::unique_ptr<Engine> m_engine;
 
 		WidgetsList m_children;
-		WeakPtr<Widget> m_last_receiver;
+		std::weak_ptr<Widget> m_last_receiver;
 
 		sf::Vector2i m_last_mouse_pos;
 };

@@ -5,7 +5,7 @@
 namespace sfg {
 
 Context* Context::m_active_context( 0 );
-SharedPtr<eng::BREW> Context::m_default_engine;
+std::shared_ptr<eng::BREW> Context::m_default_engine;
 
 Context& Context::Get() {
 	if( m_active_context ) {
@@ -36,11 +36,8 @@ bool Context::Deactivate() {
 }
 
 Context::Context() :
-	m_engine( NULL )
+	m_engine( nullptr )
 {
-}
-
-Context::~Context() {
 }
 
 Engine& Context::GetDefaultEngine() {
@@ -51,9 +48,13 @@ Engine& Context::GetDefaultEngine() {
 	return *m_default_engine;
 }
 
+/// @cond
+
 void Context::DestroyDefaultEngine() {
 	m_default_engine.reset();
 }
+
+/// @endcond
 
 Engine& Context::GetEngine() const {
 	return (m_engine ? *m_engine : GetDefaultEngine());
@@ -63,11 +64,11 @@ void Context::SetEngine( Engine& engine ) {
 	m_engine = &engine;
 }
 
-void Context::SetActiveWidget( SharedPtr<Widget> widget ) {
+void Context::SetActiveWidget( std::shared_ptr<Widget> widget ) {
 	m_active_widget = widget;
 }
 
-SharedPtr<Widget> Context::GetActiveWidget() const {
+std::shared_ptr<Widget> Context::GetActiveWidget() const {
 	return m_active_widget.lock();
 }
 

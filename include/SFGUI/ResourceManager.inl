@@ -1,17 +1,16 @@
 namespace sfg {
 
 template <class Loader>
-ResourceLoader& ResourceManager::CreateLoader() {
-	Loader* loader( new Loader );
+std::shared_ptr<const ResourceLoader> ResourceManager::CreateLoader() {
+	std::shared_ptr<Loader> loader( new Loader );
 
-	LoaderMap::iterator loader_iter( m_loaders.find( loader->GetIdentifier() ) );
+	auto loader_iter = m_loaders.find( loader->GetIdentifier() );
 	if( loader_iter != m_loaders.end() ) {
-		delete loader;
-		return *loader_iter->second;
+		return loader_iter->second;
 	}
 
 	m_loaders[loader->GetIdentifier()] = loader;
-	return *m_loaders[loader->GetIdentifier()];
+	return loader;
 }
 
 }

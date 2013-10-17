@@ -27,15 +27,10 @@ RenderQueue::~RenderQueue() {
 	}
 }
 
-void RenderQueue::Add( RenderQueue* queue ) {
-	std::size_t primitive_count = queue->m_primitives.size();
-
-	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives.push_back( queue->m_primitives[index] );
-	}
-
-	queue->m_primitives.clear();
-	delete queue;
+void RenderQueue::Add( std::unique_ptr<RenderQueue> queue ) {
+	auto primitives = std::move( queue->m_primitives );
+	m_primitives.reserve( m_primitives.size() + primitives.size() );
+	std::move( primitives.begin(), primitives.end(), std::back_inserter( m_primitives ) );
 }
 
 void RenderQueue::Add( Primitive::Ptr primitive ) {
@@ -59,10 +54,8 @@ void RenderQueue::SetPosition( const sf::Vector2f& position ) {
 
 	m_position = position;
 
-	std::size_t primitive_count = m_primitives.size();
-
-	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->SetPosition( position );
+	for( const auto& primitive : m_primitives ) {
+		primitive->SetPosition( position );
 	}
 
 	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_VERTEX );
@@ -79,10 +72,8 @@ int RenderQueue::GetZOrder() const {
 void RenderQueue::SetZOrder( int z_order ) {
 	m_z_order = z_order;
 
-	std::size_t primitive_count = m_primitives.size();
-
-	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->SetLayer( z_order );
+	for( const auto& primitive : m_primitives ) {
+		primitive->SetLayer( z_order );
 	}
 
 	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
@@ -91,10 +82,8 @@ void RenderQueue::SetZOrder( int z_order ) {
 void RenderQueue::Show( bool show ) {
 	m_show = show;
 
-	std::size_t primitive_count = m_primitives.size();
-
-	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->SetVisible( show );
+	for( const auto& primitive : m_primitives ) {
+		primitive->SetVisible( show );
 	}
 
 	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
@@ -103,10 +92,8 @@ void RenderQueue::Show( bool show ) {
 void RenderQueue::SetLevel( int level ) {
 	m_level = level;
 
-	std::size_t primitive_count = m_primitives.size();
-
-	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->SetLevel( level );
+	for( const auto& primitive : m_primitives ) {
+		primitive->SetLevel( level );
 	}
 
 	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
@@ -115,10 +102,8 @@ void RenderQueue::SetLevel( int level ) {
 void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
 	m_viewport = viewport;
 
-	std::size_t primitive_count = m_primitives.size();
-
-	for( std::size_t index = 0; index < primitive_count; ++index ) {
-		m_primitives[index]->SetViewport( m_viewport );
+	for( const auto& primitive : m_primitives ) {
+		primitive->SetViewport( m_viewport );
 	}
 
 	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );

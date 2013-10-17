@@ -3,7 +3,8 @@
 #include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/Viewport.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
+#include <cstdint>
 
 namespace sfg {
 
@@ -11,26 +12,22 @@ namespace sfg {
  */
 class SFGUI_API ScrolledWindow : public Container {
 	public:
-		typedef SharedPtr<ScrolledWindow> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const ScrolledWindow> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<ScrolledWindow> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const ScrolledWindow> PtrConst; //!< Shared pointer.
 
 		/** Content Placement
 		 */
-		enum Placement {
-			TOP = 1 << 0,
-			BOTTOM = 1 << 1,
-			LEFT = 1 << 2,
-			RIGHT = 1 << 3,
-			TOP_LEFT = TOP | LEFT, //!< Top left corner.
-			TOP_RIGHT = TOP | RIGHT, //!< Top right corner.
-			BOTTOM_LEFT = BOTTOM | LEFT, //!< Bottom left corner.
-			BOTTOM_RIGHT = BOTTOM | RIGHT, //!< Bottom right corner.
+		enum class Placement : std::uint8_t {
+			TOP_LEFT = 0, //!< Top left corner.
+			TOP_RIGHT, //!< Top right corner.
+			BOTTOM_LEFT, //!< Bottom left corner.
+			BOTTOM_RIGHT, //!< Bottom right corner.
 			DEFAULT_PLACEMENT = TOP_LEFT
 		};
 
 		/** Scrollbar policy.
 		 */
-		enum ScrollbarPolicy {
+		enum ScrollbarPolicy : std::uint8_t {
 			HORIZONTAL_ALWAYS = 1 << 0, //!< Always display horizontal scrollbar.
 			HORIZONTAL_AUTOMATIC = 1 << 1, //!< Display horizontal scrollbar only when needed.
 			HORIZONTAL_NEVER = 1 << 2, //!< Never display horizontal scrollbar.
@@ -52,7 +49,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		static Ptr Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Get the horizontal Adjustment for this Scrolled Window.
 		 * @return Horizontal Adjustment for this Scrolled Window.
@@ -77,12 +74,12 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Get the scrollbar policy for this Scrolled Window.
 		 * @return Scrollbar policy for this Scrolled Window.
 		 */
-		unsigned char GetScrollbarPolicy() const;
+		std::uint8_t GetScrollbarPolicy() const;
 
 		/** Set the scrollbar policy for this Scrolled Window.
 		 * @param policy New policy.
 		 */
-		void SetScrollbarPolicy( unsigned char policy );
+		void SetScrollbarPolicy( std::uint8_t policy );
 
 		/** Set where the content is placed and hence where the scrollbars will appear.
 		 * @param placement new ScrollbarPolicyPair.
@@ -117,11 +114,11 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
-		virtual void HandleChildInvalidate( const Widget::PtrConst& child ) const;
+		virtual void HandleChildInvalidate( const Widget::PtrConst& child ) const override;
 
 	protected:
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		ScrolledWindow( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
@@ -145,8 +142,8 @@ class SFGUI_API ScrolledWindow : public Container {
 		Scrollbar::Ptr m_horizontal_scrollbar;
 		Scrollbar::Ptr m_vertical_scrollbar;
 
-		unsigned char m_policy;
-		unsigned char m_placement;
+		std::uint8_t m_policy;
+		Placement m_placement;
 };
 
 }

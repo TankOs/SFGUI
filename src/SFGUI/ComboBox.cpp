@@ -15,7 +15,6 @@ const ComboBox::IndexType ComboBox::NONE = std::numeric_limits<ComboBox::IndexTy
 static const sf::String EMPTY = "";
 
 ComboBox::ComboBox() :
-	Bin(),
 	m_active( false ),
 	m_active_item( NONE ),
 	m_highlighted_item( NONE ),
@@ -23,16 +22,13 @@ ComboBox::ComboBox() :
 {
 }
 
-ComboBox::~ComboBox() {
-}
-
 ComboBox::Ptr ComboBox::Create() {
 	ComboBox::Ptr ptr( new ComboBox );
 	return ptr;
 }
 
-RenderQueue* ComboBox::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateComboBoxDrawable( DynamicPointerCast<const ComboBox>( shared_from_this() ) );
+std::unique_ptr<RenderQueue> ComboBox::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateComboBoxDrawable( std::dynamic_pointer_cast<const ComboBox>( shared_from_this() ) );
 }
 
 ComboBox::IndexType ComboBox::GetSelectedItem() const {
@@ -56,10 +52,10 @@ void ComboBox::AppendItem( const sf::String& text ) {
 	m_entries.push_back( text );
 
 	if( IsMouseInWidget() ) {
-		SetState( PRELIGHT );
+		SetState( State::PRELIGHT );
 	}
 	else {
-		SetState( NORMAL );
+		SetState( State::NORMAL );
 	}
 
 	RequestResize();
@@ -73,10 +69,10 @@ void ComboBox::InsertItem( IndexType index, const sf::String& text ) {
 	}
 
 	if( IsMouseInWidget() ) {
-		SetState( PRELIGHT );
+		SetState( State::PRELIGHT );
 	}
 	else {
-		SetState( NORMAL );
+		SetState( State::NORMAL );
 	}
 
 	RequestResize();
@@ -90,10 +86,10 @@ void ComboBox::PrependItem( const sf::String& text ) {
 	}
 
 	if( IsMouseInWidget() ) {
-		SetState( PRELIGHT );
+		SetState( State::PRELIGHT );
 	}
 	else {
-		SetState( NORMAL );
+		SetState( State::NORMAL );
 	}
 
 	RequestResize();
@@ -107,10 +103,10 @@ void ComboBox::ChangeItem( IndexType index, const sf::String& text ) {
 	m_entries[index] = text;
 
 	if( IsMouseInWidget() ) {
-		SetState( PRELIGHT );
+		SetState( State::PRELIGHT );
 	}
 	else {
-		SetState( NORMAL );
+		SetState( State::NORMAL );
 	}
 
 	RequestResize();
@@ -134,10 +130,10 @@ void ComboBox::RemoveItem( IndexType index ) {
 	}
 
 	if( IsMouseInWidget() ) {
-		SetState( PRELIGHT );
+		SetState( State::PRELIGHT );
 	}
 	else {
-		SetState( NORMAL );
+		SetState( State::NORMAL );
 	}
 
 	RequestResize();
@@ -168,14 +164,14 @@ bool ComboBox::IsPoppedUp() const {
 }
 
 void ComboBox::HandleMouseEnter( int /*x*/, int /*y*/ ) {
-	if( GetState() == NORMAL ) {
-		SetState( PRELIGHT );
+	if( GetState() == State::NORMAL ) {
+		SetState( State::PRELIGHT );
 	}
 }
 
 void ComboBox::HandleMouseLeave( int /*x*/, int /*y*/ ) {
-	if( GetState() == PRELIGHT ) {
-		SetState( NORMAL );
+	if( GetState() == State::PRELIGHT ) {
+		SetState( State::NORMAL );
 	}
 }
 
@@ -194,7 +190,7 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 			SetActiveWidget();
 			GrabModal();
 
-			sf::FloatRect scrollbar_allocation = m_scrollbar->GetAllocation();
+			auto scrollbar_allocation = m_scrollbar->GetAllocation();
 			scrollbar_allocation.left += GetAllocation().left;
 			scrollbar_allocation.top += GetAllocation().top;
 
@@ -212,12 +208,12 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 			unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 			const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
-			IndexType line_y = y;
+			auto line_y = y;
 			line_y -= static_cast<int>( GetAllocation().top + GetAllocation().height + padding );
 			line_y /= static_cast<int>( Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 2 * padding );
 
-			if( line_y < GetItemCount() ) {
-				if( line_y != m_highlighted_item ) {
+			if( line_y < static_cast<int>( GetItemCount() ) ) {
+				if( line_y != static_cast<int>( m_highlighted_item ) ) {
 					Invalidate();
 					m_highlighted_item = line_y + GetStartItemIndex();
 				}
@@ -239,7 +235,7 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 }
 
 void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
-	if( GetState() == ACTIVE ) {
+	if( GetState() == State::ACTIVE ) {
 		if( m_scrollbar ) {
 			sf::Event event;
 
@@ -254,7 +250,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 			SetActiveWidget();
 			GrabModal();
 
-			sf::FloatRect scrollbar_allocation = m_scrollbar->GetAllocation();
+			auto scrollbar_allocation = m_scrollbar->GetAllocation();
 			scrollbar_allocation.left += GetAllocation().left;
 			scrollbar_allocation.top += GetAllocation().top;
 
@@ -277,10 +273,10 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 		m_highlighted_item = NONE;
 
 		if( IsMouseInWidget() ) {
-			SetState( PRELIGHT );
+			SetState( State::PRELIGHT );
 		}
 		else {
-			SetState( NORMAL );
+			SetState( State::NORMAL );
 		}
 
 		Invalidate();
@@ -292,7 +288,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 		m_active = true;
 		m_highlighted_item = NONE;
 
-		SetState( ACTIVE );
+		SetState( State::ACTIVE );
 
 		GetSignals().Emit( OnOpen );
 
@@ -333,7 +329,7 @@ const std::string& ComboBox::GetName() const {
 void ComboBox::HandleStateChange( State old_state ) {
 	Bin::HandleStateChange( old_state );
 
-	if( GetState() == ACTIVE ) {
+	if( GetState() == State::ACTIVE ) {
 		SetZOrder( 1 );
 
 		GrabModal();
@@ -355,9 +351,9 @@ void ComboBox::HandleStateChange( State old_state ) {
 				line_height + 2 * padding
 			);
 
-			m_scrollbar = Scrollbar::Create( Scrollbar::VERTICAL );
+			m_scrollbar = Scrollbar::Create( Scrollbar::Orientation::VERTICAL );
 
-			float offset = ( GetState() == ACTIVE ? border_width : 0.f ) + GetAllocation().width - padding - line_height;
+			auto offset = ( GetState() == State::ACTIVE ? border_width : 0.f ) + GetAllocation().width - padding - line_height;
 
 			m_scrollbar->SetPosition( sf::Vector2f( offset, GetAllocation().height + border_width ) );
 			m_scrollbar->SetRequisition( sf::Vector2f( GetAllocation().width - offset, static_cast<float>( GetDisplayedItems() ) * item_size.y - 2.f * border_width ) );
@@ -368,7 +364,7 @@ void ComboBox::HandleStateChange( State old_state ) {
 			m_scrollbar->GetAdjustment()->SetMinorStep( 1.f );
 			m_scrollbar->GetAdjustment()->SetMajorStep( 1.f );
 
-			m_scrollbar->GetAdjustment()->GetSignal( Adjustment::OnChange ).Connect( &ComboBox::ChangeStartEntry, this );
+			m_scrollbar->GetAdjustment()->GetSignal( Adjustment::OnChange ).Connect( std::bind( &ComboBox::ChangeStartEntry, this ) );
 
 			m_scrollbar->SetZOrder( 2 );
 
@@ -399,9 +395,9 @@ ComboBox::IndexType ComboBox::GetDisplayedItems() const {
 		line_height + 2 * padding
 	);
 
-	float available_space = static_cast<float>( Renderer::Get().GetWindowSize().y ) - ( GetAbsolutePosition().y + item_size.y );
+	auto available_space = static_cast<float>( Renderer::Get().GetWindowSize().y ) - ( GetAbsolutePosition().y + item_size.y );
 
-	IndexType num_displayed_entries = static_cast<IndexType>( available_space / item_size.y );
+	auto num_displayed_entries = static_cast<IndexType>( available_space / item_size.y );
 
 	num_displayed_entries = ( GetItemCount() < num_displayed_entries ? GetItemCount() : num_displayed_entries );
 
@@ -415,7 +411,7 @@ ComboBox::IndexType ComboBox::GetStartItemIndex() const {
 void ComboBox::HandleUpdate( float seconds ) {
 	Bin::HandleUpdate( seconds );
 
-	if( GetState() != ACTIVE ) {
+	if( GetState() != State::ACTIVE ) {
 		if( IsModal() ) {
 			ReleaseModal();
 		}

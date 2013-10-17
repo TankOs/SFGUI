@@ -49,7 +49,7 @@ sf::Font LoadDejaVuSansFont() {
 	}
 
 	if( !font.loadFromMemory( font_data, font_data_len ) ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Failed to load DejaVuSans.\n";
 #endif
 	}

@@ -22,7 +22,7 @@ class ProgressBarExample {
 
 void ProgressBarExample::OnButtonClick() {
 	// Generate random value for progress bar percent done
-	float random_percentage = (float)rand()/(float)RAND_MAX;
+	auto random_percentage = static_cast<float>( rand() ) / static_cast<float>( RAND_MAX );
 	m_progressbar->SetFraction(random_percentage);
 }
 
@@ -34,8 +34,7 @@ void ProgressBarExample::Run() {
 	app_window.resetGLStates();
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create our progress bar
@@ -45,11 +44,11 @@ void ProgressBarExample::Run() {
 	m_progressbar->SetRequisition( sf::Vector2f( 200.f, 40.f ) );
 
 	// Create a button and connect the click signal.
-	sfg::Button::Ptr button( sfg::Button::Create( "Set Random Value" ) );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &ProgressBarExample::OnButtonClick, this );
+	auto button = sfg::Button::Create( "Set Random Value" );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ProgressBarExample::OnButtonClick, this ) );
 
 	// Create a horizontal box layouter and add widgets to it.
-	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::HORIZONTAL, 5.0f ) );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.0f );
 	box->Pack( m_progressbar );
 	box->Pack( button, false );
 

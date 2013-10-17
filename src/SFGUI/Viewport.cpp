@@ -5,10 +5,9 @@
 
 namespace sfg {
 
-Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) :
-	Bin()
+Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment )
 {
-	GetSignal( OnSizeRequest ).Connect( &Viewport::HandleRequisitionChange, this );
+	GetSignal( OnSizeRequest ).Connect( std::bind( &Viewport::HandleRequisitionChange, this ) );
 
 	SetHorizontalAdjustment( horizontal_adjustment );
 	SetVerticalAdjustment( vertical_adjustment );
@@ -25,7 +24,7 @@ Viewport::Ptr Viewport::Create( const Adjustment::Ptr& horizontal_adjustment, co
 	return ptr;
 }
 
-RenderQueue* Viewport::InvalidateImpl() const {
+std::unique_ptr<RenderQueue> Viewport::InvalidateImpl() const {
 	m_children_viewport->SetSourceOrigin(
 		sf::Vector2f(
 			std::floor( m_horizontal_adjustment->GetValue() + .5f ),
@@ -41,7 +40,7 @@ sf::Vector2f Viewport::CalculateRequisition() {
 }
 
 void Viewport::HandleSizeChange() {
-	sf::FloatRect allocation = GetAllocation();
+	auto allocation = GetAllocation();
 
 	m_children_viewport->SetSize(
 		sf::Vector2f(
@@ -52,7 +51,7 @@ void Viewport::HandleSizeChange() {
 }
 
 void Viewport::HandleAbsolutePositionChange() {
-	sf::Vector2f position = Widget::GetAbsolutePosition();
+	auto position = Widget::GetAbsolutePosition();
 
 	m_children_viewport->SetDestinationOrigin(
 		sf::Vector2f(
@@ -74,8 +73,8 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 
 	// Pass event to child
 	if( GetChild() ) {
-		float offset_x = ( -GetAllocation().left + m_horizontal_adjustment->GetValue() );
-		float offset_y = ( -GetAllocation().top + m_vertical_adjustment->GetValue() );
+		auto offset_x = ( -GetAllocation().left + m_horizontal_adjustment->GetValue() );
+		auto offset_y = ( -GetAllocation().top + m_vertical_adjustment->GetValue() );
 
 		switch( event.type ) {
 		case sf::Event::MouseButtonPressed:
@@ -140,7 +139,7 @@ const Adjustment::Ptr& Viewport::GetHorizontalAdjustment() const {
 
 void Viewport::SetHorizontalAdjustment( const Adjustment::Ptr& horizontal_adjustment ) {
 	m_horizontal_adjustment = horizontal_adjustment;
-	m_horizontal_adjustment->GetSignal( Adjustment::OnChange ).Connect( &Viewport::UpdateView, this );
+	m_horizontal_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Viewport::UpdateView, this ) );
 }
 
 const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
@@ -149,14 +148,14 @@ const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
 
 void Viewport::SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment ) {
 	m_vertical_adjustment = vertical_adjustment;
-	m_vertical_adjustment->GetSignal( Adjustment::OnChange ).Connect( &Viewport::UpdateView, this );
+	m_vertical_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Viewport::UpdateView, this ) );
 }
 
 void Viewport::HandleRequisitionChange() {
 	// A child just requested it's size. Because we are a viewport
 	// and have a virtual screen we give it everything it wants.
 	if( GetChild() ) {
-		sf::FloatRect new_allocation = GetChild()->GetAllocation();
+		auto new_allocation = GetChild()->GetAllocation();
 		new_allocation.width = GetChild()->GetRequisition().x;
 		new_allocation.height = GetChild()->GetRequisition().y;
 		GetChild()->SetAllocation( new_allocation );
@@ -170,7 +169,7 @@ const std::string& Viewport::GetName() const {
 
 void Viewport::HandleAdd( const Widget::Ptr& child ) {
 	if( GetChildren().size() > 1 ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Only one widget can be added to a Bin.\n";
 #endif
 

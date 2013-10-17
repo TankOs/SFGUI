@@ -85,7 +85,7 @@ void ThemeGrammar::PushSelector() {
 	}
 
 	while( !m_simple_selectors.empty() ) {
-		SimpleSelector simple_selector = m_simple_selectors.top();
+		auto simple_selector = m_simple_selectors.top();
 
 		if( m_combinators.empty() ) {
 			simple_selector.m_combinator = "";

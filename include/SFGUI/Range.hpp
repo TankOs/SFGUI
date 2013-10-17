@@ -2,7 +2,8 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Adjustment.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
+#include <cstdint>
 
 namespace sfg {
 
@@ -10,19 +11,15 @@ namespace sfg {
  */
 class SFGUI_API Range : public Widget {
 	public:
-		typedef SharedPtr<Range> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Range> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Range> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Range> PtrConst; //!< Shared pointer.
 
 		/** Orientation.
 		 */
-		enum Orientation {
+		enum class Orientation : std::uint8_t {
 			HORIZONTAL = 0, //!< Horizontal range widget.
 			VERTICAL //!< Vertical range widget.
 		};
-
-		/** Dtor.
-		 */
-		virtual ~Range();
 
 		/** Get the Adjustment for this Range widget.
 		 * @return Adjustment for this Range widget.
@@ -64,7 +61,7 @@ class SFGUI_API Range : public Widget {
 	protected:
 		/** Ctor.
 		 */
-		Range( Orientation orientation = HORIZONTAL );
+		Range( Orientation orientation = Orientation::HORIZONTAL );
 
 	private:
 		void HandleAdjustmentChange();
@@ -73,7 +70,7 @@ class SFGUI_API Range : public Widget {
 
 		unsigned int m_change_connection;
 
-		unsigned char m_orientation;
+		Orientation m_orientation;
 };
 
 }

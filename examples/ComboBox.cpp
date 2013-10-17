@@ -48,8 +48,7 @@ void ComboBoxExample::Run() {
 	app_window.resetGLStates();
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create the combo box itself.
@@ -61,13 +60,13 @@ void ComboBoxExample::Run() {
 
 	m_sel_label = sfg::Label::Create( L"Please select an item!" );
 
-	sfg::Button::Ptr button( sfg::Button::Create( L"Add item" ) );
+	auto button = sfg::Button::Create( L"Add item" );
 
-	sfg::Box::Ptr hbox( sfg::Box::Create( sfg::Box::HORIZONTAL, 5 ) );
+	auto hbox = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5 );
 	hbox->Pack( m_combo_box );
 	hbox->Pack( button, false );
 
-	sfg::Box::Ptr vbox( sfg::Box::Create( sfg::Box::VERTICAL, 5 ) );
+	auto vbox = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5 );
 	vbox->Pack( hbox, false );
 	vbox->Pack( m_sel_label, true );
 
@@ -77,9 +76,9 @@ void ComboBoxExample::Run() {
 	// So that our combo box has a meaningful purpose (besides just looking
 	// awesome :P) we need to tell it to connect to a callback of our choosing to
 	// notify us when it is clicked.
-	m_combo_box->GetSignal( sfg::ComboBox::OnSelect ).Connect( &ComboBoxExample::OnComboSelect, this );
+	m_combo_box->GetSignal( sfg::ComboBox::OnSelect ).Connect( std::bind( &ComboBoxExample::OnComboSelect, this ) );
 
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &ComboBoxExample::OnAddItemClick, this );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ComboBoxExample::OnAddItemClick, this ) );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.

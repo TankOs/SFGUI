@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFML/System.hpp>
 
 namespace sfg {
@@ -12,7 +12,7 @@ class SFGUI_API Misc {
 	public:
 		/** Dtor.
 		 */
-		~Misc();
+		virtual ~Misc() = default;
 
 		/** Set alignment
 		 * @param alignment Alignment (0..1 for x and y).
@@ -25,10 +25,6 @@ class SFGUI_API Misc {
 		const sf::Vector2f& GetAlignment() const;
 
 	protected:
-		/** Ctor.
-		 */
-		Misc();
-
 		virtual void HandleAlignmentChange( const sf::Vector2f& old_alignment );
 
 	private:

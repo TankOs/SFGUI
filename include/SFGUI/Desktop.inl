@@ -2,8 +2,7 @@ namespace sfg {
 
 template <class T>
 void Desktop::UseEngine() {
-	delete m_engine;
-	m_engine = new T;
+	m_engine.reset( new T );
 	m_context.SetEngine( *m_engine );
 	Refresh();
 }
@@ -19,7 +18,7 @@ bool Desktop::SetProperty( const std::string& selector, const std::string& prope
 }
 
 template <typename T>
-T Desktop::GetProperty( const std::string& property, SharedPtr<const Widget> widget ) const {
+T Desktop::GetProperty( const std::string& property, std::shared_ptr<const Widget> widget ) const {
 	return m_context.GetEngine().GetProperty<T>( property, widget );
 }
 

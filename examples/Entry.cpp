@@ -36,19 +36,18 @@ void EntryExample::Run() {
 	app_window.resetGLStates();
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create our box.
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 
 	// Create a button.
-	sfg::Button::Ptr button = sfg::Button::Create();
+	auto button = sfg::Button::Create();
 	button->SetLabel( "Set" );
 
 	// Connect the button.
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &EntryExample::ButtonClick, this );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &EntryExample::ButtonClick, this ) );
 
 	// Create a label.
 	m_label = sfg::Label::Create();

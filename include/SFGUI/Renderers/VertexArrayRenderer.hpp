@@ -16,10 +16,6 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		 */
 		VertexArrayRenderer();
 
-		/** Dtor.
-		 */
-		virtual ~VertexArrayRenderer();
-
 		/** Enable and select alpha testing threshold.
 		 * @param alpha_threshold Threshold at which fragments will get discarded if their alpha value is less than or equal to. Set to 0.f to disable.
 		 */
@@ -30,12 +26,12 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		 */
 		void TuneCull( bool enable );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 	protected:
-		virtual void InvalidateImpl( unsigned char datasets );
+		virtual void InvalidateImpl( unsigned char datasets ) override;
 
-		virtual void DisplayImpl() const;
+		virtual void DisplayImpl() const override;
 
 	private:
 		void RefreshArray();

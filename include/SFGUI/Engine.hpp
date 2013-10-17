@@ -4,7 +4,8 @@
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Selector.hpp>
 #include <SFGUI/ResourceManager.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <SFGUI/Parsers/ThemeParser/Parse.hpp>
+#include <memory>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <string>
@@ -48,109 +49,109 @@ class SFGUI_API Engine {
 
 		/** Dtor.
 		 */
-		virtual ~Engine();
+		virtual ~Engine() = default;
 
 		/** Create drawable for window widgets.
 		 * @param window Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateWindowDrawable( SharedPtr<const Window> window ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateWindowDrawable( std::shared_ptr<const Window> window ) const = 0;
 
 		/** Create drawable for button widgets.
 		 * @param button Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateButtonDrawable( SharedPtr<const Button> button ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateButtonDrawable( std::shared_ptr<const Button> button ) const = 0;
 
 		/** Create drawable for toggle button widgets.
 		 * @param button Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateToggleButtonDrawable( SharedPtr<const ToggleButton> button ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateToggleButtonDrawable( std::shared_ptr<const ToggleButton> button ) const = 0;
 
 		/** Create drawable for check button widgets.
 		 * @param check Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const = 0;
 
 		/** Create drawable for label widgets.
 		 * @param label Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateLabelDrawable( SharedPtr<const Label> label ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateLabelDrawable( std::shared_ptr<const Label> label ) const = 0;
 
 		/** Create drawable for entry widgets.
 		 * @param entry Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateEntryDrawable( SharedPtr<const Entry> entry ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const = 0;
 
 		/** Create drawable for scale widgets.
 		 * @param scale Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateScaleDrawable( SharedPtr<const Scale> scale ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateScaleDrawable( std::shared_ptr<const Scale> scale ) const = 0;
 
 		/** Create drawable for scrollbar widgets.
 		 * @param scrollbar Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const = 0;
 
 		/** Create drawable for scrolled window widgets.
 		 * @param scrolled_window Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> scrolled_window ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const = 0;
 
 		/** Create drawable for progress bar widgets.
 		 * @param progress_bar Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const = 0;
 
 		/** Create drawable for seperator widgets.
 		 * @param seperator Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateSeparatorDrawable( SharedPtr<const Separator> seperator ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateSeparatorDrawable( std::shared_ptr<const Separator> seperator ) const = 0;
 
 		/** Create drawable for frame widgets.
 		 * @param frame Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateFrameDrawable( SharedPtr<const Frame> frame ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateFrameDrawable( std::shared_ptr<const Frame> frame ) const = 0;
 
 		/** Create drawable for combo box widgets.
 		 * @param combo_box Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateComboBoxDrawable( std::shared_ptr<const ComboBox> combo_box ) const = 0;
 
 		/** Create drawable for image widgets.
 		 * @param image Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateImageDrawable( SharedPtr<const Image> image ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateImageDrawable( std::shared_ptr<const Image> image ) const = 0;
 
 		/** Create drawable for notebook widgets.
 		 * @param notebook Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateNotebookDrawable( std::shared_ptr<const Notebook> notebook ) const = 0;
 
 		/** Create drawable for spinner widgets.
 		 * @param spinner Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateSpinnerDrawable( std::shared_ptr<const Spinner> spinner ) const = 0;
 
 		/** Create drawable for spinbutton widgets.
 		 * @param spinbutton Widget.
 		 * @return New drawable object (unmanaged memory!).
 		 */
-		virtual RenderQueue* CreateSpinButtonDrawable( SharedPtr<const SpinButton> spinbutton ) const = 0;
+		virtual std::unique_ptr<RenderQueue> CreateSpinButtonDrawable( std::shared_ptr<const SpinButton> spinbutton ) const = 0;
 
 		/** Get maximum line height.
 		 * @param font Font.
@@ -234,7 +235,7 @@ class SFGUI_API Engine {
 		 * @return Value or T() in case property doesn't exist.
 		 */
 		template <typename T>
-		T GetProperty( const std::string& property, SharedPtr<const Widget> widget = Widget::Ptr() ) const;
+		T GetProperty( const std::string& property, std::shared_ptr<const Widget> widget = Widget::Ptr() ) const;
 
 		/** Load a theme from file.
 		 * @param filename Filename.
@@ -284,6 +285,8 @@ class SFGUI_API Engine {
 		 * @return sf::Vector2f containing line height in x and baseline offset in y.
 		 */
 		sf::Vector2f GetFontHeightProperties( const sf::Font& font, unsigned int font_size ) const;
+
+		void ParseTheme( const parser::theme::Theme& theme_to_parse );
 
 		PropertyMap m_properties;
 

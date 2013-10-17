@@ -1,7 +1,7 @@
 #pragma once
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Range.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -9,20 +9,20 @@ namespace sfg {
  */
 class SFGUI_API Scale : public Range {
 	public:
-		typedef SharedPtr<Scale> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Scale> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Scale> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Scale> PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */
-		virtual ~Scale();
+		virtual ~Scale() = default;
 
 		/** Create scale widget.
 		 * @param orientation Orientation.
 		 * @return Scale widget.
 		 */
-		static Ptr Create( Orientation orientation = HORIZONTAL );
+		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Create scale widget.
 		 * @param min Minimum value.
@@ -31,7 +31,7 @@ class SFGUI_API Scale : public Range {
 		 * @param orientation Orientation.
 		 * @return Scale widget.
 		 */
-		static Ptr Create( float min, float max, float step, Orientation orientation = HORIZONTAL );
+		static Ptr Create( float min, float max, float step, Orientation orientation = Orientation::HORIZONTAL );
 
 		/** Get slider rectangle ( position and dimensions )
 		 * @return slider rect
@@ -39,18 +39,18 @@ class SFGUI_API Scale : public Range {
 		const sf::FloatRect GetSliderRect() const;
 
 	protected:
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		/** Ctor.
 		 */
-		Scale( Orientation orientation = HORIZONTAL );
+		Scale( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual void HandleMouseMoveEvent( int x, int y );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		virtual void HandleMouseMoveEvent( int x, int y ) override;
 
-		sf::Vector2f* m_drag_offset;
+		std::unique_ptr<sf::Vector2f> m_drag_offset;
 		bool m_dragging;
 };
 

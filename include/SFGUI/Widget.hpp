@@ -2,13 +2,14 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Object.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Window/Event.hpp>
 #include <map>
 #include <string>
+#include <cstdint>
 
 namespace sfg {
 
@@ -16,15 +17,15 @@ class Container;
 
 /** Base class for widgets.
  */
-class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
+class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widget> {
 	public:
-		typedef SharedPtr<Widget> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Widget> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Widget> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Widget> PtrConst; //!< Shared pointer.
 		typedef std::vector<Widget::Ptr> WidgetsList;
 
 		/** Widget state.
 		 */
-		enum State {
+		enum class State : std::uint8_t {
 			NORMAL = 0, /*!< Normal. */
 			ACTIVE, /*!< Active, e.g. when a button is pressed. */
 			PRELIGHT, /*!< Prelight, e.g. when the mouse moves over a widget. */
@@ -146,12 +147,12 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Get parent.
 		 * @return Parent.
 		 */
-		SharedPtr<Container> GetParent();
+		std::shared_ptr<Container> GetParent();
 
 		/** Get parent.
 		 * @return Parent.
 		 */
-		SharedPtr<const Container> GetParent() const;
+		std::shared_ptr<const Container> GetParent() const;
 
 		/** Set widget's state.
 		 * @param state State.
@@ -243,12 +244,12 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Set viewport of this widget.
 		 * @param viewport Viewport of this widget.
 		 */
-		void SetViewport( const SharedPtr<RendererViewport>& viewport );
+		void SetViewport( const RendererViewport::Ptr& viewport );
 
 		/** Get viewport of this widget.
 		 * @return Viewport of this widget.
 		 */
-		const SharedPtr<RendererViewport>& GetViewport() const;
+		const RendererViewport::Ptr& GetViewport() const;
 
 		/** Get the Z layer this widget should be rendered in.
 		 * Larger values are rendered later. Default: 0.
@@ -300,9 +301,9 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 		/** Invalidate implementation (redraw internally).
 		 * Gets called whenever the widget needs to be redrawn, e.g. due to a call
 		 * to Invalidate().
-		 * @return Pointer to RenderQueue -- ownership is taken by caller.
+		 * @return Pointer to std::unique_ptr<RenderQueue> -- ownership is taken by caller.
 		 */
-		virtual RenderQueue* InvalidateImpl() const;
+		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const;
 
 		/** Requisition implementation (recalculate requisition).
 		 * @return New requisition.
@@ -456,43 +457,32 @@ class SFGUI_API Widget : public Object, public EnableSharedFromThis<Widget> {
 
 		sf::FloatRect m_allocation;
 		sf::Vector2f m_requisition;
-		sf::Vector2f* m_custom_requisition;
+		std::unique_ptr<sf::Vector2f> m_custom_requisition;
 
-		SharedPtr<RendererViewport> m_viewport;
+		std::shared_ptr<RendererViewport> m_viewport;
 
-		WeakPtr<Container> m_parent;
+		std::weak_ptr<Container> m_parent;
 
-		static WeakPtr<Widget> m_focus_widget;
-		static WeakPtr<Widget> m_active_widget;
-		static WeakPtr<Widget> m_modal_widget;
+		static std::weak_ptr<Widget> m_focus_widget;
+		static std::weak_ptr<Widget> m_active_widget;
+		static std::weak_ptr<Widget> m_modal_widget;
 
 		static std::vector<Widget*> m_root_widgets;
 
-		ClassId* m_class_id;
+		std::unique_ptr<ClassId> m_class_id;
 
 		int m_hierarchy_level;
 		int m_z_order;
 
-		mutable RenderQueue* m_drawable;
-
-		/**
-		 * Bit-field
-		 * 7=6=5 4 3=2=1 0
-		 * ^ ^ ^ ^ ^ ^ ^ ^
-		 * | | | | | | | |
-		 * | | | | | | | visible
-		 * | | | | | | |
-		 * | | | | state
-		 * | | | |
-		 * | | | mouse_in
-		 * | | |
-		 * mouse_button_down
-		 */
-
-		unsigned char m_bitfield;
+		mutable std::unique_ptr<RenderQueue> m_drawable;
 
 		mutable bool m_invalidated;
 		mutable bool m_parent_notified;
+
+		State m_state;
+		unsigned char m_mouse_button_down : 6; // 64 buttons, might not be enough for some people
+		bool m_mouse_in : 1;
+		bool m_visible : 1;
 };
 
 }

@@ -5,7 +5,7 @@
 namespace sfg {
 
 template <typename T>
-T Engine::GetProperty( const std::string& property, SharedPtr<const Widget> widget ) const {
+T Engine::GetProperty( const std::string& property, std::shared_ptr<const Widget> widget ) const {
 	static const T default_ = T();
 
 	const std::string* value( GetValue( property, widget ) );

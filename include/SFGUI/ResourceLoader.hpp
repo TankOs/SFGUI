@@ -3,6 +3,7 @@
 #include <SFGUI/Config.hpp>
 
 #include <string>
+#include <memory>
 
 namespace sf {
 class Font;
@@ -22,19 +23,19 @@ class SFGUI_API ResourceLoader {
 	public:
 		/** Dtor.
 		 */
-		virtual ~ResourceLoader();
+		virtual ~ResourceLoader() = default;
 
 		/** Load font.
 		 * @param path Path.
-		 * @return Font or NULL if failed to load.
+		 * @return Font or std::shared_ptr<const sf::Font>() if failed to load.
 		 */
-		virtual const sf::Font* LoadFont( const std::string& path ) = 0;
+		virtual std::shared_ptr<const sf::Font> LoadFont( const std::string& path ) const = 0;
 
 		/** Load image.
 		 * @param path Path.
-		 * @return Image or NULL if failed to load.
+		 * @return Image or std::shared_ptr<const sf::Image>() if failed to load.
 		 */
-		virtual const sf::Image* LoadImage( const std::string& path ) = 0;
+		virtual std::shared_ptr<const sf::Image> LoadImage( const std::string& path ) const = 0;
 
 		/** Get identifier.
 		 * @return Identifier.

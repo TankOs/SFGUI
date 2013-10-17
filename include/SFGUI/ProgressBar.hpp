@@ -2,7 +2,8 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
+#include <cstdint>
 
 #include <SFML/System/String.hpp>
 
@@ -12,12 +13,12 @@ namespace sfg {
  */
 class SFGUI_API ProgressBar : public Widget {
 	public:
-		typedef SharedPtr<ProgressBar> Ptr; ///< Shared pointer.
-		typedef SharedPtr<const ProgressBar> PtrConst; ///< Shared pointer to const.
+		typedef std::shared_ptr<ProgressBar> Ptr; ///< Shared pointer.
+		typedef std::shared_ptr<const ProgressBar> PtrConst; ///< Shared pointer to const.
 
 		/** Orientation.
 		 */
-		enum Orientation {
+		enum class Orientation : std::uint8_t {
 			HORIZONTAL = 0, ///< Horizontal.
 			VERTICAL ///< Vertical.
 		};
@@ -25,7 +26,7 @@ class SFGUI_API ProgressBar : public Widget {
 		/** Create progress bar.
 		 * @param orientation Orientation.
 		 */
-		static Ptr Create( Orientation orientation = HORIZONTAL );
+		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL );
 
 		/** Set orientation.
 		 * @param orientation Orientation.
@@ -47,16 +48,16 @@ class SFGUI_API ProgressBar : public Widget {
 		 */
 		float GetFraction() const;
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 	private:
-		ProgressBar( Orientation orientation = HORIZONTAL );
+		ProgressBar( Orientation orientation = Orientation::HORIZONTAL );
 
-		sf::Vector2f CalculateRequisition();
-		RenderQueue* InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
 
 		float m_fraction;
-		unsigned char m_orientation;
+		Orientation m_orientation;
 };
 
 }

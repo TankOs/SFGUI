@@ -3,7 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Misc.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFML/System/String.hpp>
 
 namespace sfg {
@@ -12,8 +12,8 @@ namespace sfg {
  */
 class SFGUI_API Label : public Widget, public Misc {
 	public:
-		typedef SharedPtr<Label> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Label> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Label> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Label> PtrConst; //!< Shared pointer.
 
 		/** Create label.
 		 * @param text Text.
@@ -21,11 +21,7 @@ class SFGUI_API Label : public Widget, public Misc {
 		 */
 		static Ptr Create( const sf::String& text = L"" );
 
-		virtual const std::string& GetName() const;
-
-		/** Dtor.
-		 */
-		~Label();
+		virtual const std::string& GetName() const override;
 
 		/** Set text.
 		 * @param text New text.
@@ -59,12 +55,12 @@ class SFGUI_API Label : public Widget, public Misc {
 		 */
 		Label( const sf::String& text = "" );
 
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
-		virtual void HandleRequisitionChange();
+		virtual void HandleRequisitionChange() override;
 
-		virtual void HandleSizeChange();
+		virtual void HandleSizeChange() override;
 
 	private:
 		void WrapText();

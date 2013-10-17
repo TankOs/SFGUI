@@ -16,19 +16,18 @@ int main() {
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Resize me!" );
 
 	// Create a box with 20 pixels spacing.
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::VERTICAL, 20.f );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 20.f );
 
 	// Create some buttons.
-	sfg::Button::Ptr button_aligned = sfg::Button::Create( "Aligned 0.8f right and bottom" );
-	sfg::Button::Ptr button_fixed = sfg::Button::Create( "Fixed at (200, 50)" );
+	auto button_aligned = sfg::Button::Create( "Aligned 0.8f right and bottom" );
+	auto button_fixed = sfg::Button::Create( "Fixed at (200, 50)" );
 
 	// Create a fixed.
-	sfg::Fixed::Ptr fixed = sfg::Fixed::Create();
+	auto fixed = sfg::Fixed::Create();
 
 	// Add button_fixed to the fixed at (200, 50).
 	fixed->Put( button_fixed, sf::Vector2f( 200.f, 50.f ) );
@@ -37,17 +36,17 @@ int main() {
 	box->Pack( fixed, false, true );
 
 	// Create a separator.
-	sfg::Separator::Ptr separator = sfg::Separator::Create( sfg::Separator::HORIZONTAL );
+	auto separator = sfg::Separator::Create( sfg::Separator::Orientation::HORIZONTAL );
 
 	// Add separator to box and set not to expand.
 	box->Pack( separator, false, true );
 
 	// Create an alignment.
-	sfg::Alignment::Ptr alignment = sfg::Alignment::Create();
+	auto alignment = sfg::Alignment::Create();
 
 	// Because we want to align our button horizontally, we need
 	// to place our alignment in a horizontal box set to expand and fill.
-	sfg::Box::Ptr alignment_box = sfg::Box::Create( sfg::Box::HORIZONTAL );
+	auto alignment_box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 	alignment_box->Pack( alignment, true, true );
 
 	// Add button_aligned to the alignment.
@@ -67,7 +66,7 @@ int main() {
 	alignment->SetAlignment( sf::Vector2f( .8f, .8f ) );
 
 	// Create our frame.
-	sfg::Frame::Ptr frame = sfg::Frame::Create( "Frame Title" );
+	auto frame = sfg::Frame::Create( "Frame Title" );
 
 	// We can align the frame title just like an alignment.
 	frame->SetAlignment( sf::Vector2f( .8f, .5f ) );

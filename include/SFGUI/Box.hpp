@@ -1,7 +1,8 @@
 #pragma once
 #include <SFGUI/Container.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <list>
+#include <cstdint>
 
 namespace sfg {
 
@@ -10,12 +11,12 @@ namespace sfg {
  */
 class SFGUI_API Box : public Container {
 	public:
-		typedef SharedPtr<Box> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Box> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Box> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Box> PtrConst; //!< Shared pointer.
 
 		/** Box orientation.
 		 */
-		enum Orientation {
+		enum class Orientation : std::uint8_t {
 			HORIZONTAL = 0, //!< Arrange horizontally.
 			VERTICAL //!< Arrange vertically.
 		};
@@ -25,9 +26,9 @@ class SFGUI_API Box : public Container {
 		 * @param spacing Spacing = space between widgets.
 		 * @return Box.
 		 */
-		static Ptr Create( Orientation orientation = HORIZONTAL, float spacing = 0.f );
+		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL, float spacing = 0.f );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Add a widget to the end of the box.
 		 * Alias to PackEnd(...) for backward compatibility.
@@ -71,7 +72,7 @@ class SFGUI_API Box : public Container {
 		/** Get requisition.
 		 * @return Requisition.
 		 */
-		sf::Vector2f CalculateRequisition();
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		struct ChildInfo {
@@ -85,7 +86,7 @@ class SFGUI_API Box : public Container {
 
 		typedef std::list<ChildInfo> ChildrenCont;
 
-		Box( Orientation orientation = HORIZONTAL, float spacing = 0.f );
+		Box( Orientation orientation = Orientation::HORIZONTAL, float spacing = 0.f );
 
 		void HandleAdd( const Widget::Ptr& child );
 		void HandleRemove( const Widget::Ptr& child );
@@ -97,7 +98,7 @@ class SFGUI_API Box : public Container {
 
 		ChildrenCont m_children;
 		float m_spacing;
-		unsigned char m_orientation;
+		Orientation m_orientation;
 };
 
 }

@@ -107,17 +107,17 @@ void GuessMyNumber::Run() {
 	render_window.resetGLStates();
 
 	// Create widgets.
-	sfg::Window::Ptr window( sfg::Window::Create() );
+	auto window = sfg::Window::Create();
 	window->SetTitle( TITLE );
 
-	sfg::Button::Ptr new_game_button( sfg::Button::Create( "New game" ) );
-	new_game_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &GuessMyNumber::OnNewGameClick, this );
+	auto new_game_button = sfg::Button::Create( "New game" );
+	new_game_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &GuessMyNumber::OnNewGameClick, this ) );
 
 	m_guess_button->SetId( "guess" );
-	m_guess_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &GuessMyNumber::OnGuessClick, this );
+	m_guess_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &GuessMyNumber::OnGuessClick, this ) );
 
 	// Layout.
-	sfg::Table::Ptr table( sfg::Table::Create() );
+	auto table = sfg::Table::Create();
 	table->Attach( sfg::Label::Create( "Your guess:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
 	table->Attach( m_number_entry, sf::Rect<sf::Uint32>( 1, 0, 1, 1 ) );
 	table->Attach( sfg::Label::Create( "Tries:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
@@ -128,11 +128,11 @@ void GuessMyNumber::Run() {
 	table->SetColumnSpacings( 5.f );
 	table->SetRowSpacings( 5.f );
 
-	sfg::Box::Ptr buttons_box( sfg::Box::Create( sfg::Box::HORIZONTAL, 5.f ) );
+	auto buttons_box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f );
 	buttons_box->Pack( new_game_button );
 	buttons_box->Pack( m_guess_button );
 
-	sfg::Box::Ptr content_vbox( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
+	auto content_vbox = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.f );
 	content_vbox->Pack( sfg::Label::Create( "Guess my number, it's from 1 to 100!" ) );
 	content_vbox->Pack( table );
 	content_vbox->Pack( buttons_box );

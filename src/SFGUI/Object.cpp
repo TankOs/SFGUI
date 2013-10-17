@@ -2,12 +2,6 @@
 
 namespace sfg {
 
-Object::Object() {
-}
-
-Object::~Object() {
-}
-
 Signal& Object::GetSignal( Signal::SignalID& id ) {
 	if( !id ) {
 		id = Signal::GetGUID();

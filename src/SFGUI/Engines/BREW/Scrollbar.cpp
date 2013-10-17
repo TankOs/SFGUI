@@ -6,22 +6,22 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar ) const {
-	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scrollbar ) );
-	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scrollbar ) );
-	sf::Color slider_border_color( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
-	sf::Color stepper_color( GetProperty<sf::Color>( "StepperBackgroundColor", scrollbar ) );
-	sf::Color stepper_border_color( GetProperty<sf::Color>( "BorderColor", scrollbar ) );
-	sf::Color stepper_arrow_color( GetProperty<sf::Color>( "StepperArrowColor", scrollbar ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", scrollbar ) );
-	float border_width( GetProperty<float>( "BorderWidth", scrollbar ) );
+std::unique_ptr<RenderQueue> BREW::CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const {
+	auto trough_color = GetProperty<sf::Color>( "TroughColor", scrollbar );
+	auto slider_color = GetProperty<sf::Color>( "SliderColor", scrollbar );
+	auto slider_border_color = GetProperty<sf::Color>( "BorderColor", scrollbar );
+	auto stepper_color = GetProperty<sf::Color>( "StepperBackgroundColor", scrollbar );
+	auto stepper_border_color = GetProperty<sf::Color>( "BorderColor", scrollbar );
+	auto stepper_arrow_color = GetProperty<sf::Color>( "StepperArrowColor", scrollbar );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", scrollbar );
+	auto border_width = GetProperty<float>( "BorderWidth", scrollbar );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	Scrollbar::Orientation orientation = scrollbar->GetOrientation();
+	auto orientation = scrollbar->GetOrientation();
 
-	if( orientation == Scrollbar::HORIZONTAL ) {
-		float stepper_length = scrollbar->GetAllocation().height;
+	if( orientation == Scrollbar::Orientation::HORIZONTAL ) {
+		auto stepper_length = scrollbar->GetAllocation().height;
 
 		// Trough
 		queue->Add(
@@ -89,7 +89,7 @@ RenderQueue* BREW::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar
 		);
 	}
 	else {
-		float stepper_length = scrollbar->GetAllocation().width;
+		auto stepper_length = scrollbar->GetAllocation().width;
 
 		// Trough
 		queue->Add(

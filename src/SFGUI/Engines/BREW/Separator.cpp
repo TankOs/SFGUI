@@ -6,12 +6,12 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateSeparatorDrawable( SharedPtr<const Separator> separator ) const {
-	sf::Color color( GetProperty<sf::Color>( "Color", separator ) );
+std::unique_ptr<RenderQueue> BREW::CreateSeparatorDrawable( std::shared_ptr<const Separator> separator ) const {
+	auto color = GetProperty<sf::Color>( "Color", separator );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	if( separator->GetOrientation() == Separator::HORIZONTAL ) {
+	if( separator->GetOrientation() == Separator::Orientation::HORIZONTAL ) {
 		queue->Add(
 			Renderer::Get().CreateLine(
 				sf::Vector2f( 0.f, separator->GetAllocation().height / 2.f ),

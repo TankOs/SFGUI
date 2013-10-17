@@ -6,19 +6,9 @@
 
 namespace sfg {
 
-Desktop::Desktop() :
-	m_engine( 0 ),
-	m_last_mouse_pos( 0, 0 )
-{
-}
-
-Desktop::~Desktop() {
-	delete m_engine;
-}
-
 void Desktop::Update( float seconds ) {
 	Context::Activate( m_context );
-	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
+	for( auto index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
 		m_children[index]->Update( seconds );
 	}
 	Context::Deactivate();
@@ -50,7 +40,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		Widget::Ptr widget( m_children[index] );
 
 		// Skip widget if not visible or is insensitive.
-		if( !widget->IsLocallyVisible() || widget->GetState() == Widget::INSENSITIVE ) {
+		if( !widget->IsLocallyVisible() || widget->GetState() == Widget::State::INSENSITIVE ) {
 			continue;
 		}
 
@@ -101,12 +91,12 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 	Context::Deactivate();
 }
 
-void Desktop::Add( SharedPtr<Widget> widget ) {
+void Desktop::Add( std::shared_ptr<Widget> widget ) {
 	if( std::find( m_children.begin(), m_children.end(), widget ) != m_children.end() ) {
 		return;
 	}
 
-	// Get old focused widget out of PRELIGHT state if mouse is inside the new
+	// Get old focused widget out of State::PRELIGHT state if mouse is inside the new
 	// widget.
 	if( m_children.size() ) {
 		if( widget->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
@@ -128,7 +118,7 @@ void Desktop::Add( SharedPtr<Widget> widget ) {
 	Context::Deactivate();
 }
 
-void Desktop::Remove( SharedPtr<Widget> widget ) {
+void Desktop::Remove( std::shared_ptr<Widget> widget ) {
 	WidgetsList::iterator iter( std::find( m_children.begin(), m_children.end(), widget ));
 
 	if( iter != m_children.end() ) {
@@ -153,7 +143,7 @@ void Desktop::Refresh() {
 
 	RecalculateWidgetLevels();
 
-	for( int index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
+	for( auto index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
 		m_children[index]->Refresh();
 	}
 
@@ -175,7 +165,7 @@ Engine& Desktop::GetEngine() {
 	return m_context.GetEngine();
 }
 
-void Desktop::BringToFront( SharedPtr<const Widget> child ) {
+void Desktop::BringToFront( std::shared_ptr<const Widget> child ) {
 	WidgetsList::iterator iter( std::find( m_children.begin(), m_children.end(), child ) );
 
 	if( iter == m_children.end() || iter == m_children.begin() ) {
@@ -193,7 +183,7 @@ void Desktop::BringToFront( SharedPtr<const Widget> child ) {
 	RecalculateWidgetLevels();
 }
 
-void Desktop::SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x, int y ) const {
+void Desktop::SendFakeMouseMoveEvent( std::shared_ptr<Widget> widget, int x, int y ) const {
 	sf::Event fake_event;
 	fake_event.type = sf::Event::MouseMoved;
 	fake_event.mouseMove.x = x;
@@ -202,11 +192,11 @@ void Desktop::SendFakeMouseMoveEvent( SharedPtr<Widget> widget, int x, int y ) c
 }
 
 void Desktop::RecalculateWidgetLevels() {
-	std::size_t children_size = m_children.size();
+	auto children_size = m_children.size();
 
 	int current_level = 0;
 
-	for( int index = static_cast<int>( children_size ) - 1; index >= 0; --index ) {
+	for( auto index = static_cast<int>( children_size ) - 1; index >= 0; --index ) {
 		m_children[index]->SetHierarchyLevel( current_level );
 
 		current_level += std::numeric_limits<int>::max() / static_cast<int>( children_size );

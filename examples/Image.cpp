@@ -16,15 +16,14 @@ int main() {
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Our sf::Image source
 	sf::Image sfgui_logo;
 
 	// Our sfg::Image
-	sfg::Image::Ptr image = sfg::Image::Create();
+	auto image = sfg::Image::Create();
 
 	// Try to load the image
 	if( sfgui_logo.loadFromFile( "data/sfgui.png" ) ) {

@@ -2,7 +2,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Adjustment.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -10,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Viewport : public Bin {
 	public:
-		typedef SharedPtr<Viewport> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Viewport> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Viewport> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Viewport> PtrConst; //!< Shared pointer.
 
 		/** Create viewport.
 		 * @return Viewport.
@@ -28,7 +28,7 @@ class SFGUI_API Viewport : public Bin {
 		/** Get absolute position on virtual screen: always (0,0)
 		 * @return Absolute position on virtual screen: always (0,0).
 		 */
-		virtual sf::Vector2f GetAbsolutePosition() const;
+		virtual sf::Vector2f GetAbsolutePosition() const override;
 
 		/** Get the horizontal Adjustment for this Viewport.
 		 * @return Horizontal Adjustment for this Viewport.
@@ -54,13 +54,13 @@ class SFGUI_API Viewport : public Bin {
 		 * Handle an SFML event and fire proper signals.
 		 * @return true when event has been processed (eaten).
 		 */
-		virtual void HandleEvent( const sf::Event& event );
+		virtual void HandleEvent( const sf::Event& event ) override;
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange();
+		virtual void HandleAbsolutePositionChange() override;
 
 		/** Get requisition of the child widget of the Viewport if present.
 		 * @return requisition of the child widget of the Viewport or (0.f, 0.f) if not present.
@@ -68,17 +68,17 @@ class SFGUI_API Viewport : public Bin {
 		sf::Vector2f GetChildRequisition();
 
 	protected:
-		sf::Vector2f CalculateRequisition();
+		virtual sf::Vector2f CalculateRequisition() override;
 
-		virtual void HandleSizeChange();
+		virtual void HandleSizeChange() override;
 
-		virtual void HandleAdd( const Widget::Ptr& child );
+		virtual void HandleAdd( const Widget::Ptr& child ) override;
 
 		/** Handle viewport change.
 		 */
-		virtual void HandleViewportUpdate();
+		virtual void HandleViewportUpdate() override;
 
-		virtual RenderQueue* InvalidateImpl() const;
+		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
 	private:
 		Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
@@ -90,7 +90,7 @@ class SFGUI_API Viewport : public Bin {
 		Adjustment::Ptr m_horizontal_adjustment;
 		Adjustment::Ptr m_vertical_adjustment;
 
-		SharedPtr<RendererViewport> m_children_viewport;
+		std::shared_ptr<RendererViewport> m_children_viewport;
 };
 
 }

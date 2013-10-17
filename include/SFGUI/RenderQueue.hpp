@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Primitive.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/OpenGL.hpp>
@@ -35,7 +35,7 @@ class SFGUI_API RenderQueue {
 		 * Keep in mind that this queue takes ownership of the queue.
 		 * @param queue Queue to add and manage.
 		 */
-		void Add( RenderQueue* queue );
+		void Add( std::unique_ptr<RenderQueue> queue );
 
 		void Add( Primitive::Ptr primitive );
 
@@ -66,31 +66,31 @@ class SFGUI_API RenderQueue {
 		 */
 		void SetZOrder( int z_order );
 
-		/** Draw this RenderQueue.
+		/** Draw this std::unique_ptr<RenderQueue>.
 		 * @param show true to draw.
 		 */
 		void Show( bool show = true );
 
-		/** Set draw hierarchy level of this RenderQueue.
-		 * @param level Draw hierarchy level of this RenderQueue.
+		/** Set draw hierarchy level of this std::unique_ptr<RenderQueue>.
+		 * @param level Draw hierarchy level of this std::unique_ptr<RenderQueue>.
 		 */
 		void SetLevel( int level );
 
-		/** Set viewport of this RenderQueue.
-		 * @param viewport New viewport of this RenderQueue.
+		/** Set viewport of this std::unique_ptr<RenderQueue>.
+		 * @param viewport New viewport of this std::unique_ptr<RenderQueue>.
 		 */
-		void SetViewport( const SharedPtr<RendererViewport>& viewport );
+		void SetViewport( const RendererViewport::Ptr& viewport );
 
-		/** Get viewport of this RenderQueue.
-		 * @return Viewport of this RenderQueue.
+		/** Get viewport of this std::unique_ptr<RenderQueue>.
+		 * @return Viewport of this std::unique_ptr<RenderQueue>.
 		 */
-		const SharedPtr<RendererViewport>& GetViewport() const;
+		const RendererViewport::Ptr& GetViewport() const;
 
 	private:
 		std::vector<Primitive::Ptr> m_primitives;
 
 		sf::Vector2f m_position;
-		SharedPtr<RendererViewport> m_viewport;
+		RendererViewport::Ptr m_viewport;
 
 		int m_z_order;
 		int m_level;

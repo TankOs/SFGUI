@@ -34,23 +34,22 @@ void ScrolledWindowViewportExample::Run() {
 	app_window.resetGLStates();
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create a box with 10 pixel spacing.
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::VERTICAL, 10.f );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 10.f );
 
 	// Create a button and connect the click signal.
-	sfg::Button::Ptr button = sfg::Button::Create( "Add a button" );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &ScrolledWindowViewportExample::OnButtonClick, this );
+	auto button = sfg::Button::Create( "Add a button" );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ScrolledWindowViewportExample::OnButtonClick, this ) );
 
 	// Create a box for our ScrolledWindow. ScrolledWindows are bins
 	// and can only contain 1 child widget.
-	m_scrolled_window_box = sfg::Box::Create( sfg::Box::VERTICAL );
+	m_scrolled_window_box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
 
 	// Create the ScrolledWindow.
-	sfg::ScrolledWindow::Ptr scrolledwindow = sfg::ScrolledWindow::Create();
+	auto scrolledwindow = sfg::ScrolledWindow::Create();
 
 	// Set the ScrolledWindow to always show the horizontal scrollbar
 	// and only show the vertical scrollbar when needed.
@@ -64,7 +63,7 @@ void ScrolledWindowViewportExample::Run() {
 	scrolledwindow->SetRequisition( sf::Vector2f( 500.f, 100.f ) );
 
 	// Create a viewport.
-	sfg::Viewport::Ptr viewport = sfg::Viewport::Create();
+	auto viewport = sfg::Viewport::Create();
 
 	// Always remember to set the minimum size of a Viewport.
 	viewport->SetRequisition( sf::Vector2f( 500.f, 200.f ) );
@@ -75,7 +74,7 @@ void ScrolledWindowViewportExample::Run() {
 
 	// Create a box for our Viewport. Viewports are bins
 	// as well and can only contain 1 child widget.
-	sfg::Box::Ptr viewport_box = sfg::Box::Create( sfg::Box::VERTICAL );
+	auto viewport_box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
 
 	sf::err() << "Generating random strings, please be patient..." << std::endl;
 
@@ -121,7 +120,7 @@ void ScrolledWindowViewportExample::Run() {
 
 		// Update the GUI every 1ms
 		if( clock.getElapsedTime().asMicroseconds() >= 1000 ) {
-			float delta = static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f;
+			auto delta = static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f;
 
 			// Update() takes the elapsed time in seconds.
 			window->Update( delta );

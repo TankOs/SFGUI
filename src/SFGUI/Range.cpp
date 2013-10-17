@@ -3,14 +3,10 @@
 namespace sfg {
 
 Range::Range( Orientation orientation ) :
-	Widget(),
 	m_change_connection( 0 ),
 	m_orientation( orientation )
 {
 	SetAdjustment( Adjustment::Create() );
-}
-
-Range::~Range() {
 }
 
 const Adjustment::Ptr& Range::GetAdjustment() const {
@@ -21,7 +17,7 @@ void Range::SetAdjustment( const Adjustment::Ptr& adjustment ) {
 	m_adjustment = adjustment;
 
 	// Connect change signal. This also disconnects the previous connection.
-	m_change_connection = m_adjustment->GetSignal( Adjustment::OnChange ).Connect( &Range::HandleAdjustmentChange, this );
+	m_change_connection = m_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Range::HandleAdjustmentChange, this ) );
 }
 
 float Range::GetValue() const {

@@ -19,8 +19,8 @@ Separator::Orientation Separator::GetOrientation() const {
 }
 
 
-RenderQueue* Separator::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateSeparatorDrawable( DynamicPointerCast<const Separator>( shared_from_this() ) );
+std::unique_ptr<RenderQueue> Separator::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateSeparatorDrawable( std::dynamic_pointer_cast<const Separator>( shared_from_this() ) );
 }
 
 sf::Vector2f Separator::CalculateRequisition() {

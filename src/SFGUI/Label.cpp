@@ -7,16 +7,11 @@
 namespace sfg {
 
 Label::Label( const sf::String& text ) :
-	Misc(),
 	m_text( text ),
-	m_wrapped_text( L"" ),
 	m_wrap( false )
 {
 	SetAlignment( sf::Vector2f( .5f, .5f ) );
 	Invalidate();
-}
-
-Label::~Label() {
 }
 
 Label::Ptr Label::Create( const sf::String& text ) {
@@ -82,7 +77,7 @@ void Label::WrapText() {
 	std::basic_string<sf::Uint32> line;
 
 	while( !text.empty() ) {
-		std::size_t next_newline = text.find( L'\n' );
+		auto next_newline = text.find( L'\n' );
 
 		line = text.substr( 0, next_newline );
 
@@ -104,7 +99,7 @@ void Label::WrapText() {
 		else {
 			// Line needs to be wrapped.
 			while( !line.empty() ) {
-				std::size_t last_space = line.size();
+				auto last_space = line.size();
 
 				while( Context::Get().GetEngine().GetTextMetrics( line.substr( 0, last_space ), font, font_size ).x > GetAllocation().width ) {
 					last_space = line.find_last_of( L' ', last_space - 1 );
@@ -141,7 +136,7 @@ void Label::HandleRequisitionChange() {
 		WrapText();
 	}
 
-	static bool calculate_y_requisition = false;
+	static auto calculate_y_requisition = false;
 
 	if( !calculate_y_requisition ) {
 		calculate_y_requisition = true;
@@ -159,7 +154,7 @@ void Label::HandleSizeChange() {
 
 	WrapText();
 
-	static bool calculate_y_requisition = false;
+	static auto calculate_y_requisition = false;
 
 	if( !calculate_y_requisition ) {
 		calculate_y_requisition = true;
@@ -170,8 +165,8 @@ void Label::HandleSizeChange() {
 	}
 }
 
-RenderQueue* Label::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateLabelDrawable( DynamicPointerCast<const Label>( shared_from_this() ) );
+std::unique_ptr<RenderQueue> Label::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateLabelDrawable( std::dynamic_pointer_cast<const Label>( shared_from_this() ) );
 }
 
 sf::Vector2f Label::CalculateRequisition() {
@@ -179,7 +174,7 @@ sf::Vector2f Label::CalculateRequisition() {
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
-	sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( GetWrappedText(), font, font_size );
+	auto metrics = Context::Get().GetEngine().GetTextMetrics( GetWrappedText(), font, font_size );
 	metrics.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	sf::String wrapped_text( GetWrappedText() );
@@ -188,7 +183,7 @@ sf::Vector2f Label::CalculateRequisition() {
 	std::size_t lines = 1;
 
 	do {
-		std::size_t next_newline = text.find( L'\n' );
+		auto next_newline = text.find( L'\n' );
 
 		if( next_newline != std::basic_string<sf::Uint32>::npos ) {
 			text = text.substr( next_newline + 1 );

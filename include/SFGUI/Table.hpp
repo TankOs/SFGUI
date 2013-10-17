@@ -4,7 +4,7 @@
 #include <SFGUI/TableCell.hpp>
 #include <SFGUI/TableOptions.hpp>
 #include <SFGUI/Container.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 #include <list>
 #include <vector>
@@ -17,26 +17,22 @@ namespace sfg {
  */
 class SFGUI_API Table : public Container {
 	public:
-		typedef SharedPtr<Table> Ptr; ///< Shared pointer shortcut.
-		typedef SharedPtr<const Table> PtrConst; ///< Shared pointer shortcut.
+		typedef std::shared_ptr<Table> Ptr; ///< Shared pointer shortcut.
+		typedef std::shared_ptr<const Table> PtrConst; ///< Shared pointer shortcut.
 
 		/** Attach options.
 		 */
-		enum {
+		enum AttachOption : std::uint8_t {
 			EXPAND = 1 << 0, ///< Expand child to maximum possible size.
 			FILL = 1 << 1 ///< Fill child to available size.
 		};
-
-		/** Ctor.
-		 */
-		Table();
 
 		/** Create table widget.
 		 * @return Table.
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Attach widget to table.
 		 * @param widget Widget to attach.
@@ -73,13 +69,13 @@ class SFGUI_API Table : public Container {
 		typedef std::list<priv::TableCell> TableCellList;
 		typedef std::vector<priv::TableOptions> TableOptionsArray;
 
-		sf::Vector2f CalculateRequisition();
+		virtual sf::Vector2f CalculateRequisition() override;
 		void UpdateRequisitions();
 		void AllocateChildren();
 
-		virtual void HandleSizeChange();
-		virtual void HandleRequisitionChange();
-		virtual void HandleRemove( const Widget::Ptr& child );
+		virtual void HandleSizeChange() override;
+		virtual void HandleRequisitionChange() override;
+		virtual void HandleRemove( const Widget::Ptr& child ) override;
 
 		TableCellList m_cells;
 		TableOptionsArray m_columns;

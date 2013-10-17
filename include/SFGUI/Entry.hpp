@@ -1,6 +1,6 @@
 #pragma once
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFML/System/String.hpp>
 #include <SFML/System/Clock.hpp>
 
@@ -10,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Entry : public Widget {
 	public:
-		typedef SharedPtr<Entry> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Entry> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Entry> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Entry> PtrConst; //!< Shared pointer.
 
 		/** Create entry.
 		 * @param text Text.
@@ -19,7 +19,7 @@ class SFGUI_API Entry : public Widget {
 		 */
 		static Ptr Create( const sf::String& text = L"" );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Set text.
 		 * @param text Text.
@@ -99,15 +99,15 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void SetTextMargin( float margin );
 
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		virtual void HandleUpdate( float seconds );
-		virtual void HandleTextEvent( sf::Uint32 character );
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
-		virtual void HandleSizeChange();
-		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
+		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		virtual void HandleUpdate( float seconds ) override;
+		virtual void HandleTextEvent( sf::Uint32 character ) override;
+		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
+		virtual void HandleSizeChange() override;
+		virtual void HandleFocusChange( const Widget::Ptr& focused_widget ) override;
 
 	private:
 		/** Get closest cursor position to x coordinate.
@@ -125,8 +125,8 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void MoveCursor( int delta );
 
-		virtual void HandleMouseEnter( int x, int y );
-		virtual void HandleMouseLeave( int x, int y );
+		virtual void HandleMouseEnter( int x, int y ) override;
+		virtual void HandleMouseLeave( int x, int y ) override;
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;

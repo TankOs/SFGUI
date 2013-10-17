@@ -4,17 +4,17 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> scrolled_window ) const {
-	sf::Color border_color_light( GetProperty<sf::Color>( "BorderColor", scrolled_window ) );
-	sf::Color border_color_dark( GetProperty<sf::Color>( "BorderColor", scrolled_window ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", scrolled_window ) );
-	float border_width( GetProperty<float>( "BorderWidth", scrolled_window ) );
+std::unique_ptr<RenderQueue> BREW::CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const {
+	auto border_color_light = GetProperty<sf::Color>( "BorderColor", scrolled_window );
+	auto border_color_dark = GetProperty<sf::Color>( "BorderColor", scrolled_window );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", scrolled_window );
+	auto border_width = GetProperty<float>( "BorderWidth", scrolled_window );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	sf::FloatRect rect = scrolled_window->GetContentAllocation();
+	auto rect = scrolled_window->GetContentAllocation();
 
 	rect.left -= ( border_width + scrolled_window->GetAllocation().left );
 	rect.top -= ( border_width + scrolled_window->GetAllocation().top );

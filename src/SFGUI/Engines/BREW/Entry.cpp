@@ -8,19 +8,20 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", entry ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", entry ) );
-	sf::Color text_color( GetProperty<sf::Color>( "Color", entry ) );
-	sf::Color cursor_color( GetProperty<sf::Color>( "Color", entry ) );
-	float text_padding( GetProperty<float>( "Padding", entry ) );
-	float cursor_thickness( GetProperty<float>( "Thickness", entry ) );
-	float border_width( GetProperty<float>( "BorderWidth", entry ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", entry ) );
-	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", entry ) ) );
-	const unsigned int& font_size( GetProperty<unsigned int>( "FontSize", entry ) );
+std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", entry );
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", entry );
+	auto text_color = GetProperty<sf::Color>( "Color", entry );
+	auto cursor_color = GetProperty<sf::Color>( "Color", entry );
+	auto text_padding = GetProperty<float>( "Padding", entry );
+	auto cursor_thickness = GetProperty<float>( "Thickness", entry );
+	auto border_width = GetProperty<float>( "BorderWidth", entry );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", entry );
+	const auto& font_name = GetProperty<std::string>( "FontName", entry );
+	const auto& font = GetResourceManager().GetFont( font_name );
+	auto font_size = GetProperty<unsigned int>( "FontSize", entry );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Pane.
 	queue->Add(
@@ -34,8 +35,8 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 		)
 	);
 
-	float line_height = GetFontLineHeight( font, font_size );
-	sf::Text vis_label( entry->GetVisibleText(), font, font_size );
+	auto line_height = GetFontLineHeight( *font, font_size );
+	sf::Text vis_label( entry->GetVisibleText(), *font, font_size );
 	vis_label.setColor( text_color );
 	vis_label.setPosition( text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f );
 
@@ -49,7 +50,7 @@ RenderQueue* BREW::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 		}
 
 		// Get metrics.
-		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
+		sf::Vector2f metrics( GetTextMetrics( cursor_string, *font, font_size ) );
 
 		queue->Add(
 			Renderer::Get().CreateRect(

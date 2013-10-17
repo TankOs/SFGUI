@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <vector>
 
 namespace sfg {
@@ -12,13 +12,9 @@ namespace sfg {
  */
 class SFGUI_API Container : public Widget {
 	public:
-		typedef SharedPtr<Container> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Container> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Container> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Container> PtrConst; //!< Shared pointer.
 		typedef std::vector<Widget::Ptr> WidgetsList;
-
-		/** Dtor.
-		 */
-		virtual ~Container();
 
 		/** Add child.
 		 * @param widget Widget to add.
@@ -46,7 +42,7 @@ class SFGUI_API Container : public Widget {
 
 		void Refresh();
 
-		virtual void HandleEvent( const sf::Event& event );
+		virtual void HandleEvent( const sf::Event& event ) override;
 
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
@@ -55,13 +51,9 @@ class SFGUI_API Container : public Widget {
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange();
+		virtual void HandleAbsolutePositionChange() override;
 
 	protected:
-		/** Constructor.
-		 */
-		Container();
-
 		/** Handle adding children.
 		 * @param child Child widget.
 		 */
@@ -74,19 +66,19 @@ class SFGUI_API Container : public Widget {
 
 		/** Handle visibility change.
 		 */
-		virtual void HandleGlobalVisibilityChange();
+		virtual void HandleGlobalVisibilityChange() override;
 
 		/** Handle update.
 		 */
-		virtual void HandleUpdate( float seconds );
+		virtual void HandleUpdate( float seconds ) override;
 
 		/** Handle hierarchy level change.
 		 */
-		virtual void HandleSetHierarchyLevel();
+		virtual void HandleSetHierarchyLevel() override;
 
 		/** Handle viewport change.
 		 */
-		virtual void HandleViewportUpdate();
+		virtual void HandleViewportUpdate() override;
 
 	private:
 		WidgetsList m_children;

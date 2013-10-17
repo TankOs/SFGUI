@@ -20,11 +20,10 @@ int main() {
 	// Almost everything in SFGUI is handled through smart pointers
 	// for automatic resource management purposes. You create them
 	// and they will automatically be destroyed when the time comes.
-	sfg::Window::Ptr window;
 
-	// Here we do the actual creation of the window. Creation of
-	// widgets is always done with it's Create() method.
-	window = sfg::Window::Create();
+	// Creation of widgets is always done with it's Create() method
+	// which will return a smart pointer owning the new widget.
+	auto window = sfg::Window::Create();
 
 	// Here we can set the window's title bar text.
 	window->SetTitle( "A really really really really long title" );

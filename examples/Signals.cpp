@@ -10,7 +10,7 @@
 // This is only done here for demonstration purposes.
 // DO NOT DECLARE STATIC OR GLOBAL WIDGETS IN YOUR PROGRAMS.
 // We simply cannot guarantee that it will work in every case.
-// We have to reset this SharedPtr at the end of the program.
+// We have to reset this std::shared_ptr at the end of the program.
 sfg::Window::Ptr window;
 
 // This is the first possibility you have of connecting a signal handler.
@@ -89,19 +89,19 @@ void Application::Run() {
 	window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::VERTICAL );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
 	window->Add( box );
 
 	// Possibility 1, normal function
-	sfg::Button::Ptr button1 = sfg::Button::Create();
+	auto button1 = sfg::Button::Create();
 	button1->SetLabel( "Clicky 1" );
 	button1->GetSignal( sfg::Widget::OnLeftClick ).Connect( &Foo );
 	box->Pack( button1, false );
 
 	// Possibility 2, this class
-	sfg::Button::Ptr button2 = sfg::Button::Create();
+	auto button2 = sfg::Button::Create();
 	button2->SetLabel( "Clicky 2" );
-	button2->GetSignal( sfg::Widget::OnLeftClick ).Connect( &Application::Bar, this );
+	button2->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &Application::Bar, this ) );
 	box->Pack( button2, false );
 
 	// Possibility 3, objects
@@ -110,12 +110,12 @@ void Application::Run() {
 	for( int i = 0; i < 3; i++ ) {
 		std::stringstream sstr;
 		sstr << "Clicky " << i + 3;
-		sfg::Button::Ptr button = sfg::Button::Create();
+		auto button = sfg::Button::Create();
 		button->SetLabel( sstr.str() );
 		// This is just a more complicated way of passing a pointer to a
 		// BazClass to Connect() when the BazClass object is part of an array.
 		// Passing normal pointers such as &baz1 would also work.
-		button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &BazClass::Baz, &( baz_array[i] ) );
+		button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &BazClass::Baz, &( baz_array[i] ) ) );
 		box->Pack( button, false );
 	}
 

@@ -30,12 +30,12 @@ if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL
 	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
 elseif( CMAKE_COMPILER_IS_GNUCXX )
 	if( NOT CMAKE_CXX_FLAGS )
-		set( CMAKE_CXX_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
+		set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
 		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
 	endif()
 
 	if( NOT CMAKE_CXX_FLAGS_DEBUG )
-		set( CMAKE_CXX_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
+		set( CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
 		set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
 	endif()
 endif()
@@ -79,7 +79,6 @@ set(
 	${INC_DIR}/SFGUI/Engine.inl
 	${INC_DIR}/SFGUI/Engines/BREW.hpp
 	${INC_DIR}/SFGUI/Entry.hpp
-	${INC_DIR}/SFGUI/FastDelegate.hpp
 	${INC_DIR}/SFGUI/FileResourceLoader.hpp
 	${INC_DIR}/SFGUI/Fixed.hpp
 	${INC_DIR}/SFGUI/Frame.hpp
@@ -87,7 +86,6 @@ set(
 	${INC_DIR}/SFGUI/Image.hpp
 	${INC_DIR}/SFGUI/Label.hpp
 	${INC_DIR}/SFGUI/Misc.hpp
-	${INC_DIR}/SFGUI/NonCopyable.hpp
 	${INC_DIR}/SFGUI/Notebook.hpp
 	${INC_DIR}/SFGUI/Object.hpp
 	${INC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.hpp
@@ -110,10 +108,7 @@ set(
 	${INC_DIR}/SFGUI/Selector.hpp
 	${INC_DIR}/SFGUI/Separator.hpp
 	${INC_DIR}/SFGUI/SFGUI.hpp
-	${INC_DIR}/SFGUI/SharedPtr.hpp
-	${INC_DIR}/SFGUI/SharedPtr.inl
 	${INC_DIR}/SFGUI/Signal.hpp
-	${INC_DIR}/SFGUI/Signal.inl
 	${INC_DIR}/SFGUI/SpinButton.hpp
 	${INC_DIR}/SFGUI/Spinner.hpp
 	${INC_DIR}/SFGUI/Table.hpp
@@ -160,7 +155,6 @@ set(
 	${SRC_DIR}/SFGUI/Image.cpp
 	${SRC_DIR}/SFGUI/Label.cpp
 	${SRC_DIR}/SFGUI/Misc.cpp
-	${SRC_DIR}/SFGUI/NonCopyable.cpp
 	${SRC_DIR}/SFGUI/Notebook.cpp
 	${SRC_DIR}/SFGUI/Object.cpp
 	${SRC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.cpp

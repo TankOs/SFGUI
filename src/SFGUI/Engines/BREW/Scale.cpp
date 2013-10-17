@@ -6,21 +6,21 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateScaleDrawable( SharedPtr<const Scale> scale ) const {
-	sf::Color trough_color( GetProperty<sf::Color>( "TroughColor", scale ) );
-	sf::Color slider_color( GetProperty<sf::Color>( "SliderColor", scale ) );
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", scale ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", scale ) );
-	float trough_thickness( GetProperty<float>( "TroughWidth", scale ) );
-	float border_width( GetProperty<float>( "BorderWidth", scale ) );
+std::unique_ptr<RenderQueue> BREW::CreateScaleDrawable( std::shared_ptr<const Scale> scale ) const {
+	auto trough_color = GetProperty<sf::Color>( "TroughColor", scale );
+	auto slider_color = GetProperty<sf::Color>( "SliderColor", scale );
+	auto border_color = GetProperty<sf::Color>( "BorderColor", scale );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", scale );
+	auto trough_thickness = GetProperty<float>( "TroughWidth", scale );
+	auto border_width = GetProperty<float>( "BorderWidth", scale );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	Scale::Orientation orientation = scale->GetOrientation();
+	auto orientation = scale->GetOrientation();
 
-	sf::FloatRect slider_rect = scale->GetSliderRect();
+	auto slider_rect = scale->GetSliderRect();
 
-	if( orientation == Scale::HORIZONTAL ) {
+	if( orientation == Scale::Orientation::HORIZONTAL ) {
 		// Trough
 		queue->Add(
 			Renderer::Get().CreateRect(

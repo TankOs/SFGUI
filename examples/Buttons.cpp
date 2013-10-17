@@ -47,7 +47,7 @@ void ButtonsExample::ButtonClick() {
 void ButtonsExample::ButtonToggle() {
 	// When the ToggleButton is active hide the window's titlebar.
 	if( m_toggle_button->IsActive() ) {
-		m_window->SetStyle( m_window->GetStyle() & ~sfg::Window::TITLEBAR );
+		m_window->SetStyle( m_window->GetStyle() ^ sfg::Window::TITLEBAR );
 	}
 	else {
 		m_window->SetStyle( m_window->GetStyle() | sfg::Window::TITLEBAR );
@@ -57,7 +57,7 @@ void ButtonsExample::ButtonToggle() {
 void ButtonsExample::ButtonCheck() {
 	// When the CheckButton is active hide the window's background.
 	if( m_check_button->IsActive() ) {
-		m_window->SetStyle( m_window->GetStyle() & ~sfg::Window::BACKGROUND );
+		m_window->SetStyle( m_window->GetStyle() ^ sfg::Window::BACKGROUND );
 	}
 	else {
 		m_window->SetStyle( m_window->GetStyle() | sfg::Window::BACKGROUND );
@@ -90,7 +90,7 @@ void ButtonsExample::Run() {
 	m_window->SetTitle( "Title" );
 
 	// Create a Box to contain all our fun buttons ;)
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::VERTICAL, 5.f );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.f );
 
 	// Create the Button itself.
 	m_button = sfg::Button::Create( "Click me" );
@@ -101,7 +101,7 @@ void ButtonsExample::Run() {
 	// So that our Button has a meaningful purpose
 	// (besides just looking awesome :P) we need to tell it to connect
 	// to a callback of our choosing to notify us when it is clicked.
-	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &ButtonsExample::ButtonClick, this );
+	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ButtonsExample::ButtonClick, this ) );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.
@@ -111,7 +111,7 @@ void ButtonsExample::Run() {
 	m_toggle_button = sfg::ToggleButton::Create( "Toggle me" );
 
 	// Connect the OnToggle signal to our handler.
-	m_toggle_button->GetSignal( sfg::ToggleButton::OnToggle ).Connect( &ButtonsExample::ButtonToggle, this );
+	m_toggle_button->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &ButtonsExample::ButtonToggle, this ) );
 
 	// Add the ToggleButton to the Box
 	box->Pack( m_toggle_button );
@@ -121,7 +121,7 @@ void ButtonsExample::Run() {
 
 	// Since a CheckButton is also a ToggleButton we can use
 	// ToggleButton signals to handle events for CheckButtons.
-	m_check_button->GetSignal( sfg::ToggleButton::OnToggle ).Connect( &ButtonsExample::ButtonCheck, this );
+	m_check_button->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &ButtonsExample::ButtonCheck, this ) );
 
 	// Add the CheckButton to the Box
 	box->Pack( m_check_button );
@@ -147,9 +147,9 @@ void ButtonsExample::Run() {
 	// Here we use the same handler for all three RadioButtons.
 	// RadioButtons are CheckButtons and therefore also ToggleButtons,
 	// hence we can use ToggleButton signals with RadioButtons as well.
-	m_radio_button1->GetSignal( sfg::ToggleButton::OnToggle ).Connect( &ButtonsExample::ButtonSelect, this );
-	m_radio_button2->GetSignal( sfg::ToggleButton::OnToggle ).Connect( &ButtonsExample::ButtonSelect, this );
-	m_radio_button3->GetSignal( sfg::ToggleButton::OnToggle ).Connect( &ButtonsExample::ButtonSelect, this );
+	m_radio_button1->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &ButtonsExample::ButtonSelect, this ) );
+	m_radio_button2->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &ButtonsExample::ButtonSelect, this ) );
+	m_radio_button3->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &ButtonsExample::ButtonSelect, this ) );
 
 	// Add the RadioButtons to the Box
 	box->Pack( m_radio_button1 );

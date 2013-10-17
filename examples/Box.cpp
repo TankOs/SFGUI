@@ -16,8 +16,7 @@ int main() {
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Since only being able to add one widget to a window is very limiting
@@ -25,17 +24,14 @@ int main() {
 	// can contain an unlimited amount of child widgets. Not only that, they
 	// also have the ability to lay out your widgets nicely.
 
-	// Create our box smart pointer.
-	sfg::Box::Ptr box;
-
-	// Create the box itself.
+	// Create the box.
 	// For layout purposes we must specify in what direction new widgets
 	// should be added, horizontally or vertically.
-	box = sfg::Box::Create( sfg::Box::HORIZONTAL );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 
-	sfg::Button::Ptr button1 = sfg::Button::Create();
-	sfg::Button::Ptr button2 = sfg::Button::Create();
-	sfg::Label::Ptr label = sfg::Label::Create();
+	auto button1 = sfg::Button::Create();
+	auto button2 = sfg::Button::Create();
+	auto label = sfg::Label::Create();
 
 	button1->SetLabel( "Foo" );
 	button2->SetLabel( "Bar" );

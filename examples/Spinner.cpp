@@ -41,8 +41,7 @@ void SpinnerExample::Run() {
 	app_window.resetGLStates();
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create our spinner
@@ -52,11 +51,11 @@ void SpinnerExample::Run() {
 	m_spinner->SetRequisition( sf::Vector2f( 40.f, 40.f ) );
 
 	// Create a button and connect the click signal.
-	sfg::Button::Ptr button( sfg::Button::Create( "Toggle" ) );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &SpinnerExample::OnButtonClick, this );
+	auto button = sfg::Button::Create( "Toggle" );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SpinnerExample::OnButtonClick, this ) );
 
 	// Create a horizontal box layouter and add widgets to it.
-	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::HORIZONTAL, 5.0f ) );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.0f );
 	box->Pack( m_spinner );
 	box->Pack( button, false );
 

@@ -4,16 +4,7 @@
 
 namespace sfg {
 
-RadioButton::RadioButton() :
-	CheckButton(),
-	m_group()
-{
-}
-
-RadioButton::~RadioButton() {
-}
-
-RadioButton::Ptr RadioButton::Create( const sf::String& label, const SharedPtr<RadioButtonGroup>& group ) {
+RadioButton::Ptr RadioButton::Create( const sf::String& label, const RadioButton::RadioButtonGroup::Ptr& group ) {
 	Ptr widget( new RadioButton );
 
 	widget->SetLabel( label );
@@ -28,12 +19,12 @@ RadioButton::Ptr RadioButton::Create( const sf::String& label, const SharedPtr<R
 	return widget;
 }
 
-const SharedPtr<RadioButton::RadioButtonGroup>& RadioButton::GetGroup() const {
+const RadioButton::RadioButtonGroup::Ptr& RadioButton::GetGroup() const {
 	return m_group;
 }
 
-void RadioButton::SetGroup( const SharedPtr<RadioButton::RadioButtonGroup>& group ) {
-	WeakPtr<RadioButton> weak_this( StaticPointerCast<RadioButton>( shared_from_this() ) );
+void RadioButton::SetGroup( const RadioButton::RadioButtonGroup::Ptr& group ) {
+	std::weak_ptr<RadioButton> weak_this( std::static_pointer_cast<RadioButton>( shared_from_this() ) );
 
 	if( m_group ) {
 		m_group->GetMembers().erase( weak_this );
@@ -48,8 +39,8 @@ void RadioButton::SetGroup( const SharedPtr<RadioButton::RadioButtonGroup>& grou
 
 void RadioButton::SetActive( bool active ) {
 	if( active && m_group ) {
-		for( std::set< WeakPtr<RadioButton> >::const_iterator iter = m_group->GetMembers().begin(); iter != m_group->GetMembers().end(); ++iter ) {
-			SharedPtr<RadioButton> radio_button( iter->lock() );
+		for( auto iter = m_group->GetMembers().begin(); iter != m_group->GetMembers().end(); ++iter ) {
+			std::shared_ptr<RadioButton> radio_button( iter->lock() );
 
 			if( radio_button ) {
 				radio_button->SetActive( false );
@@ -76,14 +67,11 @@ const std::string& RadioButton::GetName() const {
 	return name;
 }
 
-RadioButton::RadioButtonGroup::RadioButtonGroup() {
-}
-
 RadioButton::RadioButtonGroup::Ptr RadioButton::RadioButtonGroup::Create() {
 	return Ptr( new RadioButtonGroup );
 }
 
-std::set< WeakPtr<RadioButton> >& RadioButton::RadioButtonGroup::GetMembers() {
+RadioButton::RadioButtonGroup::ContainerType& RadioButton::RadioButtonGroup::GetMembers() {
 	return m_members;
 }
 

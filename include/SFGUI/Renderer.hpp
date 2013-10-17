@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFGUI/Primitive.hpp>
 
 #include <SFML/Graphics.hpp>
@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <cstdint>
 
 namespace sfg {
 
@@ -18,7 +19,7 @@ class RendererViewport;
  */
 class SFGUI_API Renderer {
 	public:
-		enum InvalidateDataset {
+		enum InvalidateType : std::uint8_t {
 			INVALIDATE_VERTEX = 1 << 0, //!< Vertex data needs a sync.
 			INVALIDATE_COLOR = 1 << 1, //!< Color data needs a sync.
 			INVALIDATE_TEXTURE = 1 << 2, //!< Texture data needs a sync.
@@ -38,9 +39,9 @@ class SFGUI_API Renderer {
 		static Renderer& Get();
 
 		/** Set the Renderer singleton instance.
-		 * @param Renderer instance.
+		 * @param renderer Renderer instance.
 		 */
-		static void Set( const SharedPtr<Renderer>& renderer );
+		static void Set( const std::shared_ptr<Renderer>& renderer );
 
 		/** Destroy the Renderer singleton instance.
 		 */
@@ -53,17 +54,17 @@ class SFGUI_API Renderer {
 
 		/** Dtor.
 		 */
-		virtual ~Renderer();
+		virtual ~Renderer() = default;
 
 		/** Get default viewport that covers the entire window.
 		 * @return Default viewport that covers the entire window.
 		 */
-		const SharedPtr<RendererViewport>& GetDefaultViewport();
+		const std::shared_ptr<RendererViewport>& GetDefaultViewport();
 
 		/** Create and register a new viewport with the renderer.
 		 * @return New viewport.
 		 */
-		SharedPtr<RendererViewport> CreateViewport();
+		std::shared_ptr<RendererViewport> CreateViewport();
 
 		/** Create and register a new text primitive with the renderer.
 		 * @param text sf::Text describing the text to be drawn.
@@ -146,7 +147,7 @@ class SFGUI_API Renderer {
 		 * @param callback Signal containing draw routines to call.
 		 * @return New canvas primitive.
 		 */
-		Primitive::Ptr CreateGLCanvas( SharedPtr<Signal> callback );
+		Primitive::Ptr CreateGLCanvas( std::shared_ptr<Signal> callback );
 
 		/** Register a primitive with the renderer.
 		 * @param primitive Primitive to be registered.
@@ -233,8 +234,8 @@ class SFGUI_API Renderer {
 
 	protected:
 		struct Batch {
-			SharedPtr<RendererViewport> viewport;
-			SharedPtr<Signal> custom_draw_callback;
+			std::shared_ptr<RendererViewport> viewport;
+			std::shared_ptr<Signal> custom_draw_callback;
 			std::size_t atlas_page;
 			unsigned int start_index;
 			unsigned int index_count;
@@ -263,9 +264,9 @@ class SFGUI_API Renderer {
 		void SortPrimitives();
 
 		std::vector<Primitive::Ptr> m_primitives;
-		std::vector<sf::Texture*> m_texture_atlas;
+		std::vector<std::unique_ptr<sf::Texture>> m_texture_atlas;
 
-		SharedPtr<RendererViewport> m_default_viewport;
+		std::shared_ptr<RendererViewport> m_default_viewport;
 
 		std::size_t m_vertex_count;
 		std::size_t m_index_count;
@@ -286,7 +287,7 @@ class SFGUI_API Renderer {
 		std::list<TextureNode> m_textures;
 		std::map<FontID, Primitive::Texture::Ptr> m_fonts;
 
-		static SharedPtr<Renderer> m_instance;
+		static std::shared_ptr<Renderer> m_instance;
 
 		Primitive::Texture::Ptr m_pseudo_texture;
 

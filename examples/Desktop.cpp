@@ -53,12 +53,12 @@ void DesktopExample::Run() {
 	// Widgets.
 	m_window->SetTitle( "SFGUI Desktop Example" );
 
-	sfg::Label::Ptr intro_label( sfg::Label::Create( "Click on \"Create window\" to create any number of new windows." ) );
-	sfg::Button::Ptr create_window_button( sfg::Button::Create( "Create window" ) );
+	auto intro_label = sfg::Label::Create( "Click on \"Create window\" to create any number of new windows." );
+	auto create_window_button = sfg::Button::Create( "Create window" );
 	create_window_button->SetId( "create_window" );
 
 	// Layout.
-	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
+	auto main_box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.f );
 	main_box->Pack( intro_label, false );
 	main_box->Pack( create_window_button, false );
 
@@ -66,7 +66,7 @@ void DesktopExample::Run() {
 	m_desktop.Add( m_window );
 
 	// Signals.
-	create_window_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnCreateWindowClick, this );
+	create_window_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &DesktopExample::OnCreateWindowClick, this ) );
 
 	// Init.
 	m_desktop.SetProperty( "Button#create_window", "FontSize", 18.f );
@@ -95,18 +95,18 @@ void DesktopExample::OnCreateWindowClick() {
 	++m_count;
 
 	// Create a new window.
-	sfg::Window::Ptr window( sfg::Window::Create() );
+	auto window = sfg::Window::Create();
 
 	std::stringstream sstr;
 	sstr << "A new window (" << m_count << ")";
 	window->SetTitle( sstr.str() );
 
 	// Widgets.
-	sfg::Button::Ptr destroy_button( sfg::Button::Create( "Destroy" ) );
-	sfg::Button::Ptr front_button( sfg::Button::Create( "Main window to front" ) );
+	auto destroy_button = sfg::Button::Create( "Destroy" );
+	auto front_button = sfg::Button::Create( "Main window to front" );
 
 	// Layout.
-	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.f );
 	box->Pack( sfg::Label::Create( "This is a newly created window, from runtime, interactively." ), false );
 	box->Pack( sfg::Label::Create( "You can move me around, try it!" ), false );
 	box->Pack( sfg::Label::Create( "Or click the button below to destroy me. :-(" ), false );
@@ -117,13 +117,13 @@ void DesktopExample::OnCreateWindowClick() {
 	m_desktop.Add( window );
 
 	// Signals.
-	destroy_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnDestroyWindowClick, this );
-	front_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &DesktopExample::OnFrontClick, this );
+	destroy_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &DesktopExample::OnDestroyWindowClick, this ) );
+	front_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &DesktopExample::OnFrontClick, this ) );
 }
 
 void DesktopExample::OnDestroyWindowClick() {
 	// Obtain parent window.
-	sfg::Widget::Ptr widget( sfg::Context::Get().GetActiveWidget() );
+	auto widget = sfg::Context::Get().GetActiveWidget();
 
 	while( widget->GetName() != "Window" ) {
 		widget = widget->GetParent();

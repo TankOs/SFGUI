@@ -8,21 +8,24 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const {
-	RenderQueue* queue( new RenderQueue );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", window ) );
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", window ) );
-	sf::Color title_background_color( GetProperty<sf::Color>( "TitleBackgroundColor", window ) );
-	sf::Color title_text_color( GetProperty<sf::Color>( "Color", window ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", window ) );
-	float border_width( GetProperty<float>( "BorderWidth", window ) );
-	float title_padding( GetProperty<float>( "TitlePadding", window ) );
-	float shadow_distance( GetProperty<float>( "ShadowDistance", window ) );
-	float handle_size( GetProperty<float>( "HandleSize", window ) );
-	sf::Uint8 shadow_alpha( GetProperty<sf::Uint8>( "ShadowAlpha", window ) );
-	unsigned int title_font_size( GetProperty<unsigned int>( "FontSize", window ) );
-	const sf::Font& title_font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", window ) ) );
-	float title_size( GetFontLineHeight( title_font, title_font_size ) + 2 * title_padding );
+std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const Window> window ) const {
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", window );
+	auto border_color = GetProperty<sf::Color>( "BorderColor", window );
+	auto title_background_color = GetProperty<sf::Color>( "TitleBackgroundColor", window );
+	auto title_text_color = GetProperty<sf::Color>( "Color", window );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", window );
+	auto border_width = GetProperty<float>( "BorderWidth", window );
+	auto title_padding = GetProperty<float>( "TitlePadding", window );
+	auto shadow_distance = GetProperty<float>( "ShadowDistance", window );
+	auto handle_size = GetProperty<float>( "HandleSize", window );
+	auto shadow_alpha = GetProperty<sf::Uint8>( "ShadowAlpha", window );
+	auto title_font_size = GetProperty<unsigned int>( "FontSize", window );
+	const auto& title_font_name = GetProperty<std::string>( "FontName", window );
+	const auto& title_font = GetResourceManager().GetFont( title_font_name );
+
+	auto title_size = GetFontLineHeight( *title_font, title_font_size ) + 2 * title_padding;
+
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	if( window->HasStyle( Window::SHADOW ) ) {
 		// Shadow.
@@ -89,24 +92,24 @@ RenderQueue* BREW::CreateWindowDrawable( SharedPtr<const Window> window ) const 
 		// Find out visible text, count in "...".
 		float avail_width( window->GetAllocation().width - 2.f * border_width - 2.f * title_padding );
 
-		sf::Text title_text( window->GetTitle(), title_font, title_font_size );
+		sf::Text title_text( window->GetTitle(), *title_font, title_font_size );
 
 		if( title_text.getLocalBounds().width > avail_width ) {
-			sf::Text dots( "...", title_font, title_font_size );
+			sf::Text dots( "...", *title_font, title_font_size );
 			const sf::String& title_string( window->GetTitle() );
 			sf::String visible_title;
 
 			avail_width = window->GetAllocation().width - 2.f * border_width - 2.f * title_padding - dots.getLocalBounds().width;
 
-			for( std::size_t ch_index = 0; ch_index < title_string.getSize(); ++ch_index ) {
-				avail_width -= static_cast<float>( title_font.getGlyph( title_string[ch_index], title_font_size, false ).advance );
+			for( const auto& character : title_string ) {
+				avail_width -= static_cast<float>( title_font->getGlyph( character, title_font_size, false ).advance );
 
 				if( avail_width < 0.f ) {
 					visible_title += "...";
 					break;
 				}
 
-				visible_title += title_string[ch_index];
+				visible_title += character;
 			}
 
 			title_text.setString( visible_title );

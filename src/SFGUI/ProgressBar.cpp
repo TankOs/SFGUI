@@ -30,15 +30,15 @@ const std::string& ProgressBar::GetName() const {
 }
 
 sf::Vector2f ProgressBar::CalculateRequisition() {
-	if( m_orientation == HORIZONTAL ) {
+	if( m_orientation == Orientation::HORIZONTAL ) {
 		return sf::Vector2f( 20.f, 10.f );
 	}
 
 	return sf::Vector2f( 10.f, 20.f );
 }
 
-RenderQueue* ProgressBar::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateProgressBarDrawable( DynamicPointerCast<const ProgressBar>( shared_from_this() ) );
+std::unique_ptr<RenderQueue> ProgressBar::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateProgressBarDrawable( std::dynamic_pointer_cast<const ProgressBar>( shared_from_this() ) );
 }
 
 void ProgressBar::SetOrientation( Orientation orientation ) {

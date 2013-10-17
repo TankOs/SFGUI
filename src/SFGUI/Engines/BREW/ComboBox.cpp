@@ -9,23 +9,23 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", combo_box ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", combo_box ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", combo_box ) );
-	sf::Color highlighted_color( GetProperty<sf::Color>( "HighlightedColor", combo_box ) );
-	sf::Color color( GetProperty<sf::Color>( "Color", combo_box ) );
-	sf::Color arrow_color( GetProperty<sf::Color>( "ArrowColor", combo_box ) );
-	float border_width( GetProperty<float>( "BorderWidth", combo_box ) );
-	const std::string& font_name( GetProperty<std::string>( "FontName", combo_box ) );
-	unsigned int font_size( GetProperty<unsigned int>( "FontSize", combo_box ) );
-	float padding( GetProperty<float>( "ItemPadding", combo_box ) );
-	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
-	const float line_height( GetFontLineHeight( font, font_size ) );
+std::unique_ptr<RenderQueue> BREW::CreateComboBoxDrawable( std::shared_ptr<const ComboBox> combo_box ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", combo_box );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", combo_box );
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", combo_box );
+	auto highlighted_color = GetProperty<sf::Color>( "HighlightedColor", combo_box );
+	auto color = GetProperty<sf::Color>( "Color", combo_box );
+	auto arrow_color = GetProperty<sf::Color>( "ArrowColor", combo_box );
+	auto border_width = GetProperty<float>( "BorderWidth", combo_box );
+	const auto& font_name = GetProperty<std::string>( "FontName", combo_box );
+	auto font_size = GetProperty<unsigned int>( "FontSize", combo_box );
+	auto padding = GetProperty<float>( "ItemPadding", combo_box );
+	const auto& font = GetResourceManager().GetFont( font_name );
+	auto line_height = GetFontLineHeight( *font, font_size );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	if( combo_box->GetState() == ComboBox::ACTIVE ) {
+	if( combo_box->GetState() == ComboBox::State::ACTIVE ) {
 		border_color_shift = -border_color_shift;
 	}
 
@@ -51,7 +51,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 			combo_box->GetAllocation().height
 		);
 
-		float expanded_height = static_cast<float>( combo_box->GetDisplayedItems() ) * item_size.y;
+		auto expanded_height = static_cast<float>( combo_box->GetDisplayedItems() ) * item_size.y;
 
 		// Popup Pane
 		queue->Add(
@@ -86,7 +86,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 				);
 			}
 
-			sf::Text text( combo_box->GetItem( item_index ), font, font_size );
+			sf::Text text( combo_box->GetItem( item_index ), *font, font_size );
 			text.setPosition( item_position.x + padding, item_position.y + padding );
 			text.setColor( color );
 			queue->Add( Renderer::Get().CreateText( text ) );
@@ -96,7 +96,7 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 	}
 
 	if( combo_box->GetSelectedItem() != ComboBox::NONE ) {
-		sf::Text text( combo_box->GetSelectedText(), font, font_size );
+		sf::Text text( combo_box->GetSelectedText(), *font, font_size );
 		text.setPosition(
 			border_width + padding,
 			combo_box->GetAllocation().height / 2.f - line_height / 2.f
@@ -107,23 +107,23 @@ RenderQueue* BREW::CreateComboBoxDrawable( SharedPtr<const ComboBox> combo_box )
 
 	// Arrow.
 	sf::Vector2f position(
-		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + combo_box->GetAllocation().width - padding - GetFontLineHeight( font, font_size ),
-		( combo_box->GetState() == ComboBox::ACTIVE ? border_width : 0.f ) + padding
+		( combo_box->GetState() == ComboBox::State::ACTIVE ? border_width : 0.f ) + combo_box->GetAllocation().width - padding - GetFontLineHeight( *font, font_size ),
+		( combo_box->GetState() == ComboBox::State::ACTIVE ? border_width : 0.f ) + padding
 	);
 
 	queue->Add(
 		Renderer::Get().CreateTriangle(
 			position + sf::Vector2f(
-				GetFontLineHeight( font, font_size ) / 2.f,
-				GetFontLineHeight( font, font_size ) * 3.f / 4.f
+				GetFontLineHeight( *font, font_size ) / 2.f,
+				GetFontLineHeight( *font, font_size ) * 3.f / 4.f
 			),
 			position + sf::Vector2f(
-				GetFontLineHeight( font, font_size ) * 3.f / 4.f,
-				GetFontLineHeight( font, font_size ) / 4.f
+				GetFontLineHeight( *font, font_size ) * 3.f / 4.f,
+				GetFontLineHeight( *font, font_size ) / 4.f
 			),
 			position + sf::Vector2f(
-				GetFontLineHeight( font, font_size ) / 4.f,
-				GetFontLineHeight( font, font_size ) / 4.f
+				GetFontLineHeight( *font, font_size ) / 4.f,
+				GetFontLineHeight( *font, font_size ) / 4.f
 			),
 			arrow_color
 		)

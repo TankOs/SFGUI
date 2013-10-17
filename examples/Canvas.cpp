@@ -16,28 +16,22 @@ int main() {
 	sfg::SFGUI sfgui;
 
 	// Create our OpenGL canvas window
-	sfg::Window::Ptr opengl_window;
-	opengl_window = sfg::Window::Create();
+	auto opengl_window = sfg::Window::Create();
 	opengl_window->SetTitle( "OpenGL canvas" );
 	opengl_window->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
 	// Create our SFML canvas window
-	sfg::Window::Ptr sfml_window;
-	sfml_window = sfg::Window::Create();
+	auto sfml_window = sfg::Window::Create();
 	sfml_window->SetTitle( "SFML canvas" );
 	sfml_window->SetPosition( sf::Vector2f( 400.f, 100.f ) );
 
-	// Create our Canvas smart pointers.
-	sfg::Canvas::Ptr opengl_canvas;
-	sfg::Canvas::Ptr sfml_canvas;
-
-	// Create the Canvases themselves.
+	// Create the Canvases.
 	// Passing true in to Create() tells SFGUI
 	// to create a depth buffer for the canvas.
 	// This might be needed for your OpenGL rendering.
 	// Specifying nothing defaults to no depth buffer.
-	opengl_canvas = sfg::Canvas::Create( true );
-	sfml_canvas = sfg::Canvas::Create();
+	auto opengl_canvas = sfg::Canvas::Create( true );
+	auto sfml_canvas = sfg::Canvas::Create();
 
 	// Add the Canvases to the windows.
 	opengl_window->Add( opengl_canvas );

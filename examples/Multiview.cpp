@@ -32,8 +32,7 @@ void MultiviewExample::Run() {
 	app_window.resetGLStates();
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Try dragging me to my cousins." );
 	window->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
@@ -52,7 +51,7 @@ void MultiviewExample::Run() {
 	// So that our button has a meaningful purpose
 	// (besides just looking awesome :P) we need to tell it to connect
 	// to a callback of our choosing to notify us when it is clicked.
-	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &MultiviewExample::ButtonClick, this );
+	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &MultiviewExample::ButtonClick, this ) );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.

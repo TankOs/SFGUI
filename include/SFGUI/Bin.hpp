@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Container.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -10,12 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Bin : public Container {
 	public:
-		typedef SharedPtr<Bin> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Bin> PtrConst; //!< Shared pointer.
-
-		/** Dtor.
-		 */
-		virtual ~Bin();
+		typedef std::shared_ptr<Bin> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Bin> PtrConst; //!< Shared pointer.
 
 		/** Get child widget.
 		 * @return Child widget.
@@ -23,11 +19,7 @@ class SFGUI_API Bin : public Container {
 		Widget::Ptr GetChild() const;
 
 	protected:
-		/** Constructor.
-		 */
-		Bin();
-
-		virtual void HandleAdd( const Widget::Ptr& child );
+		virtual void HandleAdd( const Widget::Ptr& child ) override;
 };
 
 }

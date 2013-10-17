@@ -2,7 +2,4 @@
 
 namespace sfg {
 
-ResourceLoader::~ResourceLoader() {
-}
-
 }

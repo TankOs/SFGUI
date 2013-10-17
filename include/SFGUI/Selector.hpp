@@ -2,10 +2,11 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 #include <string>
 #include <stdexcept>
+#include <cstdint>
 
 namespace sfg {
 
@@ -15,14 +16,14 @@ namespace sfg {
  */
 class SFGUI_API Selector {
 	public:
-		typedef SharedPtr<Selector> Ptr; ///< Shared pointer.
-		typedef SharedPtr<Selector> PtrConst; ///< Shared pointer (const object).
+		typedef std::shared_ptr<Selector> Ptr; ///< Shared pointer.
+		typedef std::shared_ptr<Selector> PtrConst; ///< Shared pointer (const object).
 
-		enum HierarchyType {
+		enum class HierarchyType : std::uint8_t {
 			INVALID = 0, //!< Invalid hierarchy type;
-			ROOT = 1 << 0, //!< Current simple selector is the root of the selector.
-			CHILD = 1 << 1, //!< Current simple selector is a child of the parent.
-			DESCENDANT = 1 << 2 //!< Current simple selector is a descendant of the parent.
+			ROOT, //!< Current simple selector is the root of the selector.
+			CHILD, //!< Current simple selector is a child of the parent.
+			DESCENDANT //!< Current simple selector is a descendant of the parent.
 		};
 
 		/** Create selector.
@@ -34,7 +35,7 @@ class SFGUI_API Selector {
 		 * @param parent Selector parent.
 		 * @return Selector.
 		 */
-		static Ptr Create( const std::string& widget, const std::string& id, const std::string& class_, const std::string& state, int hierarchy, Ptr parent );
+		static Ptr Create( const std::string& widget, const std::string& id, const std::string& class_, const std::string& state, HierarchyType hierarchy, Ptr parent );
 
 		/** Get widget name.
 		 * @return Widget name or empty if all.
@@ -52,12 +53,12 @@ class SFGUI_API Selector {
 		const std::string& GetClass() const;
 
 		/** Get state.
-		 * @return State or -1 if all.
+		 * @return State or nullptr if all.
 		 */
-		int GetState() const;
+		const Widget::State* GetState() const;
 
 		/** Get parent selector.
-		 * @return Parent or NULL if none set.
+		 * @return Parent or PtrConst() if none set.
 		 */
 		const PtrConst& GetParent() const;
 
@@ -98,12 +99,12 @@ class SFGUI_API Selector {
 
 		Ptr m_parent;
 
-		int m_hierarchy_type;
+		HierarchyType m_hierarchy_type;
 
 		std::string m_widget;
 		std::string m_id;
 		std::string m_class;
-		int m_state;
+		std::unique_ptr<Widget::State> m_state;
 
 		std::size_t m_hash;
 };

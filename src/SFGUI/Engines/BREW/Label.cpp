@@ -8,13 +8,15 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateLabelDrawable( SharedPtr<const Label> label ) const {
-	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", label ) ) );
-	const unsigned int font_size( GetProperty<unsigned int>( "FontSize", label ) );
-	const sf::Color font_color( GetProperty<sf::Color>( "Color", label ) );
-	const sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", label ) );
+std::unique_ptr<RenderQueue> BREW::CreateLabelDrawable( std::shared_ptr<const Label> label ) const {
+	const auto& font_name = GetProperty<std::string>( "FontName", label );
+	const auto& font = GetResourceManager().GetFont( font_name );
+	auto font_size = GetProperty<unsigned int>( "FontSize", label );
+	auto font_color = GetProperty<sf::Color>( "Color", label );
 
-	sf::Text vis_label( label->GetWrappedText(), font, font_size );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
+
+	sf::Text vis_label( label->GetWrappedText(), *font, font_size );
 	vis_label.setColor( font_color );
 
 	if( !label->GetLineWrap() ) {
@@ -25,7 +27,6 @@ RenderQueue* BREW::CreateLabelDrawable( SharedPtr<const Label> label ) const {
 		vis_label.setPosition( position.x, position.y );
 	}
 
-	RenderQueue* queue( new RenderQueue );
 	queue->Add( Renderer::Get().CreateText( vis_label ) );
 
 	return queue;

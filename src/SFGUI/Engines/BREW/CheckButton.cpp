@@ -8,20 +8,21 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", check ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", check ) );
-	sf::Color color( GetProperty<sf::Color>( "Color", check ) );
-	sf::Color check_color( GetProperty<sf::Color>( "CheckColor", check ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", check ) );
-	float border_width( GetProperty<float>( "BorderWidth", check ) );
-	float box_size( GetProperty<float>( "BoxSize", check ) );
-	float spacing( GetProperty<float>( "Spacing", check ) );
-	float check_size( std::min( box_size, GetProperty<float>( "CheckSize", check ) ) );
-	const std::string& font_name( GetProperty<std::string>( "FontName", check ) );
-	unsigned int font_size( GetProperty<unsigned int>( "FontSize", check ) );
-	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> BREW::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", check );
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", check );
+	auto color = GetProperty<sf::Color>( "Color", check );
+	auto check_color = GetProperty<sf::Color>( "CheckColor", check );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", check );
+	auto border_width = GetProperty<float>( "BorderWidth", check );
+	auto box_size = GetProperty<float>( "BoxSize", check );
+	auto spacing = GetProperty<float>( "Spacing", check );
+	auto check_size = std::min( box_size, GetProperty<float>( "CheckSize", check ) );
+	const auto& font_name = GetProperty<std::string>( "FontName", check );
+	auto font_size = GetProperty<unsigned int>( "FontSize", check );
+	const auto& font = GetResourceManager().GetFont( font_name );
+
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Check Pane.
 	queue->Add(
@@ -53,10 +54,10 @@ RenderQueue* BREW::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check
 
 	// Label.
 	if( check->GetLabel().getSize() > 0 ) {
-		sf::Vector2f metrics = GetTextMetrics( check->GetLabel(), font, font_size );
-		metrics.y = GetFontLineHeight( font, font_size );
+		auto metrics = GetTextMetrics( check->GetLabel(), *font, font_size );
+		metrics.y = GetFontLineHeight( *font, font_size );
 
-		sf::Text text( check->GetLabel(), font, font_size );
+		sf::Text text( check->GetLabel(), *font, font_size );
 		text.setPosition(
 			box_size + spacing,
 			check->GetAllocation().height / 2.f - metrics.y / 2.f

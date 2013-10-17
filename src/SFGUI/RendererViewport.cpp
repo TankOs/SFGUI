@@ -5,10 +5,7 @@ namespace sfg {
 
 std::size_t RendererViewport::last_id = 0;
 
-RendererViewport::RendererViewport() :
-	m_source_origin( sf::Vector2f( 0.f, 0.f ) ),
-	m_destination_origin( sf::Vector2f( 0.f, 0.f ) ),
-	m_size( sf::Vector2f( 0.f, 0.f ) )
+RendererViewport::RendererViewport()
 {
 	m_id = last_id++;
 }

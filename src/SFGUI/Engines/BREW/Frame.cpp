@@ -9,19 +9,17 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", frame ) );
-	sf::Color color( GetProperty<sf::Color>( "Color", frame ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", frame ) );
-	float border_width( GetProperty<float>( "BorderWidth", frame ) );
-	const std::string& font_name( GetProperty<std::string>( "FontName", frame ) );
-	unsigned int font_size( GetProperty<unsigned int>( "FontSize", frame ) );
-	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
-	float label_padding( GetProperty<float>( "LabelPadding", frame ) );
+std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Frame> frame ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", frame );
+	auto color = GetProperty<sf::Color>( "Color", frame );
+	auto border_width = GetProperty<float>( "BorderWidth", frame );
+	const auto& font_name = GetProperty<std::string>( "FontName", frame );
+	auto font_size = GetProperty<unsigned int>( "FontSize", frame );
+	const auto& font = GetResourceManager().GetFont( font_name );
+	auto label_padding = GetProperty<float>( "LabelPadding", frame );
+	auto line_height = GetFontLineHeight( *font, font_size );
 
-	float line_height = GetFontLineHeight( font, font_size );
-
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Right
 	queue->Add(
@@ -53,19 +51,19 @@ RenderQueue* BREW::CreateFrameDrawable( SharedPtr<const Frame> frame ) const {
 		)
 	);
 
-	float label_start_x = line_height;
-	float label_end_x = line_height;
+	auto label_start_x = line_height;
+	auto label_end_x = line_height;
 
-	float alignment = frame->GetAlignment().x;
+	auto alignment = frame->GetAlignment().x;
 
 	if( frame->GetLabel().getSize() > 0 ) {
-		sf::Vector2f metrics = GetTextMetrics( frame->GetLabel(), font, font_size );
+		auto metrics = GetTextMetrics( frame->GetLabel(), *font, font_size );
 		metrics.x += ( 2 * label_padding );
 
 		label_start_x += ( alignment * ( frame->GetAllocation().width - 2 * line_height - metrics.x ) );
 		label_end_x += ( metrics.x + alignment * ( frame->GetAllocation().width - 2 * line_height - metrics.x ) );
 
-		sf::Text text( frame->GetLabel(), font, font_size );
+		sf::Text text( frame->GetLabel(), *font, font_size );
 		text.setPosition( label_start_x + label_padding, border_width / 2.f );
 		text.setColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );

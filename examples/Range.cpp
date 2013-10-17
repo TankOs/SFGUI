@@ -38,12 +38,11 @@ void RangeExample::Run() {
 	app_window.resetGLStates();
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create our box.
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 
 	// Create a label.
 	m_label = sfg::Label::Create();
@@ -58,19 +57,13 @@ void RangeExample::Run() {
 	// linked together by a common Adjustment instance. An Adjustment
 	// is created automatically for you when you create a range widget.
 
-	// Create our scale smart pointer.
-	sfg::Scale::Ptr scale;
-
-	// Create the scale itself.
+	// Create the scale.
 	// We want a horizontal scale.
-	scale = sfg::Scale::Create( sfg::Scale::HORIZONTAL );
+	auto scale = sfg::Scale::Create( sfg::Scale::Orientation::HORIZONTAL );
 
-	// Create our scrollbar smart pointer.
-	sfg::Scrollbar::Ptr scrollbar;
-
-	// Create the scrollbar itself.
+	// Create the scrollbar.
 	// We want a vertical scrollbar.
-	scrollbar = sfg::Scrollbar::Create( sfg::Scrollbar::VERTICAL );
+	auto scrollbar = sfg::Scrollbar::Create( sfg::Scrollbar::Orientation::VERTICAL );
 
 	// We can link both widgets together by their adjustments.
 	m_adjustment = scrollbar->GetAdjustment();
@@ -97,7 +90,7 @@ void RangeExample::Run() {
 
 	// Additionally you can connect to the OnChange signal of an adjustment
 	// to get notified when any of it's parameters are changed.
-	m_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( &RangeExample::AdjustmentChange, this );
+	m_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &RangeExample::AdjustmentChange, this ) );
 
 	// Just as with the entry widget we set custom requisitions for our
 	// range widgets to make sure they don't look strange.
@@ -106,7 +99,7 @@ void RangeExample::Run() {
 
 	// To keep our scale's slider from expanding too much we use another box
 	// set to verticle orientation.
-	sfg::Box::Ptr scalebox = sfg::Box::Create( sfg::Box::VERTICAL );
+	auto scalebox = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
 	scalebox->Pack( scale, false, false );
 
 	// Pack into box

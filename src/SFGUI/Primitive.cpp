@@ -5,9 +5,7 @@
 namespace sfg {
 
 Primitive::Vertex::Vertex() :
-	position( sf::Vector2f( 0.f, 0.f ) ),
-	color( sf::Color::White ),
-	texture_coordinate( sf::Vector2f( 0.f, 0.f ) )
+	color( sf::Color::White )
 {
 }
 
@@ -34,13 +32,6 @@ bool Primitive::Vertex::operator==( const Primitive::Vertex& other ) const {
 	return true;
 }
 
-Primitive::Texture::Texture() :
-	offset( 0.f, 0.f ),
-	size( 0, 0 )
-{
-
-}
-
 Primitive::Texture::~Texture() {
 	if( sfg::Renderer::Exists() ) {
 		sfg::Renderer::Get().UnloadImage( offset );
@@ -49,7 +40,7 @@ Primitive::Texture::~Texture() {
 
 void Primitive::Texture::Update( const sf::Image& data ) {
 	if( data.getSize() != size ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "Tried to update texture with mismatching image size.\n";
 #endif
 		return;
@@ -59,7 +50,6 @@ void Primitive::Texture::Update( const sf::Image& data ) {
 }
 
 Primitive::Primitive( std::size_t vertex_reserve ) :
-	m_position( sf::Vector2f( 0.f, 0.f ) ),
 	m_layer( 0 ),
 	m_level( 0 ),
 	m_synced( false ),
@@ -73,27 +63,21 @@ Primitive::Primitive( std::size_t vertex_reserve ) :
 }
 
 void Primitive::Add( Primitive& primitive ) {
-	const std::vector<Vertex>& vertices( primitive.GetVertices() );
-	const std::vector<GLuint>& indices( primitive.GetIndices() );
+	auto current_index = m_vertices.size();
 
-	std::size_t vertex_count = vertices.size();
-	std::size_t index_count = indices.size();
-
-	std::size_t current_index = m_vertices.size();
-
-	for( std::size_t vertex_index = 0; vertex_index < vertex_count; ++vertex_index ) {
-		m_vertices.push_back( vertices[vertex_index] );
+	for( const auto& vertex : primitive.GetVertices() ) {
+		m_vertices.push_back( vertex );
 	}
 
-	for( std::size_t index_index = 0; index_index < index_count; ++index_index ) {
-		m_indices.push_back( current_index + indices[index_index] );
+	for( const auto& index : primitive.GetIndices() ) {
+		m_indices.push_back( current_index + index );
 	}
 }
 
 void Primitive::AddVertex( const Vertex& vertex ) {
 	m_synced = false;
 
-	std::size_t vertice_count = m_vertices.size();
+	auto vertice_count = m_vertices.size();
 
 	// Skip the duplicate search if this vertex is part of the first triangle.
 	if( vertice_count >= 3 ) {
@@ -111,7 +95,7 @@ void Primitive::AddVertex( const Vertex& vertex ) {
 	m_vertices.push_back( vertex );
 }
 
-void Primitive::AddTexture( const SharedPtr<Texture>& texture ) {
+void Primitive::AddTexture( const Texture::Ptr& texture ) {
 	m_textures.push_back( texture );
 }
 
@@ -185,11 +169,11 @@ bool Primitive::IsVisible() const {
 	return m_visible;
 }
 
-void Primitive::SetCustomDrawCallback( const SharedPtr<Signal>& callback ) {
+void Primitive::SetCustomDrawCallback( const std::shared_ptr<Signal>& callback ) {
 	m_custom_draw_callback = callback;
 }
 
-const SharedPtr<Signal>& Primitive::GetCustomDrawCallback() const {
+const std::shared_ptr<Signal>& Primitive::GetCustomDrawCallback() const {
 	return m_custom_draw_callback;
 }
 

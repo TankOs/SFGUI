@@ -2,12 +2,6 @@
 
 namespace sfg {
 
-Misc::Misc() {
-}
-
-Misc::~Misc() {
-}
-
 void Misc::SetAlignment( const sf::Vector2f& alignment ) {
 	sf::Vector2f old_alignment( m_alignment );
 

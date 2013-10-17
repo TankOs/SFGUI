@@ -24,10 +24,10 @@ class SpinButtonExample {
 };
 
 void SpinButtonExample::OnValueChange() {
-	const sfg::Adjustment::Ptr& adjustment( m_spinbutton->GetAdjustment() );
+	const auto& adjustment = m_spinbutton->GetAdjustment();
 
-	float range = adjustment->GetUpper() - adjustment->GetLower();
-	float inverse_fraction = 1.f - ( m_spinbutton->GetValue() - adjustment->GetLower() ) / range;
+	auto range = adjustment->GetUpper() - adjustment->GetLower();
+	auto inverse_fraction = 1.f - ( m_spinbutton->GetValue() - adjustment->GetLower() ) / range;
 
 	m_progress_bar->SetFraction( inverse_fraction );
 }
@@ -43,12 +43,11 @@ void SpinButtonExample::Run() {
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create a box to contain our SpinButton and progress bar.
-	sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::VERTICAL, 10.f );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 10.f );
 
 	// Create the SpinButton itself.
 	m_spinbutton = sfg::SpinButton::Create( -2.f, 18.f, .4f );
@@ -60,7 +59,7 @@ void SpinButtonExample::Run() {
 	m_spinbutton->SetDigits( 2 );
 
 	// Connect the OnValueChanged signal so we get notified when the SpinButton's value changes.
-	m_spinbutton->GetSignal( sfg::SpinButton::OnValueChanged ).Connect( &SpinButtonExample::OnValueChange, this );
+	m_spinbutton->GetSignal( sfg::SpinButton::OnValueChanged ).Connect( std::bind( &SpinButtonExample::OnValueChange, this ) );
 
 	// Add the SpinButton to the box.
 	box->Pack( m_spinbutton );
@@ -100,7 +99,7 @@ void SpinButtonExample::Run() {
 
 		// Update the GUI every 1ms
 		if( clock.getElapsedTime().asMicroseconds() >= 1000 ) {
-			float delta = static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f;
+			auto delta = static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f;
 
 			// Update() takes the elapsed time in seconds.
 			window->Update( delta );

@@ -16,15 +16,11 @@ int main() {
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
-	// Create our label smart pointer.
-	sfg::Label::Ptr label;
-
-	// Create the label itself.
-	label = sfg::Label::Create();
+	// Create the label.
+	auto label = sfg::Label::Create();
 
 	// Set the text of the label.
 	label->SetText( "Hello World!\nAnother Line" );

@@ -3,7 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/Misc.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 #include <SFML/Graphics/Texture.hpp>
 
@@ -13,8 +13,8 @@ namespace sfg {
  */
 class SFGUI_API Image : public Widget, public Misc {
 	public:
-		typedef SharedPtr<Image> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Image> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Image> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Image> PtrConst; //!< Shared pointer.
 
 		/** Create image.
 		 * @param image sf::Image.
@@ -22,11 +22,7 @@ class SFGUI_API Image : public Widget, public Misc {
 		 */
 		static Ptr Create( const sf::Image& image = sf::Image() );
 
-		virtual const std::string& GetName() const;
-
-		/** Dtor.
-		 */
-		~Image();
+		virtual const std::string& GetName() const override;
 
 		/** Set associated sf::Image.
 		 * @param image New sf::Image.
@@ -44,8 +40,8 @@ class SFGUI_API Image : public Widget, public Misc {
 		 */
 		Image( const sf::Image& image = sf::Image() );
 
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		sf::Image m_image;

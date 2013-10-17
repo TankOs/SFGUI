@@ -16,19 +16,18 @@ int main() {
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create our table.
-	sfg::Table::Ptr table = sfg::Table::Create();
+	auto table = sfg::Table::Create();
 
 	// Some demonstration buttons ;)
-	sfg::Button::Ptr foo = sfg::Button::Create( "Foo" );
-	sfg::Button::Ptr bar = sfg::Button::Create( "Bar" );
-	sfg::Button::Ptr baz = sfg::Button::Create( "Baz" );
-	sfg::Button::Ptr column_span = sfg::Button::Create( "Column Span" );
-	sfg::Button::Ptr row_span = sfg::Button::Create( "Row Span" );
+	auto foo = sfg::Button::Create( "Foo" );
+	auto bar = sfg::Button::Create( "Bar" );
+	auto baz = sfg::Button::Create( "Baz" );
+	auto column_span = sfg::Button::Create( "Column Span" );
+	auto row_span = sfg::Button::Create( "Row Span" );
 
 	// Attach a widget to the table.
 	// The first parameter is the widget to attach.

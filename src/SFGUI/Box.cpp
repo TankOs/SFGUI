@@ -6,7 +6,6 @@
 namespace sfg {
 
 Box::Box( Orientation orientation, float spacing ) :
-	Container(),
 	m_spacing( spacing ),
 	m_orientation( orientation )
 {
@@ -75,7 +74,7 @@ void Box::HandleAdd( const Widget::Ptr& child ) {
 	// manually, which is not allowed for this class.
 	if( iter == m_children.end() ) {
 
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Child must be added via Pack() for sfg::Box widgets.\n";
 #endif
 
@@ -100,19 +99,17 @@ void Box::HandleRemove( const Widget::Ptr& child ) {
 sf::Vector2f Box::CalculateRequisition() {
 	sf::Vector2f requisition( 0.f, 0.f );
 	unsigned int num_visible( 0 );
-	ChildrenCont::const_iterator iter( m_children.begin() );
-	ChildrenCont::const_iterator iterend( m_children.end() );
 
-	for( ; iter != iterend; ++iter ) {
-		if( !IsChildInteresting( iter->widget ) ) {
+	for( const auto& child : m_children ) {
+		if( !IsChildInteresting( child.widget ) ) {
 			continue;
 		}
 
 		++num_visible;
 
-		sf::Vector2f child_requisition( iter->widget->GetRequisition() );
+		sf::Vector2f child_requisition( child.widget->GetRequisition() );
 
-		if( m_orientation == HORIZONTAL ) {
+		if( m_orientation == Orientation::HORIZONTAL ) {
 			requisition.x += child_requisition.x;
 			requisition.y = std::max( requisition.y, child_requisition.y );
 		}
@@ -123,7 +120,7 @@ sf::Vector2f Box::CalculateRequisition() {
 	}
 
 	if( num_visible > 1 ) {
-		if( m_orientation == HORIZONTAL ) {
+		if( m_orientation == Orientation::HORIZONTAL ) {
 			requisition.x += static_cast<float>( num_visible - 1 ) * GetSpacing();
 		}
 		else {
@@ -164,20 +161,18 @@ float Box::GetSpacing() const {
 }
 
 void Box::AllocateChildren() const {
-	ChildrenCont::const_iterator iter( m_children.begin() );
-	ChildrenCont::const_iterator iterend( m_children.end() );
 	unsigned int num_expand( 0 );
 	unsigned int num_visible( 0 );
 
 	// Count number of visible and expanded children.
-	for( ; iter != iterend; ++iter ) {
-		if( !IsChildInteresting( iter->widget ) ) {
+	for( const auto& child : m_children ) {
+		if( !IsChildInteresting( child.widget ) ) {
 			continue;
 		}
 
 		++num_visible;
 
-		if( iter->expand ) {
+		if( child.expand ) {
 			++num_expand;
 		}
 	}
@@ -186,7 +181,7 @@ void Box::AllocateChildren() const {
 	float extra( 0.f );
 
 	if( num_expand > 0 ) {
-		if( m_orientation == HORIZONTAL ) {
+		if( m_orientation == Orientation::HORIZONTAL ) {
 			extra = std::max( 0.f, GetAllocation().width - GetRequisition().x ) / static_cast<float>( num_expand );
 		}
 		else {
@@ -199,23 +194,23 @@ void Box::AllocateChildren() const {
 	sf::Vector2f allocation( 0.f, 0.f );
 	sf::Vector2f position( gap, gap );
 
-	for( iter = m_children.begin(); iter != iterend; ++iter ) {
-		if( !IsChildInteresting( iter->widget ) ) {
+	for( const auto& child : m_children ) {
+		if( !IsChildInteresting( child.widget ) ) {
 			continue;
 		}
 
-		if( m_orientation == HORIZONTAL ) {
-			allocation.x = iter->widget->GetRequisition().x + (iter->expand ? extra : 0.f);
+		if( m_orientation == Orientation::HORIZONTAL ) {
+			allocation.x = child.widget->GetRequisition().x + ( child.expand ? extra : 0.f );
 			allocation.y = GetAllocation().height - 2 * gap;
 
-			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - (iter->expand && !iter->fill ? extra : 0.f), allocation.y ) );
+			child.widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - ( child.expand && !child.fill ? extra : 0.f ), allocation.y ) );
 			position.x += allocation.x + GetSpacing();
 		}
 		else {
 			allocation.x = GetAllocation().width - 2 * gap;
-			allocation.y = iter->widget->GetRequisition().y + (iter->expand ? extra : 0.f);
+			allocation.y = child.widget->GetRequisition().y + ( child.expand ? extra : 0.f );
 
-			iter->widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - (iter->expand && !iter->fill ? extra : 0.f) ) );
+			child.widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - ( child.expand && !child.fill ? extra : 0.f ) ) );
 			position.y += allocation.y + GetSpacing();
 		}
 

@@ -13,7 +13,7 @@ static ThemeGrammar _grammar;
 
 std::string GetLine( std::string str, std::size_t line ) {
 	for( std::size_t current_line = 1; current_line < line; ++current_line ) {
-		std::size_t position = str.find( '\n' );
+		auto position = str.find( '\n' );
 		if( ( position == std::string::npos ) || ( position == ( str.size() - 1 ) ) ) {
 			return std::string("");
 		}
@@ -48,7 +48,7 @@ std::vector<Rule> ParseString( std::string str ) {
 	_grammar.ClearResults();
 	//ELL_ENABLE_DUMP( grammar );
 
-	bool result = false;
+	auto result = false;
 
 	std::vector<Rule> rules;
 
@@ -57,7 +57,7 @@ std::vector<Rule> ParseString( std::string str ) {
 		rules = _grammar.GetTheme();
 		result = true;
 	}
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 	catch( const std::runtime_error& e ) {
 		result = false;
 
@@ -83,7 +83,7 @@ std::vector<Rule> ParseFile( std::string filename ) {
 	_grammar.ClearResults();
 	//ELL_ENABLE_DUMP( grammar );
 
-	bool result = false;
+	auto result = false;
 
 	std::vector<Rule> rules;
 
@@ -91,21 +91,21 @@ std::vector<Rule> ParseFile( std::string filename ) {
 	file.unsetf( std::ios::skipws );
 
 	if( !file.good() ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "Error opening file: " << filename << "\n";
 #endif
 		file.close();
 		return std::vector<Rule>();
 	}
 
-	std::string str = std::string( std::istreambuf_iterator<char>( file ), std::istreambuf_iterator<char>() );
+	auto str = std::string( std::istreambuf_iterator<char>( file ), std::istreambuf_iterator<char>() );
 
 	try {
 		_grammar.parse( str.c_str() );
 		rules = _grammar.GetTheme();
 		result = true;
 	}
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 	catch( const std::runtime_error& e ) {
 		result = false;
 

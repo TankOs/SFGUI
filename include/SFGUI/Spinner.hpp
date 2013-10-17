@@ -1,6 +1,6 @@
 #pragma once
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 #include <SFML/System.hpp>
 
 namespace sfg {
@@ -9,19 +9,15 @@ namespace sfg {
  */
 class SFGUI_API Spinner : public Widget {
 	public:
-		typedef SharedPtr<Spinner> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Spinner> PtrConst; //!< Shared pointer.
-
-		/** Dtor.
-		 */
-		~Spinner();
+		typedef std::shared_ptr<Spinner> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Spinner> PtrConst; //!< Shared pointer.
 
 		/** Create spinner.
 		 * @return Spinner.
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Start the spinner.
 		 */
@@ -46,8 +42,8 @@ class SFGUI_API Spinner : public Widget {
 		 */
 		Spinner();
 
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:
 		void HandleUpdate( float seconds );
@@ -55,8 +51,6 @@ class SFGUI_API Spinner : public Widget {
 		float m_elapsed_time;
 
 		unsigned int m_stage;
-
-		mutable RenderQueue* m_renderqueue;
 
 		bool m_started;
 };

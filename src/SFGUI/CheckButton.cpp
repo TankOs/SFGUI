@@ -4,14 +4,6 @@
 
 namespace sfg {
 
-CheckButton::CheckButton() :
-	ToggleButton()
-{
-}
-
-CheckButton::~CheckButton() {
-}
-
 CheckButton::Ptr CheckButton::Create( const sf::String& label ) {
 	Ptr widget( new CheckButton );
 
@@ -25,12 +17,12 @@ const std::string& CheckButton::GetName() const {
 	return name;
 }
 
-RenderQueue* CheckButton::InvalidateImpl() const {
+std::unique_ptr<RenderQueue> CheckButton::InvalidateImpl() const {
 	if( GetChild() ) {
 		GetChild()->Invalidate();
 	}
 
-	return Context::Get().GetEngine().CreateCheckButtonDrawable( DynamicPointerCast<const CheckButton>( shared_from_this() ) );
+	return Context::Get().GetEngine().CreateCheckButtonDrawable( std::dynamic_pointer_cast<const CheckButton>( shared_from_this() ) );
 }
 
 sf::Vector2f CheckButton::CalculateRequisition() {
@@ -42,7 +34,7 @@ sf::Vector2f CheckButton::CalculateRequisition() {
 	sf::Vector2f requisition( box_size, box_size );
 
 	if( GetLabel().getSize() > 0 ) {
-		sf::Vector2f metrics = Context::Get().GetEngine().GetTextMetrics( GetLabel(), font, font_size );
+		auto metrics = Context::Get().GetEngine().GetTextMetrics( GetLabel(), font, font_size );
 		requisition.x += metrics.x + spacing;
 		requisition.y = std::max( requisition.y, Context::Get().GetEngine().GetFontLineHeight( font, font_size ) );
 	}

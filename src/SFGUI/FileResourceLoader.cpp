@@ -2,29 +2,25 @@
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <memory>
 
 namespace sfg {
 
-FileResourceLoader::~FileResourceLoader() {
-}
-
-const sf::Font* FileResourceLoader::LoadFont( const std::string& path ) {
-	sf::Font* font( new sf::Font );
+std::shared_ptr<const sf::Font> FileResourceLoader::LoadFont( const std::string& path ) const {
+	std::shared_ptr<sf::Font> font( new sf::Font );
 
 	if( !font->loadFromFile( path ) ) {
-		delete font;
-		return NULL;
+		return std::shared_ptr<const sf::Font>();
 	}
 
 	return font;
 }
 
-const sf::Image* FileResourceLoader::LoadImage( const std::string& path ) {
-	sf::Image *image( new sf::Image );
+std::shared_ptr<const sf::Image> FileResourceLoader::LoadImage( const std::string& path ) const {
+	std::shared_ptr<sf::Image> image( new sf::Image );
 
 	if( !image->loadFromFile( path ) ) {
-		delete image;
-		return NULL;
+		return std::shared_ptr<const sf::Image>();
 	}
 
 	return image;

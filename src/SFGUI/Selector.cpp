@@ -6,8 +6,7 @@
 namespace sfg {
 
 Selector::Selector() :
-	m_hierarchy_type( INVALID ),
-	m_state( -1 ),
+	m_hierarchy_type( HierarchyType::INVALID ),
 	m_hash( 0 )
 {
 }
@@ -17,9 +16,12 @@ Selector::Selector( const Selector& other ) :
 	m_widget( other.m_widget ),
 	m_id( other.m_id ),
 	m_class( other.m_class ),
-	m_state( other.m_state ),
 	m_hash( 0 )
 {
+	if( other.m_state ) {
+		m_state.reset( new Widget::State( *other.m_state ) );
+	}
+
 	if( other.m_parent ) {
 		m_parent.reset( new Selector( *other.m_parent ) );
 	}
@@ -30,8 +32,11 @@ Selector& Selector::operator=( const Selector& other ) {
 	m_widget = other.m_widget;
 	m_id = other.m_id;
 	m_class = other.m_class;
-	m_state = other.m_state;
 	m_hash = other.m_hash;
+
+	if( other.m_state ) {
+		m_state.reset( new Widget::State( *other.m_state ) );
+	}
 
 	if( other.m_parent ) {
 		m_parent.reset( new Selector( *other.m_parent ) );
@@ -43,7 +48,7 @@ Selector& Selector::operator=( const Selector& other ) {
 	return *this;
 }
 
-Selector::Ptr Selector::Create( const std::string& widget, const std::string& id, const std::string& class_, const std::string& state, int hierarchy, Ptr parent ) {
+Selector::Ptr Selector::Create( const std::string& widget, const std::string& id, const std::string& class_, const std::string& state, HierarchyType hierarchy, Ptr parent ) {
 	Ptr selector( new Selector );
 
 	selector->m_widget = widget;
@@ -51,25 +56,22 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 	selector->m_class = class_;
 
 	std::string uppercase_state( state );
-
-	for( std::size_t index = 0; index < uppercase_state.size(); ++index ) {
-		uppercase_state[index] = static_cast<char>( toupper( uppercase_state[index] ) );
-	}
+	std::transform( uppercase_state.begin(), uppercase_state.end(), uppercase_state.begin(), toupper );
 
 	if( uppercase_state == "NORMAL" ) {
-		selector->m_state = Widget::NORMAL;
+		selector->m_state.reset( new Widget::State( Widget::State::NORMAL ) );
 	}
 	else if( uppercase_state == "ACTIVE" ) {
-		selector->m_state = Widget::ACTIVE;
+		selector->m_state.reset( new Widget::State( Widget::State::ACTIVE ) );
 	}
 	else if( uppercase_state == "PRELIGHT" ) {
-		selector->m_state = Widget::PRELIGHT;
+		selector->m_state.reset( new Widget::State( Widget::State::PRELIGHT ) );
 	}
 	else if( uppercase_state == "SELECTED" ) {
-		selector->m_state = Widget::SELECTED;
+		selector->m_state.reset( new Widget::State( Widget::State::SELECTED ) );
 	}
 	else if( uppercase_state == "INSENSITIVE" ) {
-		selector->m_state = Widget::INSENSITIVE;
+		selector->m_state.reset( new Widget::State( Widget::State::INSENSITIVE ) );
 	}
 	else if( !uppercase_state.empty() ) {
 		throw( ParserException( "Invalid state: " + state ) );
@@ -77,15 +79,15 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 
 	selector->m_hierarchy_type = hierarchy;
 
-	if( hierarchy != ROOT ) {
+	if( hierarchy != HierarchyType::ROOT ) {
 		selector->m_parent = parent;
 	}
 
 	// Hash.
-	std::size_t hash = static_cast<std::size_t>( 2166136261UL );
+	auto hash = static_cast<std::size_t>( 2166136261UL );
 
-	std::string selector_string = selector->BuildString();
-	std::size_t length = selector_string.length();
+	const auto& selector_string = selector->BuildString();
+	auto length = selector_string.length();
 
 	for ( ; length; --length ) {
 		hash ^= static_cast<std::size_t>( selector_string[ length - 1 ] );
@@ -109,8 +111,8 @@ const std::string& Selector::GetClass() const {
 	return m_class;
 }
 
-int Selector::GetState() const {
-	return m_state;
+const Widget::State* Selector::GetState() const {
+	return m_state.get();
 }
 
 const Selector::PtrConst& Selector::GetParent() const {
@@ -125,10 +127,10 @@ std::string Selector::BuildString() const {
 		str += m_parent->BuildString();
 
 		switch( m_hierarchy_type ) {
-			case CHILD: {
+			case HierarchyType::CHILD: {
 				str += ">";
 			} break;
-			case DESCENDANT: {
+			case HierarchyType::DESCENDANT: {
 				str += " ";
 			} break;
 			default: break;
@@ -154,23 +156,23 @@ std::string Selector::BuildString() const {
 		str += m_class;
 	}
 
-	if( m_state > -1 ) {
+	if( m_state ) {
 		str += ":";
 
-		switch( m_state ) {
-			case Widget::NORMAL:
+		switch( *m_state ) {
+			case Widget::State::NORMAL:
 				str += "NORMAL";
 				break;
-			case Widget::PRELIGHT:
+			case Widget::State::PRELIGHT:
 				str += "PRELIGHT";
 				break;
-			case Widget::ACTIVE:
+			case Widget::State::ACTIVE:
 				str += "ACTIVE";
 				break;
-			case Widget::SELECTED:
+			case Widget::State::SELECTED:
 				str += "SELECTED";
 				break;
-			case Widget::INSENSITIVE:
+			case Widget::State::INSENSITIVE:
 				str += "INSENSITIVE";
 				break;
 
@@ -200,24 +202,24 @@ bool Selector::Matches( const Widget::PtrConst& widget ) const {
 	// Recursion is your friend ;)
 
 	// Check if current stage is a pass...
-	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && m_state == -1 ) || // Wildcard
+	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && !m_state ) || // Wildcard
 		 ( ( m_widget.empty() || !m_widget.compare("*") || m_widget == widget->GetName() ) && //
 		 ( m_id.empty() || m_id == widget->GetId() ) && // Selector and widget match
 		 ( m_class.empty() || m_class  == widget->GetClass() ) && //
-		 ( m_state == (-1) || m_state  == widget->GetState() ) ) ) { //
+		 ( !m_state || *m_state == widget->GetState() ) ) ) { //
 		// Current stage is a pass...
 
 		// Differentiate between different hierarchy types
 		switch( m_hierarchy_type ) {
-			case ROOT: {
+			case HierarchyType::ROOT: {
 				// No parent, matching success
 				return true;
 			} break;
-			case CHILD: {
+			case HierarchyType::CHILD: {
 				// This is a child, check direct parent only
 				return ( GetParent() && GetParent()->Matches( widget->GetParent() ) );
 			} break;
-			case DESCENDANT: {
+			case HierarchyType::DESCENDANT: {
 				// This is a descendant, check all parents and try to match to all of widgets parents
 				for( PtrConst parent = GetParent(); parent; parent = parent->GetParent() ) {
 					for( Widget::PtrConst widget_parent = widget->GetParent(); widget_parent; widget_parent = widget_parent->GetParent() ) {
@@ -239,11 +241,11 @@ int Selector::GetScore() const {
 	int score = 0;
 
 	score += ( ( GetWidgetName().empty() || ( GetWidgetName() == "*" ) ) ? 0 : 1 );
-	score += ( ( GetState() == -1 ) ? 0 : 1 );
+	score += ( ( !GetState() ) ? 0 : 1 );
 	score += ( GetClass().empty() ? 0 : 100 );
 	score += ( GetId().empty() ? 0 : 10000 );
 
-	if( ( m_hierarchy_type != ROOT ) && GetParent() ) {
+	if( ( m_hierarchy_type != HierarchyType::ROOT ) && GetParent() ) {
 		score += GetParent()->GetScore();
 	}
 

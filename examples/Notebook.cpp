@@ -16,19 +16,15 @@ int main() {
 	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
-	sfg::Window::Ptr window;
-	window = sfg::Window::Create();
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
-	// Create our notebook smart pointer.
-	sfg::Notebook::Ptr notebook;
-
-	// Create the notebook itself.
-	notebook = sfg::Notebook::Create();
+	// Create the notebook.
+	auto notebook = sfg::Notebook::Create();
 
 	// Create a couple of buttons to populate the notebook.
-	sfg::Button::Ptr button1( sfg::Button::Create("Hello") );
-	sfg::Button::Ptr button2( sfg::Button::Create("World") );
+	auto button1 = sfg::Button::Create("Hello");
+	auto button2 = sfg::Button::Create("World");
 
 	// Add new pages to the notebook with respective tab labels
 	// containing solely the buttons as their children.

@@ -2,7 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Button.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -11,19 +11,15 @@ namespace sfg {
  */
 class SFGUI_API ToggleButton : public Button {
 	public:
-		typedef SharedPtr<ToggleButton> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const ToggleButton> PtrConst; //!< Shared pointer to const.
+		typedef std::shared_ptr<ToggleButton> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const ToggleButton> PtrConst; //!< Shared pointer to const.
 
 		/** Create toggle button.
 		 * @param label Label.
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
-		/** Dtor.
-		 */
-		virtual ~ToggleButton();
-
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Set active.
 		 * @param active Active.
@@ -39,9 +35,9 @@ class SFGUI_API ToggleButton : public Button {
 		static Signal::SignalID OnToggle; //!< Fired when toggled.
 
 	protected:
-		virtual RenderQueue* InvalidateImpl() const;
+		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
-		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y );
+		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y ) override;
 
 		/** Ctor.
 		 */

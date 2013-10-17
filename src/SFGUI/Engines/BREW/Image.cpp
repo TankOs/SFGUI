@@ -6,12 +6,10 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateImageDrawable( SharedPtr<const Image> image ) const {
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", image ) );
+std::unique_ptr<RenderQueue> BREW::CreateImageDrawable( std::shared_ptr<const Image> image ) const {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	RenderQueue* queue( new RenderQueue );
-
-	Primitive::Texture::Ptr texture = Renderer::Get().LoadTexture( image->GetImage() );
+	auto texture = Renderer::Get().LoadTexture( image->GetImage() );
 
 	queue->Add(
 		Renderer::Get().CreateSprite(

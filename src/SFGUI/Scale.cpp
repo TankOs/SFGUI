@@ -8,13 +8,8 @@ namespace sfg {
 
 Scale::Scale( Orientation orientation ) :
 	Range( orientation ),
-	m_drag_offset( 0 ),
 	m_dragging( false )
 {
-}
-
-Scale::~Scale() {
-	delete m_drag_offset;
 }
 
 Scale::Ptr Scale::Create( Orientation orientation ) {
@@ -32,42 +27,40 @@ Scale::Ptr Scale::Create( float min, float max, float step, Orientation orientat
 const sf::FloatRect Scale::GetSliderRect() const {
 	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
 
-	float slider_width( ( GetOrientation() == HORIZONTAL ) ? GetAllocation().height : GetAllocation().width );
+	float slider_width( ( GetOrientation() == Orientation::HORIZONTAL ) ? GetAllocation().height : GetAllocation().width );
 
 	Adjustment::Ptr adjustment( GetAdjustment() );
 
-	float current_value = adjustment->GetValue();
-	float value_range = adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize();
+	auto current_value = adjustment->GetValue();
+	auto value_range = adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize();
 
-	if( GetOrientation() == HORIZONTAL ) {
-		float slider_x = ( GetAllocation().width - slider_length ) * ( current_value - adjustment->GetLower() ) / value_range;
-		float slider_y = ( GetAllocation().height - slider_width ) / 2.f;
+	if( GetOrientation() == Orientation::HORIZONTAL ) {
+		auto slider_x = ( GetAllocation().width - slider_length ) * ( current_value - adjustment->GetLower() ) / value_range;
+		auto slider_y = ( GetAllocation().height - slider_width ) / 2.f;
 
 		return sf::FloatRect( slider_x, slider_y, slider_length, slider_width );
 	}
-	else {
-		float slider_x = ( GetAllocation().width - slider_width ) / 2.f;
-		float slider_y = ( GetAllocation().height - slider_length ) * ( 1 - ( ( current_value - adjustment->GetLower() ) / value_range ) );
 
-		return sf::FloatRect( slider_x, slider_y, slider_width, slider_length );
-	}
+	auto slider_x = ( GetAllocation().width - slider_width ) / 2.f;
+	auto slider_y = ( GetAllocation().height - slider_length ) * ( 1 - ( ( current_value - adjustment->GetLower() ) / value_range ) );
+
+	return sf::FloatRect( slider_x, slider_y, slider_width, slider_length );
 }
 
 
-RenderQueue* Scale::InvalidateImpl() const {
-	return Context::Get().GetEngine().CreateScaleDrawable( DynamicPointerCast<const Scale>( shared_from_this() ) );
+std::unique_ptr<RenderQueue> Scale::InvalidateImpl() const {
+	return Context::Get().GetEngine().CreateScaleDrawable( std::dynamic_pointer_cast<const Scale>( shared_from_this() ) );
 }
 
 sf::Vector2f Scale::CalculateRequisition() {
 	float slider_length( Context::Get().GetEngine().GetProperty<float>( "SliderLength", shared_from_this() ) );
-	float slider_width( std::max( 3.f, ( GetOrientation() == HORIZONTAL ) ? GetAllocation().height : GetAllocation().width ) );
+	float slider_width( std::max( 3.f, ( GetOrientation() == Orientation::HORIZONTAL ) ? GetAllocation().height : GetAllocation().width ) );
 
-	if( GetOrientation() == HORIZONTAL ) {
+	if( GetOrientation() == Orientation::HORIZONTAL ) {
 		return sf::Vector2f( slider_length * 2.f, slider_width );
 	}
-	else {
-		return sf::Vector2f( slider_width, slider_length * 2.f );
-	}
+
+	return sf::Vector2f( slider_width, slider_length * 2.f );
 }
 
 void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
@@ -76,8 +69,7 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 	}
 
 	if( m_drag_offset ) {
-		delete m_drag_offset;
-		m_drag_offset = 0;
+		m_drag_offset.reset();
 		m_dragging = false;
 	}
 
@@ -89,27 +81,27 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		if( !GetSliderRect().contains( static_cast<float>( x ) - GetAllocation().left, static_cast<float>( y ) - GetAllocation().top ) ) {
 			Adjustment::Ptr adjustment( GetAdjustment() );
 
-			float minor_step = adjustment->GetMinorStep();
-			float range = adjustment->GetUpper() - adjustment->GetLower();
-			float steps = range / minor_step;
-			float needed_steps = 0.f;
+			auto minor_step = adjustment->GetMinorStep();
+			auto range = adjustment->GetUpper() - adjustment->GetLower();
+			auto steps = range / minor_step;
+			auto needed_steps = 0.f;
 
-			float trough_position = 0.f;
-			float trough_length = 0.f;
+			auto trough_position = 0.f;
+			auto trough_length = 0.f;
 
-			if( GetOrientation() == HORIZONTAL ) {
+			if( GetOrientation() == Orientation::HORIZONTAL ) {
 				trough_position = static_cast<float>( x ) - ( GetAllocation().left + GetSliderRect().width / 2.f );
 				trough_length = GetAllocation().width - GetSliderRect().width;
 			}
 
-			if( GetOrientation() == VERTICAL ) {
+			if( GetOrientation() == Orientation::VERTICAL ) {
 				trough_position = static_cast<float>( y ) - ( GetAllocation().top + GetSliderRect().height / 2.f );
 				trough_length = GetAllocation().height - GetSliderRect().height;
 			}
 
 			trough_position = std::min( trough_position, trough_length );
 
-			float trough_ratio = trough_position / trough_length;
+			auto trough_ratio = trough_position / trough_length;
 
 			for( ; needed_steps < steps; needed_steps += 1.f ) {
 				if( ( 1.f / steps ) * needed_steps > trough_ratio ) {
@@ -123,10 +115,10 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		}
 
 		m_dragging = true;
-		m_drag_offset = new sf::Vector2f(
+		m_drag_offset.reset( new sf::Vector2f(
 			static_cast<float>( x ) - ( GetAllocation().left + GetSliderRect().left + GetSliderRect().width / 2.f ),
 			static_cast<float>( y ) - ( GetAllocation().top + GetSliderRect().top + GetSliderRect().height / 2.f )
-		);
+		) );
 	}
 }
 
@@ -135,18 +127,16 @@ void Scale::HandleMouseMoveEvent( int x, int y ) {
 		return;
 	}
 
-	assert( m_drag_offset );
-
 	Adjustment::Ptr adjustment( GetAdjustment() );
-	sf::FloatRect slider_rect = GetSliderRect();
+	auto slider_rect = GetSliderRect();
 
-	float value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), adjustment->GetMinorStep() / 2.f );
-	float steps = value_range / adjustment->GetMinorStep();
+	auto value_range = std::max( adjustment->GetUpper() - adjustment->GetLower() - adjustment->GetPageSize(), adjustment->GetMinorStep() / 2.f );
+	auto steps = value_range / adjustment->GetMinorStep();
 
-	if( GetOrientation() == HORIZONTAL ) {
-		float slider_center_x = GetAllocation().left + slider_rect.left + slider_rect.width / 2.0f;
-		float step_distance = ( GetAllocation().width - slider_rect.width ) / steps;
-		float delta = static_cast<float>( x ) - slider_center_x - m_drag_offset->x;
+	if( GetOrientation() == Orientation::HORIZONTAL ) {
+		auto slider_center_x = GetAllocation().left + slider_rect.left + slider_rect.width / 2.0f;
+		auto step_distance = ( GetAllocation().width - slider_rect.width ) / steps;
+		auto delta = static_cast<float>( x ) - slider_center_x - m_drag_offset->x;
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Decrement();
@@ -159,9 +149,9 @@ void Scale::HandleMouseMoveEvent( int x, int y ) {
 		}
 	}
 	else {
-		float slider_center_y = GetAllocation().top + slider_rect.top + slider_rect.height / 2.0f;
-		float step_distance = ( GetAllocation().height - slider_rect.height ) / steps;
-		float delta = static_cast<float>( y ) - slider_center_y - m_drag_offset->y;
+		auto slider_center_y = GetAllocation().top + slider_rect.top + slider_rect.height / 2.0f;
+		auto step_distance = ( GetAllocation().height - slider_rect.height ) / steps;
+		auto delta = static_cast<float>( y ) - slider_center_y - m_drag_offset->y;
 
 		while( delta < ( -step_distance / 2 ) ) {
 			adjustment->Increment();

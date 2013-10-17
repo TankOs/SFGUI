@@ -31,17 +31,17 @@ void HelloWorld::Run() {
 	m_label = sfg::Label::Create( "Hello world!" );
 
 	// Create a simple button and connect the click signal.
-	sfg::Button::Ptr button( sfg::Button::Create( "Greet SFGUI!" ) );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &HelloWorld::OnButtonClick, this );
+	auto button = sfg::Button::Create( "Greet SFGUI!" );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &HelloWorld::OnButtonClick, this ) );
 
 	// Create a vertical box layouter with 5 pixels spacing and add the label
 	// and button to it.
-	sfg::Box::Ptr box( sfg::Box::Create( sfg::Box::VERTICAL, 5.0f ) );
+	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.0f );
 	box->Pack( m_label );
 	box->Pack( button, false );
 
 	// Create a window and add the box layouter to it. Also set the window's title.
-	sfg::Window::Ptr window( sfg::Window::Create() );
+	auto window = sfg::Window::Create();
 	window->SetTitle( "Hello world!" );
 	window->Add( box );
 

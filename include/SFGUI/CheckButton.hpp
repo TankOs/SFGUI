@@ -3,7 +3,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/ToggleButton.hpp>
 
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -11,25 +11,19 @@ namespace sfg {
  */
 class SFGUI_API CheckButton : public ToggleButton {
 	public:
-		typedef SharedPtr<CheckButton> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const CheckButton> PtrConst; //!< Shared pointer to const.
+		typedef std::shared_ptr<CheckButton> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const CheckButton> PtrConst; //!< Shared pointer to const.
 
 		/** Create check button.
 		 * @param label Label.
 		 */
 		static Ptr Create( const sf::String& label );
 
-		/** Dtor.
-		 */
-		virtual ~CheckButton();
-
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 	protected:
-		CheckButton();
-
-		RenderQueue* InvalidateImpl() const;
-		sf::Vector2f CalculateRequisition();
+		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		virtual sf::Vector2f CalculateRequisition() override;
 		void HandleSizeChange();
 };
 

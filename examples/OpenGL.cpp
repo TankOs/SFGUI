@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
-const float PI = 3.14159265f;
+const auto PI = 3.14159265f;
 
 int main() {
 	// An sf::Window for raw OpenGL rendering.
@@ -20,13 +20,13 @@ int main() {
 	// We have to set up our own OpenGL viewport because we are using an sf::Window.
 	glViewport( 0, 0, app_window.getSize().x, app_window.getSize().y );
 
-	sfg::Scale::Ptr red_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
-	sfg::Scale::Ptr green_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
-	sfg::Scale::Ptr blue_scale( sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::HORIZONTAL ) );
-	sfg::Scale::Ptr angle_scale( sfg::Scale::Create( 0.f, 360.f, 1.f, sfg::Scale::HORIZONTAL ) );
-	sfg::CheckButton::Ptr auto_check( sfg::CheckButton::Create( "Auto" ) );
+	auto red_scale = sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL );
+	auto green_scale = sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL );
+	auto blue_scale = sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL );
+	auto angle_scale = sfg::Scale::Create( 0.f, 360.f, 1.f, sfg::Scale::Orientation::HORIZONTAL );
+	auto auto_check = sfg::CheckButton::Create( "Auto" );
 
-	sfg::Table::Ptr table( sfg::Table::Create() );
+	auto table = sfg::Table::Create();
 	table->SetRowSpacings( 5.f );
 	table->SetColumnSpacings( 5.f );
 
@@ -41,7 +41,7 @@ int main() {
 	table->Attach( angle_scale, sf::Rect<sf::Uint32>( 1, 4, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
 	table->Attach( auto_check, sf::Rect<sf::Uint32>( 2, 4, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
 
-	sfg::Window::Ptr window( sfg::Window::Create() );
+	auto window = sfg::Window::Create();
 	window->SetTitle( "SFGUI with OpenGL" );
 	window->Add( table );
 

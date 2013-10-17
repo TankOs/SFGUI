@@ -2,7 +2,7 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
 #include <SFGUI/RendererViewport.hpp>
-#include <SFGUI/SharedPtr.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -10,8 +10,8 @@ namespace sfg {
  */
 class SFGUI_API Canvas : public Widget {
 	public:
-		typedef SharedPtr<Canvas> Ptr; //!< Shared pointer.
-		typedef SharedPtr<const Canvas> PtrConst; //!< Shared pointer.
+		typedef std::shared_ptr<Canvas> Ptr; //!< Shared pointer.
+		typedef std::shared_ptr<const Canvas> PtrConst; //!< Shared pointer.
 
 		/** Dtor.
 		 */
@@ -45,7 +45,7 @@ class SFGUI_API Canvas : public Widget {
 
 		/** Draw an SFML drawable object to the Canvas.
 		 * @param drawable Object to draw.
-		 * @param Render states to use for drawing.
+		 * @param states Render states to use for drawing.
 		 */
 		void Draw( const sf::Drawable& drawable, const sf::RenderStates& states = sf::RenderStates::Default );
 
@@ -53,15 +53,15 @@ class SFGUI_API Canvas : public Widget {
 		 * @param vertices Pointer to the vertices.
 		 * @param vertex_count Number of vertices in the array.
 		 * @param type Type of primitives to draw.
-		 * @param Render states to use for drawing.
+		 * @param states Render states to use for drawing.
 		 */
 		void Draw( const sf::Vertex* vertices, unsigned int vertex_count, sf::PrimitiveType type, const sf::RenderStates& states = sf::RenderStates::Default );
 
-		virtual const std::string& GetName() const;
+		virtual const std::string& GetName() const override;
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange();
+		virtual void HandleAbsolutePositionChange() override;
 
 		/** Force a redraw of the canvas.
 		 * This will inform the Renderer to update the GUI with the current canvas contents.
@@ -69,20 +69,20 @@ class SFGUI_API Canvas : public Widget {
 		void Redraw() const;
 
 	protected:
-		sf::Vector2f CalculateRequisition();
-
-		virtual void HandleSizeChange();
-
-		virtual RenderQueue* InvalidateImpl() const;
-
-	private:
 		Canvas( bool depth );
 
+		virtual sf::Vector2f CalculateRequisition() override;
+
+		virtual void HandleSizeChange() override;
+
+		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
+
+	private:
 		void DrawRenderTexture();
 
-		SharedPtr<Signal> m_custom_draw_callback;
-		SharedPtr<RendererViewport> m_custom_viewport;
-		SharedPtr<sf::RenderTexture> m_render_texture;
+		std::shared_ptr<Signal> m_custom_draw_callback;
+		std::shared_ptr<RendererViewport> m_custom_viewport;
+		std::shared_ptr<sf::RenderTexture> m_render_texture;
 
 		GLuint m_display_list;
 

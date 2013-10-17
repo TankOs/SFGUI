@@ -6,7 +6,6 @@
 namespace sfg {
 
 Canvas::Canvas( bool depth ) :
-	Widget(),
 	m_custom_draw_callback( new Signal ),
 	m_display_list( 0 ),
 	m_depth( depth ),
@@ -15,7 +14,7 @@ Canvas::Canvas( bool depth ) :
 	m_custom_viewport = Renderer::Get().CreateViewport();
 	SetViewport( m_custom_viewport );
 
-	m_custom_draw_callback->Connect( &Canvas::DrawRenderTexture, this );
+	m_custom_draw_callback->Connect( std::bind( &Canvas::DrawRenderTexture, this ) );
 }
 
 Canvas::~Canvas() {
@@ -29,8 +28,8 @@ Canvas::Ptr Canvas::Create( bool depth ) {
 	return gl_canvas_ptr;
 }
 
-RenderQueue* Canvas::InvalidateImpl() const {
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> Canvas::InvalidateImpl() const {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	queue->Add(
 		Renderer::Get().CreateGLCanvas(
@@ -50,7 +49,7 @@ sf::Vector2f Canvas::CalculateRequisition() {
 }
 
 void Canvas::HandleSizeChange() {
-	sf::FloatRect allocation = GetAllocation();
+	auto allocation = GetAllocation();
 
 	m_custom_viewport->SetSize(
 		sf::Vector2f(
@@ -67,9 +66,9 @@ void Canvas::HandleSizeChange() {
 }
 
 void Canvas::HandleAbsolutePositionChange() {
-	sf::Vector2f position = Widget::GetAbsolutePosition();
+	auto position = Widget::GetAbsolutePosition();
 
-	Container::PtrConst parent = GetParent();
+	auto parent = GetParent();
 
 	sf::Vector2f parent_position( 0.f, 0.f );
 
@@ -119,7 +118,7 @@ void Canvas::Redraw() const {
 }
 
 void Canvas::Clear( const sf::Color& color, bool depth ) {
-	sf::FloatRect allocation = GetAllocation();
+	auto allocation = GetAllocation();
 
 	if( !m_render_texture ) {
 		// Make sure there is a non-internal/shared context active.
@@ -134,17 +133,17 @@ void Canvas::Clear( const sf::Color& color, bool depth ) {
 		// not for the end-user. SFML context management strikes again.
 		sf::Context context;
 
-		m_render_texture = SharedPtr<sf::RenderTexture>( new sf::RenderTexture );
+		m_render_texture = std::shared_ptr<sf::RenderTexture>( new sf::RenderTexture );
 
 		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
 	}
 	else if( m_resize ) {
 		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
@@ -177,7 +176,7 @@ void Canvas::Draw( const sf::Vertex* vertices, unsigned int vertex_count, sf::Pr
 }
 
 void Canvas::Bind() {
-	sf::FloatRect allocation = GetAllocation();
+	auto allocation = GetAllocation();
 
 	if( !m_render_texture ) {
 		// Make sure there is a non-internal/shared context active.
@@ -192,17 +191,17 @@ void Canvas::Bind() {
 		// not for the end-user. SFML context management strikes again.
 		sf::Context context;
 
-		m_render_texture = SharedPtr<sf::RenderTexture>( new sf::RenderTexture );
+		m_render_texture = std::shared_ptr<sf::RenderTexture>( new sf::RenderTexture );
 
 		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
 	}
 	else if( m_resize ) {
 		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
@@ -235,7 +234,7 @@ void Canvas::DrawRenderTexture() {
 		m_display_list = glGenLists( 1 );
 
 		if( !m_display_list ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create OpenGL display list.\n";
 #endif
 		}

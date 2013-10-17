@@ -8,22 +8,22 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", button ) );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", button ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", button ) );
-	sf::Color color( GetProperty<sf::Color>( "Color", button ) );
-	float border_width( GetProperty<float>( "BorderWidth", button ) );
-	float spacing( GetProperty<float>( "Spacing", button ) );
-	const std::string& font_name( GetProperty<std::string>( "FontName", button ) );
-	unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );
-	const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
+std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const Button> button ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", button );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", button );
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", button );
+	auto color = GetProperty<sf::Color>( "Color", button );
+	auto border_width = GetProperty<float>( "BorderWidth", button );
+	auto spacing = GetProperty<float>( "Spacing", button );
+	const auto& font_name = GetProperty<std::string>( "FontName", button );
+	auto font_size = GetProperty<unsigned int>( "FontSize", button );
+	const auto& font = GetResourceManager().GetFont( font_name );
 
-	if( button->GetState() == Button::ACTIVE ) {
+	if( button->GetState() == Button::State::ACTIVE ) {
 		border_color_shift = -border_color_shift;
 	}
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	// Pane.
 	queue->Add(
@@ -39,11 +39,11 @@ RenderQueue* BREW::CreateButtonDrawable( SharedPtr<const Button> button ) const 
 
 	// Label.
 	if( button->GetLabel().getSize() > 0 ) {
-		sf::Vector2f metrics = GetTextMetrics( button->GetLabel(), font, font_size );
-		metrics.y = GetFontLineHeight( font, font_size );
+		auto metrics = GetTextMetrics( button->GetLabel(), *font, font_size );
+		metrics.y = GetFontLineHeight( *font, font_size );
 
-		sf::Text text( button->GetLabel(), font, font_size );
-		float offset = ( button->GetState() == Button::ACTIVE ) ? border_width : 0.f;
+		sf::Text text( button->GetLabel(), *font, font_size );
+		auto offset = ( button->GetState() == Button::State::ACTIVE ) ? border_width : 0.f;
 		sfg::Widget::PtrConst child( button->GetChild() );
 
 		if( !child ) {

@@ -3,11 +3,6 @@
 
 namespace sfg {
 
-Fixed::Fixed() :
-	Container()
-{
-}
-
 Fixed::Ptr Fixed::Create() {
 	Fixed::Ptr ptr( new Fixed );
 
@@ -15,15 +10,12 @@ Fixed::Ptr Fixed::Create() {
 }
 
 sf::Vector2f Fixed::CalculateRequisition() {
-	ChildrenPositionMap::const_iterator child_iter( m_children_position_map.begin() );
-	ChildrenPositionMap::const_iterator child_iter_end( m_children_position_map.end() );
-
 	sf::Vector2f requisition( 0.f, 0.f );
 
 	// Find size needed to accomodate all widgets without overlapping any other widgets
-	for( ; child_iter != child_iter_end; ++ child_iter ) {
-		requisition.x = std::max( requisition.x, child_iter->second.x + child_iter->first->GetRequisition().x );
-		requisition.y = std::max( requisition.y, child_iter->second.y + child_iter->first->GetRequisition().y );
+	for( const auto& child_position : m_children_position_map ) {
+		requisition.x = std::max( requisition.x, child_position.second.x + child_position.first->GetRequisition().x );
+		requisition.y = std::max( requisition.y, child_position.second.y + child_position.first->GetRequisition().y );
 	}
 
 	return requisition;
@@ -57,7 +49,7 @@ void Fixed::HandleAdd( const Widget::Ptr& child ) {
 	// manually, which is not allowed for this class.
 	if( m_children_position_map.find( child ) == m_children_position_map.end() ) {
 
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Child must be added via Put() for sfg::Fixed widgets.\n";
 #endif
 

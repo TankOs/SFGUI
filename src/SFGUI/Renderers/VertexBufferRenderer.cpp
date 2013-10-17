@@ -39,7 +39,7 @@ VertexBufferRenderer::VertexBufferRenderer() :
 		glGenBuffersARB( 1, &m_index_vbo );
 	}
 	else {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "VBO extension unavailable.\n";
 #endif
 	}
@@ -122,8 +122,6 @@ void VertexBufferRenderer::DisplayImpl() const {
 		//glEnableClientState( GL_COLOR_ARRAY );
 		//glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
-		std::size_t scissor_pairs_size = m_batches.size();
-
 		if( m_use_fbo ) {
 			glBindFramebuffer( GL_FRAMEBUFFER, m_frame_buffer );
 
@@ -134,12 +132,10 @@ void VertexBufferRenderer::DisplayImpl() const {
 
 		std::size_t current_atlas_page = 0;
 
-		sf::Texture::bind( m_texture_atlas[0] );
+		sf::Texture::bind( m_texture_atlas[0].get() );
 
-		for( std::size_t index = 0; index < scissor_pairs_size; ++index ) {
-			const Batch& batch = m_batches[index];
-
-			RendererViewport::Ptr viewport = batch.viewport;
+		for( const auto& batch : m_batches ) {
+			auto viewport = batch.viewport;
 
 			if( batch.custom_draw ) {
 				sf::Vector2i destination( viewport->GetDestinationOrigin() );
@@ -152,12 +148,12 @@ void VertexBufferRenderer::DisplayImpl() const {
 
 				glViewport( 0, 0, m_window_size.x, m_window_size.y );
 
-				sf::Texture::bind( m_texture_atlas[current_atlas_page] );
+				sf::Texture::bind( m_texture_atlas[current_atlas_page].get() );
 			}
 			else {
 				if( viewport && ( ( *viewport ) != ( *m_default_viewport ) ) ) {
-					sf::Vector2f destination_origin = viewport->GetDestinationOrigin();
-					sf::Vector2f size = viewport->GetSize();
+					auto destination_origin = viewport->GetDestinationOrigin();
+					auto size = viewport->GetSize();
 
 					glScissor(
 						static_cast<int>( destination_origin.x ),
@@ -174,7 +170,7 @@ void VertexBufferRenderer::DisplayImpl() const {
 					if( batch.atlas_page != current_atlas_page ) {
 						current_atlas_page = batch.atlas_page;
 
-						sf::Texture::bind( m_texture_atlas[current_atlas_page] );
+						sf::Texture::bind( m_texture_atlas[current_atlas_page].get() );
 					}
 
 					glDrawRangeElements(
@@ -238,8 +234,6 @@ void VertexBufferRenderer::RefreshVBO() {
 	m_last_vertex_count = 0;
 	m_last_index_count = 0;
 
-	std::size_t primitives_size = m_primitives.size();
-
 	// Default viewport
 	Batch current_batch;
 	current_batch.viewport = m_default_viewport;
@@ -252,8 +246,8 @@ void VertexBufferRenderer::RefreshVBO() {
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
 
-	for( std::size_t primitive_index = 1; primitive_index != primitives_size + 1; primitive_index += 1 ) {
-		Primitive* primitive = m_primitives[primitive_index - 1].get();
+	for( const auto& primitive_ptr : m_primitives ) {
+		Primitive* primitive = primitive_ptr.get();
 
 		primitive->SetSynced();
 
@@ -263,11 +257,11 @@ void VertexBufferRenderer::RefreshVBO() {
 
 		sf::Vector2f position_transform( primitive->GetPosition() );
 
-		RendererViewport::Ptr viewport = primitive->GetViewport();
+		auto viewport = primitive->GetViewport();
 
 		std::size_t atlas_page = 0;
 
-		sf::FloatRect viewport_rect = window_viewport;
+		auto viewport_rect = window_viewport;
 
 		// Check if primitive needs to be rendered in a custom viewport.
 		if( viewport && ( ( *viewport ) != ( *m_default_viewport ) ) ) {
@@ -284,7 +278,7 @@ void VertexBufferRenderer::RefreshVBO() {
 			}
 		}
 
-		const SharedPtr<Signal>& custom_draw_callback( primitive->GetCustomDrawCallback() );
+		const std::shared_ptr<Signal>& custom_draw_callback( primitive->GetCustomDrawCallback() );
 
 		if( custom_draw_callback ) {
 			// Start a new batch.
@@ -315,15 +309,11 @@ void VertexBufferRenderer::RefreshVBO() {
 			const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
 			const std::vector<GLuint>& indices( primitive->GetIndices() );
 
-			std::size_t vertices_size = vertices.size();
-
 			sf::Vector2f position( 0.f, 0.f );
 
 			sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
 
-			for( std::size_t vertex_index = 0; vertex_index < vertices_size; ++vertex_index ) {
-				const Primitive::Vertex& vertex( vertices[vertex_index] );
-
+			for( const auto& vertex : vertices ) {
 				position.x = vertex.position.x + position_transform.x;
 				position.y = vertex.position.y + position_transform.y;
 
@@ -364,10 +354,8 @@ void VertexBufferRenderer::RefreshVBO() {
 				texture_data.resize( m_last_vertex_count );
 			}
 			else {
-				std::size_t indices_size = indices.size();
-
-				for( std::size_t index_index = 0; index_index < indices_size; ++index_index ) {
-					index_data.push_back( m_last_vertex_count + indices[index_index] );
+				for( const auto& index : indices ) {
+					index_data.push_back( m_last_vertex_count + index );
 				}
 
 				// Check if we need to start a new batch.
@@ -384,10 +372,10 @@ void VertexBufferRenderer::RefreshVBO() {
 					current_batch.custom_draw = false;
 				}
 
-				current_batch.index_count += static_cast<unsigned int>( indices_size );
+				current_batch.index_count += static_cast<unsigned int>( indices.size() );
 
-				m_last_vertex_count += static_cast<GLsizei>( vertices_size );
-				m_last_index_count += static_cast<GLsizei>( indices_size );
+				m_last_vertex_count += static_cast<GLsizei>( vertices.size() );
+				m_last_index_count += static_cast<GLsizei>( indices.size() );
 			}
 		}
 	}
@@ -479,10 +467,10 @@ void VertexBufferRenderer::SetupFBO( unsigned int width, unsigned int height ) {
 	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_frame_buffer_texture, 0 );
 
 	// Sanity check.
-	GLenum status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+	auto status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 
 	if( status != GL_FRAMEBUFFER_COMPLETE ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "glCheckFramebufferStatus() returned error " << status << ", disabling FBO.\n";
 #endif
 
@@ -557,7 +545,7 @@ void VertexBufferRenderer::TuneCull( bool enable ) {
 
 void VertexBufferRenderer::TuneUseFBO( bool enable ) {
 	if( !m_fbo_supported && enable ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "FBO extension unavailable.\n";
 #endif
 	}

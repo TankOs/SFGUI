@@ -6,10 +6,11 @@
 
 #include <cmath>
 #include <cstring>
+#include <cassert>
 
 namespace sfg {
 
-SharedPtr<Renderer> Renderer::m_instance = SharedPtr<Renderer>();
+std::shared_ptr<Renderer> Renderer::m_instance = std::shared_ptr<Renderer>();
 
 Renderer::Renderer() :
 	m_vertex_count( 0 ),
@@ -30,13 +31,6 @@ Renderer::Renderer() :
 	m_pseudo_texture = LoadTexture( pseudo_image );
 }
 
-Renderer::~Renderer() {
-	while( !m_texture_atlas.empty() ) {
-		delete m_texture_atlas.back();
-		m_texture_atlas.pop_back();
-	}
-}
-
 Renderer& Renderer::Create() {
 	if( !m_instance ) {
 		if( VertexBufferRenderer::IsAvailable() ) {
@@ -52,7 +46,7 @@ Renderer& Renderer::Create() {
 
 Renderer& Renderer::Get() {
 	if( !m_instance ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "Renderer not created yet. Did you create an sfg::SFGUI object?\n";
 #endif
 		Create();
@@ -61,7 +55,7 @@ Renderer& Renderer::Get() {
 	return *m_instance;
 }
 
-void Renderer::Set( const SharedPtr<Renderer>& renderer ) {
+void Renderer::Set( const std::shared_ptr<Renderer>& renderer ) {
 	if( renderer ) {
 		m_instance = renderer;
 	}
@@ -72,7 +66,7 @@ void Renderer::Destroy() {
 }
 
 bool Renderer::Exists() {
-	return m_instance;
+	return static_cast<bool>( m_instance );
 }
 
 const RendererViewport::Ptr& Renderer::GetDefaultViewport() {
@@ -86,32 +80,29 @@ RendererViewport::Ptr Renderer::CreateViewport() {
 }
 
 Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
-	const sf::Font& font = *text.getFont();
-	unsigned int character_size = text.getCharacterSize();
-	sf::Color color = text.getColor();
+	const auto& font = *text.getFont();
+	auto character_size = text.getCharacterSize();
+	auto color = text.getColor();
 
-	sf::Vector2f atlas_offset = LoadFont( font, character_size );
+	auto atlas_offset = LoadFont( font, character_size );
 
-	const sf::String& str = text.getString();
-	std::size_t length = str.getSize();
+	const auto& str = text.getString();
 
-	float horizontal_spacing = static_cast<float>( font.getGlyph( L' ', character_size, false ).advance );
-	float vertical_spacing = static_cast<float>( Context::Get().GetEngine().GetFontLineHeight( font, character_size ) );
+	auto horizontal_spacing = static_cast<float>( font.getGlyph( L' ', character_size, false ).advance );
+	auto vertical_spacing = static_cast<float>( Context::Get().GetEngine().GetFontLineHeight( font, character_size ) );
 	sf::Vector2f start_position( std::floor( text.getPosition().x + .5f ), std::floor( text.getPosition().y + static_cast<float>( character_size ) + .5f ) );
 
 	sf::Vector2f position( start_position );
 
-	const static float tab_spaces = 2.f;
+	const static auto tab_spaces = 2.f;
 
 	sf::Uint32 previous_character = 0;
 
-	Primitive::Ptr primitive( new Primitive( length * 4 ) );
+	Primitive::Ptr primitive( new Primitive( str.getSize() * 4 ) );
 
 	Primitive character_primitive( 4 );
 
-	for( std::size_t index = 0; index < length; ++index ) {
-		sf::Uint32 current_character = str[index];
-
+	for( const auto& current_character : str ) {
 		position.x += static_cast<float>( font.getKerning( previous_character, current_character, character_size ) );
 
 		switch( current_character ) {
@@ -132,7 +123,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 				break;
 		}
 
-		const sf::Glyph& glyph = font.getGlyph( current_character, character_size, false );
+		const auto& glyph = font.getGlyph( current_character, character_size, false );
 
 		Primitive::Vertex vertex0;
 		Primitive::Vertex vertex1;
@@ -228,10 +219,10 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 
 	Context::Get().GetEngine().ShiftBorderColors( light_border, dark_border, border_color_shift );
 
-	float left = position.x;
-	float top = position.y;
-	float right = left + size.x;
-	float bottom = top + size.y;
+	auto left = position.x;
+	auto top = position.y;
+	auto right = left + size.x;
+	auto bottom = top + size.y;
 
 	Primitive::Ptr rect(
 		CreateQuad(
@@ -343,7 +334,7 @@ Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::V
 }
 
 Primitive::Ptr Renderer::CreateSprite( const sf::FloatRect& rect, const Primitive::Texture::Ptr& texture, const sf::FloatRect& subrect, int rotation_turns ) {
-	sf::Vector2f offset = texture->offset;
+	auto offset = texture->offset;
 
 	Primitive::Ptr primitive( new Primitive( 4 ) );
 
@@ -378,8 +369,11 @@ Primitive::Ptr Renderer::CreateSprite( const sf::FloatRect& rect, const Primitiv
 	}
 
 	// Get rotation_turns into the range [0;3].
-	for( ; rotation_turns < 0; rotation_turns += 4 );
-	for( ; rotation_turns > 3; rotation_turns -= 4 );
+	rotation_turns %= 4;
+
+	if( rotation_turns < 0 ) {
+		rotation_turns += 4;
+	}
 
 	// Perform the circular shift.
 	if( rotation_turns != 0 ) {
@@ -411,7 +405,7 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	sf::Vector2f normal( end - begin );
 	sf::Vector2f unrotated_normal( normal );
 	std::swap( normal.x, normal.y );
-	float length = std::sqrt( normal.x * normal.x + normal.y * normal.y );
+	auto length = std::sqrt( normal.x * normal.x + normal.y * normal.y );
 	normal.x /= -length;
 	normal.y /= length;
 	unrotated_normal.x /= length;
@@ -425,7 +419,7 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	return CreateQuad( corner3, corner2, corner1, corner0, color );
 }
 
-Primitive::Ptr Renderer::CreateGLCanvas( SharedPtr<Signal> callback ) {
+Primitive::Ptr Renderer::CreateGLCanvas( std::shared_ptr<Signal> callback ) {
 	Primitive::Ptr primitive( new Primitive );
 
 	primitive->SetCustomDrawCallback( callback );
@@ -580,6 +574,8 @@ void Renderer::WipeStateCache( sf::RenderTarget& target ) const {
 	sf::Texture::bind( 0 );
 }
 
+/// @cond
+
 sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 	// Get the font face that Laurent tries to hide from us.
 	struct FontStruct {
@@ -610,9 +606,9 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 		font.getGlyph( codepoint, size, false );
 	}
 
-	sf::Image image = font.getTexture( size ).copyToImage();
+	auto image = font.getTexture( size ).copyToImage();
 
-	Primitive::Texture::Ptr handle = LoadTexture( image );
+	auto handle = LoadTexture( image );
 
 	m_fonts[id] = handle;
 
@@ -625,7 +621,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Texture& texture ) {
 
 Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 	if( ( image.getSize().x > m_max_texture_size ) || ( image.getSize().x > m_max_texture_size ) ) {
-#ifdef SFGUI_DEBUG
+#if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
 #endif
 		return Primitive::Texture::Ptr( new Primitive::Texture );
@@ -639,12 +635,12 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 	// Look for a nice insertion point for our new texture.
 	// We use first fit and according to theory it is never
 	// worse than double the optimum size.
-	std::list<TextureNode>::iterator iter = m_textures.begin();
+	auto iter = m_textures.begin();
 
-	float last_occupied_location = 0.f;
+	auto last_occupied_location = 0.f;
 
 	for( ; iter != m_textures.end(); ++iter ) {
-		float space_available = iter->offset.y - last_occupied_location;
+		auto space_available = iter->offset.y - last_occupied_location;
 
 		if( space_available >= static_cast<float>( image.getSize().y + 2 * padding ) ) {
 			// We found a nice spot.
@@ -654,12 +650,12 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		last_occupied_location = iter->offset.y + static_cast<float>( iter->size.y );
 	}
 
-	std::size_t current_page = static_cast<unsigned int>( last_occupied_location ) / m_max_texture_size;
+	auto current_page = static_cast<std::size_t>( last_occupied_location ) / m_max_texture_size;
 	last_occupied_location = static_cast<float>( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size );
 
 	if( m_texture_atlas.empty() || ( ( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size ) + image.getSize().y + 2 * padding > m_max_texture_size ) ) {
 		// We need a new atlas page.
-		m_texture_atlas.push_back( new sf::Texture() );
+		m_texture_atlas.push_back( std::unique_ptr<sf::Texture>( new sf::Texture() ) );
 
 		current_page = m_texture_atlas.size() - 1;
 
@@ -668,7 +664,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 
 	if( ( image.getSize().x > m_texture_atlas[current_page]->getSize().x ) || ( last_occupied_location + static_cast<float>( image.getSize().y ) > static_cast<float>( m_texture_atlas[current_page]->getSize().y ) ) ) {
 		// Image is loaded into atlas after expanding texture atlas.
-		sf::Image old_image = m_texture_atlas[current_page]->copyToImage();
+		auto old_image = m_texture_atlas[current_page]->copyToImage();
 		sf::Image new_image;
 
 		new_image.create( std::max( old_image.getSize().x, image.getSize().x ), static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + image.getSize().y + padding, sf::Color::White );
@@ -680,14 +676,14 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 	}
 	else {
 		// Image is loaded into atlas.
-		sf::Image atlas_image = m_texture_atlas[current_page]->copyToImage();
+		auto atlas_image = m_texture_atlas[current_page]->copyToImage();
 
 		atlas_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
 
 		m_texture_atlas[current_page]->loadFromImage( atlas_image );
 	}
 
-	sf::Vector2f offset = sf::Vector2f( 0.f, static_cast<float>( current_page * m_max_texture_size ) + last_occupied_location + static_cast<float>( padding ) );
+	auto offset = sf::Vector2f( 0.f, static_cast<float>( current_page * m_max_texture_size ) + last_occupied_location + static_cast<float>( padding ) );
 
 	Invalidate( INVALIDATE_TEXTURE );
 
@@ -706,7 +702,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 }
 
 void Renderer::UnloadImage( const sf::Vector2f& offset ) {
-	for( std::list<TextureNode>::iterator iter = m_textures.begin(); iter != m_textures.end(); ++iter ) {
+	for( auto iter = m_textures.begin(); iter != m_textures.end(); ++iter ) {
 		if( iter->offset == offset ) {
 			m_textures.erase( iter );
 			return;
@@ -714,24 +710,24 @@ void Renderer::UnloadImage( const sf::Vector2f& offset ) {
 	}
 
 // Only enable during development.
-//#ifdef SFGUI_DEBUG
+//#if defined( SFGUI_DEBUG )
 //	std::cerr << "Tried to unload non-existant image at (" << offset.x << "," << offset.y << ").\n";
 //#endif
 }
 
 void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) {
-	for( std::list<TextureNode>::iterator iter = m_textures.begin(); iter != m_textures.end(); ++iter ) {
-		if( iter->offset == offset ) {
-			if( iter->size != data.getSize() ) {
-#ifdef SFGUI_DEBUG
+	for( const auto& texture : m_textures ) {
+		if( texture.offset == offset ) {
+			if( texture.size != data.getSize() ) {
+#if defined( SFGUI_DEBUG )
 				std::cerr << "Tried to update texture with mismatching image size.\n";
 #endif
 				return;
 			}
 
-			std::size_t page = static_cast<std::size_t>( offset.y ) / m_max_texture_size;
+			auto page = static_cast<std::size_t>( offset.y ) / m_max_texture_size;
 
-			sf::Image image = m_texture_atlas[page]->copyToImage();
+			auto image = m_texture_atlas[page]->copyToImage();
 			image.copy( data, 0, static_cast<unsigned int>( std::floor( offset.y + .5f ) ) % m_max_texture_size );
 			m_texture_atlas[page]->loadFromImage( image );
 
@@ -740,16 +736,18 @@ void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) 
 	}
 
 // Only enable during development.
-//#ifdef SFGUI_DEBUG
+//#if defined( SFGUI_DEBUG )
 //	std::cerr << "Tried to update non-existant image at (" << offset.x << "," << offset.y << ").\n";
 //#endif
 }
+
+/// @endcond
 
 void Renderer::SortPrimitives() {
 	std::size_t current_position = 1;
 	std::size_t sort_index;
 
-	std::size_t primitives_size = m_primitives.size();
+	auto primitives_size = m_primitives.size();
 
 	// Classic insertion sort.
 	while( current_position < primitives_size ) {
@@ -770,8 +768,8 @@ void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
 	const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
 	const std::vector<GLuint>& indices( primitive->GetIndices() );
 
-	std::size_t vertices_size = vertices.size();
-	std::size_t indices_size = indices.size();
+	auto vertices_size = vertices.size();
+	auto indices_size = indices.size();
 
 	m_vertex_count += vertices_size;
 	m_index_count += indices_size;

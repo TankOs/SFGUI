@@ -6,32 +6,32 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) const {
-	sf::Color border_color( GetProperty<sf::Color>( "BorderColor", notebook ) );
-	sf::Color border_color_light( border_color );
-	sf::Color border_color_dark( border_color );
-	int border_color_shift( GetProperty<int>( "BorderColorShift", notebook ) );
-	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", notebook ) );
-	sf::Color background_color_dark( GetProperty<sf::Color>( "BackgroundColorDark", notebook ) );
-	sf::Color background_color_prelight( GetProperty<sf::Color>( "BackgroundColorPrelight", notebook ) );
-	float padding( GetProperty<float>( "Padding", notebook ) );
-	float border_width( GetProperty<float>( "BorderWidth", notebook ) );
-	float scroll_button_size( GetProperty<float>( "ScrollButtonSize", notebook ) );
-	sf::Color arrow_color( GetProperty<sf::Color>( "Color", notebook ) );
-	sf::Color scroll_button_prelight( GetProperty<sf::Color>( "ScrollButtonPrelightColor", notebook ) );
+std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const Notebook> notebook ) const {
+	auto border_color = GetProperty<sf::Color>( "BorderColor", notebook );
+	auto border_color_light( border_color );
+	auto border_color_dark( border_color );
+	auto border_color_shift = GetProperty<int>( "BorderColorShift", notebook );
+	auto background_color = GetProperty<sf::Color>( "BackgroundColor", notebook );
+	auto background_color_dark = GetProperty<sf::Color>( "BackgroundColorDark", notebook );
+	auto background_color_prelight = GetProperty<sf::Color>( "BackgroundColorPrelight", notebook );
+	auto padding = GetProperty<float>( "Padding", notebook );
+	auto border_width = GetProperty<float>( "BorderWidth", notebook );
+	auto scroll_button_size = GetProperty<float>( "ScrollButtonSize", notebook );
+	auto arrow_color = GetProperty<sf::Color>( "Color", notebook );
+	auto scroll_button_prelight = GetProperty<sf::Color>( "ScrollButtonPrelightColor", notebook );
 
 	ShiftBorderColors( border_color_light, border_color_dark, border_color_shift );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	Notebook::IndexType page_count = notebook->GetPageCount();
+	auto page_count = notebook->GetPageCount();
 
 	if( !page_count ) {
 		return queue;
 	}
 
-	Notebook::IndexType current_page = notebook->GetCurrentPage();
-	Notebook::IndexType prelight_tab = notebook->GetPrelightTab();
+	auto current_page = notebook->GetCurrentPage();
+	auto prelight_tab = notebook->GetPrelightTab();
 
 	// Get size in the dimension all tabs have uniform size.
 	sf::Vector2f tab_size( notebook->GetNthTabLabel( 0 )->GetAllocation().width, notebook->GetNthTabLabel( 0 )->GetAllocation().height );
@@ -39,7 +39,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 	// Get size in the dimension all children have uniform size.
 	sf::Vector2f child_size( notebook->GetNthPage( 0 )->GetAllocation().width, notebook->GetNthPage( 0 )->GetAllocation().height );
 
-	if( notebook->GetTabPosition() == Notebook::TOP ) {
+	if( notebook->GetTabPosition() == Notebook::TabPosition::TOP ) {
 		// Tabs are positioned at top.
 
 		// Pane.
@@ -65,9 +65,9 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		);
 
 		// Tab labels
-		for( Notebook::IndexType index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
-			Widget::Ptr label = notebook->GetNthTabLabel( index );
-			sf::FloatRect label_allocation = label->GetAllocation();
+		for( auto index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
+			auto label = notebook->GetNthTabLabel( index );
+			auto label_allocation = label->GetAllocation();
 
 			// Top border
 			queue->Add(
@@ -177,7 +177,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			}
 		}
 	}
-	else if( notebook->GetTabPosition() == Notebook::BOTTOM ) {
+	else if( notebook->GetTabPosition() == Notebook::TabPosition::BOTTOM ) {
 		// Tabs are positioned at bottom.
 
 		// Pane.
@@ -203,9 +203,9 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		);
 
 		// Tab labels
-		for( Notebook::IndexType index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
-			Widget::Ptr label = notebook->GetNthTabLabel( index );
-			sf::FloatRect label_allocation = label->GetAllocation();
+		for( auto index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
+			auto label = notebook->GetNthTabLabel( index );
+			auto label_allocation = label->GetAllocation();
 
 			// Bottom border
 			queue->Add(
@@ -315,7 +315,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			}
 		}
 	}
-	else if( notebook->GetTabPosition() == Notebook::LEFT ) {
+	else if( notebook->GetTabPosition() == Notebook::TabPosition::LEFT ) {
 		// Tabs are positioned at left.
 
 		// Pane.
@@ -341,9 +341,9 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		);
 
 		// Tab labels
-		for( Notebook::IndexType index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
-			Widget::Ptr label = notebook->GetNthTabLabel( index );
-			sf::FloatRect label_allocation = label->GetAllocation();
+		for( auto index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
+			auto label = notebook->GetNthTabLabel( index );
+			auto label_allocation = label->GetAllocation();
 
 			// Left border
 			queue->Add(
@@ -453,7 +453,7 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 			}
 		}
 	}
-	else if( notebook->GetTabPosition() == Notebook::RIGHT ) {
+	else if( notebook->GetTabPosition() == Notebook::TabPosition::RIGHT ) {
 		// Tabs are positioned at right.
 
 		// Pane.
@@ -479,9 +479,9 @@ RenderQueue* BREW::CreateNotebookDrawable( SharedPtr<const Notebook> notebook ) 
 		);
 
 		// Tab labels
-		for( Notebook::IndexType index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
-			Widget::Ptr label = notebook->GetNthTabLabel( index );
-			sf::FloatRect label_allocation = label->GetAllocation();
+		for( auto index = notebook->GetFirstDisplayedTab(); index < notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount(); ++index ) {
+			auto label = notebook->GetNthTabLabel( index );
+			auto label_allocation = label->GetAllocation();
 
 			// Right border
 			queue->Add(
