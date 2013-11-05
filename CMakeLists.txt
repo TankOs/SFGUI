@@ -9,17 +9,49 @@ project( SFGUI )
 ### USER INPUT ###
 
 set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
+
+if( BUILD_SHARED_LIBS )
+	message( STATUS "Building SFGUI as a shared library." )
+endif()
+
 set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
+
+if( SFGUI_BUILD_EXAMPLES )
+	message( STATUS "Building SFGUI examples." )
+endif()
+
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate the SFGUI API documentation." )
+
+if( SFGUI_BUILD_DOC )
+	message( STATUS "Building SFGUI HTML documentation (doxygen required)." )
+endif()
+
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include a default font (DejaVuSans) that is used automatically if no font is specified." )
 
-# Add SFML's CMake Modules directory from extlibs to module search path for
-# finding FindSFML.cmake more easily.
-set( CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/extlibs/SFML/cmake/Modules/;${CMAKE_MODULE_PATH}" )
+if( SFGUI_INCLUDE_FONT )
+	message( STATUS "Building SFGUI with embedded font support." )
+endif()
+
+# SFML_STATIC_LIBRARIES is used by FindSFML.cmake to select the correct library files to link to.
+set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
+
+# A bit of non-trivial information.
+message( STATUS "If using SFML as a static library remember to set SFML_STATIC_LIBRARIES." )
+message( STATUS "If setting SFML_STATIC_LIBRARIES, display the advanced variables and remove all SFML_XXX_LIBRARY_YYY entries so that they get repopulated." )
+
+# Automatically grab SFML_ROOT from the environment if it exists, or force the user to specify it if it doesn't.
+set( SFML_ROOT "$ENV{SFML_ROOT}" CACHE PATH "SFML root directory." )
+
+if( "${SFML_ROOT}" STREQUAL "" )
+	message( FATAL_ERROR "The SFML_ROOT environment variable was not found. Please set SFML_ROOT to the directory where SFML is located." )
+endif()
+
+# Add SFML's CMake Modules directory to module search path for finding FindSFML.cmake more easily.
+set( CMAKE_MODULE_PATH "${SFML_ROOT}/cmake/Modules/;${CMAKE_MODULE_PATH}" )
 
 # Find packages.
 find_package( OpenGL REQUIRED )
-find_package( SFML 2 REQUIRED COMPONENTS GRAPHICS WINDOW SYSTEM )
+find_package( SFML 2 REQUIRED COMPONENTS graphics window system )
 
 if( SFGUI_INCLUDE_FONT )
 	add_definitions( -DSFGUI_INCLUDE_FONT )
@@ -32,11 +64,6 @@ elseif( CMAKE_COMPILER_IS_GNUCXX )
 	if( NOT CMAKE_CXX_FLAGS )
 		set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
 		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
-	endif()
-
-	if( NOT CMAKE_CXX_FLAGS_DEBUG )
-		set( CMAKE_CXX_FLAGS_DEBUG "-std=c++11 -g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
-		set( CMAKE_C_FLAGS_DEBUG "-g -O0" CACHE STRING "C++ compiler flags (debug)" FORCE )
 	endif()
 endif()
 
@@ -243,9 +270,9 @@ set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
 # Link to dependencies on Windows.
 if( WIN32 )
-	target_link_libraries( sfgui ${SFML_LIBRARIES} ${OPENGL_gl_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
 elseif( APPLE )
-	target_link_libraries( sfgui ${SFML_LIBRARIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 endif()
 
 ### EXAMPLES ###
