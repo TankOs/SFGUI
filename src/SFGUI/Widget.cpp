@@ -227,12 +227,11 @@ void Widget::Invalidate() const {
 }
 
 std::unique_ptr<RenderQueue> Widget::InvalidateImpl() const {
-	return 0;
+	return nullptr;
 }
 
-void Widget::SetParent( const Widget::Ptr& parent ) {
-	Container::Ptr cont( std::dynamic_pointer_cast<Container>( parent ) );
-
+void Widget::SetParent( Widget::Ptr parent ) {
+	auto cont = std::dynamic_pointer_cast<Container>( parent );
 	auto oldparent = m_parent.lock();
 
 	if( cont == oldparent ) {
@@ -245,7 +244,7 @@ void Widget::SetParent( const Widget::Ptr& parent ) {
 
 	m_parent = cont;
 
-	std::vector<Widget*>::iterator iter( std::find( m_root_widgets.begin(), m_root_widgets.end(), this ) );
+	auto iter = std::find( m_root_widgets.begin(), m_root_widgets.end(), this );
 
 	if( parent ) {
 		// If this widget has a parent, it is no longer a root widget.
@@ -286,7 +285,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 	}
 
 	// Ignore the event if widget is insensitive
-	if ( GetState() == Widget::State::INSENSITIVE ) {
+	if ( GetState() == State::INSENSITIVE ) {
 		return;
 	}
 
@@ -303,7 +302,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 	// Set widget active in context.
 	Context::Get().SetActiveWidget( shared_from_this() );
 
-	Container::Ptr parent( m_parent.lock() );
+	auto parent = m_parent.lock();
 
 	switch( event.type ) {
 		case sf::Event::MouseLeft:
@@ -430,7 +429,7 @@ void Widget::SetState( State state ) {
 		return;
 	}
 
-	State old_state( GetState() );
+	auto old_state = GetState();
 
 	// Store the new state.
 	m_state = state;
@@ -556,7 +555,7 @@ void Widget::SetId( const std::string& id ) {
 	}
 
 	if( !m_class_id ) {
-		m_class_id.reset( new struct ClassId );
+		m_class_id.reset( new ClassId );
 	}
 
 	m_class_id->id = id;
@@ -578,7 +577,7 @@ void Widget::SetClass( const std::string& cls ) {
 	}
 
 	if( !m_class_id ) {
-		m_class_id.reset( new struct ClassId );
+		m_class_id.reset( new ClassId );
 	}
 
 	m_class_id->class_ = cls;
@@ -604,7 +603,7 @@ Widget::Ptr SearchContainerForId( Container::PtrConst container, const std::stri
 			return child;
 		}
 
-		Container::Ptr child_container( std::dynamic_pointer_cast<Container>( child ) );
+		auto child_container = std::dynamic_pointer_cast<Container>( child );
 
 		if( child_container ) {
 			auto widget = SearchContainerForId( child_container, id );
@@ -624,7 +623,9 @@ Widget::Ptr Widget::GetWidgetById( const std::string& id ) {
 			return root_widget->shared_from_this();
 		}
 
-		Container::Ptr container( std::dynamic_pointer_cast<Container>( root_widget->shared_from_this() ) );
+		auto container = std::dynamic_pointer_cast<Container>(
+			root_widget->shared_from_this()
+		);
 
 		if( container ) {
 			auto widget = SearchContainerForId( container, id );
@@ -650,7 +651,7 @@ Widget::WidgetsList SearchContainerForClass( Container::PtrConst container, cons
 			result.push_back( child );
 		}
 
-		Container::Ptr child_container( std::dynamic_pointer_cast<Container>( child ) );
+		auto child_container = std::dynamic_pointer_cast<Container>( child );
 
 		if( child_container ) {
 			auto child_result = SearchContainerForClass( child_container, class_name );
@@ -674,7 +675,9 @@ Widget::WidgetsList Widget::GetWidgetsByClass( const std::string& class_name ) {
 			result.push_back( root_widget->shared_from_this() );
 		}
 
-		Container::Ptr container( std::dynamic_pointer_cast<Container>( root_widget->shared_from_this() ) );
+		auto container = std::dynamic_pointer_cast<Container>(
+			root_widget->shared_from_this()
+		);
 
 		if( container ) {
 			auto container_result = SearchContainerForClass( container, class_name );
@@ -721,7 +724,7 @@ void Widget::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 void Widget::HandleMouseClick( sf::Mouse::Button /*button*/, int /*x*/, int /*y*/ ) {
 }
 
-void Widget::HandleFocusChange( const Widget::Ptr& focused_widget ) {
+void Widget::HandleFocusChange( Widget::Ptr focused_widget ) {
 	if( ( focused_widget != shared_from_this() ) && ( GetState() == State::ACTIVE ) ) {
 		SetState( State::NORMAL );
 	}
@@ -780,13 +783,13 @@ int Widget::GetHierarchyLevel() const {
 	return m_hierarchy_level;
 }
 
-void Widget::SetViewport( const RendererViewport::Ptr& viewport ) {
+void Widget::SetViewport( RendererViewport::Ptr viewport ) {
 	m_viewport = viewport;
 
 	HandleViewportUpdate();
 }
 
-const RendererViewport::Ptr& Widget::GetViewport() const {
+RendererViewport::Ptr Widget::GetViewport() const {
 	return m_viewport;
 }
 

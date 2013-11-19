@@ -12,10 +12,6 @@ class SFGUI_API Scale : public Range {
 		typedef std::shared_ptr<Scale> Ptr; //!< Shared pointer.
 		typedef std::shared_ptr<const Scale> PtrConst; //!< Shared pointer.
 
-		/** Dtor.
-		 */
-		virtual ~Scale() = default;
-
 		/** Create scale widget.
 		 * @param orientation Orientation.
 		 * @return Scale widget.
@@ -40,7 +36,7 @@ class SFGUI_API Scale : public Range {
 
 	protected:
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		/** Ctor.

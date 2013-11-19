@@ -11,8 +11,7 @@ ProgressBar::ProgressBar( Orientation orientation ) :
 }
 
 ProgressBar::Ptr ProgressBar::Create( Orientation orientation ) {
-	Ptr progress_bar( new ProgressBar( orientation ) );
-	return progress_bar;
+	return Ptr( new ProgressBar( orientation ) );
 }
 
 void ProgressBar::SetFraction( float fraction ) {

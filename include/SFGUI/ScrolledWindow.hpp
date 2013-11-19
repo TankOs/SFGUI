@@ -22,7 +22,7 @@ class SFGUI_API ScrolledWindow : public Container {
 			TOP_RIGHT, //!< Top right corner.
 			BOTTOM_LEFT, //!< Bottom left corner.
 			BOTTOM_RIGHT, //!< Bottom right corner.
-			DEFAULT_PLACEMENT = TOP_LEFT
+			DEFAULT = TOP_LEFT
 		};
 
 		/** Scrollbar policy.
@@ -34,7 +34,7 @@ class SFGUI_API ScrolledWindow : public Container {
 			VERTICAL_ALWAYS = 1 << 3, //!< Always display vertical scrollbar.
 			VERTICAL_AUTOMATIC = 1 << 4, //!< Display vertical scrollbar only when needed.
 			VERTICAL_NEVER = 1 << 5, //!< Never display vertical scrollbar.
-			DEFAULT_POLICY = HORIZONTAL_ALWAYS | VERTICAL_ALWAYS
+			DEFAULT = HORIZONTAL_ALWAYS | VERTICAL_ALWAYS
 		};
 
 		/** Create scrolled window.
@@ -47,29 +47,29 @@ class SFGUI_API ScrolledWindow : public Container {
 		 * @param vertical_adjustment Vertical adjustment.
 		 * @return ScrolledWindow.
 		 */
-		static Ptr Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
+		static Ptr Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
 
 		virtual const std::string& GetName() const override;
 
 		/** Get the horizontal Adjustment for this Scrolled Window.
 		 * @return Horizontal Adjustment for this Scrolled Window.
 		 */
-		const Adjustment::Ptr& GetHorizontalAdjustment() const;
+		Adjustment::Ptr GetHorizontalAdjustment() const;
 
 		/** Set the horizontal Adjustment for this Scrolled Window.
 		 * @param adjustment new horizontal Adjustment.
 		 */
-		void SetHorizontalAdjustment( const Adjustment::Ptr& adjustment );
+		void SetHorizontalAdjustment( Adjustment::Ptr adjustment );
 
 		/** Get the vertical Adjustment for this Scrolled Window.
 		 * @return Vertical Adjustment for this Scrolled Window.
 		 */
-		const Adjustment::Ptr& GetVerticalAdjustment() const;
+		Adjustment::Ptr GetVerticalAdjustment() const;
 
 		/** Set the vertical Adjustment for this Scrolled Window.
 		 * @param adjustment new vertical Adjustment.
 		 */
-		void SetVerticalAdjustment( const Adjustment::Ptr& adjustment );
+		void SetVerticalAdjustment( Adjustment::Ptr adjustment );
 
 		/** Get the scrollbar policy for this Scrolled Window.
 		 * @return Scrollbar policy for this Scrolled Window.
@@ -99,29 +99,29 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Add child with viewport.
 		 * @param widget Widget to add with viewport.
 		 */
-		void AddWithViewport( const Widget::Ptr& widget );
+		void AddWithViewport( Widget::Ptr widget );
 
 		/** Add child.
 		 * @param widget Widget to add.
 		 */
-		void Add( const Widget::Ptr& widget );
+		void Add( Widget::Ptr widget );
 
 		/** Remove child (from scrolledwindow).
 		 * @param widget Widget to remove.
 		 */
-		void Remove( const Widget::Ptr& widget );
+		void Remove( Widget::Ptr widget );
 
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
-		virtual void HandleChildInvalidate( const Widget::PtrConst& child ) const override;
+		virtual void HandleChildInvalidate( Widget::PtrConst child ) const override;
 
 	protected:
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
-		ScrolledWindow( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
+		ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
 
 		/** Recalculate Adjustments
 		 */
@@ -135,7 +135,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		void RecalculateContentAllocation() const;
 
 		void HandleSizeChange();
-		void HandleAdd( const Widget::Ptr& child );
+		void HandleAdd( Widget::Ptr child );
 
 		mutable sf::FloatRect m_content_allocation;
 

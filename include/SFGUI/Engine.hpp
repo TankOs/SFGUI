@@ -213,7 +213,7 @@ class SFGUI_API Engine {
 		 * @throws BadValue when value couldn't be converted to string.
 		 */
 		template <typename T>
-		bool SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const T& value );
+		bool SetProperty( Selector::Ptr selector, const std::string& property, const T& value );
 
 		/** Set property.
 		 * @param selector Valid selector object.
@@ -221,7 +221,7 @@ class SFGUI_API Engine {
 		 * @param value Value.
 		 * @return true on success, false when: Invalid selector or invalid property.
 		 */
-		bool SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const std::string& value );
+		bool SetProperty( Selector::Ptr selector, const std::string& property, const std::string& value );
 
 		/** Set multiple properties at once.
 		 * @param properties CSS-like rule declarations.
@@ -277,7 +277,7 @@ class SFGUI_API Engine {
 		typedef std::map<const std::string, SelectorValueList> WidgetNameMap;
 		typedef std::map<const std::string, WidgetNameMap> PropertyMap;
 
-		const std::string* GetValue( const std::string& property, const Widget::PtrConst& widget ) const;
+		const std::string* GetValue( const std::string& property, Widget::PtrConst widget ) const;
 
 		/** Get maximum line height and baseline offset of a font.
 		 * @param font Font.

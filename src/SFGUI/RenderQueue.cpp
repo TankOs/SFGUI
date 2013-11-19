@@ -99,7 +99,7 @@ void RenderQueue::SetLevel( int level ) {
 	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
 }
 
-void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
+void RenderQueue::SetViewport( RendererViewport::Ptr viewport ) {
 	m_viewport = viewport;
 
 	for( const auto& primitive : m_primitives ) {
@@ -109,7 +109,7 @@ void RenderQueue::SetViewport( const RendererViewport::Ptr& viewport ) {
 	Renderer::Get().Invalidate( sfg::Renderer::INVALIDATE_ALL );
 }
 
-const RendererViewport::Ptr& RenderQueue::GetViewport() const {
+RendererViewport::Ptr RenderQueue::GetViewport() const {
 	return m_viewport;
 }
 

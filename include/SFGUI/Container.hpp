@@ -16,15 +16,19 @@ class SFGUI_API Container : public Widget {
 		typedef std::shared_ptr<const Container> PtrConst; //!< Shared pointer.
 		typedef std::vector<Widget::Ptr> WidgetsList;
 
+		/** Dtor.
+		 */
+		virtual ~Container() = default;
+
 		/** Add child.
 		 * @param widget Widget to add.
 		 */
-		void Add( const Widget::Ptr& widget );
+		void Add( Widget::Ptr widget );
 
 		/** Remove child (from container).
 		 * @param widget Widget to remove.
 		 */
-		void Remove( const Widget::Ptr& widget );
+		void Remove( Widget::Ptr widget );
 
 		/** Remove all children from container.
 		 */
@@ -33,7 +37,7 @@ class SFGUI_API Container : public Widget {
 		/** Check if a widget is a child of this container.
 		 * @param widget Widget to search for.
 		 */
-		bool IsChild( const Widget::Ptr& widget ) const;
+		bool IsChild( Widget::Ptr widget ) const;
 
 		/** Get children.
 		 * @return std::list with children.
@@ -47,7 +51,7 @@ class SFGUI_API Container : public Widget {
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
-		virtual void HandleChildInvalidate( const Widget::PtrConst& child ) const;
+		virtual void HandleChildInvalidate( Widget::PtrConst child ) const;
 
 		/** Handle changing of absolute position
 		 */
@@ -57,12 +61,12 @@ class SFGUI_API Container : public Widget {
 		/** Handle adding children.
 		 * @param child Child widget.
 		 */
-		virtual void HandleAdd( const Widget::Ptr& child );
+		virtual void HandleAdd( Widget::Ptr child );
 
 		/** Handle removing children.
 		 * @param child Child widget.
 		 */
-		virtual void HandleRemove( const Widget::Ptr& child );
+		virtual void HandleRemove( Widget::Ptr child );
 
 		/** Handle visibility change.
 		 */

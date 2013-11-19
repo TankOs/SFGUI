@@ -142,7 +142,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * don't want to call this method directly.
 		 * @param parent Parent.
 		 */
-		void SetParent( const Widget::Ptr& parent );
+		void SetParent( Widget::Ptr parent );
 
 		/** Get parent.
 		 * @return Parent.
@@ -244,12 +244,12 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Set viewport of this widget.
 		 * @param viewport Viewport of this widget.
 		 */
-		void SetViewport( const RendererViewport::Ptr& viewport );
+		void SetViewport( RendererViewport::Ptr viewport );
 
 		/** Get viewport of this widget.
 		 * @return Viewport of this widget.
 		 */
-		const RendererViewport::Ptr& GetViewport() const;
+		RendererViewport::Ptr GetViewport() const;
 
 		/** Get the Z layer this widget should be rendered in.
 		 * Larger values are rendered later. Default: 0.
@@ -400,7 +400,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle focus change.
 		 * @param focused_widget Widget currently being focused.
 		 */
-		virtual void HandleFocusChange( const Widget::Ptr& focused_widget );
+		virtual void HandleFocusChange( Widget::Ptr focused_widget );
 
 		/** Handle local visibility change.
 		 */

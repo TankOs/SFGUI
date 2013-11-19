@@ -25,10 +25,8 @@ Entry::Entry() :
 }
 
 Entry::Ptr Entry::Create( const sf::String& text ) {
-	Entry::Ptr ptr( new Entry );
-
+	Ptr ptr( new Entry );
 	ptr->SetText( text );
-
 	return ptr;
 }
 
@@ -288,7 +286,7 @@ void Entry::HandleUpdate( float seconds ) {
 	}
 }
 
-void Entry::HandleFocusChange( const Widget::Ptr& focused_widget ) {
+void Entry::HandleFocusChange( Widget::Ptr focused_widget ) {
 	if( HasFocus() ) {
 		m_elapsed_time = 0.f;
 		m_cursor_status = true;

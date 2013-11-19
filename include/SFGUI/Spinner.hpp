@@ -43,7 +43,7 @@ class SFGUI_API Spinner : public Widget {
 		Spinner();
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		void HandleUpdate( float seconds );

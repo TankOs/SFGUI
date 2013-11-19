@@ -33,12 +33,12 @@ std::shared_ptr<const sf::Font> ResourceManager::GetFont( const std::string& pat
 	if( path == "Default" ) {
 		if( m_use_default_font ) {
 #if defined( SFGUI_INCLUDE_FONT )
-			std::shared_ptr<sf::Font> font( new sf::Font( LoadDejaVuSansFont() ) );
+			auto font = std::make_shared<sf::Font>( LoadDejaVuSansFont() );
 #else
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
 #endif
-			std::shared_ptr<sf::Font> font( new sf::Font() );
+			auto font = std::make_shared<sf::Font>();
 #endif
 			m_fonts[path] = font;
 
@@ -59,12 +59,12 @@ std::shared_ptr<const sf::Font> ResourceManager::GetFont( const std::string& pat
 
 			if( font_iter == m_fonts.end() ) {
 #if defined( SFGUI_INCLUDE_FONT )
-				font.reset( new sf::Font( LoadDejaVuSansFont() ) );
+				font = std::make_shared<sf::Font>( LoadDejaVuSansFont() );
 #else
 #if defined( SFGUI_DEBUG )
 				std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
 #endif
-				font.reset( new sf::Font() );
+				font = std::make_shared<sf::Font>();
 #endif
 				m_fonts[path] = font;
 			}
@@ -84,12 +84,12 @@ std::shared_ptr<const sf::Font> ResourceManager::GetFont( const std::string& pat
 
 			if( font_iter == m_fonts.end() ) {
 #if defined( SFGUI_INCLUDE_FONT )
-				font.reset( new sf::Font( LoadDejaVuSansFont() ) );
+				font = std::make_shared<sf::Font>( LoadDejaVuSansFont() );
 #else
 #if defined( SFGUI_DEBUG )
 				std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
 #endif
-				font.reset( new sf::Font() );
+				font = std::make_shared<sf::Font>();
 #endif
 				m_fonts[path] = font;
 			}

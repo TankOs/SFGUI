@@ -9,9 +9,7 @@ Alignment::Alignment() :
 }
 
 Alignment::Ptr Alignment::Create() {
-	Alignment::Ptr ptr( new Alignment );
-
-	return ptr;
+	return Ptr( new Alignment );
 }
 
 void Alignment::SetScale( const sf::Vector2f& scale ) {

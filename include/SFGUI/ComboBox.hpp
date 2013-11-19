@@ -102,16 +102,14 @@ class SFGUI_API ComboBox : public Bin {
 		static Signal::SignalID OnOpen; //!< Fired when the popup is opened.
 
 	protected:
-		/** Ctor.
-		 */
 		ComboBox();
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
-		void HandleMouseEnter( int x, int y );
-		void HandleMouseLeave( int x, int y );
+		virtual void HandleMouseEnter( int x, int y );
+		virtual void HandleMouseLeave( int x, int y );
 		virtual void HandleMouseMoveEvent( int x, int y ) override;
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		virtual void HandleStateChange( State old_state ) override;

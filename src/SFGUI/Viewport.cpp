@@ -5,7 +5,7 @@
 
 namespace sfg {
 
-Viewport::Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment )
+Viewport::Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment )
 {
 	GetSignal( OnSizeRequest ).Connect( std::bind( &Viewport::HandleRequisitionChange, this ) );
 
@@ -19,9 +19,13 @@ Viewport::Ptr Viewport::Create() {
 	return Viewport::Create( Adjustment::Create(), Adjustment::Create() );
 }
 
-Viewport::Ptr Viewport::Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment ) {
-	Viewport::Ptr ptr( new Viewport( horizontal_adjustment, vertical_adjustment ) );
-	return ptr;
+Viewport::Ptr Viewport::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
+	return Ptr(
+		new Viewport(
+			horizontal_adjustment,
+			vertical_adjustment
+		)
+	);
 }
 
 std::unique_ptr<RenderQueue> Viewport::InvalidateImpl() const {
@@ -32,7 +36,7 @@ std::unique_ptr<RenderQueue> Viewport::InvalidateImpl() const {
 		)
 	);
 
-	return 0;
+	return nullptr;
 }
 
 sf::Vector2f Viewport::CalculateRequisition() {
@@ -133,20 +137,20 @@ sf::Vector2f Viewport::GetAbsolutePosition() const {
 	return sf::Vector2f( .0f, .0f );
 }
 
-const Adjustment::Ptr& Viewport::GetHorizontalAdjustment() const {
+Adjustment::Ptr Viewport::GetHorizontalAdjustment() const {
 	return m_horizontal_adjustment;
 }
 
-void Viewport::SetHorizontalAdjustment( const Adjustment::Ptr& horizontal_adjustment ) {
+void Viewport::SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment ) {
 	m_horizontal_adjustment = horizontal_adjustment;
 	m_horizontal_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Viewport::UpdateView, this ) );
 }
 
-const Adjustment::Ptr& Viewport::GetVerticalAdjustment() const {
+Adjustment::Ptr Viewport::GetVerticalAdjustment() const {
 	return m_vertical_adjustment;
 }
 
-void Viewport::SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment ) {
+void Viewport::SetVerticalAdjustment( Adjustment::Ptr vertical_adjustment ) {
 	m_vertical_adjustment = vertical_adjustment;
 	m_vertical_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Viewport::UpdateView, this ) );
 }
@@ -167,7 +171,7 @@ const std::string& Viewport::GetName() const {
 	return name;
 }
 
-void Viewport::HandleAdd( const Widget::Ptr& child ) {
+void Viewport::HandleAdd( Widget::Ptr child ) {
 	if( GetChildren().size() > 1 ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Only one widget can be added to a Bin.\n";
@@ -184,7 +188,7 @@ void Viewport::HandleAdd( const Widget::Ptr& child ) {
 }
 
 void Viewport::HandleViewportUpdate() {
-	const Widget::Ptr& child( GetChild() );
+	Widget::Ptr child( GetChild() );
 
 	if( child ) {
 		child->SetViewport( m_children_viewport );

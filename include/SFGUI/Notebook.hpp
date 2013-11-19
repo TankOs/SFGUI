@@ -35,14 +35,14 @@ class SFGUI_API Notebook : public Container {
 		 * @param tab_label Widget used as label on the page tab.
 		 * @return Index of the new page.
 		 */
-		IndexType AppendPage( const Widget::Ptr& child, const Widget::Ptr& tab_label );
+		IndexType AppendPage( Widget::Ptr child, Widget::Ptr tab_label );
 
 		/** Prepends a new page at the beginning of the Notebook.
 		 * @param child Widget in the new page.
 		 * @param tab_label Widget used as label on the page tab.
 		 * @return Index of the new page.
 		 */
-		IndexType PrependPage( const Widget::Ptr& child, const Widget::Ptr& tab_label );
+		IndexType PrependPage( Widget::Ptr child, Widget::Ptr tab_label );
 
 		/** Inserts a new page at given position into the Notebook.
 		 * @param child Widget in the new page.
@@ -50,7 +50,7 @@ class SFGUI_API Notebook : public Container {
 		 * @param position Position to insert at. If negative or larger than Notebook size it appends the child.
 		 * @return Index of the new page.
 		 */
-		IndexType InsertPage( const Widget::Ptr& child, const Widget::Ptr& tab_label, IndexType position );
+		IndexType InsertPage( Widget::Ptr child, Widget::Ptr tab_label, IndexType position );
 
 		/** Removes the page with given number from the Notebook.
 		 * @param page_number Number of the page to be removed. If negative or larger than Notebook, removes last page.
@@ -61,7 +61,7 @@ class SFGUI_API Notebook : public Container {
 		 * @param widget Widget to search for.
 		 * @return Number of the first page containing widget or -1 if widget is not in Notebook.
 		 */
-		IndexType GetPageOf( const Widget::Ptr& widget ) const;
+		IndexType GetPageOf( Widget::Ptr widget ) const;
 
 		/** Switches current page to next page if possible.
 		 */
@@ -75,7 +75,7 @@ class SFGUI_API Notebook : public Container {
 		 * @param child Child to reorder.
 		 * @param position Position to reorder to.
 		 */
-		void ReorderChild( const Widget::Ptr& child, IndexType position );
+		void ReorderChild( Widget::Ptr child, IndexType position );
 
 		/** Gets the position of the page tabs.
 		 * @return Position of the page tabs.
@@ -110,13 +110,13 @@ class SFGUI_API Notebook : public Container {
 		/** Gets the tab label for the page with containing the given child.
 		 * @return Tab label for the page containing the given child or Widget::Ptr() if page number is out of bounds.
 		 */
-		const Widget::Ptr GetTabLabel( const Widget::Ptr& child ) const;
+		const Widget::Ptr GetTabLabel( Widget::Ptr child ) const;
 
 		/** Sets the tab label for the page with containing the given child.
 		 * @param child Child whose page label is to be set.
 		 * @param tab_label New tab label for the page containing the given child.
 		 */
-		void SetTabLabel( const Widget::Ptr& child, const Widget::Ptr& tab_label );
+		void SetTabLabel( Widget::Ptr child, Widget::Ptr tab_label );
 
 		/** Sets the current page of the Notebook.
 		 * @param page_number Page to set as current for this Notebook. Sets last page as current if page number is out of bounds.
@@ -174,14 +174,14 @@ class SFGUI_API Notebook : public Container {
 		Notebook();
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		struct ChildLabelPair {
 			Widget::Ptr child;
 			Widget::Ptr tab_label;
 
-			ChildLabelPair( const Widget::Ptr& child_, const Widget::Ptr& tab_label_ );
+			ChildLabelPair( Widget::Ptr child_, Widget::Ptr tab_label_ );
 			bool operator==( const ChildLabelPair& rhs ) const;
 		};
 
@@ -189,8 +189,8 @@ class SFGUI_API Notebook : public Container {
 
 		void HandleMouseMoveEvent( int x, int y );
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		void HandleAdd( const Widget::Ptr& child );
-		void HandleRemove( const Widget::Ptr& child );
+		void HandleAdd( Widget::Ptr child );
+		void HandleRemove( Widget::Ptr child );
 		void HandleSizeChange();
 		void HandleUpdate( float seconds );
 		void HandleGlobalVisibilityChange();

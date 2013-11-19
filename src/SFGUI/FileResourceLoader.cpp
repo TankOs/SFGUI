@@ -7,7 +7,7 @@
 namespace sfg {
 
 std::shared_ptr<const sf::Font> FileResourceLoader::LoadFont( const std::string& path ) const {
-	std::shared_ptr<sf::Font> font( new sf::Font );
+	auto font = std::make_shared<sf::Font>();
 
 	if( !font->loadFromFile( path ) ) {
 		return std::shared_ptr<const sf::Font>();
@@ -17,7 +17,7 @@ std::shared_ptr<const sf::Font> FileResourceLoader::LoadFont( const std::string&
 }
 
 std::shared_ptr<const sf::Image> FileResourceLoader::LoadImage( const std::string& path ) const {
-	std::shared_ptr<sf::Image> image( new sf::Image );
+	auto image = std::make_shared<sf::Image>();
 
 	if( !image->loadFromFile( path ) ) {
 		return std::shared_ptr<const sf::Image>();

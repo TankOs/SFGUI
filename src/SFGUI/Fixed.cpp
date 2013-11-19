@@ -4,9 +4,7 @@
 namespace sfg {
 
 Fixed::Ptr Fixed::Create() {
-	Fixed::Ptr ptr( new Fixed );
-
-	return ptr;
+	return std::make_shared<Fixed>();
 }
 
 sf::Vector2f Fixed::CalculateRequisition() {
@@ -26,13 +24,13 @@ const std::string& Fixed::GetName() const {
 	return name;
 }
 
-void Fixed::Put( const Widget::Ptr& widget, const sf::Vector2f& position ) {
+void Fixed::Put( Widget::Ptr widget, const sf::Vector2f& position ) {
 	m_children_position_map[ widget ] = position;
 
 	Container::Add( widget );
 }
 
-void Fixed::Move( const Widget::Ptr& widget, const sf::Vector2f& position ) {
+void Fixed::Move( Widget::Ptr widget, const sf::Vector2f& position ) {
 	if( m_children_position_map.find( widget ) != m_children_position_map.end() ) {
 		m_children_position_map[ widget ] = position;
 
@@ -42,7 +40,7 @@ void Fixed::Move( const Widget::Ptr& widget, const sf::Vector2f& position ) {
 	}
 }
 
-void Fixed::HandleAdd( const Widget::Ptr& child ) {
+void Fixed::HandleAdd( Widget::Ptr child ) {
 	Container::HandleAdd( child );
 
 	// If there's no position info present for the widget, the user added the widget
@@ -61,7 +59,7 @@ void Fixed::HandleAdd( const Widget::Ptr& child ) {
 	}
 }
 
-void Fixed::HandleRemove( const Widget::Ptr& child ) {
+void Fixed::HandleRemove( Widget::Ptr child ) {
 	m_children_position_map.erase( child );
 
 	RequestResize();

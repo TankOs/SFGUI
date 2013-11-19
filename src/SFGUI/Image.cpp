@@ -14,8 +14,7 @@ Image::Image( const sf::Image& image )
 }
 
 Image::Ptr Image::Create( const sf::Image& image ) {
-	Ptr image_ptr( new Image( image ) );
-	return image_ptr;
+	return Ptr( new Image( image ) );
 }
 
 void Image::SetImage( const sf::Image& image ) {

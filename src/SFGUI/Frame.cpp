@@ -5,10 +5,8 @@
 namespace sfg {
 
 Frame::Ptr Frame::Create( const sf::String& label ) {
-	Frame::Ptr ptr( new Frame );
-
+	auto ptr = std::make_shared<Frame>();
 	ptr->SetLabel( label );
-
 	return ptr;
 }
 

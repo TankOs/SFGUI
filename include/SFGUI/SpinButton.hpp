@@ -27,7 +27,7 @@ class SFGUI_API SpinButton : public Entry {
 		 * @param adjustment Adjustment to use.
 		 * @return SpinButton.
 		 */
-		static Ptr Create( const Adjustment::Ptr& adjustment );
+		static Ptr Create( Adjustment::Ptr adjustment );
 
 		virtual const std::string& GetName() const override;
 
@@ -44,12 +44,12 @@ class SFGUI_API SpinButton : public Entry {
 		/** Get the Adjustment for this SpinButton widget.
 		 * @return Adjustment for this SpinButton widget.
 		 */
-		const Adjustment::Ptr& GetAdjustment() const;
+		Adjustment::Ptr GetAdjustment() const;
 
 		/** Set the Adjustment for this SpinButton widget.
 		 * @param adjustment New Adjustment.
 		 */
-		void SetAdjustment( const Adjustment::Ptr& adjustment );
+		void SetAdjustment( Adjustment::Ptr adjustment );
 
 		/** Get the value of this SpinButton widget.
 		 * @return Value of this SpinButton widget.
@@ -92,19 +92,19 @@ class SFGUI_API SpinButton : public Entry {
 		 * @param step New step value to use.
 		 * @param digits Digits to display after the decimal point.
 		 */
-		void Configure( const Adjustment::Ptr& adjustment, float step, unsigned int digits );
+		void Configure( Adjustment::Ptr adjustment, float step, unsigned int digits );
 
 		// Signals.
 		static Signal::SignalID OnValueChanged; //!< Fired when the value changes.
 
 	protected:
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		/** Ctor.
 		 */
-		SpinButton( const Adjustment::Ptr& adjustment );
+		SpinButton( Adjustment::Ptr adjustment );
 
 		void UpdateTextFromAdjustment();
 		void UpdateAdjustmentFromText();
@@ -114,7 +114,7 @@ class SFGUI_API SpinButton : public Entry {
 		virtual void HandleTextEvent( sf::Uint32 character ) override;
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
 		virtual void HandleSizeChange() override;
-		virtual void HandleFocusChange( const Widget::Ptr& focused_widget ) override;
+		virtual void HandleFocusChange( Widget::Ptr focused_widget ) override;
 
 		Adjustment::Ptr m_adjustment;
 

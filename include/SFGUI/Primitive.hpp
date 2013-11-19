@@ -61,7 +61,7 @@ class SFGUI_API Primitive {
 		/** Add texture to this primitive.
 		 * @param texture Texture to add.
 		 */
-		void AddTexture( const Texture::Ptr& texture );
+		void AddTexture( Texture::Ptr texture );
 
 		/** Set position of this primitive.
 		 * @param position Position of this primitive.
@@ -76,12 +76,12 @@ class SFGUI_API Primitive {
 		/** Set viewport this primitive should be drawn in.
 		 * @param viewport Viewport this primitive should be drawn in.
 		 */
-		void SetViewport( const RendererViewport::Ptr& viewport );
+		void SetViewport( RendererViewport::Ptr viewport );
 
 		/** Get viewport this primitive is drawn in.
 		 * @return Viewport this primitive is drawn in.
 		 */
-		const RendererViewport::Ptr& GetViewport() const;
+		RendererViewport::Ptr GetViewport() const;
 
 		/** Set draw layer of this primitive.
 		 * @param layer Draw layer of this primitive.
@@ -143,12 +143,12 @@ class SFGUI_API Primitive {
 		/** Set the function that should be called to render custom GL content.
 		 * @param callback Signal containing the functions to call.
 		 */
-		void SetCustomDrawCallback( const std::shared_ptr<Signal>& callback );
+		void SetCustomDrawCallback( std::shared_ptr<Signal> callback );
 
 		/** Get the Signal containing the functions to call to render custom GL content.
 		 * @return Signal containing the functions to call to render custom GL content.
 		 */
-		const std::shared_ptr<Signal>& GetCustomDrawCallback() const;
+		std::shared_ptr<Signal> GetCustomDrawCallback() const;
 
 		/** Reset the primitive back to its default state.
 		 * This clears all vertices, textures, indices and any other saved values.

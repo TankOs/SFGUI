@@ -5,7 +5,7 @@
 
 namespace sfg {
 
-Scrollbar::Scrollbar( const Adjustment::Ptr& adjustment, Orientation orientation ) :
+Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	Range( orientation ),
 	m_elapsed_time( 0.f ),
 	m_slider_click_offset( 0.f ),
@@ -22,13 +22,11 @@ Scrollbar::Scrollbar( const Adjustment::Ptr& adjustment, Orientation orientation
 }
 
 Scrollbar::Ptr Scrollbar::Create( Orientation orientation ) {
-	Scrollbar::Ptr ptr( new Scrollbar( Adjustment::Ptr(), orientation ) );
-	return ptr;
+	return Ptr( new Scrollbar( Adjustment::Ptr(), orientation ) );
 }
 
-Scrollbar::Ptr Scrollbar::Create( const Adjustment::Ptr& adjustment, Orientation orientation ) {
-	Scrollbar::Ptr ptr( new Scrollbar( adjustment, orientation ) );
-	return ptr;
+Scrollbar::Ptr Scrollbar::Create( Adjustment::Ptr adjustment, Orientation orientation ) {
+	return Ptr( new Scrollbar( adjustment, orientation ) );
 }
 
 const sf::FloatRect Scrollbar::GetSliderRect() const {
@@ -246,14 +244,16 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 		auto slider_center_x = slider_rect.left + slider_rect.width / 2.0f;
 		auto step_distance = ( GetAllocation().width - 2.f * stepper_length ) / steps;
 
-		auto delta = static_cast<float>( x ) - ( slider_center_x + m_slider_click_offset );
+		auto delta = (
+			static_cast<float>( x ) - (slider_center_x + m_slider_click_offset)
+		);
 
-		while( delta < ( -step_distance / 2 ) ) {
+		while( delta < (-step_distance / 2) ) {
 			adjustment->Decrement();
 			delta += step_distance;
 		}
 
-		while( delta > ( step_distance / 2 ) ) {
+		while( delta > (step_distance / 2) ) {
 			adjustment->Increment();
 			delta -= step_distance;
 		}
@@ -262,16 +262,16 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 		auto stepper_length = GetAllocation().width;
 
 		auto slider_center_y = slider_rect.top + slider_rect.height / 2.0f;
-		auto step_distance = ( GetAllocation().height - 2.f * stepper_length ) / steps;
+		auto step_distance = (GetAllocation().height - 2.f * stepper_length) / steps;
 
-		auto delta = static_cast<float>( y ) - ( slider_center_y + m_slider_click_offset );
+		auto delta = static_cast<float>( y ) - (slider_center_y + m_slider_click_offset);
 
-		while( delta < ( -step_distance / 2 ) ) {
+		while( delta < (-step_distance / 2) ) {
 			adjustment->Decrement();
 			delta += step_distance;
 		}
 
-		while( delta > ( step_distance / 2 ) ) {
+		while( delta > (step_distance / 2) ) {
 			adjustment->Increment();
 			delta -= step_distance;
 		}
@@ -279,18 +279,18 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 }
 
 void Scrollbar::HandleUpdate( float seconds ) {
-	float stepper_speed( Context::Get().GetEngine().GetProperty<float>( "StepperSpeed", shared_from_this() ) );
+	auto stepper_speed = Context::Get().GetEngine().GetProperty<float>( "StepperSpeed", shared_from_this() );
 
 	m_elapsed_time += seconds;
 
-	if( m_elapsed_time < ( 1.f / stepper_speed ) ) {
+	if( m_elapsed_time < (1.f / stepper_speed) ) {
 		return;
 	}
 
 	if( m_repeat_wait ) {
-		sf::Uint32 stepper_repeat_delay( Context::Get().GetEngine().GetProperty<sf::Uint32>( "StepperRepeatDelay", shared_from_this() ) );
+		auto stepper_repeat_delay = Context::Get().GetEngine().GetProperty<sf::Uint32>( "StepperRepeatDelay", shared_from_this() );
 
-		if( m_elapsed_time < ( static_cast<float>( stepper_repeat_delay ) / 1000.f ) ) {
+		if( m_elapsed_time < (static_cast<float>( stepper_repeat_delay ) / 1000.f) ) {
 			return;
 		}
 

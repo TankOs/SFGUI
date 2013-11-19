@@ -10,8 +10,7 @@ Separator::Separator( Orientation orientation ) :
 }
 
 Separator::Ptr Separator::Create( Orientation orientation ) {
-	Separator::Ptr ptr( new Separator( orientation ) );
-	return ptr;
+	return Ptr( new Separator( orientation ) );
 }
 
 Separator::Orientation Separator::GetOrientation() const {

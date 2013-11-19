@@ -23,8 +23,7 @@ ComboBox::ComboBox() :
 }
 
 ComboBox::Ptr ComboBox::Create() {
-	ComboBox::Ptr ptr( new ComboBox );
-	return ptr;
+	return Ptr( new ComboBox );
 }
 
 std::unique_ptr<RenderQueue> ComboBox::InvalidateImpl() const {

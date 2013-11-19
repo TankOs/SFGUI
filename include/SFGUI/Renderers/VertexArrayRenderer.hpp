@@ -30,7 +30,6 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 
 	protected:
 		virtual void InvalidateImpl( unsigned char datasets ) override;
-
 		virtual void DisplayImpl() const override;
 
 	private:

@@ -14,9 +14,7 @@ ToggleButton::ToggleButton() :
 
 ToggleButton::Ptr ToggleButton::Create( const sf::String& label ) {
 	Ptr button( new ToggleButton );
-
 	button->SetLabel( label );
-
 	return button;
 }
 
@@ -41,10 +39,10 @@ void ToggleButton::SetActive( bool active ) {
 	m_active = active;
 
 	if( active ) {
-		SetState( Widget::State::SELECTED );
+		SetState( State::SELECTED );
 	}
 	else {
-		SetState( Widget::State::NORMAL );
+		SetState( State::NORMAL );
 	}
 
 	GetSignals().Emit( OnToggle );

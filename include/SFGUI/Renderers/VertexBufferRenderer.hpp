@@ -18,7 +18,7 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 
 		/** Dtor.
 		 */
-		virtual ~VertexBufferRenderer();
+		~VertexBufferRenderer();
 
 		/** Check if using a Vertex Buffer Renderer is supported.
 		 * @return true if using a Vertex Buffer Renderer is supported.
@@ -44,9 +44,7 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 
 	protected:
 		virtual void InvalidateImpl( unsigned char datasets ) override;
-
 		virtual void InvalidateWindow() override;
-
 		virtual void DisplayImpl() const override;
 
 	private:

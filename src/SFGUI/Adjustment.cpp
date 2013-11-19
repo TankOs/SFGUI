@@ -16,8 +16,7 @@ Adjustment::Adjustment( float value, float lower, float upper, float minor_step,
 }
 
 Adjustment::Ptr Adjustment::Create( float value, float lower, float upper, float minor_step, float major_step, float page_size ) {
-	Adjustment::Ptr ptr( new Adjustment( value, lower, upper, minor_step, major_step, page_size ) );
-	return ptr;
+	return Adjustment::Ptr( new Adjustment( value, lower, upper, minor_step, major_step, page_size ) );
 }
 
 Adjustment& Adjustment::operator=( const Adjustment& adjustment ) {

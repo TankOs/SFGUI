@@ -20,7 +20,7 @@ class TableCell {
 		 * @param y_options_ Y options.
 		 * @param padding_ Padding.
 		 */
-		TableCell( const Widget::Ptr& child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ );
+		TableCell( Widget::Ptr child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ );
 
 		sfg::Widget::Ptr child;
 		sf::Rect<sf::Uint32> rect;

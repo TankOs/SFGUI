@@ -5,10 +5,8 @@
 namespace sfg {
 
 Button::Ptr Button::Create( const sf::String& label ) {
-	Button::Ptr ptr( new Button );
-
+	auto ptr = std::make_shared<Button>();
 	ptr->SetLabel( label );
-
 	return ptr;
 }
 
@@ -26,7 +24,7 @@ const sf::String& Button::GetLabel() const {
 	return m_label;
 }
 
-void Button::SetImage( const Image::Ptr& image ) {
+void Button::SetImage( Image::Ptr image ) {
 	ClearImage();
 	Add( image );
 }
@@ -102,7 +100,7 @@ const std::string& Button::GetName() const {
 	return name;
 }
 
-void Button::HandleAdd( const Widget::Ptr& child ) {
+void Button::HandleAdd( Widget::Ptr child ) {
 	Bin::HandleAdd( child );
 
 	if( GetChild() && GetChild()->GetName() != "Image" ) {

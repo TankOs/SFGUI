@@ -3,7 +3,7 @@
 namespace sfg {
 namespace priv {
 
-TableCell::TableCell( const Widget::Ptr& child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ ) :
+TableCell::TableCell( Widget::Ptr child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ ) :
 	child( child_ ),
 	rect( rect_ ),
 	x_options( x_options_ ),

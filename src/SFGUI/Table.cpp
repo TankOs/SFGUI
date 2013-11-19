@@ -8,8 +8,7 @@
 namespace sfg {
 
 Table::Ptr Table::Create() {
-	Ptr table( new Table );
-	return Ptr( table );
+	return std::make_shared<Table>();
 }
 
 sf::Vector2f Table::CalculateRequisition() {
@@ -30,7 +29,7 @@ sf::Vector2f Table::CalculateRequisition() {
 	return size;
 }
 
-void Table::Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
+void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
 	assert( rect.width > 0 );
 	assert( rect.height > 0 );
 
@@ -93,11 +92,11 @@ void Table::UpdateRequisitions() {
 		for( sf::Uint32 col_idx = cell.rect.left; col_idx < col_bound; ++col_idx ) {
 			m_columns[col_idx].requisition = std::max(
 				m_columns[col_idx].requisition,
-				col_requisition + ( col_idx + 1 < m_columns.size() ? m_columns[col_idx].spacing : 0 ) // Add spacing if not last column.
+				col_requisition + (col_idx + 1 < m_columns.size() ? m_columns[col_idx].spacing : 0) // Add spacing if not last column.
 			);
 
 			// Set expand flag.
-			if( ( cell.x_options & EXPAND ) == EXPAND ) {
+			if( (cell.x_options & EXPAND) == EXPAND ) {
 				m_columns[col_idx].expand = true;
 			}
 		}
@@ -108,11 +107,11 @@ void Table::UpdateRequisitions() {
 		for( sf::Uint32 row_idx = cell.rect.top; row_idx < row_bound; ++row_idx ) {
 			m_rows[row_idx].requisition = std::max(
 				m_rows[row_idx].requisition,
-				row_requisition + ( row_idx + 1 < m_rows.size() ? m_rows[row_idx].spacing : 0 ) // Add spacing if not last row.
+				row_requisition + (row_idx + 1 < m_rows.size() ? m_rows[row_idx].spacing : 0) // Add spacing if not last row.
 			);
 
 			// Set expand flag.
-			if( ( cell.y_options & EXPAND ) == EXPAND ) {
+			if( (cell.y_options & EXPAND) == EXPAND ) {
 				m_rows[row_idx].expand = true;
 			}
 		}
@@ -122,7 +121,10 @@ void Table::UpdateRequisitions() {
 }
 
 void Table::AllocateChildren() {
-	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
+	auto gap = Context::Get().GetEngine().GetProperty<float>(
+		"Gap",
+		shared_from_this()
+	);
 
 	// Calculate column allocations.
 	auto total_width = GetAllocation().width - 2 * gap;
@@ -289,7 +291,7 @@ void Table::HandleRequisitionChange() {
 	AllocateChildren();
 }
 
-void Table::HandleRemove( const Widget::Ptr& child ) {
+void Table::HandleRemove( Widget::Ptr child ) {
 	TableCellList::iterator cell_iter( m_cells.begin() );
 	TableCellList::iterator cell_iter_end( m_cells.end() );
 

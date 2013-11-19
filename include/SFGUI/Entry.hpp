@@ -107,7 +107,7 @@ class SFGUI_API Entry : public Widget {
 		virtual void HandleTextEvent( sf::Uint32 character ) override;
 		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
 		virtual void HandleSizeChange() override;
-		virtual void HandleFocusChange( const Widget::Ptr& focused_widget ) override;
+		virtual void HandleFocusChange( Widget::Ptr focused_widget ) override;
 
 	private:
 		/** Get closest cursor position to x coordinate.

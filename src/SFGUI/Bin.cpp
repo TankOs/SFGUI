@@ -10,7 +10,7 @@ Widget::Ptr Bin::GetChild() const {
 	return *GetChildren().begin();
 }
 
-void Bin::HandleAdd( const Widget::Ptr& child ) {
+void Bin::HandleAdd( Widget::Ptr child ) {
 	Container::HandleAdd( child );
 
 	if( GetChildren().size() > 1 ) {

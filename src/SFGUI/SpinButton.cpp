@@ -13,7 +13,7 @@ namespace sfg {
 // Signals.
 Signal::SignalID SpinButton::OnValueChanged = 0;
 
-SpinButton::SpinButton( const Adjustment::Ptr& adjustment ) :
+SpinButton::SpinButton( Adjustment::Ptr adjustment ) :
 	m_adjustment( adjustment ),
 	m_elapsed_time( 0.f ),
 	m_digits( 0 ),
@@ -25,23 +25,18 @@ SpinButton::SpinButton( const Adjustment::Ptr& adjustment ) :
 }
 
 SpinButton::Ptr SpinButton::Create( float minimum, float maximum, float step ) {
-	Adjustment::Ptr adjustment( Adjustment::Create() );
-
-	SpinButton::Ptr ptr( new SpinButton( adjustment ) );
-
+	auto adjustment = Adjustment::Create();
 	adjustment->Configure( minimum, minimum, maximum, step, 0.f, 0.f );
 
-	return ptr;
+	return Ptr( new SpinButton( adjustment ) );
 }
 
-SpinButton::Ptr SpinButton::Create( const Adjustment::Ptr& adjustment ) {
+SpinButton::Ptr SpinButton::Create( Adjustment::Ptr adjustment ) {
 	if( !adjustment ) {
 		return Create( 0.f, 0.f, 0.f );
 	}
 
-	SpinButton::Ptr ptr( new SpinButton( adjustment ) );
-
-	return ptr;
+	return Ptr( new SpinButton( adjustment ) );
 }
 
 std::unique_ptr<RenderQueue> SpinButton::InvalidateImpl() const {
@@ -203,7 +198,7 @@ void SpinButton::HandleSizeChange() {
 	Entry::HandleSizeChange();
 }
 
-void SpinButton::HandleFocusChange( const Widget::Ptr& focused_widget ) {
+void SpinButton::HandleFocusChange( Widget::Ptr focused_widget ) {
 	Entry::HandleFocusChange( focused_widget );
 
 	if( focused_widget != shared_from_this() ) {
@@ -213,11 +208,11 @@ void SpinButton::HandleFocusChange( const Widget::Ptr& focused_widget ) {
 	UpdateTextFromAdjustment();
 }
 
-const Adjustment::Ptr& SpinButton::GetAdjustment() const {
+Adjustment::Ptr SpinButton::GetAdjustment() const {
 	return m_adjustment;
 }
 
-void SpinButton::SetAdjustment( const Adjustment::Ptr& adjustment ) {
+void SpinButton::SetAdjustment( Adjustment::Ptr adjustment ) {
 	if( !adjustment ) {
 		return;
 	}
@@ -266,7 +261,7 @@ void SpinButton::SetDigits( unsigned int digits ) {
 	UpdateTextFromAdjustment();
 }
 
-void SpinButton::Configure( const Adjustment::Ptr& adjustment, float step, unsigned int digits ) {
+void SpinButton::Configure( Adjustment::Ptr adjustment, float step, unsigned int digits ) {
 	SetAdjustment( adjustment );
 	SetStep( step );
 	SetDigits( digits );

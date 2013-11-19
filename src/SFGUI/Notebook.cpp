@@ -21,9 +21,7 @@ Notebook::Notebook() :
 }
 
 Notebook::Ptr Notebook::Create() {
-	Notebook::Ptr ptr( new Notebook );
-
-	return ptr;
+	return Ptr( new Notebook );
 }
 
 std::unique_ptr<RenderQueue> Notebook::InvalidateImpl() const {
@@ -101,15 +99,15 @@ const std::string& Notebook::GetName() const {
 	return name;
 }
 
-Notebook::IndexType Notebook::AppendPage( const Widget::Ptr& child, const Widget::Ptr& tab_label ) {
+Notebook::IndexType Notebook::AppendPage( Widget::Ptr child, Widget::Ptr tab_label ) {
 	return InsertPage( child, tab_label, -1 );
 }
 
-Notebook::IndexType Notebook::PrependPage( const Widget::Ptr& child, const Widget::Ptr& tab_label ) {
+Notebook::IndexType Notebook::PrependPage( Widget::Ptr child, Widget::Ptr tab_label ) {
 	return InsertPage( child, tab_label, 0 );
 }
 
-Notebook::IndexType Notebook::InsertPage( const Widget::Ptr& child, const Widget::Ptr& tab_label, IndexType position ) {
+Notebook::IndexType Notebook::InsertPage( Widget::Ptr child, Widget::Ptr tab_label, IndexType position ) {
 	if( ( position >= GetPageCount() ) || ( position < 0 ) ) {
 		m_children.push_back( ChildLabelPair( child, tab_label ) );
 
@@ -184,7 +182,7 @@ void Notebook::RemovePage( IndexType page_number ) {
 	Invalidate();
 }
 
-Notebook::IndexType Notebook::GetPageOf( const Widget::Ptr& widget ) const {
+Notebook::IndexType Notebook::GetPageOf( Widget::Ptr widget ) const {
 	ChildrenList::const_iterator iter( std::find( m_children.begin(), m_children.end(), ChildLabelPair( widget, Widget::Ptr() ) ) );
 
 	if( iter == m_children.end() ) {
@@ -222,7 +220,7 @@ void Notebook::PreviousPage() {
 	Invalidate();
 }
 
-void Notebook::ReorderChild( const Widget::Ptr& child, IndexType position ) {
+void Notebook::ReorderChild( Widget::Ptr child, IndexType position ) {
 	auto tab_label = GetTabLabel( child );
 
 	if( !tab_label ) {
@@ -267,7 +265,7 @@ Notebook::IndexType Notebook::GetPageCount() const {
 	return static_cast<IndexType>( m_children.size() );
 }
 
-const Widget::Ptr Notebook::GetTabLabel( const Widget::Ptr& child ) const {
+const Widget::Ptr Notebook::GetTabLabel( Widget::Ptr child ) const {
 	auto page_number = GetPageOf( child );
 
 	if( page_number < 0 ) {
@@ -277,7 +275,7 @@ const Widget::Ptr Notebook::GetTabLabel( const Widget::Ptr& child ) const {
 	return m_children[page_number].tab_label;
 }
 
-void Notebook::SetTabLabel( const Widget::Ptr& child, const Widget::Ptr& tab_label ) {
+void Notebook::SetTabLabel( Widget::Ptr child, Widget::Ptr tab_label ) {
 	auto page_number = GetPageOf( child );
 
 	if( page_number < 0 ) {
@@ -310,7 +308,7 @@ Notebook::IndexType Notebook::GetPrelightTab() const {
 	return m_prelight_tab;
 }
 
-Notebook::ChildLabelPair::ChildLabelPair( const Widget::Ptr& child_, const Widget::Ptr& tab_label_ ) :
+Notebook::ChildLabelPair::ChildLabelPair( Widget::Ptr child_, Widget::Ptr tab_label_ ) :
 	child( child_ ),
 	tab_label( tab_label_ )
 {
@@ -459,7 +457,7 @@ void Notebook::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 	SetCurrentPage( m_prelight_tab );
 }
 
-void Notebook::HandleAdd( const Widget::Ptr& child ) {
+void Notebook::HandleAdd( Widget::Ptr child ) {
 	Container::HandleAdd( child );
 
 	auto allowed = false;
@@ -486,7 +484,7 @@ void Notebook::HandleAdd( const Widget::Ptr& child ) {
 	Invalidate();
 }
 
-void Notebook::HandleRemove( const Widget::Ptr& child ) {
+void Notebook::HandleRemove( Widget::Ptr child ) {
 	auto page_number = GetPageOf( child );
 
 	if( page_number >= 0 ) {

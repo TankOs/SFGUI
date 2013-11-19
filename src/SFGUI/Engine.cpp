@@ -246,7 +246,7 @@ void Engine::ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, i
 	dark_color.b = static_cast<sf::Uint8>( std::min( 255, std::max( 0, static_cast<int>( dark_color.b ) - offset ) ) );
 }
 
-const std::string* Engine::GetValue( const std::string& property, const Widget::PtrConst& widget ) const {
+const std::string* Engine::GetValue( const std::string& property, Widget::PtrConst widget ) const {
 	// Look for property.
 	PropertyMap::const_iterator prop_iter( m_properties.find( property ) );
 
@@ -301,7 +301,7 @@ ResourceManager& Engine::GetResourceManager() const {
 	return m_resource_manager;
 }
 
-bool Engine::SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const std::string& value ) {
+bool Engine::SetProperty( sfg::Selector::Ptr selector, const std::string& property, const std::string& value ) {
 	if( !selector ) {
 		// Invalid selector string given.
 		return false;

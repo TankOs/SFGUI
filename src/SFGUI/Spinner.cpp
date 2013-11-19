@@ -13,9 +13,7 @@ Spinner::Spinner() :
 }
 
 Spinner::Ptr Spinner::Create() {
-	Spinner::Ptr ptr( new Spinner );
-
-	return ptr;
+	return Ptr( new Spinner );
 }
 
 void Spinner::Start() {

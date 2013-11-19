@@ -2,7 +2,7 @@
 
 namespace sfg {
 
-void Container::Add( const Widget::Ptr& widget ) {
+void Container::Add( Widget::Ptr widget ) {
 	if( IsChild( widget ) ) {
 		return;
 	}
@@ -17,7 +17,7 @@ void Container::Add( const Widget::Ptr& widget ) {
 	}
 }
 
-void Container::Remove( const Widget::Ptr& widget ) {
+void Container::Remove( Widget::Ptr widget ) {
 	WidgetsList::iterator iter( std::find( m_children.begin(), m_children.end(), widget ) );
 
 	if( iter != m_children.end() ) {
@@ -41,7 +41,7 @@ void Container::RemoveAll() {
 	RequestResize();
 }
 
-bool Container::IsChild( const Widget::Ptr& widget ) const {
+bool Container::IsChild( Widget::Ptr widget ) const {
 	for( const auto& child : m_children ) {
 		if( child == widget ) {
 			return true;
@@ -95,14 +95,14 @@ void Container::HandleEvent( const sf::Event& event ) {
 	Widget::HandleEvent( event );
 }
 
-void Container::HandleAdd( const Widget::Ptr& child ) {
+void Container::HandleAdd( Widget::Ptr child ) {
 	child->SetViewport( GetViewport() );
 }
 
-void Container::HandleRemove( const Widget::Ptr& /*child*/ ) {
+void Container::HandleRemove( Widget::Ptr /*child*/ ) {
 }
 
-void Container::HandleChildInvalidate( const Widget::PtrConst& child ) const {
+void Container::HandleChildInvalidate( Widget::PtrConst child ) const {
 	auto parent = GetParent();
 
 	if( parent ) {

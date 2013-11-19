@@ -25,7 +25,11 @@ std::unique_ptr<RenderQueue> Window::InvalidateImpl() const {
 		GetChild()->SetAllocation( GetClientRect() );
 	}
 
-	return Context::Get().GetEngine().CreateWindowDrawable( std::dynamic_pointer_cast<const Window>( shared_from_this() ) );
+	return std::move(
+		Context::Get().GetEngine().CreateWindowDrawable(
+			std::dynamic_pointer_cast<const Window>( shared_from_this() )
+		)
+	);
 }
 
 void Window::SetTitle( const sf::String& title ) {
@@ -208,7 +212,7 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 	}
 }
 
-void Window::HandleAdd( const Widget::Ptr& child ) {
+void Window::HandleAdd( Widget::Ptr child ) {
 	Bin::HandleAdd( child );
 
 	if( GetChild() ) {

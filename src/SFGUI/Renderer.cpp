@@ -34,10 +34,10 @@ Renderer::Renderer() :
 Renderer& Renderer::Create() {
 	if( !m_instance ) {
 		if( VertexBufferRenderer::IsAvailable() ) {
-			m_instance.reset( new VertexBufferRenderer );
+			m_instance = std::make_shared<VertexBufferRenderer>();
 		}
 		else {
-			m_instance.reset( new VertexArrayRenderer );
+			m_instance = std::make_shared<VertexArrayRenderer>();
 		}
 	}
 
@@ -55,7 +55,7 @@ Renderer& Renderer::Get() {
 	return *m_instance;
 }
 
-void Renderer::Set( const std::shared_ptr<Renderer>& renderer ) {
+void Renderer::Set( std::shared_ptr<Renderer> renderer ) {
 	if( renderer ) {
 		m_instance = renderer;
 	}
@@ -69,14 +69,12 @@ bool Renderer::Exists() {
 	return static_cast<bool>( m_instance );
 }
 
-const RendererViewport::Ptr& Renderer::GetDefaultViewport() {
+RendererViewport::Ptr Renderer::GetDefaultViewport() {
 	return m_default_viewport;
 }
 
 RendererViewport::Ptr Renderer::CreateViewport() {
-	RendererViewport::Ptr viewport( new RendererViewport );
-
-	return viewport;
+	return std::make_shared<RendererViewport>();
 }
 
 Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
@@ -98,7 +96,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 
 	sf::Uint32 previous_character = 0;
 
-	Primitive::Ptr primitive( new Primitive( str.getSize() * 4 ) );
+	auto primitive = std::make_shared<Primitive>( str.getSize() * 4 );
 
 	Primitive character_primitive( 4 );
 
@@ -172,7 +170,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
                                      const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
                                      const sf::Color& color ) {
-	Primitive::Ptr primitive( new Primitive( 4 ) );
+	auto primitive = std::make_shared<Primitive>( 4 );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -212,7 +210,7 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 		return CreateRect( position, position + size, color );
 	}
 
-	Primitive::Ptr primitive( new Primitive( 20 ) );
+	auto primitive = std::make_shared<Primitive>( 20 );
 
 	sf::Color dark_border( border_color );
 	sf::Color light_border( border_color );
@@ -306,7 +304,7 @@ Primitive::Ptr Renderer::CreateRect( const sf::FloatRect& rect, const sf::Color&
 }
 
 Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color ) {
-	Primitive::Ptr primitive( new Primitive( 3 ) );
+	auto primitive = std::make_shared<Primitive>( 3 );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -333,10 +331,10 @@ Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::V
 	return primitive;
 }
 
-Primitive::Ptr Renderer::CreateSprite( const sf::FloatRect& rect, const Primitive::Texture::Ptr& texture, const sf::FloatRect& subrect, int rotation_turns ) {
+Primitive::Ptr Renderer::CreateSprite( const sf::FloatRect& rect, Primitive::Texture::Ptr texture, const sf::FloatRect& subrect, int rotation_turns ) {
 	auto offset = texture->offset;
 
-	Primitive::Ptr primitive( new Primitive( 4 ) );
+	auto primitive = std::make_shared<Primitive>( 4 );
 
 	Primitive::Vertex vertex0;
 	Primitive::Vertex vertex1;
@@ -420,12 +418,9 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 }
 
 Primitive::Ptr Renderer::CreateGLCanvas( std::shared_ptr<Signal> callback ) {
-	Primitive::Ptr primitive( new Primitive );
-
+	auto primitive = std::make_shared<Primitive>();
 	primitive->SetCustomDrawCallback( callback );
-
 	AddPrimitive( primitive );
-
 	return primitive;
 }
 
@@ -624,7 +619,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
 #endif
-		return Primitive::Texture::Ptr( new Primitive::Texture );
+		return std::make_shared<Primitive::Texture>();
 	}
 
 	// We insert padding between atlas elements to prevent
@@ -687,7 +682,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 
 	Invalidate( INVALIDATE_TEXTURE );
 
-	Primitive::Texture::Ptr handle( new Primitive::Texture );
+	auto handle = std::make_shared<Primitive::Texture>();
 
 	handle->offset = offset;
 	handle->size = image.getSize();
@@ -760,7 +755,7 @@ void Renderer::SortPrimitives() {
 	}
 }
 
-void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
+void Renderer::AddPrimitive( Primitive::Ptr primitive ) {
 	m_primitives.push_back( primitive );
 
 	// Check for alpha values in primitive.
@@ -777,7 +772,7 @@ void Renderer::AddPrimitive( const Primitive::Ptr& primitive ) {
 	Invalidate( INVALIDATE_ALL );
 }
 
-void Renderer::RemovePrimitive( const Primitive::Ptr& primitive ) {
+void Renderer::RemovePrimitive( Primitive::Ptr primitive ) {
 	std::vector<Primitive::Ptr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), primitive ) );
 
 	if( iter != m_primitives.end() ) {

@@ -26,7 +26,7 @@ class SFGUI_API Scrollbar : public Range {
 		 * @param orientation Orientation.
 		 * @return Scrollbar widget.
 		 */
-		static Ptr Create( const Adjustment::Ptr& adjustment, Orientation orientation = Orientation::HORIZONTAL );
+		static Ptr Create( Adjustment::Ptr adjustment, Orientation orientation = Orientation::HORIZONTAL );
 
 		/** Get slider rectangle ( position and dimensions )
 		 * @return slider rect
@@ -45,12 +45,12 @@ class SFGUI_API Scrollbar : public Range {
 
 	protected:
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		/** Ctor.
 		 */
-		Scrollbar( const Adjustment::Ptr& adjustment, Orientation orientation = Orientation::HORIZONTAL );
+		Scrollbar( Adjustment::Ptr adjustment, Orientation orientation = Orientation::HORIZONTAL );
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		virtual void HandleMouseMoveEvent( int x, int y ) override;

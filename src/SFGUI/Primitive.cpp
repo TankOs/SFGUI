@@ -70,7 +70,7 @@ void Primitive::Add( Primitive& primitive ) {
 	}
 
 	for( const auto& index : primitive.GetIndices() ) {
-		m_indices.push_back( current_index + index );
+		m_indices.push_back( static_cast<GLuint>( current_index + index ) );
 	}
 }
 
@@ -95,7 +95,7 @@ void Primitive::AddVertex( const Vertex& vertex ) {
 	m_vertices.push_back( vertex );
 }
 
-void Primitive::AddTexture( const Texture::Ptr& texture ) {
+void Primitive::AddTexture( Texture::Ptr texture ) {
 	m_textures.push_back( texture );
 }
 
@@ -109,13 +109,13 @@ const sf::Vector2f& Primitive::GetPosition() const {
 	return m_position;
 }
 
-void Primitive::SetViewport( const RendererViewport::Ptr& viewport ) {
+void Primitive::SetViewport( RendererViewport::Ptr viewport ) {
 	m_viewport = viewport;
 
 	m_synced = false;
 }
 
-const RendererViewport::Ptr& Primitive::GetViewport() const {
+RendererViewport::Ptr Primitive::GetViewport() const {
 	return m_viewport;
 }
 
@@ -169,11 +169,11 @@ bool Primitive::IsVisible() const {
 	return m_visible;
 }
 
-void Primitive::SetCustomDrawCallback( const std::shared_ptr<Signal>& callback ) {
+void Primitive::SetCustomDrawCallback( std::shared_ptr<Signal> callback ) {
 	m_custom_draw_callback = callback;
 }
 
-const std::shared_ptr<Signal>& Primitive::GetCustomDrawCallback() const {
+std::shared_ptr<Signal> Primitive::GetCustomDrawCallback() const {
 	return m_custom_draw_callback;
 }
 

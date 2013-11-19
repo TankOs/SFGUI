@@ -79,12 +79,12 @@ class SFGUI_API RenderQueue {
 		/** Set viewport of this std::unique_ptr<RenderQueue>.
 		 * @param viewport New viewport of this std::unique_ptr<RenderQueue>.
 		 */
-		void SetViewport( const RendererViewport::Ptr& viewport );
+		void SetViewport( RendererViewport::Ptr viewport );
 
 		/** Get viewport of this std::unique_ptr<RenderQueue>.
 		 * @return Viewport of this std::unique_ptr<RenderQueue>.
 		 */
-		const RendererViewport::Ptr& GetViewport() const;
+		RendererViewport::Ptr GetViewport() const;
 
 	private:
 		std::vector<Primitive::Ptr> m_primitives;

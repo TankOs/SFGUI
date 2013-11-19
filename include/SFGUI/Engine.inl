@@ -49,7 +49,7 @@ bool Engine::SetProperty( const std::string& selector, const std::string& proper
 }
 
 template <typename T>
-bool Engine::SetProperty( const sfg::Selector::Ptr& selector, const std::string& property, const T& value ) {
+bool Engine::SetProperty( Selector::Ptr selector, const std::string& property, const T& value ) {
 	std::stringstream sstr;
 	sstr << value;
 

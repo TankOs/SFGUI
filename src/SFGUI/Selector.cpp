@@ -115,7 +115,7 @@ const Widget::State* Selector::GetState() const {
 	return m_state.get();
 }
 
-const Selector::PtrConst& Selector::GetParent() const {
+Selector::PtrConst Selector::GetParent() const {
 	return m_parent;
 }
 
@@ -194,7 +194,7 @@ bool Selector::operator==( const Selector& other ) const {
 	return m_hash == other.m_hash;
 }
 
-bool Selector::Matches( const Widget::PtrConst& widget ) const {
+bool Selector::Matches( Widget::PtrConst widget ) const {
 	if( !widget ) {
 		return false;
 	}

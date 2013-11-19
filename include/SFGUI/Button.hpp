@@ -34,7 +34,7 @@ class SFGUI_API Button : public Bin {
 		/** Set Image of the button.
 		 * @param image Image of the button.
 		 */
-		void SetImage( const Image::Ptr& image );
+		void SetImage( Image::Ptr image );
 
 		/** Get contained Image.
 		 * @return Contained Image.
@@ -49,7 +49,7 @@ class SFGUI_API Button : public Bin {
 		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		virtual sf::Vector2f CalculateRequisition() override;
 
-		virtual void HandleAdd( const Widget::Ptr& child ) override;
+		virtual void HandleAdd( Widget::Ptr child ) override;
 
 		void HandleSizeChange();
 

@@ -42,7 +42,7 @@ Context::Context() :
 
 Engine& Context::GetDefaultEngine() {
 	if( !m_default_engine ) {
-		m_default_engine.reset( new eng::BREW );
+		m_default_engine = std::make_shared<eng::BREW>();
 	}
 
 	return *m_default_engine;

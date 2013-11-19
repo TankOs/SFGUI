@@ -41,7 +41,7 @@ class SFGUI_API Renderer {
 		/** Set the Renderer singleton instance.
 		 * @param renderer Renderer instance.
 		 */
-		static void Set( const std::shared_ptr<Renderer>& renderer );
+		static void Set( std::shared_ptr<Renderer> renderer );
 
 		/** Destroy the Renderer singleton instance.
 		 */
@@ -59,7 +59,7 @@ class SFGUI_API Renderer {
 		/** Get default viewport that covers the entire window.
 		 * @return Default viewport that covers the entire window.
 		 */
-		const std::shared_ptr<RendererViewport>& GetDefaultViewport();
+		std::shared_ptr<RendererViewport> GetDefaultViewport();
 
 		/** Create and register a new viewport with the renderer.
 		 * @return New viewport.
@@ -132,7 +132,7 @@ class SFGUI_API Renderer {
 		 * @param rotation_turns Turns to rotate the texture by in COUNTERCLOCKWISE direction. 1 turn is 90 degrees, -1 turn is -90 degrees etc. 0 to not rotate.
 		 * @return New sprite primitive.
 		 */
-		Primitive::Ptr CreateSprite( const sf::FloatRect& rect, const Primitive::Texture::Ptr& texture, const sf::FloatRect& subrect = sf::FloatRect( 0.f, 0.f, 0.f, 0.f ), int rotation_turns = 0 );
+		Primitive::Ptr CreateSprite( const sf::FloatRect& rect, Primitive::Texture::Ptr texture, const sf::FloatRect& subrect = sf::FloatRect( 0.f, 0.f, 0.f, 0.f ), int rotation_turns = 0 );
 
 		/** Create and register a new line primitive with the renderer.
 		 * @param begin Starting point of the line.
@@ -152,12 +152,12 @@ class SFGUI_API Renderer {
 		/** Register a primitive with the renderer.
 		 * @param primitive Primitive to be registered.
 		 */
-		void AddPrimitive( const Primitive::Ptr& primitive );
+		void AddPrimitive( Primitive::Ptr primitive );
 
 		/** Unregister a primitive from the renderer.
 		 * @param primitive Primitive to be unregistered.
 		 */
-		void RemovePrimitive( const Primitive::Ptr& primitive );
+		void RemovePrimitive( Primitive::Ptr primitive );
 
 		/// @cond
 

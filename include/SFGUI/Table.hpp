@@ -41,7 +41,7 @@ class SFGUI_API Table : public Container {
 		 * @param y_options Pack options for y axis.
 		 * @param padding Padding.
 		 */
-		void Attach( const Widget::Ptr& widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
+		void Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
 
 		/** Set column spacing.
 		 * @param index Column index.
@@ -69,13 +69,13 @@ class SFGUI_API Table : public Container {
 		typedef std::list<priv::TableCell> TableCellList;
 		typedef std::vector<priv::TableOptions> TableOptionsArray;
 
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 		void UpdateRequisitions();
 		void AllocateChildren();
 
 		virtual void HandleSizeChange() override;
 		virtual void HandleRequisitionChange() override;
-		virtual void HandleRemove( const Widget::Ptr& child ) override;
+		virtual void HandleRemove( Widget::Ptr child ) override;
 
 		TableCellList m_cells;
 		TableOptionsArray m_columns;

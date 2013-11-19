@@ -24,13 +24,13 @@ class SFGUI_API Fixed : public Container {
 		 * @param widget Widget to add.
 		 * @param position Position to place the widget at.
 		 */
-		void Put( const Widget::Ptr& widget, const sf::Vector2f& position );
+		void Put( Widget::Ptr widget, const sf::Vector2f& position );
 
 		/** Move a child widget to the given position.
 		 * @param widget Widget to move.
 		 * @param position Position to move the widget to.
 		 */
-		void Move( const Widget::Ptr& widget, const sf::Vector2f& position );
+		void Move( Widget::Ptr widget, const sf::Vector2f& position );
 
 	protected:
 		virtual sf::Vector2f CalculateRequisition() override;
@@ -38,8 +38,8 @@ class SFGUI_API Fixed : public Container {
 	private:
 		typedef std::map<Widget::Ptr, sf::Vector2f> ChildrenPositionMap;
 
-		void HandleAdd( const Widget::Ptr& child );
-		void HandleRemove( const Widget::Ptr& child );
+		void HandleAdd( Widget::Ptr child );
+		void HandleRemove( Widget::Ptr child );
 
 		ChildrenPositionMap m_children_position_map;
 };

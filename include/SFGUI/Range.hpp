@@ -24,12 +24,12 @@ class SFGUI_API Range : public Widget {
 		/** Get the Adjustment for this Range widget.
 		 * @return Adjustment for this Range widget.
 		 */
-		const Adjustment::Ptr& GetAdjustment() const;
+		Adjustment::Ptr GetAdjustment() const;
 
 		/** Set the Adjustment for this Range widget.
 		 * @param adjustment new Adjustment.
 		 */
-		void SetAdjustment( const Adjustment::Ptr& adjustment );
+		void SetAdjustment( Adjustment::Ptr adjustment );
 
 		/** Get the value of this Range widget.
 		 * @return Value of this Range widget.

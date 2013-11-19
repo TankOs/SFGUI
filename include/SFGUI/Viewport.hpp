@@ -23,7 +23,7 @@ class SFGUI_API Viewport : public Bin {
 		 * @param vertical_adjustment Vertical adjustment.
 		 * @return Viewport.
 		 */
-		static Ptr Create( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
+		static Ptr Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
 
 		/** Get absolute position on virtual screen: always (0,0)
 		 * @return Absolute position on virtual screen: always (0,0).
@@ -33,22 +33,22 @@ class SFGUI_API Viewport : public Bin {
 		/** Get the horizontal Adjustment for this Viewport.
 		 * @return Horizontal Adjustment for this Viewport.
 		 */
-		const Adjustment::Ptr& GetHorizontalAdjustment() const;
+		Adjustment::Ptr GetHorizontalAdjustment() const;
 
 		/** Set the horizontal adjustment of this Viewport
 		 * @param horizontal_adjustment Horizontal Adjustment
 		 */
-		void SetHorizontalAdjustment( const Adjustment::Ptr& horizontal_adjustment );
+		void SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment );
 
 		/** Get the vertical Adjustment for this Viewport.
 		 * @return Vertical Adjustment for this Viewport.
 		 */
-		const Adjustment::Ptr& GetVerticalAdjustment() const;
+		Adjustment::Ptr GetVerticalAdjustment() const;
 
 		/** Set the vertical adjustment of this Viewport
 		 * @param vertical_adjustment Vertical Adjustment
 		 */
-		void SetVerticalAdjustment( const Adjustment::Ptr& vertical_adjustment );
+		void SetVerticalAdjustment( Adjustment::Ptr vertical_adjustment );
 
 		/** Handle SFML event.
 		 * Handle an SFML event and fire proper signals.
@@ -68,11 +68,9 @@ class SFGUI_API Viewport : public Bin {
 		sf::Vector2f GetChildRequisition();
 
 	protected:
-		virtual sf::Vector2f CalculateRequisition() override;
-
+		sf::Vector2f CalculateRequisition() override;
 		virtual void HandleSizeChange() override;
-
-		virtual void HandleAdd( const Widget::Ptr& child ) override;
+		virtual void HandleAdd( Widget::Ptr child ) override;
 
 		/** Handle viewport change.
 		 */
@@ -81,7 +79,7 @@ class SFGUI_API Viewport : public Bin {
 		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
 	private:
-		Viewport( const Adjustment::Ptr& horizontal_adjustment, const Adjustment::Ptr& vertical_adjustment );
+		Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
 
 		void HandleRequisitionChange();
 

@@ -56,10 +56,8 @@ class SFGUI_API Label : public Widget, public Misc {
 		Label( const sf::String& text = "" );
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const;
-		virtual sf::Vector2f CalculateRequisition() override;
-
+		sf::Vector2f CalculateRequisition() override;
 		virtual void HandleRequisitionChange() override;
-
 		virtual void HandleSizeChange() override;
 
 	private:

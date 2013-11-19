@@ -60,7 +60,7 @@ class SFGUI_API Selector {
 		/** Get parent selector.
 		 * @return Parent or PtrConst() if none set.
 		 */
-		const PtrConst& GetParent() const;
+		PtrConst GetParent() const;
 
 		/** Build full selector string.
 		 * @return Selector string.
@@ -81,7 +81,7 @@ class SFGUI_API Selector {
 		 * @param widget Widget.
 		 * @return true if matches.
 		 */
-		bool Matches( const Widget::PtrConst& widget ) const;
+		bool Matches( Widget::PtrConst widget ) const;
 
 		/** Get score of this selector.
 		 * Score calculation is based on W3 specification.

@@ -6,7 +6,7 @@
 namespace sfg {
 
 Canvas::Canvas( bool depth ) :
-	m_custom_draw_callback( new Signal ),
+	m_custom_draw_callback( std::make_shared<Signal>() ),
 	m_display_list( 0 ),
 	m_depth( depth ),
 	m_resize( false )
@@ -24,8 +24,7 @@ Canvas::~Canvas() {
 }
 
 Canvas::Ptr Canvas::Create( bool depth ) {
-	Ptr gl_canvas_ptr( new Canvas( depth ) );
-	return gl_canvas_ptr;
+	return Ptr( new Canvas( depth ) );
 }
 
 std::unique_ptr<RenderQueue> Canvas::InvalidateImpl() const {
@@ -133,7 +132,7 @@ void Canvas::Clear( const sf::Color& color, bool depth ) {
 		// not for the end-user. SFML context management strikes again.
 		sf::Context context;
 
-		m_render_texture = std::shared_ptr<sf::RenderTexture>( new sf::RenderTexture );
+		m_render_texture = std::make_shared<sf::RenderTexture>();
 
 		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
 #if defined( SFGUI_DEBUG )
@@ -191,7 +190,7 @@ void Canvas::Bind() {
 		// not for the end-user. SFML context management strikes again.
 		sf::Context context;
 
-		m_render_texture = std::shared_ptr<sf::RenderTexture>( new sf::RenderTexture );
+		m_render_texture = std::make_shared<sf::RenderTexture>();
 
 		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
 #if defined( SFGUI_DEBUG )
