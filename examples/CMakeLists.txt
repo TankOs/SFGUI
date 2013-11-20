@@ -6,12 +6,12 @@ function( build_example SAMPLE_NAME SOURCES )
 
 	install(
 		TARGETS ${SAMPLE_NAME}
-		RUNTIME DESTINATION ${SHARE_TARGET_DIR}/examples COMPONENT examples
+		RUNTIME DESTINATION ${SHARE_PATH}/examples COMPONENT examples
 	)
 
 	install(
 		FILES ${SOURCES}
-		DESTINATION ${SHARE_TARGET_DIR}/examples COMPONENT examples
+		DESTINATION ${SHARE_PATH}/examples COMPONENT examples
 	)
 endfunction()
 
@@ -64,5 +64,5 @@ endif()
 
 install(
 	DIRECTORY data
-	DESTINATION ${SHARE_TARGET_DIR}/examples
+	DESTINATION ${SHARE_PATH}/examples
 )

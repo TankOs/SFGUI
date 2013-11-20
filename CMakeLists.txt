@@ -1,53 +1,12 @@
 cmake_minimum_required( VERSION 2.8 )
-
-if( NOT CMAKE_BUILD_TYPE )
-	set( CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build (Debug or Release)" FORCE )
-endif()
-
 project( SFGUI )
 
 ### USER INPUT ###
 
-set( BUILD_SHARED_LIBS true CACHE BOOL "Build dynamic library." )
-
-if( BUILD_SHARED_LIBS )
-	message( STATUS "Building SFGUI as a shared library." )
-endif()
-
-set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build SFGUI examples." )
-
-if( SFGUI_BUILD_EXAMPLES )
-	message( STATUS "Building SFGUI examples." )
-endif()
-
-set( SFGUI_BUILD_DOC false CACHE BOOL "Generate the SFGUI API documentation." )
-
-if( SFGUI_BUILD_DOC )
-	message( STATUS "Building SFGUI HTML documentation (doxygen required)." )
-endif()
-
-set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include a default font (DejaVuSans) that is used automatically if no font is specified." )
-
-if( SFGUI_INCLUDE_FONT )
-	message( STATUS "Building SFGUI with embedded font support." )
-endif()
-
-# SFML_STATIC_LIBRARIES is used by FindSFML.cmake to select the correct library files to link to.
-set( SFML_STATIC_LIBRARIES false CACHE BOOL "Was SFML built as a static library?" )
-
-# A bit of non-trivial information.
-message( STATUS "If using SFML as a static library remember to set SFML_STATIC_LIBRARIES." )
-message( STATUS "If setting SFML_STATIC_LIBRARIES, display the advanced variables and remove all SFML_XXX_LIBRARY_YYY entries so that they get repopulated." )
-
-# Automatically grab SFML_ROOT from the environment if it exists, or force the user to specify it if it doesn't.
-set( SFML_ROOT "$ENV{SFML_ROOT}" CACHE PATH "SFML root directory." )
-
-if( "${SFML_ROOT}" STREQUAL "" )
-	message( FATAL_ERROR "The SFML_ROOT environment variable was not found. Please set SFML_ROOT to the directory where SFML is located." )
-endif()
-
-# Add SFML's CMake Modules directory to module search path for finding FindSFML.cmake more easily.
-set( CMAKE_MODULE_PATH "${SFML_ROOT}/cmake/Modules/;${CMAKE_MODULE_PATH}" )
+set( SFGUI_BUILD_SHARED_LIBS true CACHE BOOL "Build shared library." )
+set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build examples." )
+set( SFGUI_BUILD_DOC false CACHE BOOL "Generate API documentation." )
+set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include default font in library (DejaVuSans)." )
 
 # Find packages.
 find_package( OpenGL REQUIRED )
@@ -57,207 +16,170 @@ if( SFGUI_INCLUDE_FONT )
 	add_definitions( -DSFGUI_INCLUDE_FONT )
 endif()
 
-if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
-	set( CMAKE_CXX_FLAGS "-stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wunused-parameter -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
-	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
-elseif( CMAKE_COMPILER_IS_GNUCXX )
-	if( NOT CMAKE_CXX_FLAGS )
-		set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C++ compiler flags" FORCE )
-		set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic" CACHE STRING "C compiler flags" FORCE )
-	endif()
-endif()
-
-# Make Windows happy.
-if( WIN32 )
-	set( BIN_EXTENSION ".exe" )
-	set( SHARE_TARGET_DIR . )
-	add_definitions( -DWIN32 )
-else()
-	set( SHARE_TARGET_DIR share/SFGUI )
-endif()
-
-# Make OS X happy.
-if( APPLE )
-	include_directories( /System/Library/Frameworks/CoreFoundation.framework/Headers )
-	find_library( COREFOUNDATION_LIBRARY CoreFoundation )
-	mark_as_advanced( COREFOUNDATION_LIBRARY )
-endif()
-
-set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
-
-set( SRC_DIR "${PROJECT_SOURCE_DIR}/src/" )
-set( INC_DIR "${PROJECT_SOURCE_DIR}/include/" )
+set( INCLUDE_PATH "${PROJECT_SOURCE_DIR}/include" )
+set( SOURCE_PATH "${PROJECT_SOURCE_DIR}/src" )
 
 set(
 	SOURCES
-	${INC_DIR}/SFGUI/Adjustment.hpp
-	${INC_DIR}/SFGUI/Alignment.hpp
-	${INC_DIR}/SFGUI/Bin.hpp
-	${INC_DIR}/SFGUI/Box.hpp
-	${INC_DIR}/SFGUI/Button.hpp
-	${INC_DIR}/SFGUI/CheckButton.hpp
-	${INC_DIR}/SFGUI/ComboBox.hpp
-	${INC_DIR}/SFGUI/Config.hpp
-	${INC_DIR}/SFGUI/Container.hpp
-	${INC_DIR}/SFGUI/Context.hpp
-	${INC_DIR}/SFGUI/Desktop.hpp
-	${INC_DIR}/SFGUI/Desktop.inl
-	${INC_DIR}/SFGUI/Engine.hpp
-	${INC_DIR}/SFGUI/Engine.inl
-	${INC_DIR}/SFGUI/Engines/BREW.hpp
-	${INC_DIR}/SFGUI/Entry.hpp
-	${INC_DIR}/SFGUI/FileResourceLoader.hpp
-	${INC_DIR}/SFGUI/Fixed.hpp
-	${INC_DIR}/SFGUI/Frame.hpp
-	${INC_DIR}/SFGUI/Canvas.hpp
-	${INC_DIR}/SFGUI/Image.hpp
-	${INC_DIR}/SFGUI/Label.hpp
-	${INC_DIR}/SFGUI/Misc.hpp
-	${INC_DIR}/SFGUI/Notebook.hpp
-	${INC_DIR}/SFGUI/Object.hpp
-	${INC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.hpp
-	${INC_DIR}/SFGUI/Parsers/ThemeParser/Parse.hpp
-	${INC_DIR}/SFGUI/Primitive.hpp
-	${INC_DIR}/SFGUI/ProgressBar.hpp
-	${INC_DIR}/SFGUI/RadioButton.hpp
-	${INC_DIR}/SFGUI/Range.hpp
-	${INC_DIR}/SFGUI/Renderer.hpp
-	${INC_DIR}/SFGUI/RendererViewport.hpp
-	${INC_DIR}/SFGUI/Renderers/VertexArrayRenderer.hpp
-	${INC_DIR}/SFGUI/Renderers/VertexBufferRenderer.hpp
-	${INC_DIR}/SFGUI/RenderQueue.hpp
-	${INC_DIR}/SFGUI/ResourceLoader.hpp
-	${INC_DIR}/SFGUI/ResourceManager.hpp
-	${INC_DIR}/SFGUI/ResourceManager.inl
-	${INC_DIR}/SFGUI/Scale.hpp
-	${INC_DIR}/SFGUI/Scrollbar.hpp
-	${INC_DIR}/SFGUI/ScrolledWindow.hpp
-	${INC_DIR}/SFGUI/Selector.hpp
-	${INC_DIR}/SFGUI/Separator.hpp
-	${INC_DIR}/SFGUI/SFGUI.hpp
-	${INC_DIR}/SFGUI/Signal.hpp
-	${INC_DIR}/SFGUI/SpinButton.hpp
-	${INC_DIR}/SFGUI/Spinner.hpp
-	${INC_DIR}/SFGUI/Table.hpp
-	${INC_DIR}/SFGUI/TableCell.hpp
-	${INC_DIR}/SFGUI/TableOptions.hpp
-	${INC_DIR}/SFGUI/ToggleButton.hpp
-	${INC_DIR}/SFGUI/Viewport.hpp
-	${INC_DIR}/SFGUI/Widget.hpp
-	${INC_DIR}/SFGUI/Window.hpp
-	${SRC_DIR}/SFGUI/Adjustment.cpp
-	${SRC_DIR}/SFGUI/Alignment.cpp
-	${SRC_DIR}/SFGUI/Bin.cpp
-	${SRC_DIR}/SFGUI/Box.cpp
-	${SRC_DIR}/SFGUI/Button.cpp
-	${SRC_DIR}/SFGUI/CheckButton.cpp
-	${SRC_DIR}/SFGUI/ComboBox.cpp
-	${SRC_DIR}/SFGUI/Container.cpp
-	${SRC_DIR}/SFGUI/Context.cpp
-	${SRC_DIR}/SFGUI/Desktop.cpp
-	${SRC_DIR}/SFGUI/Engine.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Button.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/CheckButton.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/ComboBox.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Entry.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Frame.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Image.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Label.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Notebook.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/ProgressBar.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Scale.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Scrollbar.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/ScrolledWindow.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Separator.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/SpinButton.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Spinner.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/ToggleButton.cpp
-	${SRC_DIR}/SFGUI/Engines/BREW/Window.cpp
-	${SRC_DIR}/SFGUI/Entry.cpp
-	${SRC_DIR}/SFGUI/FileResourceLoader.cpp
-	${SRC_DIR}/SFGUI/Fixed.cpp
-	${SRC_DIR}/SFGUI/Frame.cpp
-	${SRC_DIR}/SFGUI/Canvas.cpp
-	${SRC_DIR}/SFGUI/Image.cpp
-	${SRC_DIR}/SFGUI/Label.cpp
-	${SRC_DIR}/SFGUI/Misc.cpp
-	${SRC_DIR}/SFGUI/Notebook.cpp
-	${SRC_DIR}/SFGUI/Object.cpp
-	${SRC_DIR}/SFGUI/Parsers/ThemeParser/Grammar.cpp
-	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarPredicates.cpp
-	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSelector.cpp
-	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarSimpleSelector.cpp
-	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarStatement.cpp
-	${SRC_DIR}/SFGUI/Parsers/ThemeParser/GrammarToken.cpp
-	${SRC_DIR}/SFGUI/Parsers/ThemeParser/Parse.cpp
-	${SRC_DIR}/SFGUI/Primitive.cpp
-	${SRC_DIR}/SFGUI/ProgressBar.cpp
-	${SRC_DIR}/SFGUI/RadioButton.cpp
-	${SRC_DIR}/SFGUI/Range.cpp
-	${SRC_DIR}/SFGUI/Renderer.cpp
-	${SRC_DIR}/SFGUI/RendererViewport.cpp
-	${SRC_DIR}/SFGUI/Renderers/VertexArrayRenderer.cpp
-	${SRC_DIR}/SFGUI/Renderers/VertexBufferRenderer.cpp
-	${SRC_DIR}/SFGUI/RenderQueue.cpp
-	${SRC_DIR}/SFGUI/ResourceLoader.cpp
-	${SRC_DIR}/SFGUI/ResourceManager.cpp
-	${SRC_DIR}/SFGUI/Scale.cpp
-	${SRC_DIR}/SFGUI/Scrollbar.cpp
-	${SRC_DIR}/SFGUI/ScrolledWindow.cpp
-	${SRC_DIR}/SFGUI/Selector.cpp
-	${SRC_DIR}/SFGUI/Separator.cpp
-	${SRC_DIR}/SFGUI/SFGUI.cpp
-	${SRC_DIR}/SFGUI/Signal.cpp
-	${SRC_DIR}/SFGUI/SpinButton.cpp
-	${SRC_DIR}/SFGUI/Spinner.cpp
-	${SRC_DIR}/SFGUI/Table.cpp
-	${SRC_DIR}/SFGUI/TableCell.cpp
-	${SRC_DIR}/SFGUI/TableOptions.cpp
-	${SRC_DIR}/SFGUI/ToggleButton.cpp
-	${SRC_DIR}/SFGUI/Viewport.cpp
-	${SRC_DIR}/SFGUI/Widget.cpp
-	${SRC_DIR}/SFGUI/Window.cpp
+	"${INCLUDE_PATH}/SFGUI/Adjustment.hpp"
+	"${INCLUDE_PATH}/SFGUI/Alignment.hpp"
+	"${INCLUDE_PATH}/SFGUI/Bin.hpp"
+	"${INCLUDE_PATH}/SFGUI/Box.hpp"
+	"${INCLUDE_PATH}/SFGUI/Button.hpp"
+	"${INCLUDE_PATH}/SFGUI/Canvas.hpp"
+	"${INCLUDE_PATH}/SFGUI/CheckButton.hpp"
+	"${INCLUDE_PATH}/SFGUI/ComboBox.hpp"
+	"${INCLUDE_PATH}/SFGUI/Config.hpp"
+	"${INCLUDE_PATH}/SFGUI/Container.hpp"
+	"${INCLUDE_PATH}/SFGUI/Context.hpp"
+	"${INCLUDE_PATH}/SFGUI/DejaVuSansFont.hpp"
+	"${INCLUDE_PATH}/SFGUI/Desktop.hpp"
+	"${INCLUDE_PATH}/SFGUI/Desktop.inl"
+	"${INCLUDE_PATH}/SFGUI/Engine.hpp"
+	"${INCLUDE_PATH}/SFGUI/Engine.inl"
+	"${INCLUDE_PATH}/SFGUI/Engines/BREW.hpp"
+	"${INCLUDE_PATH}/SFGUI/Entry.hpp"
+	"${INCLUDE_PATH}/SFGUI/FileResourceLoader.hpp"
+	"${INCLUDE_PATH}/SFGUI/Fixed.hpp"
+	"${INCLUDE_PATH}/SFGUI/Frame.hpp"
+	"${INCLUDE_PATH}/SFGUI/Image.hpp"
+	"${INCLUDE_PATH}/SFGUI/Label.hpp"
+	"${INCLUDE_PATH}/SFGUI/Misc.hpp"
+	"${INCLUDE_PATH}/SFGUI/Notebook.hpp"
+	"${INCLUDE_PATH}/SFGUI/Object.hpp"
+	"${INCLUDE_PATH}/SFGUI/Parsers/ThemeParser"
+	"${INCLUDE_PATH}/SFGUI/Parsers/ThemeParser/Grammar.hpp"
+	"${INCLUDE_PATH}/SFGUI/Parsers/ThemeParser/Parse.hpp"
+	"${INCLUDE_PATH}/SFGUI/Primitive.hpp"
+	"${INCLUDE_PATH}/SFGUI/ProgressBar.hpp"
+	"${INCLUDE_PATH}/SFGUI/RadioButton.hpp"
+	"${INCLUDE_PATH}/SFGUI/Range.hpp"
+	"${INCLUDE_PATH}/SFGUI/RenderQueue.hpp"
+	"${INCLUDE_PATH}/SFGUI/Renderer.hpp"
+	"${INCLUDE_PATH}/SFGUI/RendererViewport.hpp"
+	"${INCLUDE_PATH}/SFGUI/Renderers/VertexArrayRenderer.hpp"
+	"${INCLUDE_PATH}/SFGUI/Renderers/VertexBufferRenderer.hpp"
+	"${INCLUDE_PATH}/SFGUI/ResourceLoader.hpp"
+	"${INCLUDE_PATH}/SFGUI/ResourceManager.hpp"
+	"${INCLUDE_PATH}/SFGUI/ResourceManager.inl"
+	"${INCLUDE_PATH}/SFGUI/SFGUI.hpp"
+	"${INCLUDE_PATH}/SFGUI/Scale.hpp"
+	"${INCLUDE_PATH}/SFGUI/Scrollbar.hpp"
+	"${INCLUDE_PATH}/SFGUI/ScrolledWindow.hpp"
+	"${INCLUDE_PATH}/SFGUI/Selector.hpp"
+	"${INCLUDE_PATH}/SFGUI/Separator.hpp"
+	"${INCLUDE_PATH}/SFGUI/Signal.hpp"
+	"${INCLUDE_PATH}/SFGUI/SpinButton.hpp"
+	"${INCLUDE_PATH}/SFGUI/Spinner.hpp"
+	"${INCLUDE_PATH}/SFGUI/Table.hpp"
+	"${INCLUDE_PATH}/SFGUI/TableCell.hpp"
+	"${INCLUDE_PATH}/SFGUI/TableOptions.hpp"
+	"${INCLUDE_PATH}/SFGUI/ToggleButton.hpp"
+	"${INCLUDE_PATH}/SFGUI/Viewport.hpp"
+	"${INCLUDE_PATH}/SFGUI/Widget.hpp"
+	"${INCLUDE_PATH}/SFGUI/Window.hpp"
+	"${SOURCE_PATH}/SFGUI/Adjustment.cpp"
+	"${SOURCE_PATH}/SFGUI/Alignment.cpp"
+	"${SOURCE_PATH}/SFGUI/Bin.cpp"
+	"${SOURCE_PATH}/SFGUI/Box.cpp"
+	"${SOURCE_PATH}/SFGUI/Button.cpp"
+	"${SOURCE_PATH}/SFGUI/Canvas.cpp"
+	"${SOURCE_PATH}/SFGUI/CheckButton.cpp"
+	"${SOURCE_PATH}/SFGUI/ComboBox.cpp"
+	"${SOURCE_PATH}/SFGUI/Container.cpp"
+	"${SOURCE_PATH}/SFGUI/Context.cpp"
+	"${SOURCE_PATH}/SFGUI/Desktop.cpp"
+	"${SOURCE_PATH}/SFGUI/Engine.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Button.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/CheckButton.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/ComboBox.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Entry.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Frame.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Image.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Label.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Notebook.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/ProgressBar.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Scale.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Scrollbar.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/ScrolledWindow.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Separator.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/SpinButton.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Spinner.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/ToggleButton.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/Window.cpp"
+	"${SOURCE_PATH}/SFGUI/Entry.cpp"
+	"${SOURCE_PATH}/SFGUI/FileResourceLoader.cpp"
+	"${SOURCE_PATH}/SFGUI/Fixed.cpp"
+	"${SOURCE_PATH}/SFGUI/Frame.cpp"
+	"${SOURCE_PATH}/SFGUI/Image.cpp"
+	"${SOURCE_PATH}/SFGUI/Label.cpp"
+	"${SOURCE_PATH}/SFGUI/Misc.cpp"
+	"${SOURCE_PATH}/SFGUI/Notebook.cpp"
+	"${SOURCE_PATH}/SFGUI/Object.cpp"
+	"${SOURCE_PATH}/SFGUI/Parsers/ThemeParser/Grammar.cpp"
+	"${SOURCE_PATH}/SFGUI/Parsers/ThemeParser/GrammarPredicates.cpp"
+	"${SOURCE_PATH}/SFGUI/Parsers/ThemeParser/GrammarSelector.cpp"
+	"${SOURCE_PATH}/SFGUI/Parsers/ThemeParser/GrammarSimpleSelector.cpp"
+	"${SOURCE_PATH}/SFGUI/Parsers/ThemeParser/GrammarStatement.cpp"
+	"${SOURCE_PATH}/SFGUI/Parsers/ThemeParser/GrammarToken.cpp"
+	"${SOURCE_PATH}/SFGUI/Parsers/ThemeParser/Parse.cpp"
+	"${SOURCE_PATH}/SFGUI/Primitive.cpp"
+	"${SOURCE_PATH}/SFGUI/ProgressBar.cpp"
+	"${SOURCE_PATH}/SFGUI/RadioButton.cpp"
+	"${SOURCE_PATH}/SFGUI/Range.cpp"
+	"${SOURCE_PATH}/SFGUI/RenderQueue.cpp"
+	"${SOURCE_PATH}/SFGUI/Renderer.cpp"
+	"${SOURCE_PATH}/SFGUI/RendererViewport.cpp"
+	"${SOURCE_PATH}/SFGUI/Renderers/VertexArrayRenderer.cpp"
+	"${SOURCE_PATH}/SFGUI/Renderers/VertexBufferRenderer.cpp"
+	"${SOURCE_PATH}/SFGUI/ResourceLoader.cpp"
+	"${SOURCE_PATH}/SFGUI/ResourceManager.cpp"
+	"${SOURCE_PATH}/SFGUI/SFGUI.cpp"
+	"${SOURCE_PATH}/SFGUI/Scale.cpp"
+	"${SOURCE_PATH}/SFGUI/Scrollbar.cpp"
+	"${SOURCE_PATH}/SFGUI/ScrolledWindow.cpp"
+	"${SOURCE_PATH}/SFGUI/Selector.cpp"
+	"${SOURCE_PATH}/SFGUI/Separator.cpp"
+	"${SOURCE_PATH}/SFGUI/Signal.cpp"
+	"${SOURCE_PATH}/SFGUI/SpinButton.cpp"
+	"${SOURCE_PATH}/SFGUI/Spinner.cpp"
+	"${SOURCE_PATH}/SFGUI/Table.cpp"
+	"${SOURCE_PATH}/SFGUI/TableCell.cpp"
+	"${SOURCE_PATH}/SFGUI/TableOptions.cpp"
+	"${SOURCE_PATH}/SFGUI/ToggleButton.cpp"
+	"${SOURCE_PATH}/SFGUI/Viewport.cpp"
+	"${SOURCE_PATH}/SFGUI/Widget.cpp"
+	"${SOURCE_PATH}/SFGUI/Window.cpp"
+	"${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c"
 )
 
 if( SFGUI_INCLUDE_FONT )
 	set(
 		SOURCES
 		${SOURCES}
-		${INC_DIR}/SFGUI/DejaVuSansFont.hpp
-		${SRC_DIR}/SFGUI/DejaVuSansFont.cpp
+		"src/SFGUI/DejaVuSansFont.cpp"
 	)
 endif()
 
-include_directories( ${INC_DIR} )
+set_source_files_properties(
+	"${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c"
+	PROPERTIES COMPILE_FLAGS "-w"
+)
+
+include_directories( ${INCLUDE_PATH} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
 include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
 include_directories( "${PROJECT_SOURCE_DIR}/extlibs/GLee/include" )
 
-### GLee ###
-
-set(
-	SOURCES
-	${SOURCES}
-	${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c
-)
-
-set_source_files_properties( ${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c PROPERTIES COMPILE_FLAGS "-w" )
-
 # Add the library.
-if( BUILD_SHARED_LIBS )
+if( SFGUI_BUILD_SHARED_LIBS )
 	add_library( sfgui SHARED ${SOURCES} )
 
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -d )
-
-	if ( WIN32 AND CMAKE_COMPILER_IS_GNUCXX )
-		set_target_properties( sfgui PROPERTIES PREFIX "" )
-		set_target_properties( sfgui PROPERTIES IMPORT_SUFFIX ".a" )
-	endif()
 else()
 	add_definitions( -DSFGUI_STATIC )
-
 	add_library( sfgui ${SOURCES} )
 
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -s-d )
@@ -268,11 +190,34 @@ endif()
 # Tell the compiler to export when necessary.
 set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
-# Link to dependencies on Windows.
+# Platform- and compiler-specific options.
 if( WIN32 )
+	add_definitions( -DWIN32 )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
+
+	if( CMAKE_COMPILER_IS_GNUCXX )
+		set_target_properties( sfgui PROPERTIES PREFIX "" )
+		set_target_properties( sfgui PROPERTIES IMPORT_SUFFIX ".a" )
+	endif()
+
+	set( SHARE_PATH "." )
 elseif( APPLE )
+	find_library( COREFOUNDATION_LIBRARY CoreFoundation )
+	mark_as_advanced( COREFOUNDATION_LIBRARY )
+
+	include_directories( /System/Library/Frameworks/CoreFoundation.framework/Headers )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
+	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
+else()
+	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
+endif()
+
+if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+	set( CMAKE_CXX_FLAGS "-stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wunused-parameter -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
+	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_C_FLAGS}" )
+elseif( CMAKE_COMPILER_IS_GNUCXX )
+	set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
+	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_C_FLAGS}" )
 endif()
 
 ### EXAMPLES ###
@@ -303,5 +248,5 @@ install(
 
 install(
 	FILES README AUTHORS LICENSE FONT.LICENSE CHANGELOG
-	DESTINATION ${SHARE_TARGET_DIR}
+	DESTINATION ${SHARE_PATH}
 )
