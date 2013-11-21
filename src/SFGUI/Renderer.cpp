@@ -650,7 +650,11 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 
 	if( m_texture_atlas.empty() || ( ( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size ) + image.getSize().y + 2 * padding > m_max_texture_size ) ) {
 		// We need a new atlas page.
-		m_texture_atlas.push_back( std::unique_ptr<sf::Texture>( new sf::Texture() ) );
+		m_texture_atlas.push_back(
+			std::move(
+				std::unique_ptr<sf::Texture>( new sf::Texture() )
+			)
+		);
 
 		current_page = m_texture_atlas.size() - 1;
 

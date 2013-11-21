@@ -27,6 +27,9 @@ class SFGUI_API Renderer {
 			INVALIDATE_ALL = INVALIDATE_VERTEX | INVALIDATE_COLOR | INVALIDATE_TEXTURE | INVALIDATE_INDEX //!< All data needs a sync.
 		};
 
+		Renderer( const Renderer& ) = delete;
+		Renderer& operator=( const Renderer& ) = delete;
+
 		/** Create the Renderer singleton instance.
 		 * SFGUI will automatically detect what is the best renderer for your given hardware.
 		 * @return Renderer instance.

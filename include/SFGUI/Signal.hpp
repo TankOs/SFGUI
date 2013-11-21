@@ -26,6 +26,13 @@ class SFGUI_API Signal {
 	public:
 		typedef std::size_t SignalID; //!< Signal ID type.
 
+		Signal() = default;
+		Signal( const Signal& ) = delete;
+		Signal& operator=( const Signal& ) = delete;
+
+		Signal( Signal&& other );
+		Signal& operator=( Signal&& other );
+
 		/** Connect to free function.
 		 * @param delegate Free function.
 		 * @return Connection serial, use for disconnecting.
@@ -50,13 +57,7 @@ class SFGUI_API Signal {
 		typedef std::map<unsigned int, std::function<void()>> DelegateMap;
 
 		static unsigned int m_serial;
-		// Fix for VS2013 std::map not using move on its elements when inserting.
-#if defined( _MSC_VER )
-		std::shared_ptr<DelegateMap> m_delegates;
-#else
 		std::unique_ptr<DelegateMap> m_delegates;
-#endif
-
 		static SignalID m_last_guid;
 };
 

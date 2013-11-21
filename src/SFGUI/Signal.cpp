@@ -5,6 +5,16 @@ namespace sfg {
 unsigned int Signal::m_serial = 1;
 Signal::SignalID Signal::m_last_guid = 0;
 
+Signal::Signal( Signal&& other ) :
+	m_delegates( std::move( other.m_delegates ) )
+{
+}
+
+Signal& Signal::operator=( Signal&& other ) {
+	m_delegates = std::move( other.m_delegates );
+	return *this;
+}
+
 unsigned int Signal::Connect( std::function<void()> delegate ) {
 	if( !m_delegates ) {
 		m_delegates.reset( new DelegateMap );
@@ -51,7 +61,9 @@ Signal& SignalContainer::operator[]( const Signal::SignalID& id ) {
 	if( signal_iter == m_signals->end() ) {
 		// Requested signal is not present in map.
 		// Insert a new signal and set the iterator to point to it.
-		signal_iter = m_signals->insert( std::pair<Signal::SignalID, Signal>( id, Signal() ) ).first;
+		signal_iter = m_signals->insert(
+			std::pair<Signal::SignalID, Signal>( id, Signal() )
+		).first;
 	}
 
 	// Return the signal.

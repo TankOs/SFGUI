@@ -70,7 +70,11 @@ bool VertexBufferRenderer::IsAvailable() {
 	// with GLee or else it will report missing extensions sometimes.
 	sf::Context context;
 
-	return GLEE_ARB_vertex_buffer_object;
+	if( GLEE_ARB_vertex_buffer_object ) {
+		return true;
+	}
+
+	return false;
 }
 
 void VertexBufferRenderer::DisplayImpl() const {
