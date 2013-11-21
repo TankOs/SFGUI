@@ -1,6 +1,10 @@
 cmake_minimum_required( VERSION 2.8 )
 project( SFGUI )
 
+set( SFGUI_MAJOR_VERSION 0 )
+set( SFGUI_MINOR_VERSION 2 )
+set( SFGUI_REVISION_VERSION 0 )
+
 ### USER INPUT ###
 
 set( SFGUI_BUILD_SHARED_LIBS true CACHE BOOL "Build shared library." )
