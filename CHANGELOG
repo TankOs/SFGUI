@@ -1,5 +1,31 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
+0.2.0
+
+Enhancement:
+  - Conversion of codebase to use C++11 features.
+  - Implemented two backend renderers (one uses vertex buffer objects, the
+    other client-side vertex arrays).
+  - Generalized renderer textured quad creation from CreateImage into
+    CreateSprite allowing Engine developers more freedom to manage resources
+    and convey their usage.
+  - Allow creation of RadioButtonGroups in advance.
+
+Fixes:
+  - Fixed linking and general building errors on OSX.
+  - Fixed corner case bug with canvas.
+  - Fixed viewports not propagating properly.
+  - Fixed index count not being reduced in renderer when primitives are
+    removed.
+  - Fixed FindSFGUI.cmake ignoring standard arguments.
+  - Removed obsolete UpdateViewRect() from sfg::Desktop.
+  - Fixed renderer crashing when drawing without any textures loaded into the
+    atlas.
+  - Fixed loading fonts in renderer.
+  - Adapted CMake configuration to the new SFML linking system.
+  - Got rid of SFML as an extlib (Git submodule).
+  - Cleaned up CMake configuration file.
+
 0.1.1
 
 Enhancements:
@@ -69,11 +95,9 @@ Fixes:
   - sf::Event::MouseEntered and sf::Event::MouseLeft not being handled
     properly.
 
-
 0.0.1
 
   - FIX: Compatible to latest SFML commit.
-
 
 0.0.0
 
