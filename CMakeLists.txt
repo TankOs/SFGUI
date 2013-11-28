@@ -200,7 +200,10 @@ if( WIN32 )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
 
 	if( CMAKE_COMPILER_IS_GNUCXX )
-		set_target_properties( sfgui PROPERTIES PREFIX "" )
+		if( SFGUI_BUILD_SHARED_LIBS )
+			set_target_properties( sfgui PROPERTIES PREFIX "" )
+		endif()
+		
 		set_target_properties( sfgui PROPERTIES IMPORT_SUFFIX ".a" )
 	endif()
 
