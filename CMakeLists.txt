@@ -12,8 +12,17 @@ set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build examples." )
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include default font in library (DejaVuSans)." )
 
+if( WIN32 )
+	set( GLEW_STATIC true CACHE BOOL "Link GLEW statically." )
+
+	if( GLEW_STATIC )
+		add_definitions( -DGLEW_STATIC )
+	endif()
+endif()
+
 # Find packages.
 find_package( OpenGL REQUIRED )
+find_package( GLEW REQUIRED )
 find_package( SFML 2 REQUIRED COMPONENTS graphics window system )
 
 if( SFGUI_INCLUDE_FONT )
@@ -155,7 +164,6 @@ set(
 	"${SOURCE_PATH}/SFGUI/Viewport.cpp"
 	"${SOURCE_PATH}/SFGUI/Widget.cpp"
 	"${SOURCE_PATH}/SFGUI/Window.cpp"
-	"${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c"
 )
 
 if( SFGUI_INCLUDE_FONT )
@@ -166,16 +174,11 @@ if( SFGUI_INCLUDE_FONT )
 	)
 endif()
 
-set_source_files_properties(
-	"${PROJECT_SOURCE_DIR}/extlibs/GLee/src/GLee.c"
-	PROPERTIES COMPILE_FLAGS "-w"
-)
-
 include_directories( ${INCLUDE_PATH} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
+include_directories( ${GLEW_INCLUDE_PATH} )
 include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
-include_directories( "${PROJECT_SOURCE_DIR}/extlibs/GLee/include" )
 
 # Add the library.
 if( SFGUI_BUILD_SHARED_LIBS )
@@ -197,7 +200,7 @@ set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 # Platform- and compiler-specific options.
 if( WIN32 )
 	add_definitions( -DWIN32 )
-	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY} )
 
 	if( CMAKE_COMPILER_IS_GNUCXX )
 		if( SFGUI_BUILD_SHARED_LIBS )
@@ -213,7 +216,7 @@ elseif( APPLE )
 	mark_as_advanced( COREFOUNDATION_LIBRARY )
 
 	include_directories( /System/Library/Frameworks/CoreFoundation.framework/Headers )
-	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 else()
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )

@@ -1,8 +1,8 @@
-// Needs to be included before GLee for NOMINMAX
+// Needs to be included before GLEW for NOMINMAX
 #include <SFGUI/Config.hpp>
 
 // Needs to be included before OpenGL (so anything else)
-#include <GLee.h>
+#include <GL/glew.h>
 
 // X headers define None which is used by SFML's window style.
 #undef None
@@ -11,6 +11,78 @@
 #include <SFGUI/RendererViewport.hpp>
 
 namespace sfg {
+
+// Although it has the ARB prefix, this is a core extension promoted from EXT.
+#if defined( GLEW_ARB_framebuffer_object )
+
+	#define GLEXT_GLEW_framebuffer_object GLEW_ARB_framebuffer_object
+
+	#define GLEXT_GL_FRAMEBUFFER GL_FRAMEBUFFER
+	#define GLEXT_GL_FRAMEBUFFER_COMPLETE GL_FRAMEBUFFER_COMPLETE
+	#define GLEXT_GL_COLOR_ATTACHMENT0 GL_COLOR_ATTACHMENT0
+
+	#define GLEXT_glGenFramebuffers glGenFramebuffers
+	#define GLEXT_glDeleteFramebuffers glDeleteFramebuffers
+	#define GLEXT_glBindFramebuffer glBindFramebuffer
+	#define GLEXT_glFramebufferTexture2D glFramebufferTexture2D
+	#define GLEXT_glCheckFramebufferStatus glCheckFramebufferStatus
+
+#elif defined( GLEW_EXT_framebuffer_object )
+
+	#define GLEXT_GLEW_framebuffer_object GLEW_EXT_framebuffer_object
+
+	#define GLEXT_GL_FRAMEBUFFER GL_FRAMEBUFFER_EXT
+	#define GLEXT_GL_FRAMEBUFFER_COMPLETE GL_FRAMEBUFFER_COMPLETE_EXT
+	#define GLEXT_GL_COLOR_ATTACHMENT0 GL_COLOR_ATTACHMENT0_EXT
+
+	#define GLEXT_glGenFramebuffers glGenFramebuffersEXT
+	#define GLEXT_glDeleteFramebuffers glDeleteFramebuffersEXT
+	#define GLEXT_glBindFramebuffer glBindFramebufferEXT
+	#define GLEXT_glFramebufferTexture2D glFramebufferTexture2DEXT
+	#define GLEXT_glCheckFramebufferStatus glCheckFramebufferStatusEXT
+
+#else
+
+	#error You have a version of GLEW that is too old for SFGUI. Please update it.
+
+#endif
+
+// VBO support promoted to core from ARB in 1.5.
+#if defined( GLEW_VERSION_1_5 )
+
+	#define GLEXT_GLEW_vertex_buffer_object GLEW_VERSION_1_5
+
+	#define GLEXT_GL_ARRAY_BUFFER GL_ARRAY_BUFFER
+	#define GLEXT_GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER
+	#define GLEXT_GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW
+
+	#define GLEXT_glGenBuffers glGenBuffers
+	#define GLEXT_glDeleteBuffers glDeleteBuffers
+	#define GLEXT_glBindBuffer glBindBuffer
+	#define GLEXT_glBufferData glBufferData
+	#define GLEXT_glBufferSubData glBufferSubData
+
+#elif defined( GLEW_ARB_vertex_buffer_object )
+
+	#define GLEXT_GLEW_vertex_buffer_object GLEW_ARB_vertex_buffer_object
+
+	#define GLEXT_GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+	#define GLEXT_GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
+	#define GLEXT_GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
+
+	#define GLEXT_glGenBuffers glGenBuffersARB
+	#define GLEXT_glDeleteBuffers glDeleteBuffersARB
+	#define GLEXT_glBindBuffer glBindBufferARB
+	#define GLEXT_glBufferData glBufferDataARB
+	#define GLEXT_glBufferSubData glBufferSubDataARB
+
+#else
+
+	#error You have a version of GLEW that is too old for SFGUI. Please update it.
+
+#endif
+
+bool VertexBufferRenderer::m_glew_initialized = false;
 
 VertexBufferRenderer::VertexBufferRenderer() :
 	m_frame_buffer( 0 ),
@@ -27,16 +99,29 @@ VertexBufferRenderer::VertexBufferRenderer() :
 	m_fbo_supported( false ) {
 
 	// Make sure we have a valid GL context before messing around
-	// with GLee or else it will report missing extensions sometimes.
+	// with GLEW or else it will report missing extensions sometimes.
 	sf::Context context;
 
-	if( GLEE_ARB_vertex_buffer_object ) {
+	if( !m_glew_initialized ) {
+		auto result = glewInit();
+
+		if( result != GLEW_OK ) {
+#if defined( SFGUI_DEBUG )
+			std::cerr << "GLEW initialization failed: " << glewGetErrorString( result ) << "\n";
+#endif
+			return;
+		}
+
+		m_glew_initialized = true;
+	}
+
+	if( GLEXT_GLEW_vertex_buffer_object ) {
 		m_vbo_supported = true;
 
-		glGenBuffersARB( 1, &m_vertex_vbo );
-		glGenBuffersARB( 1, &m_color_vbo );
-		glGenBuffersARB( 1, &m_texture_vbo );
-		glGenBuffersARB( 1, &m_index_vbo );
+		GLEXT_glGenBuffers( 1, &m_vertex_vbo );
+		GLEXT_glGenBuffers( 1, &m_color_vbo );
+		GLEXT_glGenBuffers( 1, &m_texture_vbo );
+		GLEXT_glGenBuffers( 1, &m_index_vbo );
 	}
 	else {
 #if defined( SFGUI_DEBUG )
@@ -44,7 +129,7 @@ VertexBufferRenderer::VertexBufferRenderer() :
 #endif
 	}
 
-	if( GLEE_EXT_framebuffer_object || GLEE_ARB_framebuffer_object ) {
+	if( GLEXT_GLEW_framebuffer_object ) {
 		m_fbo_supported = true;
 	}
 }
@@ -53,10 +138,10 @@ VertexBufferRenderer::~VertexBufferRenderer() {
 	DestroyFBO();
 
 	if( m_vbo_supported ) {
-		glDeleteBuffersARB( 1, &m_index_vbo );
-		glDeleteBuffersARB( 1, &m_texture_vbo );
-		glDeleteBuffersARB( 1, &m_color_vbo );
-		glDeleteBuffersARB( 1, &m_vertex_vbo );
+		GLEXT_glDeleteBuffers( 1, &m_index_vbo );
+		GLEXT_glDeleteBuffers( 1, &m_texture_vbo );
+		GLEXT_glDeleteBuffers( 1, &m_color_vbo );
+		GLEXT_glDeleteBuffers( 1, &m_vertex_vbo );
 	}
 }
 
@@ -67,10 +152,23 @@ const std::string& VertexBufferRenderer::GetName() const {
 
 bool VertexBufferRenderer::IsAvailable() {
 	// Make sure we have a valid GL context before messing around
-	// with GLee or else it will report missing extensions sometimes.
+	// with GLEW or else it will report missing extensions sometimes.
 	sf::Context context;
 
-	if( GLEE_ARB_vertex_buffer_object ) {
+	if( !m_glew_initialized ) {
+		auto result = glewInit();
+
+		if( result != GLEW_OK ) {
+#if defined( SFGUI_DEBUG )
+			std::cerr << "GLEW initialization failed: " << glewGetErrorString( result ) << "\n";
+#endif
+			return false;
+		}
+
+		m_glew_initialized = true;
+	}
+
+	if( GLEXT_GLEW_vertex_buffer_object ) {
 		return true;
 	}
 
@@ -110,16 +208,16 @@ void VertexBufferRenderer::DisplayImpl() const {
 		// Further, we stick all referenced textures into our giant atlas
 		// so we don't have to rebind during the draw.
 
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
+		GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_vertex_vbo );
 		glVertexPointer( 2, GL_FLOAT, 0, 0 );
 
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
+		GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_color_vbo );
 		glColorPointer( 4, GL_UNSIGNED_BYTE, 0, 0 );
 
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
+		GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_texture_vbo );
 		glTexCoordPointer( 2, GL_FLOAT, 0, 0 );
 
-		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, m_index_vbo );
+		GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, m_index_vbo );
 
 		// Not needed, constantly kept enabled by SFML... -_-
 		//glEnableClientState( GL_VERTEX_ARRAY );
@@ -127,7 +225,7 @@ void VertexBufferRenderer::DisplayImpl() const {
 		//glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 
 		if( m_use_fbo ) {
-			glBindFramebuffer( GL_FRAMEBUFFER, m_frame_buffer );
+			GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, m_frame_buffer );
 
 			glClear( GL_COLOR_BUFFER_BIT );
 		}
@@ -197,11 +295,11 @@ void VertexBufferRenderer::DisplayImpl() const {
 		//glDisableClientState( GL_VERTEX_ARRAY );
 
 		// Needed otherwise SFML will blow up...
-		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+		GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, 0 );
+		GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, 0 );
 
 		if( m_use_fbo ) {
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, 0 );
 
 			glCallList( m_display_list );
 		}
@@ -390,41 +488,41 @@ void VertexBufferRenderer::RefreshVBO() {
 	if( !vertex_data.empty() && !color_data.empty() && !texture_data.empty() ) {
 		if( m_vbo_sync_type & INVALIDATE_VERTEX ) {
 			// Sync vertex data
-			glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_vertex_vbo );
-			glBufferDataARB( GL_ARRAY_BUFFER_ARB, vertex_data.size() * sizeof( sf::Vector3f ), 0, GL_DYNAMIC_DRAW_ARB );
+			GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_vertex_vbo );
+			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, vertex_data.size() * sizeof( sf::Vector3f ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
 			if( vertex_data.size() > 0 ) {
-				glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, vertex_data.size() * sizeof( sf::Vector2f ), &vertex_data[0] );
+				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, vertex_data.size() * sizeof( sf::Vector2f ), &vertex_data[0] );
 			}
 		}
 
 		if( m_vbo_sync_type & INVALIDATE_COLOR ) {
 			// Sync color data
-			glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_color_vbo );
-			glBufferDataARB( GL_ARRAY_BUFFER_ARB, color_data.size() * sizeof( sf::Color ), 0, GL_DYNAMIC_DRAW_ARB );
+			GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_color_vbo );
+			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, color_data.size() * sizeof( sf::Color ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
 			if( color_data.size() > 0 ) {
-				glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
+				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
 			}
 		}
 
 		if( m_vbo_sync_type & INVALIDATE_TEXTURE ) {
 			// Sync texture coord data
-			glBindBufferARB( GL_ARRAY_BUFFER_ARB, m_texture_vbo );
-			glBufferDataARB( GL_ARRAY_BUFFER_ARB, texture_data.size() * sizeof( sf::Vector2f ), 0, GL_DYNAMIC_DRAW_ARB );
+			GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_texture_vbo );
+			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, texture_data.size() * sizeof( sf::Vector2f ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
 			if( texture_data.size() > 0 ) {
-				glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
+				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
 			}
 		}
 
 		if( m_vbo_sync_type & INVALIDATE_INDEX ) {
 			// Sync index data
-			glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, m_index_vbo );
-			glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, index_data.size() * sizeof( GLuint ), 0, GL_DYNAMIC_DRAW_ARB );
+			GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, m_index_vbo );
+			GLEXT_glBufferData( GLEXT_GL_ELEMENT_ARRAY_BUFFER, index_data.size() * sizeof( GLuint ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
 			if( index_data.size() > 0 ) {
-				glBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, index_data.size() * sizeof( GLuint ), &index_data[0] );
+				GLEXT_glBufferSubData( GLEXT_GL_ELEMENT_ARRAY_BUFFER, 0, index_data.size() * sizeof( GLuint ), &index_data[0] );
 			}
 		}
 	}
@@ -446,10 +544,10 @@ void VertexBufferRenderer::SetupFBO( unsigned int width, unsigned int height ) {
 
 	// Create FBO.
 	if( !m_frame_buffer ) {
-		glGenFramebuffers( 1, &m_frame_buffer );
+		GLEXT_glGenFramebuffers( 1, &m_frame_buffer );
 	}
 
-	glBindFramebuffer( GL_FRAMEBUFFER, m_frame_buffer );
+	GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, m_frame_buffer );
 
 	// Create FBO texture object.
 	if( !m_frame_buffer_texture ) {
@@ -468,14 +566,14 @@ void VertexBufferRenderer::SetupFBO( unsigned int width, unsigned int height ) {
 
 	glBindTexture( GL_TEXTURE_2D, 0 );
 
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_frame_buffer_texture, 0 );
+	GLEXT_glFramebufferTexture2D( GLEXT_GL_FRAMEBUFFER, GLEXT_GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_frame_buffer_texture, 0 );
 
 	// Sanity check.
-	auto status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+	auto status = GLEXT_glCheckFramebufferStatus( GLEXT_GL_FRAMEBUFFER );
 
-	if( status != GL_FRAMEBUFFER_COMPLETE ) {
+	if( status != GLEXT_GL_FRAMEBUFFER_COMPLETE ) {
 #if defined( SFGUI_DEBUG )
-		std::cerr << "glCheckFramebufferStatus() returned error " << status << ", disabling FBO.\n";
+		std::cerr << "GLEXT_glCheckFramebufferStatus() returned error " << status << ", disabling FBO.\n";
 #endif
 
 		DestroyFBO();
@@ -484,7 +582,7 @@ void VertexBufferRenderer::SetupFBO( unsigned int width, unsigned int height ) {
 		m_use_fbo = false;
 	}
 
-	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+	GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, 0 );
 
 	if( m_use_fbo && !m_display_list ) {
 		m_display_list = glGenLists( 1 );
@@ -533,7 +631,7 @@ void VertexBufferRenderer::DestroyFBO() {
 	}
 
 	if( m_frame_buffer ) {
-		glDeleteFramebuffers( 1, &m_frame_buffer );
+		GLEXT_glDeleteFramebuffers( 1, &m_frame_buffer );
 
 		m_frame_buffer = 0;
 	}
