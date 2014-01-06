@@ -65,6 +65,7 @@
 	#define GLX_GLXEXT_PROTOTYPES
 	#include <GL/gl.h>
 	#include <GL/glx.h>
+	typedef XID GLXContextID;
 #endif
 
 #ifndef APIENTRY
