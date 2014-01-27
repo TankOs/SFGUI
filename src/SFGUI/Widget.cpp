@@ -279,24 +279,26 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	}
 }
 
-void Widget::HandleEvent( const sf::Event& event ) {
+unsigned int Widget::HandleEvent( const sf::Event& event ) {
+	unsigned int nbHandle = 0;
+
 	if( !IsGloballyVisible() ) {
-		return;
+		return nbHandle;
 	}
 
 	// Ignore the event if widget is insensitive
 	if ( GetState() == State::INSENSITIVE ) {
-		return;
+		return nbHandle;
 	}
 
 	// Ignore the event if another widget is active.
 	if( !IsActiveWidget() && !IsActiveWidget( PtrConst() ) ) {
-		return;
+		return nbHandle;
 	}
 
 	// Ignore the event if another widget is modal.
 	if( HasModal() && !IsModal() ) {
-		return;
+		return nbHandle;
 	}
 
 	// Set widget active in context.
@@ -309,6 +311,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( IsMouseInWidget() ) {
 				SetMouseInWidget( false );
 
+				nbHandle += 1;
 				GetSignals().Emit( OnMouseLeave );
 				HandleMouseLeave( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
 			}
@@ -328,15 +331,18 @@ void Widget::HandleEvent( const sf::Event& event ) {
 				if( !IsMouseInWidget() ) {
 					SetMouseInWidget( true );
 
+					nbHandle += 1;
 					GetSignals().Emit( OnMouseEnter );
 					HandleMouseEnter( event.mouseMove.x, event.mouseMove.y );
 				}
 
+				nbHandle += 1;
 				GetSignals().Emit( OnMouseMove );
 			}
 			else if( IsMouseInWidget() ) { // Check for leave event.
 				SetMouseInWidget( false );
 
+				nbHandle += 1;
 				GetSignals().Emit( OnMouseLeave );
 				HandleMouseLeave( event.mouseMove.x, event.mouseMove.y );
 			}
@@ -353,9 +359,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 			if( IsMouseInWidget() ) {
 				if( event.mouseButton.button == sf::Mouse::Left ) {
+				        nbHandle += 1;
 					GetSignals().Emit( OnMouseLeftPress );
 				}
 				else if( event.mouseButton.button == sf::Mouse::Right ) {
+				        nbHandle += 1;
 					GetSignals().Emit( OnMouseRightPress );
 				}
 			}
@@ -372,9 +380,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 					HandleMouseClick( event.mouseButton.button, event.mouseButton.x, event.mouseButton.y );
 
 					if( event.mouseButton.button == sf::Mouse::Left ) {
+					        nbHandle += 1;
 						GetSignals().Emit( OnLeftClick );
 					}
 					else if( event.mouseButton.button == sf::Mouse::Right ) {
+					        nbHandle += 1;
 						GetSignals().Emit( OnRightClick );
 					}
 				}
@@ -384,9 +394,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 			if( IsMouseInWidget() ) {
 				if( event.mouseButton.button == sf::Mouse::Left ) {
+				        nbHandle += 1;
 					GetSignals().Emit( OnMouseLeftRelease );
 				}
 				else if( event.mouseButton.button == sf::Mouse::Right ) {
+				        nbHandle += 1;
 					GetSignals().Emit( OnMouseRightRelease );
 				}
 			}
@@ -397,6 +409,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.key.code, true );
+				nbHandle += 1;
 				GetSignals().Emit( OnKeyPress );
 			}
 
@@ -406,6 +419,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleKeyEvent( event.key.code, false );
+				nbHandle += 1;
 				GetSignals().Emit( OnKeyRelease );
 			}
 			break;
@@ -414,6 +428,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			if( HasFocus() ) {
 				// TODO: Delegate event too when widget's not active?
 				HandleTextEvent( event.text.unicode );
+				nbHandle += 1;
 				GetSignals().Emit( OnText );
 			}
 			break;
@@ -421,6 +436,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		default:
 			break;
 	}
+	return nbHandle;
 }
 
 void Widget::SetState( State state ) {

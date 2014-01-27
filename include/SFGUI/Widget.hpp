@@ -169,7 +169,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * containers only.
 		 * @param event SFML event.
 		 */
-		virtual void HandleEvent( const sf::Event& event );
+		virtual unsigned int HandleEvent( const sf::Event& event );
 
 		/** Get absolute position on screen.
 		 * @return Absolute position.

@@ -69,10 +69,12 @@ void Viewport::HandleAbsolutePositionChange() {
 	Container::HandleAbsolutePositionChange();
 }
 
-void Viewport::HandleEvent( const sf::Event& event ) {
+unsigned int Viewport::HandleEvent( const sf::Event& event ) {
+	unsigned int nbHandle = 0;
+
 	// Ignore event when widget is not visible.
 	if( !IsGloballyVisible() ) {
-		return;
+		return nbHandle;
 	}
 
 	// Pass event to child
@@ -91,7 +93,7 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 			altered_event.mouseButton.x += static_cast<int>( offset_x );
 			altered_event.mouseButton.y += static_cast<int>( offset_y );
 
-			GetChild()->HandleEvent( altered_event );
+			nbHandle += GetChild()->HandleEvent( altered_event );
 		} break;
 		case sf::Event::MouseLeft: {
 			// Nice hack to cause scrolledwindow children to get out of
@@ -99,7 +101,7 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 			sf::Event altered_event( event );
 			altered_event.mouseMove.x = -1;
 			altered_event.mouseMove.y = -1;
-			GetChild()->HandleEvent( altered_event );
+			nbHandle += GetChild()->HandleEvent( altered_event );
 		} break;
 		case sf::Event::MouseMoved: { // All MouseMove events
 			sf::Event altered_event( event );
@@ -113,7 +115,7 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 				altered_event.mouseMove.x += static_cast<int>( offset_x );
 				altered_event.mouseMove.y += static_cast<int>( offset_y );
 			}
-			GetChild()->HandleEvent( altered_event );
+			nbHandle += GetChild()->HandleEvent( altered_event );
 		} break;
 		case sf::Event::MouseWheelMoved: { // All MouseWheel events
 			if( !GetAllocation().contains( static_cast<float>( event.mouseWheel.x ), static_cast<float>( event.mouseWheel.y ) ) ) {
@@ -124,13 +126,14 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 			altered_event.mouseWheel.x += static_cast<int>( offset_x );
 			altered_event.mouseWheel.y += static_cast<int>( offset_y );
 
-			GetChild()->HandleEvent( altered_event );
+			nbHandle += GetChild()->HandleEvent( altered_event );
 		} break;
 		default: { // Pass event unaltered if it is a non-mouse event
-			GetChild()->HandleEvent( event );
+			nbHandle += GetChild()->HandleEvent( event );
 		} break;
 		}
 	}
+	return nbHandle;
 }
 
 sf::Vector2f Viewport::GetAbsolutePosition() const {
