@@ -76,6 +76,7 @@ std::unique_ptr<RenderQueue> Bob::CreateScrollbarDrawable( std::shared_ptr<const
 
 	// Arrows
 	std::shared_ptr<const sf::Image> arrow_image( GetResourceManager().GetImage( GetProperty<std::string>( "ArrowImage", scrollbar ) ) );
+	Primitive::Texture::Ptr arrow_texture( m_texture_manager.GetTexture( arrow_image ) );
 	if( arrow_image ){
 		sf::Vector2f arrow_size;
 		if( orientation == Scrollbar::Orientation::HORIZONTAL ) {
@@ -86,18 +87,18 @@ std::unique_ptr<RenderQueue> Bob::CreateScrollbarDrawable( std::shared_ptr<const
 		}
 
 		// Decrease-arrow
-		queue->Add( CreateArrow( sf::FloatRect( std::floor( decrease_position.x + ( stepper_dimension.x - arrow_size.x ) / 2.f + 0.5f ),
-												std::floor( decrease_position.y + ( stepper_dimension.y - arrow_size.y ) / 2.f + 0.5f ),
-												std::floor( arrow_size.x + 0.5f),
-												std::floor( arrow_size.y + 0.5f) ),
-								  arrow_decrease_rotation, arrow_image) );
+		queue->Add( Renderer::Get().CreateSprite( sf::FloatRect( std::floor( decrease_position.x + ( stepper_dimension.x - arrow_size.x ) / 2.f + 0.5f ),
+																 std::floor( decrease_position.y + ( stepper_dimension.y - arrow_size.y ) / 2.f + 0.5f ),
+																 std::floor( arrow_size.x + 0.5f),
+																 std::floor( arrow_size.y + 0.5f) ),
+												  arrow_texture, sf::FloatRect(), arrow_decrease_rotation ) );
 
 		// Increase-arrow
-		queue->Add( CreateArrow( sf::FloatRect( std::floor( increase_position.x + ( stepper_dimension.x - arrow_size.x ) / 2.f + 0.5f ),
-												std::floor( increase_position.y + ( stepper_dimension.y - arrow_size.y ) / 2.f + 0.5f ),
-												std::floor( arrow_size.x + 0.5f),
-												std::floor( arrow_size.y + 0.5f) ),
-								  arrow_increase_rotation, arrow_image) );
+		queue->Add( Renderer::Get().CreateSprite( sf::FloatRect( std::floor( increase_position.x + ( stepper_dimension.x - arrow_size.x ) / 2.f + 0.5f ),
+																 std::floor( increase_position.y + ( stepper_dimension.y - arrow_size.y ) / 2.f + 0.5f ),
+																 std::floor( arrow_size.x + 0.5f),
+																 std::floor( arrow_size.y + 0.5f) ),
+												  arrow_texture, sf::FloatRect(), arrow_increase_rotation ) );
 	}
 
 	// Slider

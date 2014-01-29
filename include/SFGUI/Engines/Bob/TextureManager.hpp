@@ -52,11 +52,11 @@ class SFGUI_API TextureManager{
 
 		/** Get a texture from a given image.
 		 * @param  image Image to load.
-		 * @return SharedPtr to the loaded texture.
+		 * @return Pointer to the loaded texture.
 		 */
-		std::shared_ptr< Primitive::Texture > GetTexture( std::shared_ptr<const sf::Image> image );
+		Primitive::Texture::Ptr GetTexture( std::shared_ptr<const sf::Image> image );
 
-		/** Unload texture from a given loaded image.
+		/** Unload texture from a previously loaded image.
 		 * @param  image Image to Unload.
 		 */
 		void UnloadTexture( std::shared_ptr<const sf::Image> image );
@@ -67,7 +67,7 @@ class SFGUI_API TextureManager{
 		void swap( TextureManager& rhs );
 
 	private:
-		typedef std::shared_ptr< Primitive::Texture > TextureHandle;
+		typedef Primitive::Texture::Ptr TextureHandle;
 		typedef std::map< std::shared_ptr<const sf::Image>, TextureHandle > TextureMap;
 
 		TextureMap m_textures;

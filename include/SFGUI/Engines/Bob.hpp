@@ -43,7 +43,6 @@ class SFGUI_API Bob : public Engine {
 		std::unique_ptr<RenderQueue> CreateSpinButtonDrawable( std::shared_ptr<const SpinButton> spinbutton ) const;
 
 	protected:
-		Primitive::Ptr CreateArrow( const sf::FloatRect& rect, unsigned int rotation, std::shared_ptr<const sf::Image> image ) const;
 		Primitive::Ptr CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect ) const;
 
 	private:

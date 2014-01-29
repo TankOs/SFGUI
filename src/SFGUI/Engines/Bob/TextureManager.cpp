@@ -1,8 +1,6 @@
 #include <SFGUI/Engines/Bob/TextureManager.hpp>
 #include <SFGUI/Renderer.hpp>
 
-#include <SFML/Graphics/Image.hpp>
-
 namespace sfg {
 namespace eng {
 namespace bob {
