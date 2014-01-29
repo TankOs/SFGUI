@@ -9,7 +9,7 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check ) const {
+std::unique_ptr<RenderQueue> Bob::CreateCheckButtonDrawable( std::shared_ptr<const CheckButton> check ) const {
 	unsigned int font_size(GetProperty<unsigned int>("FontSize", check));
 	const sf::Font& font(*GetResourceManager().GetFont(GetProperty<std::string>("FontName", check)));
 	float box_size( GetProperty<float>( "BoxSize", check ) );
@@ -18,7 +18,7 @@ RenderQueue* Bob::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check 
 
 	float vertical_offset = std::floor( ( check->GetAllocation().height - box_size ) / 2.f + 0.5f );
 
-	RenderQueue*  queue( new RenderQueue );
+	std::unique_ptr<RenderQueue>  queue( new RenderQueue );
 
 	// Box
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, vertical_offset, box_size, box_size ),
@@ -28,15 +28,16 @@ RenderQueue* Bob::CreateCheckButtonDrawable( SharedPtr<const CheckButton> check 
 
 
 	if( check->IsActive() ) {
-		const sf::Image *check_image = GetResourceManager().GetImage( GetProperty<std::string>( "CheckImage", check ) );
+		auto check_image = GetResourceManager().GetImage( GetProperty<std::string>( "CheckImage", check ) );
+		auto check_texture = m_texture_manager.GetTexture( check_image );
 		sf::Vector2f check_image_size( check_image->getSize() );
 
-		queue->Add( Renderer::Get().CreateImage(
+		queue->Add( Renderer::Get().CreateSprite(
 						sf::FloatRect( std::floor( ( box_size - check_image_size.x ) / 2.f + 0.5f ),
 									   std::floor( ( box_size - check_image_size.y ) / 2.f + 0.5f ) +  vertical_offset,
 									   check_image_size.x,
 									   check_image_size.y ),
-						*check_image ) );
+						check_texture ) );
 	}
 
 	// Label

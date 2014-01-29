@@ -8,8 +8,8 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateToggleButtonDrawable( SharedPtr<const ToggleButton> /*button*/ ) const {
-    return NULL;
+std::unique_ptr<RenderQueue> Bob::CreateToggleButtonDrawable( std::shared_ptr<const ToggleButton> /*button*/ ) const {
+    return nullptr;
 }
 
 }

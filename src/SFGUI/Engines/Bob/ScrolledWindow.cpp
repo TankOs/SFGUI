@@ -1,15 +1,14 @@
 #include <SFGUI/Engines/Bob.hpp>
-#include <SFGUI/Engines/Bob/Spritebox.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
 
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateScrolledWindowDrawable( SharedPtr<const ScrolledWindow> scrolled_window ) const {
+std::unique_ptr<RenderQueue> Bob::CreateScrolledWindowDrawable( std::shared_ptr<const ScrolledWindow> scrolled_window ) const {
 	float border_width( GetProperty<float>( "BorderWidth", scrolled_window ) );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f,
 												scrolled_window->GetContentAllocation().width  + 2 * border_width,

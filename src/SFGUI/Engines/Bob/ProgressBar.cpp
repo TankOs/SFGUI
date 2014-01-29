@@ -2,15 +2,14 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/ProgressBar.hpp>
-#include <SFGUI/Engines/Bob/Spritebox.hpp>
 
 #include <cmath>
 
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progress_bar ) const {
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> Bob::CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	//Background
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, progress_bar->GetAllocation().width, progress_bar->GetAllocation().height ),
@@ -27,7 +26,7 @@ RenderQueue* Bob::CreateProgressBarDrawable( SharedPtr<const ProgressBar> progre
 		);
 		sf::Vector2f bar_position( padding, padding );
 
-		if( progress_bar->GetOrientation() == ProgressBar::HORIZONTAL ) {
+		if( progress_bar->GetOrientation() == ProgressBar::Orientation::HORIZONTAL ) {
 			bar_dimension.x *= progress_bar->GetFraction();
 		}
 		else {

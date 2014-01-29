@@ -2,15 +2,14 @@
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Context.hpp>
-#include <SFGUI/Engines/Bob/Spritebox.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> Bob::CreateWindowDrawable( std::shared_ptr<const Window> window ) const {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", window ) );
 	sf::Color title_text_color( GetProperty<sf::Color>( "Color", window ) );
@@ -36,16 +35,17 @@ RenderQueue* Bob::CreateWindowDrawable( SharedPtr<const Window> window ) const {
 	}
 
 	if( window->HasStyle( Window::RESIZE ) ) {
-		const sf::Image *handle_image( GetResourceManager().GetImage( GetProperty<std::string>( "HandleImage", window ) ) );
-		if( handle_image != NULL ){
+		auto handle_image( GetResourceManager().GetImage( GetProperty<std::string>( "HandleImage", window ) ) );
+		auto handle_texture( m_texture_manager.GetTexture( handle_image ) );
+		if( handle_image ){
 			queue->Add(
-				Renderer::Get().CreateImage(
+				Renderer::Get().CreateSprite(
 					sf::FloatRect( window->GetAllocation().width  - static_cast<float>( handle_image->getSize().x ),
 								   window->GetAllocation().height - static_cast<float>( handle_image->getSize().y ),
 					               static_cast<float>( handle_image->getSize().x ),
 								   static_cast<float>( handle_image->getSize().y )
 					),
-					*handle_image
+					handle_texture
 				)
 			);
 		}

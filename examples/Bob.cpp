@@ -74,7 +74,7 @@ void BobExample::Run() {
 
 	m_check_button = sfg::CheckButton::Create( L"Look, a check-box!" );
 
-	m_progress = sfg::ProgressBar::Create( sfg::ProgressBar::HORIZONTAL );
+	m_progress = sfg::ProgressBar::Create( sfg::ProgressBar::Orientation::HORIZONTAL );
 	m_progress->SetRequisition( sf::Vector2f( 0.f, 20.f ) );
 
 	m_scrollbar = sfg::Scrollbar::Create();
@@ -88,9 +88,9 @@ void BobExample::Run() {
 	m_spinner->SetRequisition( sf::Vector2f( 40.f, 20.f ) );
 	m_spinner->Start();
 
-	sfg::Box::Ptr m_scrolled_window_box = sfg::Box::Create( sfg::Box::VERTICAL );
+	sfg::Box::Ptr m_scrolled_window_box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
 	for( int i = 0; i < 10; i++ ) {
-		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::HORIZONTAL );
+		sfg::Box::Ptr box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 		for( int j = 0; j < 20; j++ ) {
 			box->Pack( sfg::Button::Create( L"One button among many" ), true );
 		}
@@ -101,18 +101,18 @@ void BobExample::Run() {
 	m_scrolled_window = sfg::ScrolledWindow::Create();
 	m_scrolled_window->SetRequisition( sf::Vector2f( 250.f, 100.f ) );
 	m_scrolled_window->SetScrollbarPolicy( sfg::ScrolledWindow::HORIZONTAL_AUTOMATIC | sfg::ScrolledWindow::VERTICAL_AUTOMATIC );
-	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::TOP_LEFT );
+	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::Placement::TOP_LEFT );
 	m_scrolled_window->AddWithViewport( m_scrolled_window_box );
 
 	// Layout.
-	sfg::Box::Ptr widget_box( sfg::Box::Create( sfg::Box::HORIZONTAL, 5.f) );
+	sfg::Box::Ptr widget_box( sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f) );
 	widget_box->Pack( m_button, true );
 	widget_box->Pack( m_entry, true );
 	widget_box->Pack( m_scale, true );
 	widget_box->Pack( m_check_button, true );
 	widget_box->Pack( m_spinner, true );
 
-	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::VERTICAL, 5.f ) );
+	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );
 	main_box->Pack( m_scrollbar, false );
 	main_box->Pack( m_progress, false );
@@ -126,8 +126,8 @@ void BobExample::Run() {
 	m_window->SetPosition( sf::Vector2f( 100.f, 100.f) );
 
 	// Signals.
-	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( &BobExample::OnButtonClick, this );
-	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( &BobExample::OnAdjustmentChange, this );
+	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &BobExample::OnButtonClick, this ) );
+	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &BobExample::OnAdjustmentChange, this ) );
 
 	m_scrollbar->SetValue( 30.f );
 
@@ -140,16 +140,6 @@ void BobExample::Run() {
 				(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 			) {
 				render_window.close();
-			}
-			else if( event.type == sf::Event::Resized ) {
-				m_desktop.UpdateViewRect(
-					sf::FloatRect(
-						0,
-						0,
-						static_cast<float>( render_window.getSize().x ),
-						static_cast<float>( render_window.getSize().y )
-					)
-				);
 			}
 			else {
 				m_desktop.HandleEvent( event );

@@ -2,9 +2,9 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Primitive.hpp>
-#include <SFGUI/NonCopyable.hpp>
 
 #include <map>
+#include <memory>
 
 namespace sf {
 class Image;
@@ -18,7 +18,7 @@ namespace bob {
  * This class is necessary to manage our textures,
  * since we don't want to reload it all the time.
  */
-class SFGUI_API TextureManager : public NonCopyable {
+class SFGUI_API TextureManager{
 	public:
 		/** Ctor.
 		 * Creates an empty TextureManager.
@@ -29,16 +29,37 @@ class SFGUI_API TextureManager : public NonCopyable {
 		 */
 		~TextureManager();
 
+		/// @cond
+		// Fix for VS2013 not supporting = default move members.
+#if defined( _MSC_VER )
+		/** Deleted Copy Ctor.
+		 */
+		TextureManager( const TextureManager& ) = delete;
+
+		/** Deleted Copy Assignment.
+		 */
+		TextureManager& operator=( const TextureManager& ) = delete;
+#else
+		/** Move Ctor.
+		 */
+		TextureManager( TextureManager&& ) = default;
+
+		/** Move Assignment.
+		 */
+		TextureManager& operator=( TextureManager&& ) = default;
+#endif
+		/// @endcond
+
 		/** Get a texture from a given image.
 		 * @param  image Image to load.
 		 * @return SharedPtr to the loaded texture.
 		 */
-		SharedPtr< Primitive::Texture > GetTexture( const sf::Image *image );
+		std::shared_ptr< Primitive::Texture > GetTexture( std::shared_ptr<const sf::Image> image );
 
 		/** Unload texture from a given loaded image.
 		 * @param  image Image to Unload.
 		 */
-		void UnloadTexture( const sf::Image *image );
+		void UnloadTexture( std::shared_ptr<const sf::Image> image );
 
 		/** Swap (never throws).
 		 * @param  rhs Other TextureManager.
@@ -46,8 +67,8 @@ class SFGUI_API TextureManager : public NonCopyable {
 		void swap( TextureManager& rhs );
 
 	private:
-		typedef SharedPtr< Primitive::Texture > TextureHandle;
-		typedef std::map< const sf::Image *, TextureHandle > TextureMap;
+		typedef std::shared_ptr< Primitive::Texture > TextureHandle;
+		typedef std::map< std::shared_ptr<const sf::Image>, TextureHandle > TextureMap;
 
 		TextureMap m_textures;
 };

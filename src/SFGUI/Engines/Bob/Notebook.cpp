@@ -6,8 +6,8 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateNotebookDrawable( SharedPtr<const Notebook> /*notebook*/ ) const {
-	return NULL;
+std::unique_ptr<RenderQueue> Bob::CreateNotebookDrawable( std::shared_ptr<const Notebook> /*notebook*/ ) const {
+	return nullptr;
 }
 
 }

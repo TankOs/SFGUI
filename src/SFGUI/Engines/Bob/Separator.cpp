@@ -6,8 +6,8 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateSeparatorDrawable( SharedPtr<const Separator> /*separator*/ ) const {
-	return NULL;
+std::unique_ptr<RenderQueue> Bob::CreateSeparatorDrawable( std::shared_ptr<const Separator> /*separator*/ ) const {
+	return nullptr;
 }
 
 }

@@ -3,13 +3,11 @@
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Button.hpp>
 
-#include <SFGUI/Engines/Bob/Spritebox.hpp>
-
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateButtonDrawable( SharedPtr<const Button> button ) const {
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> Bob::CreateButtonDrawable( std::shared_ptr<const Button> button ) const {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, button->GetAllocation().width, button->GetAllocation().height ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "Image", button ) ),

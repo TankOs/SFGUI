@@ -8,8 +8,8 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateFrameDrawable( SharedPtr<const Frame> /*frame*/ ) const {
-	return NULL;
+std::unique_ptr<RenderQueue> Bob::CreateFrameDrawable( std::shared_ptr<const Frame> /*frame*/ ) const {
+	return nullptr;
 }
 
 }

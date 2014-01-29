@@ -8,7 +8,7 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateLabelDrawable( SharedPtr<const Label> label ) const {
+std::unique_ptr<RenderQueue> Bob::CreateLabelDrawable( std::shared_ptr<const Label> label ) const {
 	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", label ) ) );
 	const unsigned int font_size( GetProperty<unsigned int>( "FontSize", label ) );
 	const sf::Color font_color( GetProperty<sf::Color>( "Color", label ) );
@@ -24,7 +24,7 @@ RenderQueue* Bob::CreateLabelDrawable( SharedPtr<const Label> label ) const {
 		vis_label.setPosition( position.x, position.y );
 	}
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 	queue->Add( Renderer::Get().CreateText( vis_label ) );
 
 	return queue;

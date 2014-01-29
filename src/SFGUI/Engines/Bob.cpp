@@ -68,15 +68,15 @@ void Bob::ResetProperties() {
 	SetProperty( "Window", "HandleSize", 10.f );
 }
 
-Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, const sf::Image *image, UintRect sub_rect ) const
+Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect ) const
 {
 	Primitive::Ptr primitive( new Primitive( 6 * 3 * 3 ) );
 
-	if( image == NULL )
+	if( !image )
 		return primitive;
 
-	SharedPtr< Primitive::Texture > texture( m_texture_manager.GetTexture( image ) );
-	if( texture.get() == NULL )
+	std::shared_ptr< Primitive::Texture > texture( m_texture_manager.GetTexture( image ) );
+	if( !texture )
 		return primitive;
 
 	sf::FloatRect float_sub_rect = static_cast<sf::FloatRect>( sub_rect );
@@ -144,8 +144,8 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, const sf::Image 
     return primitive;
 }
 
-Primitive::Ptr Bob::CreateArrow( const sf::FloatRect& rect, unsigned int rotation, const sf::Image *image ) const {
-	SharedPtr<Primitive::Texture> texture_handle( m_texture_manager.GetTexture( image ) );
+Primitive::Ptr Bob::CreateArrow( const sf::FloatRect& rect, unsigned int rotation, std::shared_ptr<const sf::Image> image ) const {
+	std::shared_ptr<Primitive::Texture> texture_handle( m_texture_manager.GetTexture( image ) );
 	sf::Vector2f offset = texture_handle->offset;
 
 	Primitive::Ptr primitive( new Primitive );

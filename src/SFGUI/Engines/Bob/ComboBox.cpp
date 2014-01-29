@@ -7,8 +7,8 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateComboBoxDrawable( SharedPtr<const ComboBox> /*combo_box*/ ) const {
-	return NULL;
+std::unique_ptr<RenderQueue> Bob::CreateComboBoxDrawable( std::shared_ptr<const ComboBox> /*combo_box*/ ) const {
+	return nullptr;
 }
 
 }

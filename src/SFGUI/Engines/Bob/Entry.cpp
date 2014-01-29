@@ -3,12 +3,10 @@
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Entry.hpp>
 
-#include <SFGUI/Engines/Bob/Spritebox.hpp>
-
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
+std::unique_ptr<RenderQueue> Bob::CreateEntryDrawable( std::shared_ptr<const Entry> entry ) const {
 	sf::Color text_color( GetProperty<sf::Color>( "Color", entry ) );
 	sf::Color cursor_color( GetProperty<sf::Color>( "Color", entry ) );
 	float text_padding( GetProperty<float>( "Padding", entry ) );
@@ -16,7 +14,7 @@ RenderQueue* Bob::CreateEntryDrawable( SharedPtr<const Entry> entry ) const {
 	const sf::Font& font( *GetResourceManager().GetFont( GetProperty<std::string>( "FontName", entry ) ) );
 	const unsigned int& font_size( GetProperty<unsigned int>( "FontSize", entry ) );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	//Spritebox
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().width, entry->GetAllocation().height ),

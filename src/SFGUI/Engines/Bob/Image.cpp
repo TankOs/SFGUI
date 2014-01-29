@@ -6,20 +6,21 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateImageDrawable( SharedPtr<const Image> image ) const {
+std::unique_ptr<RenderQueue> Bob::CreateImageDrawable( std::shared_ptr<const Image> image ) const {
 	sf::Color background_color( GetProperty<sf::Color>( "BackgroundColor", image ) );
 
-	RenderQueue* queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
+	auto texture = Renderer::Get().LoadTexture( image->GetImage() );
 
 	queue->Add(
-		Renderer::Get().CreateImage(
+		Renderer::Get().CreateSprite(
 			sf::FloatRect(
 				( image->GetAllocation().width - image->GetRequisition().x ) * image->GetAlignment().x,
 				( image->GetAllocation().height - image->GetRequisition().y ) * image->GetAlignment().y,
 				static_cast<float>( image->GetImage().getSize().x ),
 				static_cast<float>( image->GetImage().getSize().y )
 			),
-			image->GetImage()
+			texture
 		)
 	);
 

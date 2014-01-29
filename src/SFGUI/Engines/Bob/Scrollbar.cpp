@@ -1,5 +1,4 @@
 #include <SFGUI/Engines/Bob.hpp>
-#include <SFGUI/Engines/Bob/Spritebox.hpp>
 
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
@@ -10,8 +9,8 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar ) const {
-	RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> Bob::CreateScrollbarDrawable( std::shared_ptr<const Scrollbar> scrollbar ) const {
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	Scrollbar::Orientation orientation = scrollbar->GetOrientation();
 
@@ -27,7 +26,7 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 	unsigned int arrow_decrease_rotation;
 	unsigned int arrow_increase_rotation;
 
-	if( orientation == Scrollbar::HORIZONTAL ) {
+	if( orientation == Scrollbar::Orientation::HORIZONTAL ) {
 		stepper_dimension = sf::Vector2f( scrollbar->GetAllocation().height, scrollbar->GetAllocation().height );
 		trough_dimension  = sf::Vector2f( scrollbar->GetAllocation().width - 2 * stepper_dimension.x, scrollbar->GetAllocation().height );
 
@@ -76,10 +75,10 @@ RenderQueue* Bob::CreateScrollbarDrawable( SharedPtr<const Scrollbar> scrollbar 
 								 GetProperty<UintRect>( "StepperSubRect", scrollbar ) ) );
 
 	// Arrows
-	const sf::Image *arrow_image( GetResourceManager().GetImage( GetProperty<std::string>( "ArrowImage", scrollbar ) ) );
-	if(arrow_image != NULL){
+	std::shared_ptr<const sf::Image> arrow_image( GetResourceManager().GetImage( GetProperty<std::string>( "ArrowImage", scrollbar ) ) );
+	if( arrow_image ){
 		sf::Vector2f arrow_size;
-		if( orientation == Scrollbar::HORIZONTAL ) {
+		if( orientation == Scrollbar::Orientation::HORIZONTAL ) {
 			arrow_size = sf::Vector2f( static_cast<float>( arrow_image->getSize().y ), static_cast<float>( arrow_image->getSize().x ) );
 		}
 		else {

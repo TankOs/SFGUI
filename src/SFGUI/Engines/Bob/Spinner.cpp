@@ -7,15 +7,15 @@
 namespace sfg {
 namespace eng {
 
-RenderQueue* Bob::CreateSpinnerDrawable( SharedPtr<const Spinner> spinner ) const {
-    RenderQueue* queue( new RenderQueue );
+std::unique_ptr<RenderQueue> Bob::CreateSpinnerDrawable( std::shared_ptr<const Spinner> spinner ) const {
+    std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-    const sf::Image *image = GetResourceManager().GetImage( GetProperty<std::string>( "Image", spinner ) );
-    if( image == NULL )
+    std::shared_ptr<const sf::Image> image = GetResourceManager().GetImage( GetProperty<std::string>( "Image", spinner ) );
+    if( !image )
 		return queue;
 
-   	SharedPtr< Primitive::Texture > texture( m_texture_manager.GetTexture( image ) );
-	if( texture.get() == NULL )
+   	std::shared_ptr< Primitive::Texture > texture( m_texture_manager.GetTexture( image ) );
+	if( !texture )
 		return queue;
 
 	// Only quadratic spinners.
