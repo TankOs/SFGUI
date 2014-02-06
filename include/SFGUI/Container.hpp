@@ -46,7 +46,7 @@ class SFGUI_API Container : public Widget {
 
 		void Refresh();
 
-		virtual void HandleEvent( const sf::Event& event ) override;
+		virtual unsigned int HandleEvent( const sf::Event& event ) override;
 
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.

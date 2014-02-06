@@ -14,7 +14,9 @@ void Desktop::Update( float seconds ) {
 	Context::Deactivate();
 }
 
-void Desktop::HandleEvent( const sf::Event& event ) {
+unsigned int Desktop::HandleEvent( const sf::Event& event ) {
+	unsigned int nbHandle = 0;
+
 	// Activate context.
 	Context::Activate( m_context );
 
@@ -77,7 +79,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 			last_receiver = widget;
 		}
 
-		widget->HandleEvent( event );
+		nbHandle += widget->HandleEvent( event );
 
 		if( check_inside && is_inside ) {
 			if( index < m_children.size() && widget == m_children[index] ) {
@@ -89,6 +91,8 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 
 	// Restore previous context.
 	Context::Deactivate();
+
+	return nbHandle;
 }
 
 void Desktop::Add( std::shared_ptr<Widget> widget ) {
