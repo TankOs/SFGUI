@@ -1,8 +1,18 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
+0.2.1
+
+Enhancements:
+  - GLee replaced by GLEW.
+
+Fixes:
+  - Fixed compilation error on GLXContextID.
+  - Fixed CMake configuration generating library file names that ld couldn't
+    find when using symbolic names during linking.
+
 0.2.0
 
-Enhancement:
+Enhancements:
   - Conversion of codebase to use C++11 features.
   - Implemented two backend renderers (one uses vertex buffer objects, the
     other client-side vertex arrays).
