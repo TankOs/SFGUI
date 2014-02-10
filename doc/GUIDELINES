@@ -9,20 +9,19 @@ consistent as possible.
 
 2. COMMITS/CONTRIBUTIONS TO THE REPOSITORY
 
-SFGUI's repository follows the version branch workflow: The master branch
-always contains commits of the latest stable release. Development happens in
-branches that are labeled by the next version number.
+The repository uses two special branches:
 
-Example: If version 0.0.0 is current, master contains 0.0.0's commits. If 0.1.0
-will be the next version, then development commits can be found in the branch
-with the same name.
+	- master: Includes commits that will definitely be in the next version.
+	- dev: Includes commits that are most likely accepted to be merged to the
+		master branch. Might be unstable/rewritten.
 
 When sending in patches, make sure to use "git format-patch" or give us access
 to your Git repository, so that we can pull from it.
 
 A real advantage for us is if you rebase your commits onto our latest commits
-for the next version. This minimizes the merge effort we might have to spend
-when applying your patch.
+of the dev branch. This minimizes the merge effort we might have to spend when
+applying your patch, and it makes sure that your changes work with our latest
+changes.
 
 
 3. CODE STYLE
