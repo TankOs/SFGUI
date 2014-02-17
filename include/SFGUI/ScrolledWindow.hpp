@@ -117,7 +117,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		virtual void HandleChildInvalidate( Widget::PtrConst child ) const override;
 
 	protected:
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
 
 	private:

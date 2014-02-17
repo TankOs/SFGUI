@@ -601,9 +601,16 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 		font.getGlyph( codepoint, size, false );
 	}
 
-	auto image = font.getTexture( size ).copyToImage();
+	// Make a local copy to avoid unnecessary dereferencing.
+	for( const auto character_set : m_character_sets ) {
+		for( auto codepoint = character_set.first; codepoint < character_set.second; ++codepoint ) {
+			font.getGlyph( codepoint, size, false );
+		}
+	}
 
-	auto handle = LoadTexture( image );
+	const auto image = font.getTexture( size ).copyToImage();
+
+	const auto handle = LoadTexture( image );
 
 	m_fonts[id] = handle;
 
@@ -805,6 +812,14 @@ void Renderer::Redraw() {
 
 const sf::Vector2u& Renderer::GetWindowSize() const {
 	return m_last_window_size;
+}
+
+void Renderer::AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound ) {
+	if( high_bound <= low_bound ) {
+		return;
+	}
+
+	m_character_sets.emplace_back( std::make_pair( low_bound, high_bound ) );
 }
 
 void Renderer::InvalidateImpl( unsigned char /*datasets*/ ) {

@@ -44,7 +44,7 @@ class SFGUI_API Scrollbar : public Range {
 		bool IsIncreaseStepperPressed() const;
 
 	protected:
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
 
 	private:

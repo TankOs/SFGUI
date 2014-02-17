@@ -98,7 +98,7 @@ class SFGUI_API SpinButton : public Entry {
 		static Signal::SignalID OnValueChanged; //!< Fired when the value changes.
 
 	protected:
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
 
 	private:

@@ -99,7 +99,7 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void SetTextMargin( float margin );
 
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		virtual sf::Vector2f CalculateRequisition() override;
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;

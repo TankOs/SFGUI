@@ -22,7 +22,7 @@ class SFGUI_API CheckButton : public ToggleButton {
 		virtual const std::string& GetName() const override;
 
 	protected:
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		virtual sf::Vector2f CalculateRequisition() override;
 		void HandleSizeChange();
 };

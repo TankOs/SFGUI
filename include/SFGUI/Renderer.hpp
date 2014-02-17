@@ -228,6 +228,15 @@ class SFGUI_API Renderer {
 		 */
 		const sf::Vector2u& GetWindowSize() const;
 
+		/** Add a required character set to the character sets that the Renderer will load for new fonts.
+		 * This is required if using a script whose glyphs are not smaller than codepoint 0x370
+		 * such as Greek, Cyrillic, Hebrew, Arabic etc.
+		 * By default, only the Latin script and its extensions are loaded.
+		 * @param low_bound Lower boundary of the character set, i.e. the glyph with the smallest codepoint.
+		 * @param high_bound Higher boundary of the character set, i.e. the glyph with the largest codepoint.
+		 */
+		void AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound );
+
 		/** Get name of the Renderer.
 		 * The name of a Renderer is a descriptive name of the Renderer itself. E.g.
 		 * "Vertex Buffer Renderer" for the VertexBufferRenderer.
@@ -289,6 +298,7 @@ class SFGUI_API Renderer {
 
 		std::list<TextureNode> m_textures;
 		std::map<FontID, Primitive::Texture::Ptr> m_fonts;
+		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
 
 		static std::shared_ptr<Renderer> m_instance;
 

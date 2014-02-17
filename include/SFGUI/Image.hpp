@@ -40,7 +40,7 @@ class SFGUI_API Image : public Widget, public Misc {
 		 */
 		Image( const sf::Image& image = sf::Image() );
 
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
 
 	private:

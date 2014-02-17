@@ -54,7 +54,7 @@ class SFGUI_API ProgressBar : public Widget {
 		ProgressBar( Orientation orientation = Orientation::HORIZONTAL );
 
 		sf::Vector2f CalculateRequisition() override;
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
 		float m_fraction;
 		Orientation m_orientation;

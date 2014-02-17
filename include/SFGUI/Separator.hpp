@@ -33,7 +33,7 @@ class SFGUI_API Separator : public Widget {
 		Orientation GetOrientation() const;
 
 	protected:
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
 
 	private:

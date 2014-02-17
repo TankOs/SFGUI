@@ -35,7 +35,7 @@ class SFGUI_API Scale : public Range {
 		const sf::FloatRect GetSliderRect() const;
 
 	protected:
-		std::unique_ptr<RenderQueue> InvalidateImpl() const;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
 
 	private:
