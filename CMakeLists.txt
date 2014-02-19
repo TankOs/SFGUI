@@ -177,7 +177,7 @@ endif()
 include_directories( ${INCLUDE_PATH} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
-include_directories( ${GLEW_INCLUDE_PATH} )
+include_directories( ${GLEW_INCLUDE_DIRS} )
 include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
 
 # Add the library.
