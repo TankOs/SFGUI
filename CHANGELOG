@@ -2,6 +2,11 @@ Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
 0.2.1
 
+Fixes:
+  - Replaced GLEW_INCLUDE_PATH by GLEW_INCLUDE_DIRS in CMake config.
+
+0.2.1
+
 Enhancements:
   - GLee replaced by GLEW.
 

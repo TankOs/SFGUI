@@ -6,7 +6,7 @@
 1. INSTALLING
 
 Dependencies:
-  - SFML 2.1 (http://sfml-dev.org/)
+  - SFML Git (http://sfml-dev.org/)
 
 The build system in use is CMake (http://cmake.org/). It's available for all
 major platforms.
