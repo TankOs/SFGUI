@@ -1,9 +1,14 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
-0.2.1
+0.2.2
+
+Enhancements:
+  - Added possibility for specifying optional character sets for the renderer
+    during runtime to preload glyphs.
 
 Fixes:
   - Replaced GLEW_INCLUDE_PATH by GLEW_INCLUDE_DIRS in CMake config.
+	- Added missing override declarations.
 
 0.2.1
 
