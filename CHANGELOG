@@ -1,5 +1,11 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
+0.2.3
+
+Fixes:
+  - Now using both GLEW_INCLUDE_PATH and GLEW_INCLUDE_DIRS for SFML
+    compatibility reasons.
+
 0.2.2
 
 Enhancements:

@@ -3,7 +3,7 @@ project( SFGUI )
 
 set( SFGUI_MAJOR_VERSION 0 )
 set( SFGUI_MINOR_VERSION 2 )
-set( SFGUI_REVISION_VERSION 2 )
+set( SFGUI_REVISION_VERSION 3 )
 
 ### USER INPUT ###
 
@@ -177,7 +177,8 @@ endif()
 include_directories( ${INCLUDE_PATH} )
 include_directories( ${SFML_INCLUDE_DIR} )
 include_directories( ${OPENGL_INCLUDE_DIR} )
-include_directories( ${GLEW_INCLUDE_DIRS} )
+include_directories( ${GLEW_INCLUDE_DIRS} ) # Set by GLEW's FindGLEW.cmake.
+include_directories( ${GLEW_INCLUDE_PATH} ) # Set by SFML's FindGLEW.cmake.
 include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
 
 # Add the library.
