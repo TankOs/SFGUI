@@ -179,12 +179,15 @@ if( SFGUI_INCLUDE_FONT )
 	)
 endif()
 
-include_directories( ${INCLUDE_PATH} )
-include_directories( ${SFML_INCLUDE_DIR} )
-include_directories( ${OPENGL_INCLUDE_DIR} )
-include_directories( ${GLEW_INCLUDE_DIRS} ) # Set by GLEW's FindGLEW.cmake.
-include_directories( ${GLEW_INCLUDE_PATH} ) # Set by SFML's FindGLEW.cmake.
+include_directories( "${INCLUDE_PATH}" )
+include_directories( "${SFML_INCLUDE_DIR}" )
 include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
+
+if( NOT ( "${GLEW_INCLUDE_PATH}" STREQUAL "${EMPTY_STRING}" ) )
+	include_directories( "${GLEW_INCLUDE_PATH}" ) # Set by SFML's FindGLEW.cmake.
+else()
+	include_directories( "${GLEW_INCLUDE_DIRS}" ) # Set by GLEW's FindGLEW.cmake.
+endif()
 
 # Add the library.
 if( SFGUI_BUILD_SHARED_LIBS )
@@ -293,5 +296,5 @@ install(
 
 install(
 	FILES README AUTHORS LICENSE FONT.LICENSE CHANGELOG
-	DESTINATION ${SHARE_PATH}
+	DESTINATION "${SHARE_PATH}"
 )

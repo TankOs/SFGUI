@@ -211,7 +211,7 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 			line_y -= static_cast<int>( GetAllocation().top + GetAllocation().height + padding );
 			line_y /= static_cast<int>( Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 2 * padding );
 
-			if( line_y < static_cast<int>( GetItemCount() ) ) {
+			if( ( line_y < static_cast<int>( GetItemCount() ) ) && ( line_y >= 0 ) ) {
 				if( line_y != static_cast<int>( m_highlighted_item ) ) {
 					Invalidate();
 					m_highlighted_item = line_y + GetStartItemIndex();

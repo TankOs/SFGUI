@@ -304,13 +304,20 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 	auto parent = m_parent.lock();
 
+	auto emit_leave = false;
+	auto emit_enter = false;
+	auto emit_move = false;
+	auto emit_left_click = false;
+	auto emit_right_click = false;
+
 	switch( event.type ) {
 		case sf::Event::MouseLeft:
 			if( IsMouseInWidget() ) {
 				SetMouseInWidget( false );
 
-				GetSignals().Emit( OnMouseLeave );
 				HandleMouseLeave( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+
+				emit_leave = true;
 			}
 
 			HandleMouseMoveEvent( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
@@ -318,6 +325,10 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			SetMouseButtonDown();
 			HandleMouseButtonEvent( sf::Mouse::Left, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
 			HandleMouseButtonEvent( sf::Mouse::Right, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+
+			if( emit_leave ) {
+				GetSignals().Emit( OnMouseLeave );
+			}
 
 			break;
 
@@ -328,20 +339,34 @@ void Widget::HandleEvent( const sf::Event& event ) {
 				if( !IsMouseInWidget() ) {
 					SetMouseInWidget( true );
 
-					GetSignals().Emit( OnMouseEnter );
+					emit_enter = true;
+
 					HandleMouseEnter( event.mouseMove.x, event.mouseMove.y );
 				}
 
-				GetSignals().Emit( OnMouseMove );
+				emit_move = true;
 			}
 			else if( IsMouseInWidget() ) { // Check for leave event.
 				SetMouseInWidget( false );
 
-				GetSignals().Emit( OnMouseLeave );
+				emit_leave = true;
+
 				HandleMouseLeave( event.mouseMove.x, event.mouseMove.y );
 			}
 
 			HandleMouseMoveEvent( event.mouseMove.x, event.mouseMove.y );
+
+			if( emit_move ) {
+				if( emit_enter ) {
+					GetSignals().Emit( OnMouseEnter );
+				}
+
+				GetSignals().Emit( OnMouseMove );
+			}
+			else if( emit_leave ) {
+				GetSignals().Emit( OnMouseLeave );
+			}
+
 			break;
 
 		case sf::Event::MouseButtonPressed:
@@ -372,15 +397,22 @@ void Widget::HandleEvent( const sf::Event& event ) {
 					HandleMouseClick( event.mouseButton.button, event.mouseButton.x, event.mouseButton.y );
 
 					if( event.mouseButton.button == sf::Mouse::Left ) {
-						GetSignals().Emit( OnLeftClick );
+						emit_left_click = true;
 					}
 					else if( event.mouseButton.button == sf::Mouse::Right ) {
-						GetSignals().Emit( OnRightClick );
+						emit_right_click = true;
 					}
 				}
 			}
 
 			HandleMouseButtonEvent( event.mouseButton.button, false, event.mouseButton.x, event.mouseButton.y );
+
+			if( emit_left_click ) {
+				GetSignals().Emit( OnLeftClick );
+			}
+			else if( emit_right_click ) {
+				GetSignals().Emit( OnRightClick );
+			}
 
 			if( IsMouseInWidget() ) {
 				if( event.mouseButton.button == sf::Mouse::Left ) {
