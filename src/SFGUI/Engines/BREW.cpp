@@ -178,7 +178,7 @@ std::unique_ptr<RenderQueue> BREW::CreateBorder( const sf::FloatRect& rect, floa
 	queue->Add(
 		Renderer::Get().CreateLine(
 			sf::Vector2f( rect.left + rect.width, rect.top ),
-			sf::Vector2f( rect.left + rect.width, rect.top + rect.height + border_width ),
+			sf::Vector2f( rect.left + rect.width, rect.top + rect.height ),
 			dark_color,
 			border_width
 		)
