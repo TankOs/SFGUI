@@ -321,15 +321,15 @@ void VertexBufferRenderer::DisplayImpl() const {
 void VertexBufferRenderer::RefreshVBO() {
 	SortPrimitives();
 
-	std::vector<sf::Vector2f> vertex_data;
-	std::vector<sf::Color> color_data;
-	std::vector<sf::Vector2f> texture_data;
-	std::vector<GLuint> index_data;
+	m_vertex_data.clear();
+	m_color_data.clear();
+	m_texture_data.clear();
+	m_index_data.clear();
 
-	vertex_data.reserve( m_vertex_count );
-	color_data.reserve( m_vertex_count );
-	texture_data.reserve( m_vertex_count );
-	index_data.reserve( m_index_count );
+	m_vertex_data.reserve( m_vertex_count );
+	m_color_data.reserve( m_vertex_count );
+	m_texture_data.reserve( m_vertex_count );
+	m_index_data.reserve( m_index_count );
 
 	m_batches.clear();
 
@@ -348,8 +348,11 @@ void VertexBufferRenderer::RefreshVBO() {
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
 
+	const auto max_texture_size = m_max_texture_size;
+	const auto default_texture_size = m_texture_atlas[0]->getSize();
+
 	for( const auto& primitive_ptr : m_primitives ) {
-		Primitive* primitive = primitive_ptr.get();
+		auto primitive = primitive_ptr.get();
 
 		primitive->SetSynced();
 
@@ -357,18 +360,16 @@ void VertexBufferRenderer::RefreshVBO() {
 			continue;
 		}
 
-		sf::Vector2f position_transform( primitive->GetPosition() );
+		auto position_transform = primitive->GetPosition();
 
 		auto viewport = primitive->GetViewport();
-
-		std::size_t atlas_page = 0;
 
 		auto viewport_rect = window_viewport;
 
 		// Check if primitive needs to be rendered in a custom viewport.
 		if( viewport && ( ( *viewport ) != ( *m_default_viewport ) ) ) {
-			sf::Vector2f destination_origin( viewport->GetDestinationOrigin() );
-			sf::Vector2f size( viewport->GetSize() );
+			auto destination_origin = viewport->GetDestinationOrigin();
+			auto size = viewport->GetSize();
 
 			position_transform += ( destination_origin - viewport->GetSourceOrigin() );
 
@@ -380,7 +381,7 @@ void VertexBufferRenderer::RefreshVBO() {
 			}
 		}
 
-		const std::shared_ptr<Signal>& custom_draw_callback( primitive->GetCustomDrawCallback() );
+		const auto& custom_draw_callback = primitive->GetCustomDrawCallback();
 
 		if( custom_draw_callback ) {
 			// Start a new batch.
@@ -415,20 +416,31 @@ void VertexBufferRenderer::RefreshVBO() {
 
 			sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
 
-			for( const auto& vertex : vertices ) {
+			std::size_t atlas_page = 0;
+
+			const auto vertices_size = vertices.size();
+			sf::Vector2f normalizer;
+
+			for( std::size_t index = 0; index < vertices_size; ++index ) {
+				const auto vertex = vertices[index];
 				position.x = vertex.position.x + position_transform.x;
 				position.y = vertex.position.y + position_transform.y;
 
-				vertex_data.push_back( position );
-				color_data.push_back( vertex.color );
+				m_vertex_data.push_back( position );
+				m_color_data.push_back( vertex.color );
 
-				atlas_page = static_cast<unsigned int>( vertex.texture_coordinate.y ) / m_max_texture_size;
+				// The bound texture can only change between triangles.
+				if( index % 3 == 0 ) {
+					atlas_page = static_cast<unsigned int>( vertex.texture_coordinate.y ) / max_texture_size;
+					auto texture_size = ( vertex.texture_coordinate.y <= 1.f ) ? default_texture_size : m_texture_atlas[atlas_page]->getSize();
 
-				// Used to normalize texture coordinates.
-				sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas[atlas_page]->getSize().x ), 1.f / static_cast<float>( m_texture_atlas[atlas_page]->getSize().y ) );
+					// Used to normalize texture coordinates.
+					normalizer.x = 1.f / static_cast<float>( texture_size.x );
+					normalizer.y = 1.f / static_cast<float>( texture_size.y );
+				}
 
 				// Normalize SFML's pixel texture coordinates.
-				texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, static_cast<float>( static_cast<unsigned int>( vertex.texture_coordinate.y ) % m_max_texture_size ) * normalizer.y ) );
+				m_texture_data.emplace_back( vertex.texture_coordinate.x * normalizer.x, static_cast<float>( static_cast<unsigned int>( vertex.texture_coordinate.y ) % max_texture_size ) * normalizer.y );
 
 				// Update the bounding rect.
 				if( m_cull ) {
@@ -451,13 +463,13 @@ void VertexBufferRenderer::RefreshVBO() {
 			}
 
 			if( m_cull && !viewport_rect.intersects( bounding_rect ) ) {
-				vertex_data.resize( m_last_vertex_count );
-				color_data.resize( m_last_vertex_count );
-				texture_data.resize( m_last_vertex_count );
+				m_vertex_data.resize( m_last_vertex_count );
+				m_color_data.resize( m_last_vertex_count );
+				m_texture_data.resize( m_last_vertex_count );
 			}
 			else {
 				for( const auto& index : indices ) {
-					index_data.push_back( m_last_vertex_count + index );
+					m_index_data.push_back( m_last_vertex_count + index );
 				}
 
 				// Check if we need to start a new batch.
@@ -485,44 +497,44 @@ void VertexBufferRenderer::RefreshVBO() {
 	current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
 	m_batches.push_back( current_batch );
 
-	if( !vertex_data.empty() && !color_data.empty() && !texture_data.empty() ) {
+	if( !m_vertex_data.empty() && !m_color_data.empty() && !m_texture_data.empty() ) {
 		if( m_vbo_sync_type & INVALIDATE_VERTEX ) {
 			// Sync vertex data
 			GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_vertex_vbo );
-			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, vertex_data.size() * sizeof( sf::Vector3f ), 0, GLEXT_GL_DYNAMIC_DRAW );
+			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, m_vertex_data.size() * sizeof( sf::Vector3f ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
-			if( vertex_data.size() > 0 ) {
-				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, vertex_data.size() * sizeof( sf::Vector2f ), &vertex_data[0] );
+			if( m_vertex_data.size() > 0 ) {
+				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, m_vertex_data.size() * sizeof( sf::Vector2f ), m_vertex_data.data() );
 			}
 		}
 
 		if( m_vbo_sync_type & INVALIDATE_COLOR ) {
 			// Sync color data
 			GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_color_vbo );
-			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, color_data.size() * sizeof( sf::Color ), 0, GLEXT_GL_DYNAMIC_DRAW );
+			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, m_color_data.size() * sizeof( sf::Color ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
-			if( color_data.size() > 0 ) {
-				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, color_data.size() * sizeof( sf::Color ), &color_data[0] );
+			if( m_color_data.size() > 0 ) {
+				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, m_color_data.size() * sizeof( sf::Color ), m_color_data.data() );
 			}
 		}
 
 		if( m_vbo_sync_type & INVALIDATE_TEXTURE ) {
 			// Sync texture coord data
 			GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_texture_vbo );
-			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, texture_data.size() * sizeof( sf::Vector2f ), 0, GLEXT_GL_DYNAMIC_DRAW );
+			GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, m_texture_data.size() * sizeof( sf::Vector2f ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
-			if( texture_data.size() > 0 ) {
-				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, texture_data.size() * sizeof( sf::Vector2f ), &texture_data[0] );
+			if( m_texture_data.size() > 0 ) {
+				GLEXT_glBufferSubData( GLEXT_GL_ARRAY_BUFFER, 0, m_texture_data.size() * sizeof( sf::Vector2f ), m_texture_data.data() );
 			}
 		}
 
 		if( m_vbo_sync_type & INVALIDATE_INDEX ) {
 			// Sync index data
 			GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, m_index_vbo );
-			GLEXT_glBufferData( GLEXT_GL_ELEMENT_ARRAY_BUFFER, index_data.size() * sizeof( GLuint ), 0, GLEXT_GL_DYNAMIC_DRAW );
+			GLEXT_glBufferData( GLEXT_GL_ELEMENT_ARRAY_BUFFER, m_index_data.size() * sizeof( GLuint ), 0, GLEXT_GL_DYNAMIC_DRAW );
 
-			if( index_data.size() > 0 ) {
-				GLEXT_glBufferSubData( GLEXT_GL_ELEMENT_ARRAY_BUFFER, 0, index_data.size() * sizeof( GLuint ), &index_data[0] );
+			if( m_index_data.size() > 0 ) {
+				GLEXT_glBufferSubData( GLEXT_GL_ELEMENT_ARRAY_BUFFER, 0, m_index_data.size() * sizeof( GLuint ), m_index_data.data() );
 			}
 		}
 	}

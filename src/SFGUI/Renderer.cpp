@@ -18,7 +18,8 @@ Renderer::Renderer() :
 	m_window_size( 0, 0 ),
 	m_max_texture_size( 0 ),
 	m_force_redraw( false ),
-	m_last_window_size( 0, 0 ) {
+	m_last_window_size( 0, 0 ),
+	m_primitives_sorted( false ) {
 	// Needed to determine maximum texture size.
 	sf::Context context;
 
@@ -657,6 +658,22 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 
 	if( m_texture_atlas.empty() || ( ( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size ) + image.getSize().y + 2 * padding > m_max_texture_size ) ) {
 		// We need a new atlas page.
+
+		if( !m_texture_atlas.empty() ) {
+			// Make sure the current page vertical size is maximal
+			// so we can compute the right page from y texture coordinate.
+			auto old_image = m_texture_atlas.back()->copyToImage();
+			sf::Image new_image;
+
+			new_image.create( old_image.getSize().x, m_max_texture_size, sf::Color::White );
+			new_image.copy( old_image, 0, 0 );
+
+			new_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
+
+			m_texture_atlas.back()->loadFromImage( new_image );
+		}
+
+		// Insert the new page.
 		m_texture_atlas.push_back(
 			std::move(
 				std::unique_ptr<sf::Texture>( new sf::Texture() )
@@ -750,6 +767,10 @@ void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) 
 /// @endcond
 
 void Renderer::SortPrimitives() {
+	if( m_primitives_sorted ) {
+		return;
+	}
+
 	std::size_t current_position = 1;
 	std::size_t sort_index;
 
@@ -764,6 +785,8 @@ void Renderer::SortPrimitives() {
 			--sort_index;
 		}
 	}
+
+	m_primitives_sorted = true;
 }
 
 void Renderer::AddPrimitive( Primitive::Ptr primitive ) {
@@ -779,6 +802,8 @@ void Renderer::AddPrimitive( Primitive::Ptr primitive ) {
 
 	m_vertex_count += vertices_size;
 	m_index_count += indices_size;
+
+	m_primitives_sorted = false;
 
 	Invalidate( INVALIDATE_ALL );
 }

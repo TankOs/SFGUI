@@ -148,6 +148,9 @@ void VertexArrayRenderer::RefreshArray() {
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
 
+	const auto max_texture_size = m_max_texture_size;
+	const auto default_texture_size = m_texture_atlas[0]->getSize();
+
 	for( std::size_t primitive_index = 1; primitive_index != primitives_size + 1; primitive_index += 1 ) {
 		Primitive* primitive = m_primitives[primitive_index - 1].get();
 
@@ -160,8 +163,6 @@ void VertexArrayRenderer::RefreshArray() {
 		sf::Vector2f position_transform( primitive->GetPosition() );
 
 		auto viewport = primitive->GetViewport();
-
-		std::size_t atlas_page = 0;
 
 		auto viewport_rect = window_viewport;
 
@@ -215,20 +216,31 @@ void VertexArrayRenderer::RefreshArray() {
 
 			sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
 
-			for( const auto& vertex : vertices ) {
+			std::size_t atlas_page = 0;
+
+			const auto vertices_size = vertices.size();
+			sf::Vector2f normalizer;
+
+			for( std::size_t index = 0; index < vertices_size; ++index ) {
+				const auto vertex = vertices[index];
 				position.x = vertex.position.x + position_transform.x;
 				position.y = vertex.position.y + position_transform.y;
 
 				m_vertex_data.push_back( position );
 				m_color_data.push_back( vertex.color );
 
-				atlas_page = static_cast<unsigned int>( vertex.texture_coordinate.y ) / m_max_texture_size;
+				// The bound texture can only change between triangles.
+				if( index % 3 == 0 ) {
+					atlas_page = static_cast<unsigned int>( vertex.texture_coordinate.y ) / max_texture_size;
+					auto texture_size = ( vertex.texture_coordinate.y <= 1.f ) ? default_texture_size : m_texture_atlas[atlas_page]->getSize();
 
-				// Used to normalize texture coordinates.
-				sf::Vector2f normalizer( 1.f / static_cast<float>( m_texture_atlas[atlas_page]->getSize().x ), 1.f / static_cast<float>( m_texture_atlas[atlas_page]->getSize().y ) );
+					// Used to normalize texture coordinates.
+					normalizer.x = 1.f / static_cast<float>( texture_size.x );
+					normalizer.y = 1.f / static_cast<float>( texture_size.y );
+				}
 
 				// Normalize SFML's pixel texture coordinates.
-				m_texture_data.push_back( sf::Vector2f( vertex.texture_coordinate.x * normalizer.x, static_cast<float>( static_cast<unsigned int>( vertex.texture_coordinate.y ) % m_max_texture_size ) * normalizer.y ) );
+				m_texture_data.emplace_back( vertex.texture_coordinate.x * normalizer.x, static_cast<float>( static_cast<unsigned int>( vertex.texture_coordinate.y ) % max_texture_size ) * normalizer.y );
 
 				// Update the bounding rect.
 				if( m_cull ) {

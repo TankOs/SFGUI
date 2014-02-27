@@ -56,6 +56,11 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 
 		void DestroyFBO();
 
+		std::vector<sf::Vector2f> m_vertex_data;
+		std::vector<sf::Color> m_color_data;
+		std::vector<sf::Vector2f> m_texture_data;
+		std::vector<GLuint> m_index_data;
+
 		std::vector<Batch> m_batches;
 
 		GLuint m_frame_buffer;

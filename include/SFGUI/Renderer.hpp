@@ -305,6 +305,8 @@ class SFGUI_API Renderer {
 		Primitive::Texture::Ptr m_pseudo_texture;
 
 		mutable sf::Vector2u m_last_window_size;
+
+		bool m_primitives_sorted;
 };
 
 }
