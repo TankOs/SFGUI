@@ -118,7 +118,6 @@ class SFGUI_API ComboBox : public Bin {
 
 		Scrollbar::Ptr m_scrollbar;
 
-		bool m_active;
 		IndexType m_active_item;
 		IndexType m_highlighted_item;
 		std::vector<sf::String> m_entries;

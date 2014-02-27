@@ -45,8 +45,8 @@ void ToggleButton::SetActive( bool active ) {
 		SetState( State::NORMAL );
 	}
 
-	GetSignals().Emit( OnToggle );
 	Invalidate();
+	GetSignals().Emit( OnToggle );
 }
 
 bool ToggleButton::IsActive() const {

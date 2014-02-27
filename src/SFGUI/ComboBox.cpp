@@ -15,7 +15,6 @@ const ComboBox::IndexType ComboBox::NONE = std::numeric_limits<ComboBox::IndexTy
 static const sf::String EMPTY = "";
 
 ComboBox::ComboBox() :
-	m_active( false ),
 	m_active_item( NONE ),
 	m_highlighted_item( NONE ),
 	m_start_entry( 0 )
@@ -159,7 +158,7 @@ const sf::String& ComboBox::GetItem( IndexType index ) const {
 }
 
 bool ComboBox::IsPoppedUp() const {
-	return m_active;
+	return GetState() == State::ACTIVE;
 }
 
 void ComboBox::HandleMouseEnter( int /*x*/, int /*y*/ ) {
@@ -175,7 +174,7 @@ void ComboBox::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 }
 
 void ComboBox::HandleMouseMoveEvent( int x, int y ) {
-	if( m_active ) {
+	if( GetState() == State::ACTIVE ) {
 		if( m_scrollbar ) {
 			sf::Event event;
 
@@ -262,11 +261,11 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 			return;
 		}
 
-		m_active = false;
+		auto emit_select = false;
 
 		if( ( m_highlighted_item != NONE ) && ( m_active_item != m_highlighted_item ) ) {
 			m_active_item = m_highlighted_item;
-			GetSignals().Emit( OnSelect );
+			emit_select = true;
 		}
 
 		m_highlighted_item = NONE;
@@ -280,18 +279,20 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 
 		Invalidate();
 
+		if( emit_select ) {
+			GetSignals().Emit( OnSelect );
+		}
+
 		return;
 	}
 
 	if( press && ( button == sf::Mouse::Left ) && IsMouseInWidget() ) {
-		m_active = true;
 		m_highlighted_item = NONE;
 
 		SetState( State::ACTIVE );
 
-		GetSignals().Emit( OnOpen );
-
 		Invalidate();
+		GetSignals().Emit( OnOpen );
 	}
 }
 
