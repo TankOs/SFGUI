@@ -20,6 +20,11 @@ if( WIN32 )
 	endif()
 endif()
 
+# Make sure to look for the static SFML libraries
+if(NOT SFGUI_BUILD_SHARED_LIBS)
+	set(SFML_STATIC_LIBRARIES TRUE)
+endif()
+
 # Find packages.
 find_package( OpenGL REQUIRED )
 find_package( GLEW REQUIRED )
@@ -200,6 +205,35 @@ set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
 # Platform- and compiler-specific options.
 if( WIN32 )
+	set(SFGUI_STATIC_STD_LIBS FALSE CACHE BOOL "Use statically linked standard/runtime libraries? This option must match the one used for SFML.")
+
+	# Determine whether we're dealing with a TDM compiler or not
+	if(CMAKE_COMPILER_IS_GNUCXX)
+		execute_process(COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE GCC_COMPILER_VERSION)
+		string(REGEX MATCHALL ".*(tdm[64]*-[1-9]).*" COMPILER_GCC_TDM "${GCC_COMPILER_VERSION}")
+	endif()
+
+	# Allow the static linking of the runtime libraries
+	if(SFGUI_STATIC_STD_LIBS)
+		if(SFGUI_BUILD_SHARED_LIBS)
+			message("\n-> SFGUI_STATIC_STD_LIBS and SFGUI_BUILD_SHARED_LIBS are not compatible.")
+			message("-> They lead to multiple runtime environments which result in undefined behavior.\n")
+		else()
+			add_definitions(-DSFML_STATIC)
+			if(MSVC)
+				foreach(flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
+					if(${flag} MATCHES "/MD")
+					string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+					endif()
+				endforeach()
+			elseif(CMAKE_COMPILER_IS_GNUCXX AND NOT COMPILER_GCC_TDM)
+				set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+			endif()
+		endif()
+	elseif(COMPILER_GCC_TDM)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -shared-libgcc -shared-libstdc++")
+	endif()
+
 	add_definitions( -DWIN32 )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY} )
 
@@ -207,7 +241,7 @@ if( WIN32 )
 		if( SFGUI_BUILD_SHARED_LIBS )
 			set_target_properties( sfgui PROPERTIES PREFIX "" )
 		endif()
-		
+
 		set_target_properties( sfgui PROPERTIES IMPORT_SUFFIX ".a" )
 	endif()
 
