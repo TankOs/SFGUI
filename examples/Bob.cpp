@@ -18,6 +18,7 @@ class BobExample {
 
 		void OnButtonClick();
 		void OnAdjustmentChange();
+		void OnToggleSpinner();
 
 		sfg::SFGUI m_sfgui;
 
@@ -30,6 +31,7 @@ class BobExample {
 		sfg::Scale::Ptr m_scale;
 		sfg::Scrollbar::Ptr m_scrollbar;
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
+		sfg::ToggleButton::Ptr m_toggle_button;
 		sfg::Spinner::Ptr m_spinner;
 };
 
@@ -104,19 +106,26 @@ void BobExample::Run() {
 	m_scrolled_window->SetPlacement( sfg::ScrolledWindow::Placement::TOP_LEFT );
 	m_scrolled_window->AddWithViewport( m_scrolled_window_box );
 
+	m_toggle_button = sfg::ToggleButton::Create( L"Spin" );
+	m_toggle_button->SetActive( true );
+
 	// Layout.
-	sfg::Box::Ptr widget_box( sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f) );
-	widget_box->Pack( m_button, true );
-	widget_box->Pack( m_entry, true );
-	widget_box->Pack( m_scale, true );
-	widget_box->Pack( m_check_button, true );
-	widget_box->Pack( m_spinner, true );
+	sfg::Box::Ptr widget_box_1( sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f) );
+	widget_box_1->Pack( m_button, true );
+	widget_box_1->Pack( m_entry, true );
+	widget_box_1->Pack( m_scale, true );
+
+	sfg::Box::Ptr widget_box_2( sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f) );
+	widget_box_2->Pack( m_check_button, false );
+	widget_box_2->Pack( m_toggle_button, true );
+	widget_box_2->Pack( m_spinner, false );
 
 	sfg::Box::Ptr main_box( sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.f ) );
 	main_box->Pack( intro_label, false );
 	main_box->Pack( m_scrollbar, false );
 	main_box->Pack( m_progress, false );
-	main_box->Pack( widget_box, false );
+	main_box->Pack( widget_box_1, false );
+	main_box->Pack( widget_box_2, false );
 	main_box->Pack( m_scrolled_window );
 
 
@@ -128,6 +137,7 @@ void BobExample::Run() {
 	// Signals.
 	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &BobExample::OnButtonClick, this ) );
 	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &BobExample::OnAdjustmentChange, this ) );
+	m_toggle_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &BobExample::OnToggleSpinner, this ) );
 
 	m_scrollbar->SetValue( 30.f );
 
@@ -174,6 +184,15 @@ void BobExample::OnButtonClick() {
 		//Don't forget to load a theme again,
 		//since all properties are reset
 		m_desktop.LoadThemeFromFile( "data/bob/grey.theme" );
+	}
+}
+
+void BobExample::OnToggleSpinner() {
+	if( !m_spinner->Started() ) {
+		m_spinner->Start();
+	}
+	else {
+		m_spinner->Stop();
 	}
 }
 

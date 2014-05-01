@@ -61,6 +61,9 @@ void Bob::ResetProperties() {
 	SetProperty( "Spinner", "CycleDuration", 1000.f );
 	SetProperty( "Spinner", "Steps", 60 );
 
+	// ToggleButton-specific
+	SetProperty( "ToggleButton", "Spacing", 5.f );
+
 	// Window-specific
 	SetProperty( "Window", "Gap", 10.f );
 	SetProperty( "Window", "TitlePadding", 5.f );

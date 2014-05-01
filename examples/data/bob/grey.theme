@@ -68,6 +68,21 @@ Spinner {
 	CycleDuration: 800;
 }
 
+ToggleButton {
+	Image: data/bob/box.png;
+	ActiveImage: data/bob/box_active.png;
+}
+
+ToggleButton:PRELIGHT {
+	Image: data/bob/box_prelight.png;
+	ActiveImage: data/bob/box_prelight.png;
+}
+
+ToggleButton:ACTIVE {
+	Image: data/bob/box_active.png;
+	ActiveImage: data/bob/box_active.png;
+}
+
 Window {
 	Image: data/bob/window.png;
 	AreaImage: data/bob/window_area.png;
