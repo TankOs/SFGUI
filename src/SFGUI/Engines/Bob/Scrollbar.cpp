@@ -34,8 +34,8 @@ std::unique_ptr<RenderQueue> Bob::CreateScrollbarDrawable( std::shared_ptr<const
 		increase_position = sf::Vector2f( scrollbar->GetAllocation().width - stepper_dimension.x, 0 );
 		trough_position   = sf::Vector2f( stepper_dimension.x, 0 );
 
-		arrow_decrease_rotation = 3;
-		arrow_increase_rotation = 1;
+		arrow_decrease_rotation = 1;
+		arrow_increase_rotation = 3;
 	}
 	else {
 		stepper_dimension = sf::Vector2f( scrollbar->GetAllocation().width, scrollbar->GetAllocation().width );
