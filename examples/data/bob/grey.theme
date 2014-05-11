@@ -83,6 +83,10 @@ ToggleButton:ACTIVE {
 	ActiveImage: data/bob/box_active.png;
 }
 
+Separator {
+	Image: data/bob/separator.png;
+}
+
 Window {
 	Image: data/bob/window.png;
 	AreaImage: data/bob/window_area.png;

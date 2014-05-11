@@ -109,6 +109,9 @@ void BobExample::Run() {
 	m_toggle_button = sfg::ToggleButton::Create( L"Spin" );
 	m_toggle_button->SetActive( true );
 
+	auto separatorh = sfg::Separator::Create( sfg::Separator::Orientation::HORIZONTAL );
+	auto separatorv = sfg::Separator::Create( sfg::Separator::Orientation::VERTICAL );
+
 	// Layout.
 	sfg::Box::Ptr widget_box_1( sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f) );
 	widget_box_1->Pack( m_button, true );
@@ -117,6 +120,7 @@ void BobExample::Run() {
 
 	sfg::Box::Ptr widget_box_2( sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f) );
 	widget_box_2->Pack( m_check_button, false );
+	widget_box_2->Pack( separatorv, false );
 	widget_box_2->Pack( m_toggle_button, true );
 	widget_box_2->Pack( m_spinner, false );
 
@@ -125,6 +129,7 @@ void BobExample::Run() {
 	main_box->Pack( m_scrollbar, false );
 	main_box->Pack( m_progress, false );
 	main_box->Pack( widget_box_1, false );
+	main_box->Pack( separatorh, false );
 	main_box->Pack( widget_box_2, false );
 	main_box->Pack( m_scrolled_window );
 
