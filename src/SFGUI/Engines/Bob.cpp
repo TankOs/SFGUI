@@ -166,10 +166,10 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 			vertex2.position = mat.transformPoint( x_coords[x+1], y_coords[y]   ) + position;
 			vertex3.position = mat.transformPoint( x_coords[x+1], y_coords[y+1] ) + position;
 
-			vertex0.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x )   * texStep.x, static_cast<float>( y )   * texStep.y );
-			vertex1.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x )   * texStep.x, static_cast<float>( y+1 ) * texStep.y );
-			vertex2.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x+1 ) * texStep.x, static_cast<float>( y )   * texStep.y );
-			vertex3.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x+1 ) * texStep.x, static_cast<float>( y+1 ) * texStep.y );
+			vertex0.texture_coordinate = texStartCoord + sf::Vector2f( std::round( static_cast<float>( x )   * texStep.x ), std::round( static_cast<float>( y )   * texStep.y ) );
+			vertex1.texture_coordinate = texStartCoord + sf::Vector2f( std::round( static_cast<float>( x )   * texStep.x ), std::round( static_cast<float>( y+1 ) * texStep.y ) );
+			vertex2.texture_coordinate = texStartCoord + sf::Vector2f( std::round( static_cast<float>( x+1 ) * texStep.x ), std::round( static_cast<float>( y )   * texStep.y ) );
+			vertex3.texture_coordinate = texStartCoord + sf::Vector2f( std::round( static_cast<float>( x+1 ) * texStep.x ), std::round( static_cast<float>( y+1 ) * texStep.y ) );
 
 			primitive->AddVertex( vertex0 );
 			primitive->AddVertex( vertex1 );
