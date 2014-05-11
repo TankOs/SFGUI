@@ -71,9 +71,9 @@ void Bob::ResetProperties() {
 	SetProperty( "Window", "HandleSize", 10.f );
 }
 
-Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect ) const
+Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect, unsigned int horizontal, unsigned int vertical, bool rotate ) const
 {
-	Primitive::Ptr primitive( new Primitive( 6 * 3 * 3 ) );
+	Primitive::Ptr primitive( new Primitive( 6 * horizontal * vertical ) );
 
 	if( !image )
 		return primitive;
@@ -93,45 +93,83 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
     if( dimension.x < 1 || dimension.y < 1 || texture == 0 )
         return primitive;
 
-    //round for pixel perfect rendering
-    sf::Vector2f step( std::floor( float_sub_rect.width  / 3.f + 0.5f),
-                       std::floor( float_sub_rect.height  / 3.f + 0.5f));
+	// Calculate the coordinates of the spritebox depending on the number of divisions
+
+    // Round for pixel perfect rendering
+    sf::Vector2f border_step( std::floor( float_sub_rect.width   / static_cast<float>( horizontal ) + 0.5f),
+                       std::floor( float_sub_rect.height  / static_cast<float>( vertical )   + 0.5f) );
 
 	if (dimension.x < float_sub_rect.width ){
-		step.x = dimension.x / 3.f;
+		border_step.x = dimension.x / static_cast<float>( horizontal ) ;
 	}
 	if( dimension.y < float_sub_rect.height ){
-		step.y = dimension.y / 3.f;
+		border_step.y = dimension.y / static_cast<float>( vertical ) ;
 	}
 
-    sf::Vector2f coords[4];
-    coords[0] = sf::Vector2f( 0, 0 );
-    coords[1] = step;
-    coords[2] = dimension - step;
-    coords[3] = dimension;
+    std::vector<float> x_coords( horizontal + 1) , y_coords( vertical + 1 );
+    x_coords[0] = 0.f;
+    y_coords[0] = 0.f;
 
-    sf::Vector2f texStartCoord( float_sub_rect.left ,float_sub_rect.top );
+    // Make sure we don't cause a overflow for only one division in either direction
+    if( horizontal > 1 ){
+		x_coords[horizontal - 1] = dimension.x  - border_step.x;
+    }
+    if( vertical > 1){
+		y_coords[vertical - 1] = dimension.y - border_step.y;
+    }
+
+    x_coords[1] = border_step.x;
+    y_coords[1] = border_step.y;
+
+	x_coords[horizontal] = rect.width;
+	y_coords[vertical]   = rect.height;
+
+	// Space out the remaining coordinates equally
+	if( horizontal > 3 ){
+		float x_step( ( dimension.x - 2 * border_step.x ) / static_cast<float>( horizontal - 2 ) );
+		for( int i = 2; i <= static_cast<int>( horizontal ) / 2; ++i ){
+			x_coords[horizontal - i] = std::floor( dimension.x - border_step.x - static_cast<float>( i - 1 ) * x_step + 0.5f );
+			x_coords[i]              = std::floor( border_step.x + static_cast<float>( i - 1 ) * x_step + 0.5f );
+		}
+	}
+
+	if( vertical > 3 ){
+		float y_step( ( dimension.y - 2 * border_step.y ) / static_cast<float>( vertical - 2 ) );
+		for( int i = 2; i <= static_cast<int>( vertical ) / 2; ++i ){
+			y_coords[vertical - i] = std::floor( dimension.y - border_step.y - static_cast<float>( i - 1 ) * y_step + 0.5f );
+			y_coords[i]            = std::floor( border_step.y + static_cast<float>( i - 1 ) * y_step + 0.5f );
+		}
+	}
+
+
+	// Calculate texture coordinates
+	sf::Vector2f texStartCoord( float_sub_rect.left ,float_sub_rect.top );
 
 	texStartCoord += texture->offset;
 
-	sf::Vector2f texStep( float_sub_rect.width  / 3.f,
-						  float_sub_rect.height / 3.f );
+	sf::Vector2f texStep( float_sub_rect.width / static_cast<float>( horizontal ), float_sub_rect.height / static_cast<float>( vertical ) );
+
+	// Use SFML to rotate since SFGUI doesn't provide anything to do that
+	sf::Transform mat;
+	if( rotate ){
+		mat.rotate( 90.f );
+	}
 
     primitive->AddTexture( texture );
 
 	Primitive::Vertex vertex0, vertex1, vertex2, vertex3;
 
-    for( unsigned int x = 0; x < 3; ++x ){
-        for( unsigned int y = 0; y < 3; ++y ){
-			vertex0.position = sf::Vector2f( coords[x].x,   coords[y].y )   + position;
-			vertex1.position = sf::Vector2f( coords[x].x,   coords[y+1].y ) + position;
-			vertex2.position = sf::Vector2f( coords[x+1].x, coords[y].y )   + position;
-			vertex3.position = sf::Vector2f( coords[x+1].x, coords[y+1].y ) + position;
+    for( unsigned int x = 0; x < horizontal; ++x ){
+        for( unsigned int y = 0; y < vertical; ++y ){
+			vertex0.position = mat.transformPoint( x_coords[x],   y_coords[y]   ) + position;
+			vertex1.position = mat.transformPoint( x_coords[x],   y_coords[y+1] ) + position;
+			vertex2.position = mat.transformPoint( x_coords[x+1], y_coords[y]   ) + position;
+			vertex3.position = mat.transformPoint( x_coords[x+1], y_coords[y+1] ) + position;
 
-			vertex0.texture_coordinate = sf::Vector2f( texStartCoord.x +  static_cast<float>( x )   * texStep.x, texStartCoord.y + static_cast<float>( y )   * texStep.y );
-			vertex1.texture_coordinate = sf::Vector2f( texStartCoord.x +  static_cast<float>( x )   * texStep.x, texStartCoord.y + static_cast<float>( y+1 ) * texStep.y );
-			vertex2.texture_coordinate = sf::Vector2f( texStartCoord.x +  static_cast<float>( x+1 ) * texStep.x, texStartCoord.y + static_cast<float>( y )   * texStep.y );
-			vertex3.texture_coordinate = sf::Vector2f( texStartCoord.x +  static_cast<float>( x+1 ) * texStep.x, texStartCoord.y + static_cast<float>( y+1 ) * texStep.y );
+			vertex0.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x )   * texStep.x, static_cast<float>( y )   * texStep.y );
+			vertex1.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x )   * texStep.x, static_cast<float>( y+1 ) * texStep.y );
+			vertex2.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x+1 ) * texStep.x, static_cast<float>( y )   * texStep.y );
+			vertex3.texture_coordinate = texStartCoord + sf::Vector2f( static_cast<float>( x+1 ) * texStep.x, static_cast<float>( y+1 ) * texStep.y );
 
 			primitive->AddVertex( vertex0 );
 			primitive->AddVertex( vertex1 );
