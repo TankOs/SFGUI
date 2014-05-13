@@ -13,6 +13,9 @@ Bob::Bob() :
 }
 
 void Bob::ResetProperties() {
+	// Disable automatic widget refreshing.
+	SetAutoRefresh( false );
+
 	ClearProperties();
 
 	// Set defaults.
@@ -69,6 +72,9 @@ void Bob::ResetProperties() {
 	SetProperty( "Window", "TitlePadding", 5.f );
 	SetProperty( "Window", "WindowSubRect", UintRect( 0, 0, 0, 0 ) );
 	SetProperty( "Window", "HandleSize", 10.f );
+
+	// Don't forget to reactivate automatic widget refreshing.
+	SetAutoRefresh( true );
 }
 
 Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect, unsigned int horizontal, unsigned int vertical, int rotation_turns ) const
