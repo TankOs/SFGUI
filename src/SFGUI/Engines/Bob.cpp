@@ -71,7 +71,7 @@ void Bob::ResetProperties() {
 	SetProperty( "Window", "HandleSize", 10.f );
 }
 
-Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect, unsigned int horizontal, unsigned int vertical, bool rotate ) const
+Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect, unsigned int horizontal, unsigned int vertical, int rotation_turns ) const
 {
 	Primitive::Ptr primitive( new Primitive( 6 * horizontal * vertical ) );
 
@@ -82,13 +82,23 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 	if( !texture )
 		return primitive;
 
+	// Get rotation_turns into the range [0;3].
+	rotation_turns %= 4;
+
 	sf::FloatRect float_sub_rect = static_cast<sf::FloatRect>( sub_rect );
 	if( sub_rect == UintRect( 0, 0, 0, 0 ) ){
 		float_sub_rect = sf::FloatRect( sf::Vector2f( 0, 0 ), static_cast<sf::Vector2f>( texture->size ) );
 	}
 
-	sf::Vector2f dimension = sf::Vector2f( rect.width, rect.height );
-	sf::Vector2f position  = sf::Vector2f( rect.left, rect.top );
+	// Use SFML to rotate
+	sf::Transform transform, inverse_transform;
+	transform.rotate( static_cast<float>( rotation_turns * 90 ) );
+	inverse_transform.rotate( static_cast<float>( -rotation_turns * 90 ) );
+
+	sf::FloatRect transformed_rect( transform.transformRect( rect ) );
+
+	sf::Vector2f dimension = sf::Vector2f( transformed_rect.width, transformed_rect.height );
+	sf::Vector2f position  = sf::Vector2f( transformed_rect.left,  transformed_rect.top );
 
     if( dimension.x < 1 || dimension.y < 1 || texture == 0 )
         return primitive;
@@ -97,7 +107,7 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 
     // Round for pixel perfect rendering
     sf::Vector2f border_step( std::floor( float_sub_rect.width   / static_cast<float>( horizontal ) + 0.5f),
-                       std::floor( float_sub_rect.height  / static_cast<float>( vertical )   + 0.5f) );
+                              std::floor( float_sub_rect.height  / static_cast<float>( vertical )   + 0.5f) );
 
 	if (dimension.x < float_sub_rect.width ){
 		border_step.x = dimension.x / static_cast<float>( horizontal ) ;
@@ -121,8 +131,8 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
     x_coords[1] = border_step.x;
     y_coords[1] = border_step.y;
 
-	x_coords[horizontal] = rect.width;
-	y_coords[vertical]   = rect.height;
+	x_coords[horizontal] = dimension.x;
+	y_coords[vertical]   = dimension.y;
 
 	// Space out the remaining coordinates equally
 	if( horizontal > 3 ){
@@ -149,22 +159,16 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 
 	sf::Vector2f texStep( float_sub_rect.width / static_cast<float>( horizontal ), float_sub_rect.height / static_cast<float>( vertical ) );
 
-	// Use SFML to rotate since SFGUI doesn't provide anything to do that
-	sf::Transform mat;
-	if( rotate ){
-		mat.rotate( 90.f );
-	}
-
     primitive->AddTexture( texture );
 
 	Primitive::Vertex vertex0, vertex1, vertex2, vertex3;
 
     for( unsigned int x = 0; x < horizontal; ++x ){
         for( unsigned int y = 0; y < vertical; ++y ){
-			vertex0.position = mat.transformPoint( x_coords[x],   y_coords[y]   ) + position;
-			vertex1.position = mat.transformPoint( x_coords[x],   y_coords[y+1] ) + position;
-			vertex2.position = mat.transformPoint( x_coords[x+1], y_coords[y]   ) + position;
-			vertex3.position = mat.transformPoint( x_coords[x+1], y_coords[y+1] ) + position;
+			vertex0.position = inverse_transform.transformPoint( sf::Vector2f( x_coords[x],   y_coords[y]   ) + position );
+			vertex1.position = inverse_transform.transformPoint( sf::Vector2f( x_coords[x],   y_coords[y+1] ) + position );
+			vertex2.position = inverse_transform.transformPoint( sf::Vector2f( x_coords[x+1], y_coords[y]   ) + position );
+			vertex3.position = inverse_transform.transformPoint( sf::Vector2f( x_coords[x+1], y_coords[y+1] ) + position );
 
 			vertex0.texture_coordinate = texStartCoord + sf::Vector2f( std::round( static_cast<float>( x )   * texStep.x ), std::round( static_cast<float>( y )   * texStep.y ) );
 			vertex1.texture_coordinate = texStartCoord + sf::Vector2f( std::round( static_cast<float>( x )   * texStep.x ), std::round( static_cast<float>( y+1 ) * texStep.y ) );

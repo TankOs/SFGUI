@@ -43,7 +43,7 @@ class SFGUI_API Bob : public Engine {
 		std::unique_ptr<RenderQueue> CreateSpinButtonDrawable( std::shared_ptr<const SpinButton> spinbutton ) const;
 
 	protected:
-		Primitive::Ptr CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect, unsigned int horizontal = 3, unsigned int vertical = 3, bool rotate = false ) const;
+		Primitive::Ptr CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<const sf::Image> image, UintRect sub_rect, unsigned int horizontal = 3, unsigned int vertical = 3, int rotation_turns = 0 ) const;
 
 	private:
 		mutable bob::TextureManager m_texture_manager;
