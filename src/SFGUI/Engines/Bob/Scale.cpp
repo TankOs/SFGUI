@@ -12,7 +12,7 @@ std::unique_ptr<RenderQueue> Bob::CreateScaleDrawable( std::shared_ptr<const Sca
 	float trough_thickness( GetProperty<float>( "TroughWidth", scale ) );
 	sf::Vector2f trough_position;
 	sf::Vector2f trough_dimension;
-	sf::FloatRect slider_rect(scale->GetSliderRect());
+	sf::FloatRect slider_rect( scale->GetSliderRect() );
 
 	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
@@ -32,7 +32,8 @@ std::unique_ptr<RenderQueue> Bob::CreateScaleDrawable( std::shared_ptr<const Sca
 								 GetProperty<UintRect>( "TroughSubRect", scale ) ) );
 
 	// Slider
-	queue->Add( CreateSpritebox( slider_rect,
+	queue->Add( CreateSpritebox( sf::FloatRect( std::round( slider_rect.left ),  std::round( slider_rect.top ),
+												std::round( slider_rect.width ), std::round( slider_rect.height ) ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "SliderImage", scale ) ),
 								 GetProperty<UintRect>( "SliderSubRect", scale ) ) );
 
