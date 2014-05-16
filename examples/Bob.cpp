@@ -33,6 +33,7 @@ class BobExample {
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
 		sfg::ToggleButton::Ptr m_toggle_button;
 		sfg::Spinner::Ptr m_spinner;
+		sfg::ComboBox::Ptr m_combo_box;
 };
 
 const unsigned int BobExample::SCREEN_WIDTH = 800;
@@ -109,6 +110,14 @@ void BobExample::Run() {
 	m_toggle_button = sfg::ToggleButton::Create( L"Spin" );
 	m_toggle_button->SetActive( true );
 
+	m_combo_box = sfg::ComboBox::Create();
+	for( int i = 0; i < 50; ++i ) {
+		std::stringstream sstr;
+		sstr << "Item " << i;
+
+		m_combo_box->AppendItem( sstr.str() );
+	}
+
 	auto separatorh = sfg::Separator::Create( sfg::Separator::Orientation::HORIZONTAL );
 	auto separatorv = sfg::Separator::Create( sfg::Separator::Orientation::VERTICAL );
 
@@ -131,6 +140,7 @@ void BobExample::Run() {
 	main_box->Pack( widget_box_1, false );
 	main_box->Pack( separatorh, false );
 	main_box->Pack( widget_box_2, false );
+	main_box->Pack( m_combo_box, false );
 	main_box->Pack( m_scrolled_window );
 
 

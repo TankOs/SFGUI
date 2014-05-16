@@ -26,7 +26,7 @@ void Bob::ResetProperties() {
 	SetProperty( "*", "Padding", 5.f );
 	SetProperty( "*", "SubRect", UintRect( 0, 0, 0, 0 ) );
 
-	// Button-specific
+	// Button-specific.
 	SetProperty( "Button", "Spacing", 5.f );
 
 	// CheckButton-specific.
@@ -35,13 +35,17 @@ void Bob::ResetProperties() {
 	SetProperty( "CheckButton", "SubRect", UintRect( 0, 0, 0, 0 ) );
 	SetProperty( "CheckButton", "CheckSubRect", UintRect( 0, 0, 0, 0 ) );
 
-	// Entry-specific
+	// ComboBox-specific.
+	SetProperty( "ComboBox", "ItemPadding", 4.f );
+	SetProperty( "ComboBox", "ItemPaddingHorizontally", 4.f );
+
+	// Entry-specific.
 	SetProperty( "Entry", "Thickness", 1.f );
 
 	// ProgressBar-specific.
 	SetProperty( "ProgressBar", "BarPadding", 1.f);
 
-	// Scale-specific
+	// Scale-specific.
 	SetProperty( "Scale", "SliderLength", 15.f );
 	SetProperty( "Scale", "SliderSubRect", UintRect( 0, 0, 0, 0 ) );
 	SetProperty( "Scale", "TroughWidth", 5.f );
@@ -55,7 +59,7 @@ void Bob::ResetProperties() {
 	SetProperty( "Scrollbar", "SliderSubRect", UintRect( 0, 0, 0, 0 ) );
 	SetProperty( "Scrollbar", "TroughSubRect", UintRect( 0, 0, 0, 0 ) );
 
-	// ScrolledWindow-specific
+	// ScrolledWindow-specific.
 	SetProperty( "ScrolledWindow", "ScrollbarWidth", 20.f );
 	SetProperty( "ScrolledWindow", "ScrollbarSpacing", 5.f );
 	SetProperty( "ScrolledWindow", "BorderWidth", 0.f );
@@ -64,10 +68,10 @@ void Bob::ResetProperties() {
 	SetProperty( "Spinner", "CycleDuration", 1000.f );
 	SetProperty( "Spinner", "Steps", 60 );
 
-	// ToggleButton-specific
+	// ToggleButton-specific.
 	SetProperty( "ToggleButton", "Spacing", 5.f );
 
-	// Window-specific
+	// Window-specific.
 	SetProperty( "Window", "Gap", 10.f );
 	SetProperty( "Window", "TitlePadding", 5.f );
 	SetProperty( "Window", "WindowSubRect", UintRect( 0, 0, 0, 0 ) );

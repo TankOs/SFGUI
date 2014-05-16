@@ -34,6 +34,24 @@ CheckButton:ACTIVE {
 	Image: data/bob/box_active.png;
 }
 
+ComboBox {
+	ItemPaddingHorizontally: 6;
+	HighlightPadding: 2;
+
+	FieldImage: data/bob/box.png;
+	PopUpImage: data/bob/box_active.png;
+	HighlightImage: data/bob/combo_box_highlight.png;
+	ArrowImage: data/bob/combo_box_arrow.png;
+}
+
+ComboBox:PRELIGHT {
+	FieldImage: data/bob/box_prelight.png;
+}
+
+ComboBox:ACTIVE {
+	FieldImage: data/bob/box_active.png;
+}
+
 Entry {
 	Image: data/bob/entry.png;
 }
