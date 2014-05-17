@@ -59,7 +59,7 @@ BobExample::BobExample() :
 }
 
 void BobExample::Run() {
-	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "SFGUI Desktop Example" );
+	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "SFGUI Bob Example" );
 	sf::Event event;
 
 	// We have to do this because we don't use SFML to draw.
