@@ -18,6 +18,11 @@ std::unique_ptr<RenderQueue> Bob::CreateSpinnerDrawable( std::shared_ptr<const S
 	if( !texture )
 		return queue;
 
+    auto subRect = GetProperty<sf::FloatRect>( "SubRect", spinner );
+    if( subRect == sf::FloatRect() ) {
+		subRect = sf::FloatRect( 0.f, 0.f, static_cast<float>( texture->size.x ), static_cast<float>( texture->size.y ) );
+    }
+
 	// Only quadratic spinners.
 	float size = std::min( spinner->GetAllocation().width, spinner->GetAllocation().height );
 	sf::Vector2f dim = sf::Vector2f( size, size );
@@ -27,19 +32,20 @@ std::unique_ptr<RenderQueue> Bob::CreateSpinnerDrawable( std::shared_ptr<const S
 
 	// Use SFML here instead of some nasty trigonometry.
 	sf::Transform mat;
-	mat.rotate( static_cast<float>( spinner->GetStage() ) / static_cast<float>( steps ) * 360.f, dim / 2.f );
+	mat.translate( offset );
+	mat.rotate( ( static_cast<float>( spinner->GetStage() ) / static_cast<float>( steps ) ) * 360.f, dim / 2.f );
 
 	Primitive::Vertex vertex0, vertex1, vertex2, vertex3;
 
-	vertex0.position = offset + mat.transformPoint( sf::Vector2f( 0, 0 ) );
-	vertex1.position = offset + mat.transformPoint( sf::Vector2f( 0, dim.y ) );
-	vertex2.position = offset + mat.transformPoint( sf::Vector2f( dim.x, 0) );
-	vertex3.position = offset + mat.transformPoint( dim );
+	vertex0.position = mat.transformPoint( sf::Vector2f( 0, 0 ) );
+	vertex1.position = mat.transformPoint( sf::Vector2f( 0, dim.y ) );
+	vertex2.position = mat.transformPoint( sf::Vector2f( dim.x, 0) );
+	vertex3.position = mat.transformPoint( dim );
 
-	vertex0.texture_coordinate = texture->offset + sf::Vector2f( 0, 0 );
-	vertex1.texture_coordinate = texture->offset + sf::Vector2f( 0, static_cast<float>( texture->size.y ) );
-	vertex2.texture_coordinate = texture->offset + sf::Vector2f( static_cast<float>( texture->size.x ), 0 );
-	vertex3.texture_coordinate = texture->offset + sf::Vector2f( texture->size );
+	vertex0.texture_coordinate = texture->offset + sf::Vector2f( subRect.left, subRect.top );
+	vertex1.texture_coordinate = texture->offset + sf::Vector2f( subRect.left, subRect.top + subRect.height );
+	vertex2.texture_coordinate = texture->offset + sf::Vector2f( subRect.left + subRect.width, subRect.top );
+	vertex3.texture_coordinate = texture->offset + sf::Vector2f( subRect.left + subRect.width, subRect.top + subRect.height );
 
 	Primitive::Ptr primitive( new Primitive( 6 ) );
 	primitive->AddTexture( texture );

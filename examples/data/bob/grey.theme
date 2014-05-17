@@ -82,6 +82,7 @@ ScrolledWindow {
 
 Spinner {
 	Image: data/bob/spinner.png;
+	SubRect: 1 1 64 64;
 	Steps: 8;
 	CycleDuration: 800;
 }
