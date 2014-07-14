@@ -60,8 +60,9 @@ class SFGUI_API Container : public Widget {
 	protected:
 		/** Handle adding children.
 		 * @param child Child widget.
+		 * @return true if child was added, false otherwise.
 		 */
-		virtual void HandleAdd( Widget::Ptr child );
+		virtual bool HandleAdd( Widget::Ptr child );
 
 		/** Handle removing children.
 		 * @param child Child widget.

@@ -212,14 +212,16 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 	}
 }
 
-void Window::HandleAdd( Widget::Ptr child ) {
-	Bin::HandleAdd( child );
-
-	if( GetChild() ) {
-		// Reset allocation so the window will be as large as required.
-		SetAllocation( sf::FloatRect( GetAllocation().left, GetAllocation().top, 1.f, 1.f ) );
-		RequestResize();
+bool Window::HandleAdd( Widget::Ptr child ) {
+	if( !Bin::HandleAdd( child ) ) {
+		return false;
 	}
+
+	// Reset allocation so the window will be as large as required.
+	SetAllocation( sf::FloatRect( GetAllocation().left, GetAllocation().top, 1.f, 1.f ) );
+	RequestResize();
+
+	return true;
 }
 
 }

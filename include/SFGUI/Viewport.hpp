@@ -70,7 +70,7 @@ class SFGUI_API Viewport : public Bin {
 	protected:
 		sf::Vector2f CalculateRequisition() override;
 		virtual void HandleSizeChange() override;
-		virtual void HandleAdd( Widget::Ptr child ) override;
+		virtual bool HandleAdd( Widget::Ptr child ) override;
 
 		/** Handle viewport change.
 		 */

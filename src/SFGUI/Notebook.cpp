@@ -457,9 +457,7 @@ void Notebook::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 	SetCurrentPage( m_prelight_tab );
 }
 
-void Notebook::HandleAdd( Widget::Ptr child ) {
-	Container::HandleAdd( child );
-
+bool Notebook::HandleAdd( Widget::Ptr child ) {
 	auto allowed = false;
 
 	for( const auto& tab : m_children ) {
@@ -477,11 +475,15 @@ void Notebook::HandleAdd( Widget::Ptr child ) {
 		std::cerr << "SFGUI warning: Child must be added via AppendPage() or PrependPage() or InsertPage() for sfg::Notebook widgets.\n";
 #endif
 
-		Remove( child );
+		return false;
 	}
+
+	Container::HandleAdd( child );
 
 	RequestResize();
 	Invalidate();
+
+	return true;
 }
 
 void Notebook::HandleRemove( Widget::Ptr child ) {

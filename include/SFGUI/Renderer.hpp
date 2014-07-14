@@ -8,7 +8,7 @@
 #include <SFML/OpenGL.hpp>
 #include <vector>
 #include <map>
-#include <list>
+#include <deque>
 #include <cstdint>
 
 namespace sfg {
@@ -257,8 +257,8 @@ class SFGUI_API Renderer {
 		};
 
 		struct TextureNode {
-			sf::Vector2f offset;
-			sf::Vector2u size;
+			sf::Vector2i offset;
+			sf::Vector2i size;
 		};
 
 		typedef std::pair<void*, unsigned int> FontID;
@@ -285,7 +285,7 @@ class SFGUI_API Renderer {
 
 		mutable sf::Vector2u m_window_size;
 
-		unsigned int m_max_texture_size;
+		static unsigned int m_max_texture_size;
 
 		mutable bool m_force_redraw;
 
@@ -296,7 +296,7 @@ class SFGUI_API Renderer {
 
 		void WipeStateCache( sf::RenderTarget& target ) const;
 
-		std::list<TextureNode> m_textures;
+		std::deque<TextureNode> m_textures;
 		std::map<FontID, Primitive::Texture::Ptr> m_fonts;
 		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
 

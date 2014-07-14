@@ -60,13 +60,11 @@ void Box::ReorderChild( Widget::Ptr widget, std::size_t position ) {
 	m_box_children.insert( insertion_point, *iter );
 	m_box_children.erase( iter );
 
-	Refresh();
+	Invalidate();
 	AllocateChildren();
 }
 
-void Box::HandleAdd( Widget::Ptr child ) {
-	Container::HandleAdd( child );
-
+bool Box::HandleAdd( Widget::Ptr child ) {
 	ChildrenCont::const_iterator iter( std::find( m_box_children.begin(), m_box_children.end(), child ) );
 
 	// If there's no ChildInfo present for the widget, the user added the widget
@@ -77,11 +75,15 @@ void Box::HandleAdd( Widget::Ptr child ) {
 		std::cerr << "SFGUI warning: Child must be added via Pack() for sfg::Box widgets.\n";
 #endif
 
-		Remove( child );
+		return false;
 	}
 
-	Refresh();
-	AllocateChildren();
+	Container::HandleAdd( child );
+
+	RequestResize();
+	Invalidate();
+
+	return true;
 }
 
 void Box::HandleRemove( Widget::Ptr child ) {
@@ -91,8 +93,8 @@ void Box::HandleRemove( Widget::Ptr child ) {
 		m_box_children.erase( iter );
 	}
 
-	Refresh();
-	AllocateChildren();
+	RequestResize();
+	Invalidate();
 }
 
 sf::Vector2f Box::CalculateRequisition() {
@@ -139,7 +141,7 @@ void Box::HandleSizeChange() {
 }
 
 Box::ChildInfo::ChildInfo( Widget::Ptr widget_, bool expand_, bool fill_ ) :
-	widget( widget_ ),
+	widget( widget_.get() ),
 	expand( expand_ ),
 	fill( fill_ )
 {
@@ -217,7 +219,7 @@ void Box::AllocateChildren() const {
 	}
 }
 
-bool Box::IsChildInteresting( sfg::Widget::PtrConst child ) const {
+bool Box::IsChildInteresting( Widget* child ) const {
 	return
 		child->IsLocallyVisible() &&
 		(child->GetRequisition().x > 0.f || child->GetAllocation().width > 0.0f) &&

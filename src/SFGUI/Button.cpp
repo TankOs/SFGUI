@@ -34,8 +34,10 @@ const Image::Ptr Button::GetImage() const {
 }
 
 void Button::ClearImage() {
-	if( GetChild() ) {
-		Remove( GetChild() );
+	auto child = GetChild();
+
+	if( child ) {
+		Remove( child );
 	}
 }
 
@@ -100,16 +102,16 @@ const std::string& Button::GetName() const {
 	return name;
 }
 
-void Button::HandleAdd( Widget::Ptr child ) {
-	Bin::HandleAdd( child );
-
-	if( GetChild() && GetChild()->GetName() != "Image" ) {
+bool Button::HandleAdd( Widget::Ptr child ) {
+	if( child && child->GetName() != "Image" ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Only an Image can be added to a Button.\n";
 #endif
 
-		Remove( GetChild() );
+		return false;
 	}
+
+	return Bin::HandleAdd( child );
 }
 
 void Button::HandleSizeChange() {

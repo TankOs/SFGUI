@@ -11,20 +11,27 @@
 namespace sfg {
 
 std::shared_ptr<Renderer> Renderer::m_instance = std::shared_ptr<Renderer>();
+unsigned int Renderer::m_max_texture_size = 0;
 
 Renderer::Renderer() :
 	m_vertex_count( 0 ),
 	m_index_count( 0 ),
 	m_window_size( 0, 0 ),
-	m_max_texture_size( 0 ),
 	m_force_redraw( false ),
 	m_last_window_size( 0, 0 ),
 	m_primitives_sorted( false ) {
-	// Needed to determine maximum texture size.
-	sf::Context context;
+	static auto checked_max_texture_size = false;
+
+	if( !checked_max_texture_size ) {
+		// Needed to determine maximum texture size.
+		sf::Context context;
+
+		m_max_texture_size = sf::Texture::getMaximumSize();
+
+		checked_max_texture_size = true;
+	}
 
 	m_default_viewport = CreateViewport();
-	m_max_texture_size = sf::Texture::getMaximumSize();
 
 	// Load our "no texture" pseudo-texture.
 	sf::Image pseudo_image;
@@ -623,110 +630,121 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Texture& texture ) {
 }
 
 Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
-	if( ( image.getSize().x > m_max_texture_size ) || ( image.getSize().x > m_max_texture_size ) ) {
+	// We insert padding between atlas elements to prevent
+	// texture filtering from screwing up our images.
+	// If 1 pixel isn't enough, increase.
+	const static auto padding = 1;
+
+	auto required_vertical_size = static_cast<int>( image.getSize().y ) + padding;
+
+	if( ( image.getSize().x > m_max_texture_size ) || ( required_vertical_size > static_cast<int>( m_max_texture_size ) ) ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
 #endif
 		return std::make_shared<Primitive::Texture>();
 	}
 
-	// We insert padding between atlas elements to prevent
-	// texture filtering from screwing up our images.
-	// If 1 pixel isn't enough, increase.
-	const static unsigned int padding = 1;
-
 	// Look for a nice insertion point for our new texture.
 	// We use first fit and according to theory it is never
 	// worse than double the optimum size.
-	auto iter = m_textures.begin();
+	auto texture_iter = m_textures.begin();
 
-	auto last_occupied_location = 0.f;
+	auto atlas_last_occupied_location = 0;
 
-	for( ; iter != m_textures.end(); ++iter ) {
-		auto space_available = iter->offset.y - last_occupied_location;
+	for( ; texture_iter != m_textures.end(); ++texture_iter ) {
+		auto space_available = texture_iter->offset.y - atlas_last_occupied_location;
 
-		if( space_available >= static_cast<float>( image.getSize().y + 2 * padding ) ) {
+		if( space_available >= required_vertical_size ) {
 			// We found a nice spot.
 			break;
 		}
 
-		last_occupied_location = iter->offset.y + static_cast<float>( iter->size.y );
+		atlas_last_occupied_location = texture_iter->offset.y + texture_iter->size.y;
 	}
 
-	auto current_page = static_cast<std::size_t>( last_occupied_location ) / m_max_texture_size;
-	last_occupied_location = static_cast<float>( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size );
+	auto current_page_index = static_cast<std::size_t>( atlas_last_occupied_location ) / m_max_texture_size;
+	auto current_page_last_occupied_location = atlas_last_occupied_location % m_max_texture_size;
 
-	if( m_texture_atlas.empty() || ( ( static_cast<unsigned int>( last_occupied_location ) % m_max_texture_size ) + image.getSize().y + 2 * padding > m_max_texture_size ) ) {
+	// Cache the "temporary" sf::Image so its internal std::vector
+	// does not have to constantly be allocated anew.
+	static sf::Image new_image;
+
+	if( m_texture_atlas.empty() || ( current_page_last_occupied_location + required_vertical_size > m_max_texture_size ) ) {
 		// We need a new atlas page.
 
-		if( !m_texture_atlas.empty() ) {
+		auto new_texture = std::unique_ptr<sf::Texture>( new sf::Texture );
+
+		// Protection against possible broken cards that don't like huge textures.
+		// Disable if having issues.
+		static auto create_maximal = true;
+
+		if( create_maximal ) {
+			if( !new_texture->create( 1, m_max_texture_size ) ) {
+				create_maximal = false;
+			}
+		}
+
+		if( !create_maximal && !m_texture_atlas.empty() ) {
 			// Make sure the current page vertical size is maximal
 			// so we can compute the right page from y texture coordinate.
-			auto old_image = m_texture_atlas.back()->copyToImage();
-			sf::Image new_image;
+			auto current_page = m_texture_atlas[current_page_index].get();
+			auto old_image = current_page->copyToImage();
 
 			new_image.create( old_image.getSize().x, m_max_texture_size, sf::Color::White );
 			new_image.copy( old_image, 0, 0 );
+			new_image.copy( image, 0, current_page_last_occupied_location );
 
-			new_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
-
-			m_texture_atlas.back()->loadFromImage( new_image );
+			current_page->loadFromImage( new_image );
 		}
 
 		// Insert the new page.
-		m_texture_atlas.push_back(
-			std::move(
-				std::unique_ptr<sf::Texture>( new sf::Texture() )
-			)
-		);
+		m_texture_atlas.push_back( std::move( new_texture ) );
 
-		current_page = m_texture_atlas.size() - 1;
-
-		last_occupied_location = 0.f;
+		current_page_index = m_texture_atlas.size() - 1;
+		current_page_last_occupied_location = 0;
 	}
 
-	if( ( image.getSize().x > m_texture_atlas[current_page]->getSize().x ) || ( last_occupied_location + static_cast<float>( image.getSize().y ) > static_cast<float>( m_texture_atlas[current_page]->getSize().y ) ) ) {
+	auto current_page = m_texture_atlas[current_page_index].get();
+	auto current_page_size_x = m_texture_atlas[current_page_index]->getSize().x;
+	auto current_page_size_y = m_texture_atlas[current_page_index]->getSize().y;
+
+	if( ( image.getSize().x > current_page_size_x ) || ( current_page_last_occupied_location + required_vertical_size > current_page_size_y ) ) {
 		// Image is loaded into atlas after expanding texture atlas.
-		auto old_image = m_texture_atlas[current_page]->copyToImage();
-		sf::Image new_image;
+		auto old_image = current_page->copyToImage();
 
-		new_image.create( std::max( old_image.getSize().x, image.getSize().x ), static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + image.getSize().y + padding, sf::Color::White );
+		new_image.create( std::max( current_page_size_x, image.getSize().x ), std::max( current_page_size_y, current_page_last_occupied_location + required_vertical_size ), sf::Color::White );
 		new_image.copy( old_image, 0, 0 );
+		new_image.copy( image, 0, current_page_last_occupied_location );
 
-		new_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
-
-		m_texture_atlas[current_page]->loadFromImage( new_image );
+		current_page->loadFromImage( new_image );
 	}
 	else {
 		// Image is loaded into atlas.
-		auto atlas_image = m_texture_atlas[current_page]->copyToImage();
-
-		atlas_image.copy( image, 0, static_cast<unsigned int>( std::floor( last_occupied_location + .5f ) ) + padding );
-
-		m_texture_atlas[current_page]->loadFromImage( atlas_image );
+		current_page->update( image, 0, current_page_last_occupied_location );
 	}
 
-	auto offset = sf::Vector2f( 0.f, static_cast<float>( current_page * m_max_texture_size ) + last_occupied_location + static_cast<float>( padding ) );
+	auto offset = sf::Vector2i( 0, current_page_index * m_max_texture_size + current_page_last_occupied_location );
 
 	Invalidate( INVALIDATE_TEXTURE );
 
 	auto handle = std::make_shared<Primitive::Texture>();
 
-	handle->offset = offset;
+	handle->offset = static_cast<sf::Vector2f>( offset );
 	handle->size = image.getSize();
 
 	TextureNode texture_node;
 	texture_node.offset = offset;
-	texture_node.size = image.getSize();
+	texture_node.size = static_cast<sf::Vector2i>( image.getSize() ) + sf::Vector2i( 0, padding );
 
-	m_textures.insert( iter, texture_node );
+	m_textures.insert( texture_iter, texture_node );
 
 	return handle;
 }
 
 void Renderer::UnloadImage( const sf::Vector2f& offset ) {
+	sf::Vector2i int_offset( static_cast<int>( std::floor( offset.x + .5f ) ), static_cast<int>( std::floor( offset.y + .5f ) ) );
 	for( auto iter = m_textures.begin(); iter != m_textures.end(); ++iter ) {
-		if( iter->offset == offset ) {
+		if( iter->offset == int_offset ) {
 			m_textures.erase( iter );
 			return;
 		}
@@ -739,20 +757,26 @@ void Renderer::UnloadImage( const sf::Vector2f& offset ) {
 }
 
 void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) {
+	// We insert padding between atlas elements to prevent
+	// texture filtering from screwing up our images.
+	// If 1 pixel isn't enough, increase.
+	const static auto padding = 1;
+
+	sf::Vector2i int_offset( static_cast<int>( std::floor( offset.x + .5f ) ), static_cast<int>( std::floor( offset.y + .5f ) ) );
+	sf::Vector2i int_size( static_cast<sf::Vector2i>( data.getSize() ) + sf::Vector2i( 0, padding ) );
+
 	for( const auto& texture : m_textures ) {
-		if( texture.offset == offset ) {
-			if( texture.size != data.getSize() ) {
+		if( texture.offset == int_offset ) {
+			if( texture.size != int_size ) {
 #if defined( SFGUI_DEBUG )
 				std::cerr << "Tried to update texture with mismatching image size.\n";
 #endif
 				return;
 			}
 
-			auto page = static_cast<std::size_t>( offset.y ) / m_max_texture_size;
+			auto page = static_cast<std::size_t>( int_offset.y ) / m_max_texture_size;
 
-			auto image = m_texture_atlas[page]->copyToImage();
-			image.copy( data, 0, static_cast<unsigned int>( std::floor( offset.y + .5f ) ) % m_max_texture_size );
-			m_texture_atlas[page]->loadFromImage( image );
+			m_texture_atlas[page]->update( data, 0, int_offset.y % m_max_texture_size );
 
 			return;
 		}

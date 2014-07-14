@@ -198,6 +198,7 @@ void Desktop::RecalculateWidgetLevels() {
 
 	for( auto index = static_cast<int>( children_size ) - 1; index >= 0; --index ) {
 		m_children[index]->SetHierarchyLevel( current_level );
+		m_children[index]->Invalidate();
 
 		current_level += std::numeric_limits<int>::max() / static_cast<int>( children_size );
 	}

@@ -189,7 +189,7 @@ class SFGUI_API Notebook : public Container {
 
 		void HandleMouseMoveEvent( int x, int y );
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		void HandleAdd( Widget::Ptr child );
+		bool HandleAdd( Widget::Ptr child ) override;
 		void HandleRemove( Widget::Ptr child );
 		void HandleSizeChange();
 		void HandleUpdate( float seconds );

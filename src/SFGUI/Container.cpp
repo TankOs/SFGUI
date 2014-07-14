@@ -3,15 +3,7 @@
 namespace sfg {
 
 void Container::Add( Widget::Ptr widget ) {
-	if( IsChild( widget ) ) {
-		return;
-	}
-
-	m_children.push_back( widget );
-	HandleAdd( widget );
-
-	// Check if HandleAdd still wants the little boy.
-	if( IsChild( widget ) ) {
+	if( HandleAdd( widget ) ) {
 		widget->SetParent( shared_from_this() );
 		RequestResize();
 	}
@@ -42,13 +34,7 @@ void Container::RemoveAll() {
 }
 
 bool Container::IsChild( Widget::Ptr widget ) const {
-	for( const auto& child : m_children ) {
-		if( child == widget ) {
-			return true;
-		}
-	}
-
-	return false;
+	return std::find( m_children.begin(), m_children.end(), widget ) != m_children.end();
 }
 
 const Container::WidgetsList& Container::GetChildren() const {
@@ -95,8 +81,16 @@ void Container::HandleEvent( const sf::Event& event ) {
 	Widget::HandleEvent( event );
 }
 
-void Container::HandleAdd( Widget::Ptr child ) {
+bool Container::HandleAdd( Widget::Ptr child ) {
+	if( IsChild( child ) ) {
+		return false;
+	}
+
+	m_children.push_back( child );
+
 	child->SetViewport( GetViewport() );
+
+	return true;
 }
 
 void Container::HandleRemove( Widget::Ptr /*child*/ ) {

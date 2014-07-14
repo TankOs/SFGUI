@@ -49,7 +49,7 @@ class SFGUI_API Button : public Bin {
 		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		virtual sf::Vector2f CalculateRequisition() override;
 
-		virtual void HandleAdd( Widget::Ptr child ) override;
+		virtual bool HandleAdd( Widget::Ptr child ) override;
 
 		void HandleSizeChange();
 

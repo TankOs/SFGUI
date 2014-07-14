@@ -25,6 +25,10 @@ const std::string& Fixed::GetName() const {
 }
 
 void Fixed::Put( Widget::Ptr widget, const sf::Vector2f& position ) {
+	if( IsChild( widget ) ) {
+		return;
+	}
+
 	m_children_position_map[ widget ] = position;
 
 	Container::Add( widget );
@@ -40,9 +44,7 @@ void Fixed::Move( Widget::Ptr widget, const sf::Vector2f& position ) {
 	}
 }
 
-void Fixed::HandleAdd( Widget::Ptr child ) {
-	Container::HandleAdd( child );
-
+bool Fixed::HandleAdd( Widget::Ptr child ) {
 	// If there's no position info present for the widget, the user added the widget
 	// manually, which is not allowed for this class.
 	if( m_children_position_map.find( child ) == m_children_position_map.end() ) {
@@ -51,12 +53,16 @@ void Fixed::HandleAdd( Widget::Ptr child ) {
 		std::cerr << "SFGUI warning: Child must be added via Put() for sfg::Fixed widgets.\n";
 #endif
 
-		Remove( child );
-	} else {
-		child->SetAllocation( sf::FloatRect( m_children_position_map[ child ], child->GetRequisition() ) );
-
-		RequestResize();
+		return false;
 	}
+
+	Container::HandleAdd( child );
+
+	child->SetAllocation( sf::FloatRect( m_children_position_map[ child ], child->GetRequisition() ) );
+
+	RequestResize();
+
+	return true;
 }
 
 void Fixed::HandleRemove( Widget::Ptr child ) {

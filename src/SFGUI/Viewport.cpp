@@ -171,20 +171,20 @@ const std::string& Viewport::GetName() const {
 	return name;
 }
 
-void Viewport::HandleAdd( Widget::Ptr child ) {
-	if( GetChildren().size() > 1 ) {
+bool Viewport::HandleAdd( Widget::Ptr child ) {
+	if( !GetChildren().empty() ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Only one widget can be added to a Bin.\n";
 #endif
 
-		Remove( child );
+		return false;
 	}
 
-	if( !IsChild( child ) ) {
-		return;
-	}
+	Container::HandleAdd( child );
 
 	child->SetViewport( m_children_viewport );
+
+	return true;
 }
 
 void Viewport::HandleViewportUpdate() {
