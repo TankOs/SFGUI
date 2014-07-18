@@ -264,7 +264,10 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 		GetViewport()->SetAllocation( m_content_allocation );
 	}
 
+	m_horizontal_scrollbar->RequestResize();
 	m_horizontal_scrollbar->Invalidate();
+
+	m_vertical_scrollbar->RequestResize();
 	m_vertical_scrollbar->Invalidate();
 
 	Invalidate();
@@ -298,6 +301,15 @@ bool ScrolledWindow::HandleAdd( Widget::Ptr child ) {
 
 void ScrolledWindow::AddWithViewport( Widget::Ptr widget ) {
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
+
+	if( GetChildren().size() > 2 ) {
+
+#if defined( SFGUI_DEBUG )
+		std::cerr << "SFGUI warning: Only one widget can be added to a ScrolledWindow.\n";
+#endif
+
+		return;
+	}
 
 	m_viewport = Viewport::Create();
 
