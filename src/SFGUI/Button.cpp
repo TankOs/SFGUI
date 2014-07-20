@@ -5,7 +5,7 @@
 namespace sfg {
 
 Button::Ptr Button::Create( const sf::String& label ) {
-	auto ptr = std::make_shared<Button>();
+	auto ptr = Ptr( new Button );
 	ptr->SetLabel( label );
 	return ptr;
 }

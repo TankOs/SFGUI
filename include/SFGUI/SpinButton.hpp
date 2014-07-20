@@ -104,7 +104,7 @@ class SFGUI_API SpinButton : public Entry {
 	private:
 		/** Ctor.
 		 */
-		SpinButton( Adjustment::Ptr adjustment );
+		SpinButton();
 
 		void UpdateTextFromAdjustment();
 		void UpdateAdjustmentFromText();

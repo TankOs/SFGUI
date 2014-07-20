@@ -32,6 +32,10 @@ class SFGUI_API Frame : public Bin, public Misc {
 		const sf::String& GetLabel() const;
 
 	protected:
+		/** Ctor.
+		 */
+		Frame() = default;
+
 		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		virtual sf::Vector2f CalculateRequisition() override;
 

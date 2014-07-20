@@ -13,13 +13,16 @@ Scale::Scale( Orientation orientation ) :
 }
 
 Scale::Ptr Scale::Create( Orientation orientation ) {
-	return Ptr( new Scale( orientation ) );
+	Ptr ptr( new Scale( orientation ) );
+	ptr->SetAdjustment( Adjustment::Create() );
+	return ptr;
 }
 
 Scale::Ptr Scale::Create( float min, float max, float step, Orientation orientation ) {
 	Ptr ptr( new Scale( orientation ) );
 	ptr->SetRange( min, max );
 	ptr->SetIncrements( step, 0.f );
+	ptr->SetAdjustment( Adjustment::Create() );
 	return ptr;
 }
 

@@ -5,7 +5,7 @@
 namespace sfg {
 
 RadioButton::Ptr RadioButton::Create( const sf::String& label, RadioButton::RadioButtonGroup::Ptr group ) {
-	auto widget = std::make_shared<RadioButton>();
+	auto widget = Ptr( new RadioButton );
 
 	widget->SetLabel( label );
 
@@ -24,7 +24,7 @@ RadioButton::RadioButtonGroup::Ptr RadioButton::GetGroup() const {
 }
 
 void RadioButton::SetGroup( RadioButton::RadioButtonGroup::Ptr group ) {
-	std::weak_ptr<RadioButton> weak_this( std::static_pointer_cast<RadioButton>( shared_from_this() ) );
+	auto weak_this = std::weak_ptr<RadioButton>( std::static_pointer_cast<RadioButton>( shared_from_this() ) );
 
 	if( m_group ) {
 		m_group->GetMembers().erase( weak_this );
@@ -68,7 +68,7 @@ const std::string& RadioButton::GetName() const {
 }
 
 RadioButton::RadioButtonGroup::Ptr RadioButton::RadioButtonGroup::Create() {
-	return std::make_shared<RadioButtonGroup>();
+	return Ptr( new RadioButtonGroup );
 }
 
 RadioButton::RadioButtonGroup::ContainerType& RadioButton::RadioButtonGroup::GetMembers() {

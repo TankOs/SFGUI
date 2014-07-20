@@ -32,6 +32,11 @@ class SFGUI_API RadioButton : public CheckButton {
 				 */
 				ContainerType& GetMembers();
 
+			protected:
+				/** Ctor.
+				 */
+				RadioButtonGroup() = default;
+
 			private:
 				ContainerType m_members;
 		};
@@ -60,6 +65,10 @@ class SFGUI_API RadioButton : public CheckButton {
 		virtual const std::string& GetName() const override;
 
 	protected:
+		/** Ctor.
+		 */
+		RadioButton() = default;
+
 		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y ) override;
 
 	private:

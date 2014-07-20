@@ -79,7 +79,9 @@ class SFGUI_API Viewport : public Bin {
 		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
 	private:
-		Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
+		/** Ctor.
+		 */
+		Viewport();
 
 		void HandleRequisitionChange();
 
@@ -87,6 +89,9 @@ class SFGUI_API Viewport : public Bin {
 
 		Adjustment::Ptr m_horizontal_adjustment;
 		Adjustment::Ptr m_vertical_adjustment;
+
+		unsigned int m_horizontal_adjustment_signal_serial;
+		unsigned int m_vertical_adjustment_signal_serial;
 
 		std::shared_ptr<RendererViewport> m_children_viewport;
 };

@@ -364,7 +364,23 @@ void ComboBox::HandleStateChange( State old_state ) {
 			m_scrollbar->GetAdjustment()->SetMinorStep( 1.f );
 			m_scrollbar->GetAdjustment()->SetMajorStep( 1.f );
 
-			m_scrollbar->GetAdjustment()->GetSignal( Adjustment::OnChange ).Connect( std::bind( &ComboBox::ChangeStartEntry, this ) );
+			auto weak_this = std::weak_ptr<Widget>( shared_from_this() );
+
+			m_scrollbar->GetAdjustment()->GetSignal( Adjustment::OnChange ).Connect( [weak_this] {
+				auto shared_this = weak_this.lock();
+
+				if( !shared_this ) {
+					return;
+				}
+
+				auto combo_box = std::dynamic_pointer_cast<ComboBox>( shared_this );
+
+				if( !combo_box ) {
+					return;
+				}
+
+				combo_box->ChangeStartEntry();
+			} );
 
 			m_scrollbar->SetZOrder( 2 );
 

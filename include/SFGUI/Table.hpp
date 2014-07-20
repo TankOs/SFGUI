@@ -65,6 +65,11 @@ class SFGUI_API Table : public Container {
 		 */
 		void SetRowSpacings( float spacing );
 
+	protected:
+		/** Ctor.
+		 */
+		Table() = default;
+
 	private:
 		typedef std::list<priv::TableCell> TableCellList;
 		typedef std::vector<priv::TableOptions> TableOptionsArray;

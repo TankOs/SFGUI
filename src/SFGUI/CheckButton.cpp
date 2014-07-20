@@ -5,7 +5,7 @@
 namespace sfg {
 
 CheckButton::Ptr CheckButton::Create( const sf::String& label ) {
-	auto widget = std::make_shared<CheckButton>();
+	auto widget = Ptr( new CheckButton );
 	widget->SetLabel( label );
 	return widget;
 }

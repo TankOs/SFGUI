@@ -4,7 +4,7 @@
 namespace sfg {
 
 Fixed::Ptr Fixed::Create() {
-	return std::make_shared<Fixed>();
+	return Ptr( new Fixed );
 }
 
 sf::Vector2f Fixed::CalculateRequisition() {

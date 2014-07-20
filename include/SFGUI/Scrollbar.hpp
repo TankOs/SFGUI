@@ -50,7 +50,7 @@ class SFGUI_API Scrollbar : public Range {
 	private:
 		/** Ctor.
 		 */
-		Scrollbar( Adjustment::Ptr adjustment, Orientation orientation = Orientation::HORIZONTAL );
+		Scrollbar( Orientation orientation = Orientation::HORIZONTAL );
 
 		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		virtual void HandleMouseMoveEvent( int x, int y ) override;

@@ -5,13 +5,10 @@
 
 namespace sfg {
 
-Viewport::Viewport( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment )
+Viewport::Viewport() :
+	m_horizontal_adjustment_signal_serial( 0 ),
+	m_vertical_adjustment_signal_serial( 0 )
 {
-	GetSignal( OnSizeRequest ).Connect( std::bind( &Viewport::HandleRequisitionChange, this ) );
-
-	SetHorizontalAdjustment( horizontal_adjustment );
-	SetVerticalAdjustment( vertical_adjustment );
-
 	m_children_viewport = Renderer::Get().CreateViewport();
 }
 
@@ -20,12 +17,12 @@ Viewport::Ptr Viewport::Create() {
 }
 
 Viewport::Ptr Viewport::Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) {
-	return Ptr(
-		new Viewport(
-			horizontal_adjustment,
-			vertical_adjustment
-		)
-	);
+	auto ptr = Ptr( new Viewport );
+
+	ptr->SetHorizontalAdjustment( horizontal_adjustment );
+	ptr->SetVerticalAdjustment( vertical_adjustment );
+
+	return ptr;
 }
 
 std::unique_ptr<RenderQueue> Viewport::InvalidateImpl() const {
@@ -142,8 +139,29 @@ Adjustment::Ptr Viewport::GetHorizontalAdjustment() const {
 }
 
 void Viewport::SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment ) {
+	if( m_horizontal_adjustment ) {
+		m_horizontal_adjustment->GetSignal( Adjustment::OnChange ).Disconnect( m_horizontal_adjustment_signal_serial );
+	}
+
 	m_horizontal_adjustment = horizontal_adjustment;
-	m_horizontal_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Viewport::UpdateView, this ) );
+
+	auto weak_this = std::weak_ptr<Widget>( shared_from_this() );
+
+	m_horizontal_adjustment_signal_serial = m_horizontal_adjustment->GetSignal( Adjustment::OnChange ).Connect( [weak_this] {
+		auto shared_this = weak_this.lock();
+
+		if( !shared_this ) {
+			return;
+		}
+
+		auto viewport = std::dynamic_pointer_cast<Viewport>( shared_this );
+
+		if( !viewport ) {
+			return;
+		}
+
+		viewport->UpdateView();
+	} );
 }
 
 Adjustment::Ptr Viewport::GetVerticalAdjustment() const {
@@ -151,8 +169,29 @@ Adjustment::Ptr Viewport::GetVerticalAdjustment() const {
 }
 
 void Viewport::SetVerticalAdjustment( Adjustment::Ptr vertical_adjustment ) {
+	if( m_vertical_adjustment ) {
+		m_vertical_adjustment->GetSignal( Adjustment::OnChange ).Disconnect( m_vertical_adjustment_signal_serial );
+	}
+
 	m_vertical_adjustment = vertical_adjustment;
-	m_vertical_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Viewport::UpdateView, this ) );
+
+	auto weak_this = std::weak_ptr<Widget>( shared_from_this() );
+
+	m_vertical_adjustment_signal_serial = m_vertical_adjustment->GetSignal( Adjustment::OnChange ).Connect( [weak_this] {
+		auto shared_this = weak_this.lock();
+
+		if( !shared_this ) {
+			return;
+		}
+
+		auto viewport = std::dynamic_pointer_cast<Viewport>( shared_this );
+
+		if( !viewport ) {
+			return;
+		}
+
+		viewport->UpdateView();
+	} );
 }
 
 void Viewport::HandleRequisitionChange() {

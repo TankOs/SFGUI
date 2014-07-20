@@ -33,6 +33,10 @@ class SFGUI_API Fixed : public Container {
 		void Move( Widget::Ptr widget, const sf::Vector2f& position );
 
 	protected:
+		/** Ctor.
+		 */
+		Fixed() = default;
+
 		virtual sf::Vector2f CalculateRequisition() override;
 
 	private:

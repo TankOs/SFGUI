@@ -5,7 +5,7 @@
 
 namespace sfg {
 
-Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
+Scrollbar::Scrollbar( Orientation orientation ) :
 	Range( orientation ),
 	m_elapsed_time( 0.f ),
 	m_slider_click_offset( 0.f ),
@@ -16,17 +16,18 @@ Scrollbar::Scrollbar( Adjustment::Ptr adjustment, Orientation orientation ) :
 	m_increase_pressed( false ),
 	m_repeat_wait( true )
 {
-	if( adjustment ) {
-		SetAdjustment( adjustment );
-	}
 }
 
 Scrollbar::Ptr Scrollbar::Create( Orientation orientation ) {
-	return Ptr( new Scrollbar( Adjustment::Ptr(), orientation ) );
+	auto ptr = Ptr( new Scrollbar( orientation ) );
+	ptr->SetAdjustment( Adjustment::Create() );
+	return ptr;
 }
 
 Scrollbar::Ptr Scrollbar::Create( Adjustment::Ptr adjustment, Orientation orientation ) {
-	return Ptr( new Scrollbar( adjustment, orientation ) );
+	auto ptr = Ptr( new Scrollbar( orientation ) );
+	ptr->SetAdjustment( adjustment );
+	return ptr;
 }
 
 const sf::FloatRect Scrollbar::GetSliderRect() const {

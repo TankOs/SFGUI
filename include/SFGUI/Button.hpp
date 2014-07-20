@@ -46,6 +46,10 @@ class SFGUI_API Button : public Bin {
 		void ClearImage();
 
 	protected:
+		/** Ctor.
+		 */
+		Button() = default;
+
 		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		virtual sf::Vector2f CalculateRequisition() override;
 

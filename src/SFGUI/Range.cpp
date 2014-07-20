@@ -6,7 +6,6 @@ Range::Range( Orientation orientation ) :
 	m_change_connection( 0 ),
 	m_orientation( orientation )
 {
-	SetAdjustment( Adjustment::Create() );
 }
 
 Adjustment::Ptr Range::GetAdjustment() const {
@@ -14,10 +13,31 @@ Adjustment::Ptr Range::GetAdjustment() const {
 }
 
 void Range::SetAdjustment( Adjustment::Ptr adjustment ) {
+	// Disconnect the previous connection.
+	if( m_adjustment ) {
+		m_adjustment->GetSignal( Adjustment::OnChange ).Disconnect( m_change_connection );
+	}
+
 	m_adjustment = adjustment;
 
-	// Connect change signal. This also disconnects the previous connection.
-	m_change_connection = m_adjustment->GetSignal( Adjustment::OnChange ).Connect( std::bind( &Range::HandleAdjustmentChange, this ) );
+	auto weak_this = std::weak_ptr<Widget>( shared_from_this() );
+
+	// Connect change signal.
+	m_change_connection = m_adjustment->GetSignal( Adjustment::OnChange ).Connect( [weak_this] {
+		auto shared_this = weak_this.lock();
+
+		if( !shared_this ) {
+			return;
+		}
+
+		auto range = std::dynamic_pointer_cast<Range>( shared_this );
+
+		if( !range ) {
+			return;
+		}
+
+		range->HandleAdjustmentChange();
+	} );
 }
 
 float Range::GetValue() const {

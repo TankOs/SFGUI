@@ -8,7 +8,7 @@
 namespace sfg {
 
 Table::Ptr Table::Create() {
-	return std::make_shared<Table>();
+	return Ptr( new Table );
 }
 
 sf::Vector2f Table::CalculateRequisition() {
