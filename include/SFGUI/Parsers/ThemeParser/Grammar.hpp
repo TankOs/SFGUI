@@ -1,30 +1,9 @@
 #pragma once
 #include <ciso646> // For our beloved friend MSVC.
 
-// Since we don't want to mess with the ell headers (LGPL) to
-// fix the warnings we just disable them for these 2 includes.
-#if defined( _MSC_VER )
-	// TODO: Disable MSVC warnings for these includes too
-
-	#include <ell/Grammar.h>
-	#include <ell/Parser.h>
-
-
-#elif defined( __GNUC__ )
-	#pragma GCC push_options
-	#pragma GCC diagnostic ignored "-Wshadow"
-
-	#include <ell/Grammar.h>
-	#include <ell/Parser.h>
-
-	#pragma GCC pop_options
-#else
-	#include <ell/Grammar.h>
-	#include <ell/Parser.h>
-#endif
-
 #include <SFGUI/Parsers/ThemeParser/Parse.hpp>
-
+#include <ell/Grammar.h>
+#include <ell/Parser.h>
 #include <string>
 #include <stack>
 

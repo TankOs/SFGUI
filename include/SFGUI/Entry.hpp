@@ -49,17 +49,17 @@ class SFGUI_API Entry : public Widget {
 		/** Get offset to the beginning of the visible text.
 		 * @return Offset.
 		 */
-		std::size_t GetVisibleOffset() const;
+		int GetVisibleOffset() const;
 
 		/** Get current cursor position.
 		 * @return Cursor position.
 		 */
-		std::size_t GetCursorPosition() const;
+		int GetCursorPosition() const;
 
 		/** Set cursor position.
 		 * @param pos Position.
 		 */
-		void SetCursorPosition( std::size_t pos );
+		void SetCursorPosition( int pos );
 
 		/** Check if cursor is visible.
 		 * @return true if visible./
@@ -79,12 +79,12 @@ class SFGUI_API Entry : public Widget {
 		/** Get maximum length.
 		 * @return Maximum length (0 if disabled).
 		 */
-		std::size_t GetMaximumLength() const;
+		int GetMaximumLength() const;
 
 		/** Set maximum length.
 		 * @param max_length Maximum length (0 to disable).
 		 */
-		void SetMaximumLength( std::size_t max_length );
+		void SetMaximumLength( int max_length );
 
 		// Signals.
 		static Signal::SignalID OnTextChanged; //!< Fired when the text changes.
@@ -114,7 +114,7 @@ class SFGUI_API Entry : public Widget {
 		 * @param mouse_pos_x x coordinate.
 		 * @return Closest cursor position.
 		 */
-		std::size_t GetPositionFromMouseX( int mouse_pos_x );
+		int GetPositionFromMouseX( int mouse_pos_x );
 
 		/** Recalculate visible string.
 		 */
@@ -133,15 +133,15 @@ class SFGUI_API Entry : public Widget {
 		mutable sf::String m_visible_string;
 
 		// The offset in the string at which the visible portion starts
-		mutable std::size_t m_visible_offset;
+		mutable int m_visible_offset;
 
 		// The UTF-32 character which hides each character of the string
 		sf::Uint32 m_text_placeholder;
 
-		// The maximum text lenght. If it equals to 0, it disables this limit
-		std::size_t m_max_length;
+		// The maximum text length. If it equals to 0, it disables this limit
+		int m_max_length;
 
-		std::size_t m_cursor_position;
+		int m_cursor_position;
 
 		float m_elapsed_time;
 

@@ -3,14 +3,20 @@
 
 #include <SFML/Window.hpp>
 #include <limits>
+#include <iterator>
 
 namespace sfg {
 
 void Desktop::Update( float seconds ) {
 	Context::Activate( m_context );
-	for( auto index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
-		m_children[index]->Update( seconds );
+
+	std::reverse_iterator<WidgetsList::iterator> iter( std::end( m_children ) );
+	std::reverse_iterator<WidgetsList::iterator> finish( std::begin( m_children ) );
+
+	for( ; iter != finish; ++iter ) {
+		(*iter)->Update( seconds );
 	}
+
 	Context::Deactivate();
 }
 
@@ -36,8 +42,8 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		check_inside = true;
 	}
 
-	for( std::size_t index = 0; index < m_children.size(); ++index ) {
-		Widget::Ptr widget( m_children[index] );
+	for( int index = 0; index < static_cast<int>( m_children.size() ); ++index ) {
+		Widget::Ptr widget( m_children[static_cast<std::size_t>( index )] );
 
 		// Skip widget if not visible or is insensitive.
 		if( !widget->IsLocallyVisible() || widget->GetState() == Widget::State::INSENSITIVE ) {
@@ -80,7 +86,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		widget->HandleEvent( event );
 
 		if( check_inside && is_inside ) {
-			if( index < m_children.size() && widget == m_children[index] ) {
+			if( index < static_cast<int>( m_children.size() ) && widget == m_children[static_cast<std::size_t>( index )] ) {
 				m_last_receiver = widget;
 			}
 			break;
@@ -143,8 +149,11 @@ void Desktop::Refresh() {
 
 	RecalculateWidgetLevels();
 
-	for( auto index = static_cast<int>( m_children.size() ) - 1; index >= 0; --index ) {
-		m_children[index]->Refresh();
+	std::reverse_iterator<WidgetsList::iterator> iter( std::end( m_children ) );
+	std::reverse_iterator<WidgetsList::iterator> finish( std::begin( m_children ) );
+
+	for( ; iter != finish; ++iter ) {
+		(*iter)->Refresh();
 	}
 
 	// Restore previous context.
@@ -193,13 +202,14 @@ void Desktop::SendFakeMouseMoveEvent( std::shared_ptr<Widget> widget, int x, int
 
 void Desktop::RecalculateWidgetLevels() {
 	auto children_size = m_children.size();
+	auto current_level = 0;
 
-	int current_level = 0;
+	std::reverse_iterator<WidgetsList::iterator> iter( std::end( m_children ) );
+	std::reverse_iterator<WidgetsList::iterator> finish( std::begin( m_children ) );
 
-	for( auto index = static_cast<int>( children_size ) - 1; index >= 0; --index ) {
-		m_children[index]->SetHierarchyLevel( current_level );
-		m_children[index]->Invalidate();
-
+	for( ; iter != finish; ++iter ) {
+		(*iter)->SetHierarchyLevel( current_level );
+		(*iter)->Invalidate();
 		current_level += std::numeric_limits<int>::max() / static_cast<int>( children_size );
 	}
 }

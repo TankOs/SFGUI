@@ -13,7 +13,7 @@ class SFGUI_API ComboBox : public Bin {
 	public:
 		typedef std::shared_ptr<ComboBox> Ptr; ///< Shared pointer.
 		typedef std::shared_ptr<const ComboBox> PtrConst; ///< Shared pointer to const.
-		typedef std::size_t IndexType; ///< Type for item indices.
+		typedef int IndexType; ///< Type for item indices.
 
 		static const IndexType NONE; ///< Value for specifying an invalid index/no item selected.
 

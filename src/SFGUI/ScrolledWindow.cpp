@@ -159,7 +159,7 @@ void ScrolledWindow::RecalculateAdjustments() const {
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
 	if( GetViewport() && GetViewport()->GetChild() ) {
-		auto max_horiz_val = std::max( GetViewport()->GetChild()->GetAllocation().width + 2.f, GetAllocation().width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		auto max_horiz_val = std::max( GetViewport()->GetChild()->GetAllocation().width + border_width * 2.f, GetAllocation().width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
 		auto h_adjustment = m_horizontal_scrollbar->GetAdjustment();
 		h_adjustment->SetLower( .0f );
@@ -168,7 +168,7 @@ void ScrolledWindow::RecalculateAdjustments() const {
 		h_adjustment->SetMajorStep( GetAllocation().width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 		h_adjustment->SetPageSize( GetAllocation().width - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
-		auto max_vert_val = std::max( GetViewport()->GetChild()->GetAllocation().height + 2.f, GetAllocation().height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
+		auto max_vert_val = std::max( GetViewport()->GetChild()->GetAllocation().height + border_width * 2.f, GetAllocation().height - scrollbar_width - scrollbar_spacing - border_width * 2.f );
 
 		auto v_adjustment = m_vertical_scrollbar->GetAdjustment();
 		v_adjustment->SetLower( .0f );
@@ -180,8 +180,18 @@ void ScrolledWindow::RecalculateAdjustments() const {
 
 	RecalculateContentAllocation();
 
+	auto horizontal_scrollbar_visible = m_horizontal_scrollbar->IsLocallyVisible();
+	auto vertical_scrollbar_visible = m_vertical_scrollbar->IsLocallyVisible();
+
 	m_horizontal_scrollbar->Show( IsHorizontalScrollbarVisible() );
 	m_vertical_scrollbar->Show( IsVerticalScrollbarVisible() );
+
+	// Recalculate if a scrollbar transitions from hidden to visible.
+	// This is required to find the "optimal" scrollbar visibility
+	// setting for a given viewport allocation.
+	if( ( horizontal_scrollbar_visible != IsHorizontalScrollbarVisible() ) || ( vertical_scrollbar_visible != IsVerticalScrollbarVisible() ) ) {
+		RecalculateAdjustments();
+	}
 }
 
 void ScrolledWindow::RecalculateContentAllocation() const {

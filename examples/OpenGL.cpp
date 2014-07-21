@@ -3,8 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
-const auto PI = 3.14159265f;
-
 int main() {
 	// An sf::Window for raw OpenGL rendering.
 	sf::Window app_window( sf::VideoMode( 800, 600 ), "SFGUI with OpenGL example", sf::Style::Titlebar | sf::Style::Close );
@@ -18,7 +16,7 @@ int main() {
 
 	// Initial OpenGL setup.
 	// We have to set up our own OpenGL viewport because we are using an sf::Window.
-	glViewport( 0, 0, app_window.getSize().x, app_window.getSize().y );
+	glViewport( 0, 0, static_cast<int>( app_window.getSize().x ), static_cast<int>( app_window.getSize().y ) );
 
 	auto red_scale = sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL );
 	auto green_scale = sfg::Scale::Create( 0.f, 1.f, .01f, sfg::Scale::Orientation::HORIZONTAL );
@@ -64,6 +62,8 @@ int main() {
 	sf::Clock clock;
 
 	while( app_window.isOpen() ) {
+		auto delta = clock.restart().asSeconds();
+
 		while( app_window.pollEvent( event ) ) {
 			if( event.type == sf::Event::Closed ) {
 				app_window.close();
@@ -75,7 +75,7 @@ int main() {
 
 		if( auto_check->IsActive() ) {
 			float angle( angle_scale->GetValue() );
-			angle += static_cast<float>( clock.getElapsedTime().asMicroseconds() ) * .0005f;
+			angle += delta * 90.f;
 
 			while( angle >= 360.f ) {
 				angle -= 360.f;
@@ -100,14 +100,12 @@ int main() {
 		glVertex3f( 1.f, 1.f, 0.f );
 		glEnd();
 
-		desktop.Update( clock.restart().asSeconds() );
+		desktop.Update( delta );
 
 		// SFGUI rendering.
 		sfgui.Display( app_window );
 
 		app_window.display();
-
-		clock.restart();
 	}
 
 	return 0;

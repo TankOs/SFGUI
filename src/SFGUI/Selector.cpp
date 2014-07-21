@@ -83,18 +83,7 @@ Selector::Ptr Selector::Create( const std::string& widget, const std::string& id
 		selector->m_parent = parent;
 	}
 
-	// Hash.
-	auto hash = static_cast<std::size_t>( 2166136261UL );
-
-	const auto& selector_string = selector->BuildString();
-	auto length = selector_string.length();
-
-	for ( ; length; --length ) {
-		hash ^= static_cast<std::size_t>( selector_string[ length - 1 ] );
-		hash *= static_cast<std::size_t>( 16777619UL );
-	}
-
-	selector->m_hash = hash;
+	selector->m_hash = std::hash<std::string>()( selector->BuildString() );
 
 	return selector;
 }

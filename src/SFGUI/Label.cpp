@@ -82,7 +82,7 @@ void Label::WrapText() {
 		line = text.substr( 0, next_newline );
 
 		if( next_newline != std::basic_string<sf::Uint32>::npos ) {
-			text = text.substr( next_newline + 1 );
+			text.erase( 0, next_newline + 1 );
 		}
 		else {
 			text.clear();
@@ -113,7 +113,7 @@ void Label::WrapText() {
 
 				if( last_space != std::basic_string<sf::Uint32>::npos ) {
 					wrapped_text += line.substr( 0, last_space );
-					line = line.substr( last_space );
+					line.erase( 0, last_space );
 				}
 
 				if( !line.empty() ) {
@@ -121,7 +121,7 @@ void Label::WrapText() {
 
 					// If this is a new line remove the leading space.
 					if( line[0] == L' ' ) {
-						line = line.substr( 1 );
+						line.erase( 0, 1 );
 					}
 				}
 			}
@@ -186,7 +186,7 @@ sf::Vector2f Label::CalculateRequisition() {
 		auto next_newline = text.find( L'\n' );
 
 		if( next_newline != std::basic_string<sf::Uint32>::npos ) {
-			text = text.substr( next_newline + 1 );
+			text.erase( 0, next_newline + 1 );
 		}
 		else {
 			break;

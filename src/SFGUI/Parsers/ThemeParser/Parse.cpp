@@ -18,10 +18,10 @@ std::string GetLine( std::string str, std::size_t line ) {
 			return std::string("");
 		}
 
-		str = str.substr( position + 1 );
+		str.erase( 0, position + 1 );
 	}
 
-	str = str.substr( 0, str.find( '\n' ) );
+	str.erase( str.find( '\n' ) );
 
 	return str;
 }
@@ -63,7 +63,7 @@ std::vector<Rule> ParseString( std::string str ) {
 
 		std::cerr << "Error parsing string:\n"
 		 << str << "\n"
-		 << std::string( _grammar.position - str.c_str() ,' ' ) << "^\n"
+		 << std::string( static_cast<std::size_t>( _grammar.position - str.c_str() ), ' ' ) << "^\n"
 		 << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
 	}
 #else
@@ -110,8 +110,8 @@ std::vector<Rule> ParseFile( std::string filename ) {
 		result = false;
 
 		std::cerr << "Error parsing file \"" << filename << "\" at line " << _grammar.line_number <<":\n"
-		 << GetLine( str, _grammar.line_number ) << "\n"
-		 << std::string( ColumnPosition( str, _grammar.position - str.c_str() ) ,' ' ) << "^\n"
+		 << GetLine( str, static_cast<std::size_t>( _grammar.line_number ) ) << "\n"
+		 << std::string( ColumnPosition( str, static_cast<std::size_t>( _grammar.position - str.c_str() ) ), ' ' ) << "^\n"
 		 << "Expected " << strstr( e.what(), "expecting " ) + 10 << "\n";
 	}
 #else

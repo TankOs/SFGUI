@@ -52,7 +52,7 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 
 		void RefreshVBO();
 
-		void SetupFBO( unsigned int width, unsigned int height );
+		void SetupFBO( int width, int height );
 
 		void DestroyFBO();
 

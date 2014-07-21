@@ -499,6 +499,8 @@ void SampleApp::Run() {
 	sf::Int64 frame_times[5000];
 	std::size_t frame_times_index = 0;
 
+	std::fill( std::begin( frame_times ), std::end( frame_times ), 0 );
+
 	while( m_window.isOpen() ) {
 		while( m_window.pollEvent( event ) ) {
 			if( event.type == sf::Event::Closed ) {
@@ -757,7 +759,7 @@ void SampleApp::RenderCustomGL() {
 	glMatrixMode( GL_MODELVIEW );
 	glPopMatrix();
 
-	glViewport( 0, 0, m_window.getSize().x, m_window.getSize().y );
+	glViewport( 0, 0, static_cast<int>( m_window.getSize().x ), static_cast<int>( m_window.getSize().y ) );
 }
 
 void SampleApp::RenderCustomSFML() {

@@ -38,9 +38,9 @@ sf::Font LoadDejaVuSansFont() {
 			input_block[2] = static_cast<unsigned char>( base64_chars.find( font_data_pointer[index + 2] ) );
 			input_block[3] = static_cast<unsigned char>( base64_chars.find( font_data_pointer[index + 3] ) );
 
-			font_data[font_data_decoded_counter] = static_cast<unsigned char>( ( input_block[0] << 2 ) | ( ( input_block[1] & 0x30 ) >> 4 ) );
-			font_data[font_data_decoded_counter + 1] = static_cast<unsigned char>( ( ( input_block[1] & 0xf ) << 4 ) | ( ( input_block[2] & 0x3c ) >> 2 ) );
-			font_data[font_data_decoded_counter + 2] = static_cast<unsigned char>( ( ( input_block[2] & 0x3 ) << 6 ) | input_block[3] );
+			font_data[font_data_decoded_counter] = static_cast<char>( ( input_block[0] << 2 ) | ( ( input_block[1] & 0x30 ) >> 4 ) );
+			font_data[font_data_decoded_counter + 1] = static_cast<char>( ( ( input_block[1] & 0xf ) << 4 ) | ( ( input_block[2] & 0x3c ) >> 2 ) );
+			font_data[font_data_decoded_counter + 2] = static_cast<char>( ( ( input_block[2] & 0x3 ) << 6 ) | input_block[3] );
 
 			font_data_decoded_counter += 3;
 		}

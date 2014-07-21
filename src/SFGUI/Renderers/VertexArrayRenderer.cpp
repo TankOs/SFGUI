@@ -49,7 +49,7 @@ void VertexArrayRenderer::DisplayImpl() const {
 
 	glEnable( GL_SCISSOR_TEST );
 
-	std::size_t current_atlas_page = 0;
+	auto current_atlas_page = 0;
 
 	sf::Texture::bind( m_texture_atlas[0].get() );
 
@@ -57,8 +57,8 @@ void VertexArrayRenderer::DisplayImpl() const {
 		auto viewport = batch.viewport;
 
 		if( batch.custom_draw ) {
-			sf::Vector2i destination( viewport->GetDestinationOrigin() );
-			sf::Vector2u size( viewport->GetSize() );
+			auto destination = static_cast<sf::Vector2i>( viewport->GetDestinationOrigin() );
+			auto size = static_cast<sf::Vector2i>( viewport->GetSize() );
 
 			glViewport( destination.x, m_window_size.y - destination.y - size.y, size.x, size.y );
 
@@ -67,18 +67,18 @@ void VertexArrayRenderer::DisplayImpl() const {
 
 			glViewport( 0, 0, m_window_size.x, m_window_size.y );
 
-			sf::Texture::bind( m_texture_atlas[current_atlas_page].get() );
+			sf::Texture::bind( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )].get() );
 		}
 		else {
 			if( viewport && ( ( *viewport ) != ( *m_default_viewport ) ) ) {
-				auto destination_origin = viewport->GetDestinationOrigin();
-				auto size = viewport->GetSize();
+				auto destination_origin = static_cast<sf::Vector2i>( viewport->GetDestinationOrigin() );
+				auto size = static_cast<sf::Vector2i>( viewport->GetSize() );
 
 				glScissor(
-					static_cast<int>( destination_origin.x ),
-					m_window_size.y - static_cast<int>( destination_origin.y + size.y ),
-					static_cast<int>( size.x ),
-					static_cast<int>( size.y )
+					destination_origin.x,
+					m_window_size.y - ( destination_origin.y + size.y ),
+					size.x,
+					size.y
 				);
 			}
 			else {
@@ -89,14 +89,14 @@ void VertexArrayRenderer::DisplayImpl() const {
 				if( batch.atlas_page != current_atlas_page ) {
 					current_atlas_page = batch.atlas_page;
 
-					sf::Texture::bind( m_texture_atlas[current_atlas_page].get() );
+					sf::Texture::bind( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )].get() );
 				}
 
 				glDrawElements(
 					GL_TRIANGLES,
 					batch.index_count,
 					GL_UNSIGNED_INT,
-					reinterpret_cast<const char*>( &m_index_data[0] ) + ( batch.start_index * sizeof( GLuint ) )
+					reinterpret_cast<const char*>( &m_index_data[0] ) + static_cast<unsigned int>( batch.start_index * static_cast<int>( sizeof( GLuint ) ) )
 				);
 			}
 		}
@@ -124,10 +124,10 @@ void VertexArrayRenderer::RefreshArray() {
 	m_texture_data.clear();
 	m_index_data.clear();
 
-	m_vertex_data.reserve( m_vertex_count );
-	m_color_data.reserve( m_vertex_count );
-	m_texture_data.reserve( m_vertex_count );
-	m_index_data.reserve( m_index_count );
+	m_vertex_data.reserve( static_cast<std::size_t>( m_vertex_count ) );
+	m_color_data.reserve( static_cast<std::size_t>( m_vertex_count ) );
+	m_texture_data.reserve( static_cast<std::size_t>( m_vertex_count ) );
+	m_index_data.reserve( static_cast<std::size_t>( m_index_count ) );
 
 	m_batches.clear();
 
@@ -143,7 +143,7 @@ void VertexArrayRenderer::RefreshArray() {
 	current_batch.start_index = 0;
 	current_batch.index_count = 0;
 	current_batch.min_index = 0;
-	current_batch.max_index = static_cast<GLuint>( m_vertex_count - 1 );
+	current_batch.max_index = m_vertex_count - 1;
 	current_batch.custom_draw = false;
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
@@ -185,7 +185,7 @@ void VertexArrayRenderer::RefreshArray() {
 
 		if( custom_draw_callback ) {
 			// Start a new batch.
-			current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+			current_batch.max_index = m_last_vertex_count ? ( m_last_vertex_count - 1 ) : 0;
 			m_batches.push_back( current_batch );
 
 			// Mark current_batch custom draw batch.
@@ -204,7 +204,7 @@ void VertexArrayRenderer::RefreshArray() {
 			current_batch.viewport = m_default_viewport;
 			current_batch.start_index = m_last_index_count;
 			current_batch.index_count = 0;
-			current_batch.min_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+			current_batch.min_index = m_last_vertex_count ? ( m_last_vertex_count - 1 ) : 0;
 			current_batch.custom_draw = false;
 		}
 		else {
@@ -216,7 +216,7 @@ void VertexArrayRenderer::RefreshArray() {
 
 			sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
 
-			std::size_t atlas_page = 0;
+			auto atlas_page = 0;
 
 			const auto vertices_size = vertices.size();
 			sf::Vector2f normalizer;
@@ -231,8 +231,8 @@ void VertexArrayRenderer::RefreshArray() {
 
 				// The bound texture can only change between triangles.
 				if( index % 3 == 0 ) {
-					atlas_page = static_cast<unsigned int>( vertex.texture_coordinate.y ) / max_texture_size;
-					auto texture_size = ( vertex.texture_coordinate.y <= 1.f ) ? default_texture_size : m_texture_atlas[atlas_page]->getSize();
+					atlas_page = static_cast<int>( vertex.texture_coordinate.y ) / max_texture_size;
+					auto texture_size = ( vertex.texture_coordinate.y <= 1.f ) ? default_texture_size : m_texture_atlas[static_cast<std::size_t>( atlas_page )]->getSize();
 
 					// Used to normalize texture coordinates.
 					normalizer.x = 1.f / static_cast<float>( texture_size.x );
@@ -240,7 +240,7 @@ void VertexArrayRenderer::RefreshArray() {
 				}
 
 				// Normalize SFML's pixel texture coordinates.
-				m_texture_data.emplace_back( vertex.texture_coordinate.x * normalizer.x, static_cast<float>( static_cast<unsigned int>( vertex.texture_coordinate.y ) % max_texture_size ) * normalizer.y );
+				m_texture_data.emplace_back( vertex.texture_coordinate.x * normalizer.x, static_cast<float>( static_cast<int>( vertex.texture_coordinate.y ) % max_texture_size ) * normalizer.y );
 
 				// Update the bounding rect.
 				if( m_cull ) {
@@ -263,18 +263,18 @@ void VertexArrayRenderer::RefreshArray() {
 			}
 
 			if( m_cull && !viewport_rect.intersects( bounding_rect ) ) {
-				m_vertex_data.resize( m_last_vertex_count );
-				m_color_data.resize( m_last_vertex_count );
-				m_texture_data.resize( m_last_vertex_count );
+				m_vertex_data.resize( static_cast<std::size_t>( m_last_vertex_count ) );
+				m_color_data.resize( static_cast<std::size_t>( m_last_vertex_count ) );
+				m_texture_data.resize( static_cast<std::size_t>( m_last_vertex_count ) );
 			}
 			else {
 				for( const auto& index : indices ) {
-					m_index_data.push_back( m_last_vertex_count + index );
+					m_index_data.push_back( m_last_vertex_count + static_cast<int>( index ) );
 				}
 
 				// Check if we need to start a new batch.
 				if( ( ( *viewport ) != ( *current_batch.viewport ) ) || ( atlas_page != current_batch.atlas_page ) ) {
-					current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+					current_batch.max_index = m_last_vertex_count ? ( m_last_vertex_count - 1 ) : 0;
 					m_batches.push_back( current_batch );
 
 					// Reset current_batch to defaults.
@@ -282,11 +282,11 @@ void VertexArrayRenderer::RefreshArray() {
 					current_batch.atlas_page = atlas_page;
 					current_batch.start_index = m_last_index_count;
 					current_batch.index_count = 0;
-					current_batch.min_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+					current_batch.min_index = m_last_vertex_count ? ( m_last_vertex_count - 1 ) : 0;
 					current_batch.custom_draw = false;
 				}
 
-				current_batch.index_count += static_cast<unsigned int>( indices.size() );
+				current_batch.index_count += static_cast<int>( indices.size() );
 
 				m_last_vertex_count += static_cast<GLsizei>( vertices.size() );
 				m_last_index_count += static_cast<GLsizei>( indices.size() );
@@ -294,7 +294,7 @@ void VertexArrayRenderer::RefreshArray() {
 		}
 	}
 
-	current_batch.max_index = m_last_vertex_count ? ( static_cast<GLuint>( m_last_vertex_count ) - 1 ) : 0;
+	current_batch.max_index = m_last_vertex_count ? ( m_last_vertex_count - 1 ) : 0;
 	m_batches.push_back( current_batch );
 }
 

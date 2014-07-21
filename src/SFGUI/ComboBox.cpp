@@ -38,7 +38,7 @@ ComboBox::IndexType ComboBox::GetHighlightedItem() const {
 }
 
 void ComboBox::SelectItem( IndexType index ) {
-	if( index >= m_entries.size() ) {
+	if( index >= static_cast<IndexType>( m_entries.size() ) ) {
 		return;
 	}
 
@@ -94,11 +94,11 @@ void ComboBox::PrependItem( const sf::String& text ) {
 }
 
 void ComboBox::ChangeItem( IndexType index, const sf::String& text ) {
-	if( index >= m_entries.size() ) {
+	if( index >= static_cast<IndexType>( m_entries.size() ) ) {
 		return;
 	}
 
-	m_entries[index] = text;
+	m_entries[static_cast<std::size_t>( index )] = text;
 
 	if( IsMouseInWidget() ) {
 		SetState( State::PRELIGHT );
@@ -111,7 +111,7 @@ void ComboBox::ChangeItem( IndexType index, const sf::String& text ) {
 }
 
 void ComboBox::RemoveItem( IndexType index ) {
-	if( index >= m_entries.size() ) {
+	if( index >= static_cast<IndexType>( m_entries.size() ) ) {
 		return;
 	}
 
@@ -142,19 +142,19 @@ const sf::String& ComboBox::GetSelectedText() const {
 		return EMPTY;
 	}
 
-	return m_entries[m_active_item];
+	return m_entries[static_cast<std::size_t>( m_active_item )];
 }
 
 ComboBox::IndexType ComboBox::GetItemCount() const {
-	return m_entries.size();
+	return static_cast<IndexType>( m_entries.size() );
 }
 
 const sf::String& ComboBox::GetItem( IndexType index ) const {
-	if( index >= m_entries.size() ) {
+	if( index >= static_cast<IndexType>( m_entries.size() ) ) {
 		return EMPTY;
 	}
 
-	return m_entries[index];
+	return m_entries[static_cast<std::size_t>( index )];
 }
 
 bool ComboBox::IsPoppedUp() const {
@@ -174,6 +174,10 @@ void ComboBox::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 }
 
 void ComboBox::HandleMouseMoveEvent( int x, int y ) {
+	if( ( x == std::numeric_limits<int>::min() ) || ( y == std::numeric_limits<int>::min() ) ) {
+		return;
+	}
+
 	if( GetState() == State::ACTIVE ) {
 		if( m_scrollbar ) {
 			sf::Event event;
@@ -233,6 +237,10 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 }
 
 void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+	if( ( x == std::numeric_limits<int>::min() ) || ( y == std::numeric_limits<int>::min() ) ) {
+		return;
+	}
+
 	if( GetState() == State::ACTIVE ) {
 		if( m_scrollbar ) {
 			sf::Event event;
@@ -305,7 +313,7 @@ sf::Vector2f ComboBox::CalculateRequisition() {
 	// Determine highest needed width of all items.
 	sf::Vector2f metrics( 0.f, 0.f );
 	for ( IndexType item = 0; item < GetItemCount(); ++item ) {
-		metrics.x = std::max( metrics.x, Context::Get().GetEngine().GetTextMetrics( m_entries.at( item ), font, font_size ).x );
+		metrics.x = std::max( metrics.x, Context::Get().GetEngine().GetTextMetrics( m_entries[static_cast<std::size_t>( item )], font, font_size ).x );
 	}
 
 	metrics.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );

@@ -54,7 +54,7 @@ void Entry::PrependText( const sf::String& text ) {
 	SetText( text + m_string );
 }
 
-void Entry::SetCursorPosition( std::size_t new_position ) {
+void Entry::SetCursorPosition( int new_position ) {
 	if( new_position == m_cursor_position ) {
 		return;
 	}
@@ -75,7 +75,7 @@ sf::Uint32 Entry::GetHideCharacter() const {
 	return m_text_placeholder;
 }
 
-std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
+int Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 	const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
@@ -85,10 +85,11 @@ std::size_t Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 
 	auto text_start = GetAllocation().left + text_padding;
 	auto last_delta = std::fabs( text_start - static_cast<float>( mouse_pos_x ) );
-	std::size_t cursor_position = 0;
+	int cursor_position = 0;
+	auto length = static_cast<int>( string.size() );
 
-	for( cursor_position = 0; cursor_position < string.size(); cursor_position++ ) {
-		auto text_length = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, cursor_position + 1 ), font, font_size ).x;
+	for( cursor_position = 0; cursor_position < length; cursor_position++ ) {
+		auto text_length = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, static_cast<std::size_t>( cursor_position + 1 ) ), font, font_size ).x;
 		auto new_delta = std::fabs( text_start + text_length - static_cast<float>( mouse_pos_x ) );
 		if( new_delta < last_delta ) {
 			last_delta = new_delta;
@@ -115,7 +116,7 @@ void Entry::RecalculateVisibleString() const {
 	}
 
 	std::basic_string<sf::Uint32> string( m_string.begin(), m_string.end() );
-	string = string.substr( m_visible_offset );
+	string.erase( 0, static_cast<std::size_t>( m_visible_offset ) );
 
 	if( m_text_placeholder != 0 ) {
 		string.replace( 0, string.size(), string.size(), m_text_placeholder );
@@ -127,11 +128,11 @@ void Entry::RecalculateVisibleString() const {
 	// on the right end of the string until the cursor is reached, then start
 	// chopping off characters on the left side of the string.
 	while( !string.empty() && (GetAllocation().width - m_text_margin > 0) && (length > GetAllocation().width - m_text_margin - (2.f * text_padding)) ) {
-		if( ( m_cursor_position - m_visible_offset ) < string.size() ) {
-			string = string.substr( 0, string.size() - 1 );
+		if( ( m_cursor_position - m_visible_offset ) < static_cast<int>( string.size() ) ) {
+			string.erase( string.size() - 1, 1 );
 		}
 		else {
-			string = string.substr( 1, string.size() - 1 );
+			string.erase( 0, 1 );
 			m_visible_offset++;
 		}
 
@@ -143,7 +144,7 @@ void Entry::RecalculateVisibleString() const {
 }
 
 void Entry::MoveCursor( int delta ) {
-	if( delta && ( static_cast<int>( m_cursor_position ) + delta >= 0 ) && ( static_cast<int>( m_cursor_position ) + delta <= static_cast<int>( m_string.getSize() ) ) ) {
+	if( delta && ( m_cursor_position + delta >= 0 ) && ( m_cursor_position + delta <= static_cast<int>( m_string.getSize() ) ) ) {
 		m_cursor_position += delta;
 
 		if( m_cursor_position < m_visible_offset ) {
@@ -159,13 +160,13 @@ void Entry::MoveCursor( int delta ) {
 }
 
 void Entry::HandleTextEvent( sf::Uint32 character ) {
-	if( m_max_length > 0 && m_string.getSize() >= m_max_length ) {
+	if( m_max_length > 0 && static_cast<int>( m_string.getSize() ) >= m_max_length ) {
 		return;
 	}
 
 	if( character > 0x1f && character != 0x7f ) {
 		// not a control character
-		m_string.insert( m_cursor_position, character );
+		m_string.insert( static_cast<std::size_t>( m_cursor_position ), character );
 		MoveCursor( 1 );
 
 		GetSignals().Emit( OnTextChanged );
@@ -180,7 +181,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	switch( key ) {
 	case sf::Keyboard::BackSpace: { // backspace
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
-			m_string.erase( m_cursor_position - 1 );
+			m_string.erase( static_cast<std::size_t>( m_cursor_position - 1 ) );
 
 			// Store old number of visible characters.
 			auto old_num_visible_chars = m_visible_string.getSize();
@@ -202,8 +203,8 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 		}
 	} break;
 	case sf::Keyboard::Delete: {
-		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < m_string.getSize() ) ) {
-			m_string.erase( m_cursor_position );
+		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < static_cast<int>( m_string.getSize() ) ) ) {
+			m_string.erase( static_cast<std::size_t>( m_cursor_position ) );
 
 			// Store old number of visible characters.
 			auto old_num_visible_chars = m_visible_string.getSize();
@@ -232,7 +233,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	case sf::Keyboard::End: {
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
-			SetCursorPosition( m_string.getSize() );
+			SetCursorPosition( static_cast<int>( m_string.getSize() ) );
 		}
 	} break;
 	case sf::Keyboard::Left: {
@@ -321,11 +322,11 @@ bool Entry::IsCursorVisible() const {
 	return m_cursor_status;
 }
 
-std::size_t Entry::GetVisibleOffset() const {
+int Entry::GetVisibleOffset() const {
 	return m_visible_offset;
 }
 
-std::size_t Entry::GetCursorPosition() const {
+int Entry::GetCursorPosition() const {
 	return m_cursor_position;
 }
 
@@ -338,18 +339,18 @@ const std::string& Entry::GetName() const {
 	return name;
 }
 
-std::size_t Entry::GetMaximumLength() const {
+int Entry::GetMaximumLength() const {
 	return m_max_length;
 }
 
-void Entry::SetMaximumLength( std::size_t max_length ) {
+void Entry::SetMaximumLength( int max_length ) {
 	SetCursorPosition( 0 );
 
 	m_max_length = max_length;
 
 	// Truncate text if longer than maximum.
-	if( m_max_length < m_string.getSize() && m_max_length != 0 ) {
-		m_string.erase( m_max_length, m_max_length - m_string.getSize() );
+	if( m_max_length < static_cast<int>( m_string.getSize() ) && m_max_length != 0 ) {
+		m_string.erase( static_cast<std::size_t>( m_max_length ), static_cast<std::size_t>( m_max_length ) - m_string.getSize() );
 		RecalculateVisibleString();
 		GetSignals().Emit( OnTextChanged );
 	}

@@ -95,8 +95,8 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 	// Draw cursor if spinbutton is active and cursor is visible.
 	if( spinbutton->HasFocus() && spinbutton->IsCursorVisible() ) {
 		sf::String cursor_string( spinbutton->GetVisibleText() );
-		if( spinbutton->GetCursorPosition() - spinbutton->GetVisibleOffset() < cursor_string.getSize() ) {
-			cursor_string.erase( spinbutton->GetCursorPosition() - spinbutton->GetVisibleOffset(), cursor_string.getSize() );
+		if( spinbutton->GetCursorPosition() - spinbutton->GetVisibleOffset() < static_cast<int>( cursor_string.getSize() ) ) {
+			cursor_string.erase( static_cast<std::size_t>( spinbutton->GetCursorPosition() - spinbutton->GetVisibleOffset() ), cursor_string.getSize() );
 		}
 
 		// Get metrics.

@@ -226,7 +226,7 @@ class SFGUI_API Renderer {
 		/** Get the size of the window the last time the GUI was displayed.
 		 * @return Size of the window the last time the GUI was displayed.
 		 */
-		const sf::Vector2u& GetWindowSize() const;
+		const sf::Vector2i& GetWindowSize() const;
 
 		/** Add a required character set to the character sets that the Renderer will load for new fonts.
 		 * This is required if using a script whose glyphs are not smaller than codepoint 0x370
@@ -248,11 +248,11 @@ class SFGUI_API Renderer {
 		struct Batch {
 			std::shared_ptr<RendererViewport> viewport;
 			std::shared_ptr<Signal> custom_draw_callback;
-			std::size_t atlas_page;
-			unsigned int start_index;
-			unsigned int index_count;
-			GLuint min_index;
-			GLuint max_index;
+			int atlas_page;
+			int start_index;
+			int index_count;
+			int min_index;
+			int max_index;
 			bool custom_draw;
 		};
 
@@ -280,12 +280,12 @@ class SFGUI_API Renderer {
 
 		std::shared_ptr<RendererViewport> m_default_viewport;
 
-		std::size_t m_vertex_count;
-		std::size_t m_index_count;
+		int m_vertex_count;
+		int m_index_count;
 
-		mutable sf::Vector2u m_window_size;
+		mutable sf::Vector2i m_window_size;
 
-		static unsigned int m_max_texture_size;
+		static int m_max_texture_size;
 
 		mutable bool m_force_redraw;
 
@@ -304,7 +304,7 @@ class SFGUI_API Renderer {
 
 		Primitive::Texture::Ptr m_pseudo_texture;
 
-		mutable sf::Vector2u m_last_window_size;
+		mutable sf::Vector2i m_last_window_size;
 
 		bool m_primitives_sorted;
 };

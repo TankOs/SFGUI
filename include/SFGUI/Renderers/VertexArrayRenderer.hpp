@@ -38,12 +38,12 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		std::vector<sf::Vector2f> m_vertex_data;
 		std::vector<sf::Color> m_color_data;
 		std::vector<sf::Vector2f> m_texture_data;
-		std::vector<GLuint> m_index_data;
+		std::vector<int> m_index_data;
 
 		std::vector<Batch> m_batches;
 
-		GLsizei m_last_vertex_count;
-		GLsizei m_last_index_count;
+		int m_last_vertex_count;
+		int m_last_index_count;
 
 		float m_alpha_threshold;
 

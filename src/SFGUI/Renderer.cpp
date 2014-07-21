@@ -11,7 +11,7 @@
 namespace sfg {
 
 std::shared_ptr<Renderer> Renderer::m_instance = std::shared_ptr<Renderer>();
-unsigned int Renderer::m_max_texture_size = 0;
+int Renderer::m_max_texture_size = 0;
 
 Renderer::Renderer() :
 	m_vertex_count( 0 ),
@@ -26,7 +26,7 @@ Renderer::Renderer() :
 		// Needed to determine maximum texture size.
 		sf::Context context;
 
-		m_max_texture_size = sf::Texture::getMaximumSize();
+		m_max_texture_size = static_cast<int>( sf::Texture::getMaximumSize() );
 
 		checked_max_texture_size = true;
 	}
@@ -412,6 +412,11 @@ Primitive::Ptr Renderer::CreateLine( const sf::Vector2f& begin, const sf::Vector
 	sf::Vector2f unrotated_normal( normal );
 	std::swap( normal.x, normal.y );
 	auto length = std::sqrt( normal.x * normal.x + normal.y * normal.y );
+
+	if( !( length > 0.f ) ) {
+		return std::make_shared<Primitive>();
+	}
+
 	normal.x /= -length;
 	normal.y /= length;
 	unrotated_normal.x /= length;
@@ -433,7 +438,7 @@ Primitive::Ptr Renderer::CreateGLCanvas( std::shared_ptr<Signal> callback ) {
 }
 
 void Renderer::Display( sf::Window& target ) const {
-	m_window_size = target.getSize();
+	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
 
 	target.setActive( true );
 
@@ -462,7 +467,7 @@ void Renderer::Display( sf::Window& target ) const {
 }
 
 void Renderer::Display( sf::RenderWindow& target ) const {
-	m_window_size = target.getSize();
+	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
 
 	target.setActive( true );
 
@@ -476,7 +481,7 @@ void Renderer::Display( sf::RenderWindow& target ) const {
 }
 
 void Renderer::Display( sf::RenderTexture& target ) const {
-	m_window_size = target.getSize();
+	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
 
 	target.setActive( true );
 
@@ -505,7 +510,7 @@ void Renderer::SetupGL() const {
 	// it's window resizes and nothing is drawn directly through SFML...
 
 	if( m_last_window_size != m_window_size ) {
-		glViewport( 0, 0, static_cast<GLsizei>( m_window_size.x ), static_cast<GLsizei>( m_window_size.y ) );
+		glViewport( 0, 0, m_window_size.x, m_window_size.y );
 
 		m_last_window_size = m_window_size;
 
@@ -636,8 +641,9 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 	const static auto padding = 1;
 
 	auto required_vertical_size = static_cast<int>( image.getSize().y ) + padding;
+	auto required_horizontal_size = static_cast<int>( image.getSize().x );
 
-	if( ( image.getSize().x > m_max_texture_size ) || ( required_vertical_size > static_cast<int>( m_max_texture_size ) ) ) {
+	if( ( required_horizontal_size > m_max_texture_size ) || ( required_vertical_size > static_cast<int>( m_max_texture_size ) ) ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
 #endif
@@ -662,7 +668,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		atlas_last_occupied_location = texture_iter->offset.y + texture_iter->size.y;
 	}
 
-	auto current_page_index = static_cast<std::size_t>( atlas_last_occupied_location ) / m_max_texture_size;
+	auto current_page_index = atlas_last_occupied_location / m_max_texture_size;
 	auto current_page_last_occupied_location = atlas_last_occupied_location % m_max_texture_size;
 
 	// Cache the "temporary" sf::Image so its internal std::vector
@@ -679,7 +685,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		static auto create_maximal = true;
 
 		if( create_maximal ) {
-			if( !new_texture->create( 1, m_max_texture_size ) ) {
+			if( !new_texture->create( 1u, static_cast<unsigned int>( m_max_texture_size ) ) ) {
 				create_maximal = false;
 			}
 		}
@@ -687,12 +693,12 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		if( !create_maximal && !m_texture_atlas.empty() ) {
 			// Make sure the current page vertical size is maximal
 			// so we can compute the right page from y texture coordinate.
-			auto current_page = m_texture_atlas[current_page_index].get();
+			auto current_page = m_texture_atlas[static_cast<std::size_t>( current_page_index )].get();
 			auto old_image = current_page->copyToImage();
 
-			new_image.create( old_image.getSize().x, m_max_texture_size, sf::Color::White );
-			new_image.copy( old_image, 0, 0 );
-			new_image.copy( image, 0, current_page_last_occupied_location );
+			new_image.create( old_image.getSize().x, static_cast<unsigned int>( m_max_texture_size ), sf::Color::White );
+			new_image.copy( old_image, 0u, 0u );
+			new_image.copy( image, 0u, static_cast<unsigned int>( current_page_last_occupied_location ) );
 
 			current_page->loadFromImage( new_image );
 		}
@@ -700,27 +706,27 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		// Insert the new page.
 		m_texture_atlas.push_back( std::move( new_texture ) );
 
-		current_page_index = m_texture_atlas.size() - 1;
+		current_page_index = static_cast<int>( m_texture_atlas.size() ) - 1;
 		current_page_last_occupied_location = 0;
 	}
 
-	auto current_page = m_texture_atlas[current_page_index].get();
-	auto current_page_size_x = m_texture_atlas[current_page_index]->getSize().x;
-	auto current_page_size_y = m_texture_atlas[current_page_index]->getSize().y;
+	auto current_page = m_texture_atlas[static_cast<std::size_t>( current_page_index )].get();
+	auto current_page_size_x = static_cast<int>( current_page->getSize().x );
+	auto current_page_size_y = static_cast<int>( current_page->getSize().y );
 
-	if( ( image.getSize().x > current_page_size_x ) || ( current_page_last_occupied_location + required_vertical_size > current_page_size_y ) ) {
+	if( ( required_horizontal_size > current_page_size_x ) || ( current_page_last_occupied_location + required_vertical_size > current_page_size_y ) ) {
 		// Image is loaded into atlas after expanding texture atlas.
 		auto old_image = current_page->copyToImage();
 
-		new_image.create( std::max( current_page_size_x, image.getSize().x ), std::max( current_page_size_y, current_page_last_occupied_location + required_vertical_size ), sf::Color::White );
-		new_image.copy( old_image, 0, 0 );
-		new_image.copy( image, 0, current_page_last_occupied_location );
+		new_image.create( static_cast<unsigned int>( std::max( current_page_size_x, required_horizontal_size ) ), static_cast<unsigned int>( std::max( current_page_size_y, current_page_last_occupied_location + required_vertical_size ) ), sf::Color::White );
+		new_image.copy( old_image, 0u, 0u );
+		new_image.copy( image, 0u, static_cast<unsigned int>( current_page_last_occupied_location ) );
 
 		current_page->loadFromImage( new_image );
 	}
 	else {
 		// Image is loaded into atlas.
-		current_page->update( image, 0, current_page_last_occupied_location );
+		current_page->update( image, 0u, static_cast<unsigned int>( current_page_last_occupied_location ) );
 	}
 
 	auto offset = sf::Vector2i( 0, current_page_index * m_max_texture_size + current_page_last_occupied_location );
@@ -774,9 +780,9 @@ void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) 
 				return;
 			}
 
-			auto page = static_cast<std::size_t>( int_offset.y ) / m_max_texture_size;
+			auto page = static_cast<std::size_t>( int_offset.y / m_max_texture_size );
 
-			m_texture_atlas[page]->update( data, 0, int_offset.y % m_max_texture_size );
+			m_texture_atlas[page]->update( data, 0u, static_cast<unsigned int>( int_offset.y % m_max_texture_size ) );
 
 			return;
 		}
@@ -821,11 +827,8 @@ void Renderer::AddPrimitive( Primitive::Ptr primitive ) {
 	const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
 	const std::vector<GLuint>& indices( primitive->GetIndices() );
 
-	auto vertices_size = vertices.size();
-	auto indices_size = indices.size();
-
-	m_vertex_count += vertices_size;
-	m_index_count += indices_size;
+	m_vertex_count += static_cast<int>( vertices.size() );
+	m_index_count += static_cast<int>( indices.size() );
 
 	m_primitives_sorted = false;
 
@@ -839,11 +842,11 @@ void Renderer::RemovePrimitive( Primitive::Ptr primitive ) {
 		const std::vector<Primitive::Vertex>& vertices( (*iter)->GetVertices() );
 		const std::vector<GLuint>& indices( (*iter)->GetIndices() );
 
-		assert( m_vertex_count >= vertices.size() );
-		assert( m_index_count >= indices.size() );
+		assert( m_vertex_count >= static_cast<int>( vertices.size() ) );
+		assert( m_index_count >= static_cast<int>( indices.size() ) );
 
-		m_vertex_count -= vertices.size();
-		m_index_count -= indices.size();
+		m_vertex_count -= static_cast<int>( vertices.size() );
+		m_index_count -= static_cast<int>( indices.size() );
 
 		m_primitives.erase( iter );
 	}
@@ -859,7 +862,7 @@ void Renderer::Redraw() {
 	m_force_redraw = true;
 }
 
-const sf::Vector2u& Renderer::GetWindowSize() const {
+const sf::Vector2i& Renderer::GetWindowSize() const {
 	return m_last_window_size;
 }
 

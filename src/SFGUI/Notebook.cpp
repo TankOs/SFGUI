@@ -194,13 +194,13 @@ Notebook::IndexType Notebook::GetPageOf( Widget::Ptr widget ) const {
 
 void Notebook::NextPage() {
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
-		m_children[m_current_page].child->Show( false );
+		m_children[static_cast<std::size_t>( m_current_page )].child->Show( false );
 	}
 
 	m_current_page = std::min( m_current_page + 1, GetPageCount() - 1 );
 
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
-		m_children[m_current_page].child->Show( true );
+		m_children[static_cast<std::size_t>( m_current_page )].child->Show( true );
 	}
 
 	Invalidate();
@@ -208,13 +208,13 @@ void Notebook::NextPage() {
 
 void Notebook::PreviousPage() {
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
-		m_children[m_current_page].child->Show( false );
+		m_children[static_cast<std::size_t>( m_current_page )].child->Show( false );
 	}
 
 	m_current_page = std::max( m_current_page - 1, 0 );
 
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
-		m_children[m_current_page].child->Show( true );
+		m_children[static_cast<std::size_t>( m_current_page )].child->Show( true );
 	}
 
 	Invalidate();
@@ -247,7 +247,7 @@ Notebook::IndexType Notebook::GetCurrentPage() const {
 
 const Widget::Ptr Notebook::GetNthPage( IndexType page_number ) const {
 	if( ( page_number >= 0 ) && ( page_number < GetPageCount() ) ) {
-		return m_children[page_number].child;
+		return m_children[static_cast<std::size_t>( page_number )].child;
 	}
 
 	return Widget::Ptr();
@@ -255,7 +255,7 @@ const Widget::Ptr Notebook::GetNthPage( IndexType page_number ) const {
 
 const Widget::Ptr Notebook::GetNthTabLabel( IndexType page_number ) const {
 	if( ( page_number >= 0 ) && ( page_number < GetPageCount() ) ) {
-		return m_children[page_number].tab_label;
+		return m_children[static_cast<std::size_t>( page_number )].tab_label;
 	}
 
 	return Widget::Ptr();
@@ -272,7 +272,7 @@ const Widget::Ptr Notebook::GetTabLabel( Widget::Ptr child ) const {
 		return Widget::Ptr();
 	}
 
-	return m_children[page_number].tab_label;
+	return m_children[static_cast<std::size_t>( page_number )].tab_label;
 }
 
 void Notebook::SetTabLabel( Widget::Ptr child, Widget::Ptr tab_label ) {
@@ -282,12 +282,12 @@ void Notebook::SetTabLabel( Widget::Ptr child, Widget::Ptr tab_label ) {
 		return;
 	}
 
-	m_children[page_number].tab_label = tab_label;
+	m_children[static_cast<std::size_t>( page_number )].tab_label = tab_label;
 }
 
 void Notebook::SetCurrentPage( IndexType page_number ) {
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
-		m_children[m_current_page].child->Show( false );
+		m_children[static_cast<std::size_t>( m_current_page )].child->Show( false );
 	}
 
 	if( ( page_number >= 0 ) && ( page_number < GetPageCount() ) ) {
@@ -298,7 +298,7 @@ void Notebook::SetCurrentPage( IndexType page_number ) {
 	}
 
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
-		m_children[m_current_page].child->Show( true );
+		m_children[static_cast<std::size_t>( m_current_page )].child->Show( true );
 	}
 
 	Invalidate();
@@ -405,7 +405,7 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 	}
 
 	for( auto index = GetFirstDisplayedTab(); index < GetFirstDisplayedTab() + GetDisplayedTabCount(); ++index ) {
-		auto allocation = m_children[index].tab_label->GetAllocation();
+		auto allocation = m_children[static_cast<std::size_t>( index )].tab_label->GetAllocation();
 
 		allocation.left -= padding;
 		allocation.top -= padding;
@@ -540,23 +540,23 @@ void Notebook::RecalculateSize() {
 		child.tab_label->Show( false );
 	}
 
-	auto children_size = m_children.size();
+	auto children_size = static_cast<IndexType>( m_children.size() );
 
-	m_num_displayed_tabs = static_cast<IndexType>( children_size - GetFirstDisplayedTab() );
+	m_num_displayed_tabs = children_size - GetFirstDisplayedTab();
 
 	if( GetTabPosition() == TabPosition::TOP ) {
 		// Tabs are positioned at top.
 		auto tab_current_x = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
-				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
+		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
 
-			m_children[index].tab_label->Show( true );
+			m_children[static_cast<std::size_t>( index )].tab_label->Show( true );
 
-			m_children[index].child->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
 					border_width + padding,
 					m_tab_requisition.y + border_width + padding,
@@ -565,31 +565,31 @@ void Notebook::RecalculateSize() {
 				)
 			);
 
-			m_children[index].tab_label->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
 					tab_current_x + border_width + padding,
 					border_width + padding,
-					m_children[index].tab_label->GetRequisition().x,
+					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x,
 					m_tab_requisition.y - 2.f * padding - border_width
 				)
 			);
 
-			tab_current_x += ( border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x );
+			tab_current_x += ( border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x );
 		}
 	}
 	else if( GetTabPosition() == TabPosition::BOTTOM ) {
 		// Tabs are positioned at bottom.
 		auto tab_current_x = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
-				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
+		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
 
-			m_children[index].tab_label->Show( true );
+			m_children[static_cast<std::size_t>( index )].tab_label->Show( true );
 
-			m_children[index].child->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
 					border_width + padding,
 					border_width + padding,
@@ -598,31 +598,31 @@ void Notebook::RecalculateSize() {
 				)
 			);
 
-			m_children[index].tab_label->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
 					tab_current_x + border_width + padding,
 					GetAllocation().height - m_tab_requisition.y + padding,
-					m_children[index].tab_label->GetRequisition().x,
+					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x,
 					m_tab_requisition.y - 2.f * padding - border_width
 				)
 			);
 
-			tab_current_x += ( border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().x );
+			tab_current_x += ( border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x );
 		}
 	}
 	else if( GetTabPosition() == TabPosition::LEFT ) {
 		// Tabs are positioned at left.
 		auto tab_current_y = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
-				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
+		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
 
-			m_children[index].tab_label->Show( true );
+			m_children[static_cast<std::size_t>( index )].tab_label->Show( true );
 
-			m_children[index].child->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
 					m_tab_requisition.x + border_width + padding,
 					border_width + padding,
@@ -631,31 +631,31 @@ void Notebook::RecalculateSize() {
 				)
 			);
 
-			m_children[index].tab_label->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
 					border_width + padding,
 					tab_current_y + border_width + padding,
 					m_tab_requisition.x - 2.f * padding - border_width,
-					m_children[index].tab_label->GetRequisition().y
+					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y
 				)
 			);
 
-			tab_current_y += ( border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y );
+			tab_current_y += ( border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y );
 		}
 	}
 	else if( GetTabPosition() == TabPosition::RIGHT ) {
 		// Tabs are positioned at right.
 		auto tab_current_y = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
-		for( std::size_t index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
-				m_num_displayed_tabs = static_cast<IndexType>( index - GetFirstDisplayedTab() );
+		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
+			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
+				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
 
-			m_children[index].tab_label->Show( true );
+			m_children[static_cast<std::size_t>( index )].tab_label->Show( true );
 
-			m_children[index].child->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
 					border_width + padding,
 					border_width + padding,
@@ -664,16 +664,16 @@ void Notebook::RecalculateSize() {
 				)
 			);
 
-			m_children[index].tab_label->SetAllocation(
+			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
 					GetAllocation().width - m_tab_requisition.x + padding,
 					tab_current_y + border_width + padding,
 					m_tab_requisition.x - 2.f * padding - border_width,
-					m_children[index].tab_label->GetRequisition().y
+					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y
 				)
 			);
 
-			tab_current_y += ( border_width + 2.f * padding + m_children[index].tab_label->GetRequisition().y );
+			tab_current_y += ( border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y );
 		}
 	}
 

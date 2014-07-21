@@ -125,7 +125,7 @@ int main() {
 		glMatrixMode( GL_MODELVIEW );
 		glPopMatrix();
 
-		glViewport( 0, 0, app_window.getSize().x, app_window.getSize().y );
+		glViewport( 0, 0, static_cast<int>( app_window.getSize().x ), static_cast<int>( app_window.getSize().y ) );
 
 		glEnable( GL_TEXTURE_2D );
 		glDisable( GL_DEPTH_TEST );

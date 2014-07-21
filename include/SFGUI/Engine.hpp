@@ -10,7 +10,7 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <string>
 #include <map>
-#include <list>
+#include <vector>
 #include <stdexcept>
 
 namespace sf {

@@ -166,7 +166,7 @@ void SpinButton::HandleUpdate( float seconds ) {
 }
 
 void SpinButton::HandleTextEvent( sf::Uint32 character ) {
-	if( isdigit( character ) ) {
+	if( isdigit( static_cast<int>( character ) ) ) {
 		Entry::HandleTextEvent( character );
 		return;
 	}
@@ -293,7 +293,7 @@ void SpinButton::Configure( Adjustment::Ptr adjustment, float step, unsigned int
 
 void SpinButton::UpdateTextFromAdjustment() {
 	std::stringstream sstr;
-	sstr << std::fixed << std::setprecision( m_digits ) << m_adjustment->GetValue();
+	sstr << std::fixed << std::setprecision( static_cast<int>( m_digits ) ) << m_adjustment->GetValue();
 	Entry::SetText( sstr.str() );
 
 	GetSignals().Emit( OnValueChanged );

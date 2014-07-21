@@ -180,13 +180,13 @@ if( SFGUI_INCLUDE_FONT )
 endif()
 
 include_directories( "${INCLUDE_PATH}" )
-include_directories( "${SFML_INCLUDE_DIR}" )
-include_directories( "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
+include_directories( SYSTEM "${SFML_INCLUDE_DIR}" )
+include_directories( SYSTEM "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
 
 if( NOT ( "${GLEW_INCLUDE_PATH}" STREQUAL "${EMPTY_STRING}" ) )
-	include_directories( "${GLEW_INCLUDE_PATH}" ) # Set by SFML's FindGLEW.cmake.
+	include_directories( SYSTEM "${GLEW_INCLUDE_PATH}" ) # Set by SFML's FindGLEW.cmake.
 else()
-	include_directories( "${GLEW_INCLUDE_DIRS}" ) # Set by GLEW's FindGLEW.cmake.
+	include_directories( SYSTEM "${GLEW_INCLUDE_DIRS}" ) # Set by GLEW's FindGLEW.cmake.
 endif()
 
 # Add the library.
@@ -253,7 +253,7 @@ elseif( APPLE )
 	find_library( COREFOUNDATION_LIBRARY CoreFoundation )
 	mark_as_advanced( COREFOUNDATION_LIBRARY )
 
-	include_directories( /System/Library/Frameworks/CoreFoundation.framework/Headers )
+	include_directories( SYSTEM /System/Library/Frameworks/CoreFoundation.framework/Headers )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 else()
@@ -261,10 +261,10 @@ else()
 endif()
 
 if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
-	set( CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wunused-parameter -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
+	set( CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wsign-conversion -Wunused-parameter -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
 	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_C_FLAGS}" )
 elseif( CMAKE_COMPILER_IS_GNUCXX )
-	set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
+	set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wsign-conversion -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
 	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_C_FLAGS}" )
 endif()
 
