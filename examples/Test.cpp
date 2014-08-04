@@ -703,8 +703,17 @@ void SampleApp::RenderCustomGL() {
 		glPushMatrix();
 		glLoadIdentity();
 
+		static const auto pi = 3.1415926535897932384626433832795f;
+		static const auto fov = 90.f;
+		static const auto near_distance = 1.f;
+		static const auto far_distance = 20.f;
+
 		// We set the proper aspect ratio using the dimensions of our Canvas.
-		gluPerspective( 90.f, m_gl_canvas->GetAllocation().width / m_gl_canvas->GetAllocation().height, 1.f, 20.f );
+		auto aspect = m_gl_canvas->GetAllocation().width / m_gl_canvas->GetAllocation().height;
+		auto frustum_height = std::tan( fov / 360 * pi ) * near_distance;
+		auto frustum_width = frustum_height * aspect;
+
+		glFrustum( -frustum_width, frustum_width, -frustum_height, frustum_height, near_distance, far_distance );
 
 		glBegin( GL_QUADS );
 

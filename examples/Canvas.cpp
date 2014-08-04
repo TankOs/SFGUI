@@ -112,7 +112,16 @@ int main() {
 
 		glViewport( 0, 0, static_cast<int>( opengl_canvas->GetAllocation().width ), static_cast<int>( opengl_canvas->GetAllocation().height ) );
 
-		gluPerspective( 90.f, opengl_canvas->GetAllocation().width / opengl_canvas->GetAllocation().height, 1.f, 20.f );
+		static const auto pi = 3.1415926535897932384626433832795f;
+		static const auto fov = 90.f;
+		static const auto near_distance = 1.f;
+		static const auto far_distance = 20.f;
+
+		auto aspect = opengl_canvas->GetAllocation().width / opengl_canvas->GetAllocation().height;
+		auto frustum_height = std::tan( fov / 360 * pi ) * near_distance;
+		auto frustum_width = frustum_height * aspect;
+
+		glFrustum( -frustum_width, frustum_width, -frustum_height, frustum_height, near_distance, far_distance );
 
 		glBegin( GL_QUADS );
 		glVertex2s( -1, 1 );

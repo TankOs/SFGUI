@@ -52,7 +52,17 @@ int main() {
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	gluPerspective( 90.f, 800.f / 600.f, .1f, 100.f );
+
+	static const auto pi = 3.1415926535897932384626433832795f;
+	static const auto fov = 90.f;
+	static const auto near_distance = .1f;
+	static const auto far_distance = 100.f;
+	static const auto aspect = 800.f / 600.f;
+
+	auto frustum_height = std::tan( fov / 360 * pi ) * near_distance;
+	auto frustum_width = frustum_height * aspect;
+
+	glFrustum( -frustum_width, frustum_width, -frustum_height, frustum_height, near_distance, far_distance );
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();

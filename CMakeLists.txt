@@ -12,22 +12,16 @@ set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build examples." )
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include default font in library (DejaVuSans)." )
 
-if( WIN32 )
-	set( GLEW_STATIC true CACHE BOOL "Link GLEW statically." )
-
-	if( GLEW_STATIC )
-		add_definitions( -DGLEW_STATIC )
-	endif()
-endif()
-
 # Make sure to look for the static SFML libraries
-if(NOT SFGUI_BUILD_SHARED_LIBS)
-	set(SFML_STATIC_LIBRARIES TRUE)
+if( NOT SFGUI_BUILD_SHARED_LIBS )
+	set( SFML_STATIC_LIBRARIES true )
 endif()
+
+# Tell CMake where to find additional find modules
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
 
 # Find packages.
 find_package( OpenGL REQUIRED )
-find_package( GLEW REQUIRED )
 find_package( SFML 2 REQUIRED COMPONENTS graphics window system )
 
 if( SFGUI_INCLUDE_FONT )
@@ -130,6 +124,8 @@ set(
 	"${SOURCE_PATH}/SFGUI/FileResourceLoader.cpp"
 	"${SOURCE_PATH}/SFGUI/Fixed.cpp"
 	"${SOURCE_PATH}/SFGUI/Frame.cpp"
+	"${SOURCE_PATH}/SFGUI/GLLoader.cpp"
+	"${SOURCE_PATH}/SFGUI/GLLoader.hpp"
 	"${SOURCE_PATH}/SFGUI/Image.cpp"
 	"${SOURCE_PATH}/SFGUI/Label.cpp"
 	"${SOURCE_PATH}/SFGUI/Misc.cpp"
@@ -180,14 +176,12 @@ if( SFGUI_INCLUDE_FONT )
 endif()
 
 include_directories( "${INCLUDE_PATH}" )
+include_directories( "${SOURCE_PATH}" )
 include_directories( SYSTEM "${SFML_INCLUDE_DIR}" )
 include_directories( SYSTEM "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
 
-if( NOT ( "${GLEW_INCLUDE_PATH}" STREQUAL "${EMPTY_STRING}" ) )
-	include_directories( SYSTEM "${GLEW_INCLUDE_PATH}" ) # Set by SFML's FindGLEW.cmake.
-else()
-	include_directories( SYSTEM "${GLEW_INCLUDE_DIRS}" ) # Set by GLEW's FindGLEW.cmake.
-endif()
+# Set the library output directory
+set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
 
 # Add the library.
 if( SFGUI_BUILD_SHARED_LIBS )
@@ -208,37 +202,36 @@ set_target_properties( sfgui PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
 
 # Platform- and compiler-specific options.
 if( WIN32 )
-	set(SFGUI_STATIC_STD_LIBS FALSE CACHE BOOL "Use statically linked standard/runtime libraries? This option must match the one used for SFML.")
+	set( SFGUI_STATIC_STD_LIBS FALSE CACHE BOOL "Use statically linked standard/runtime libraries? This option must match the one used for SFML." )
 
 	# Determine whether we're dealing with a TDM compiler or not
-	if(CMAKE_COMPILER_IS_GNUCXX)
-		execute_process(COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE GCC_COMPILER_VERSION)
-		string(REGEX MATCHALL ".*(tdm[64]*-[1-9]).*" COMPILER_GCC_TDM "${GCC_COMPILER_VERSION}")
+	if( CMAKE_COMPILER_IS_GNUCXX )
+		execute_process( COMMAND "${CMAKE_CXX_COMPILER}" "--version" OUTPUT_VARIABLE GCC_COMPILER_VERSION )
+		string( REGEX MATCHALL ".*(tdm[64]*-[1-9]).*" COMPILER_GCC_TDM "${GCC_COMPILER_VERSION}" )
 	endif()
 
 	# Allow the static linking of the runtime libraries
-	if(SFGUI_STATIC_STD_LIBS)
-		if(SFGUI_BUILD_SHARED_LIBS)
-			message("\n-> SFGUI_STATIC_STD_LIBS and SFGUI_BUILD_SHARED_LIBS are not compatible.")
-			message("-> They lead to multiple runtime environments which result in undefined behavior.\n")
+	if( SFGUI_STATIC_STD_LIBS )
+		if( SFGUI_BUILD_SHARED_LIBS )
+			message( FATAL_ERROR "\n-> SFGUI_STATIC_STD_LIBS and SFGUI_BUILD_SHARED_LIBS are not compatible.\n-> They lead to multiple runtime environments which results in undefined behavior.\n" )
 		else()
-			add_definitions(-DSFML_STATIC)
-			if(MSVC)
-				foreach(flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE)
-					if(${flag} MATCHES "/MD")
-					string(REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}")
+			add_definitions( -DSFML_STATIC )
+			if( MSVC )
+				foreach( flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE )
+					if( ${flag} MATCHES "/MD" )
+					string( REGEX REPLACE "/MD" "/MT" ${flag} "${${flag}}" )
 					endif()
 				endforeach()
-			elseif(CMAKE_COMPILER_IS_GNUCXX AND NOT COMPILER_GCC_TDM)
-				set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
+			elseif( CMAKE_COMPILER_IS_GNUCXX AND NOT COMPILER_GCC_TDM )
+				set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++" )
 			endif()
 		endif()
-	elseif(COMPILER_GCC_TDM)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -shared-libgcc -shared-libstdc++")
+	elseif( COMPILER_GCC_TDM )
+		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -shared-libgcc -shared-libstdc++" )
 	endif()
 
 	add_definitions( -DWIN32 )
-	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
 
 	if( CMAKE_COMPILER_IS_GNUCXX )
 		if( SFGUI_BUILD_SHARED_LIBS )
@@ -254,7 +247,7 @@ elseif( APPLE )
 	mark_as_advanced( COREFOUNDATION_LIBRARY )
 
 	include_directories( SYSTEM /System/Library/Frameworks/CoreFoundation.framework/Headers )
-	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${GLEW_LIBRARIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 else()
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
@@ -297,4 +290,9 @@ install(
 install(
 	FILES README AUTHORS LICENSE FONT.LICENSE CHANGELOG
 	DESTINATION "${SHARE_PATH}"
+)
+
+install(
+	FILES cmake/Modules/FindSFGUI.cmake
+	DESTINATION "${SHARE_PATH}/cmake/Modules"
 )

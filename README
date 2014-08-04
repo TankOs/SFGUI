@@ -7,8 +7,6 @@
 
 Dependencies:
   - SFML Git (http://sfml-dev.org/)
-  - GLEW (http://glew.sourceforge.net/, a copy is available in SFML's extlibs
-    directory)
 
 The build system in use is CMake (http://cmake.org/). It's available for all
 major platforms.
@@ -39,8 +37,8 @@ to your project's CMakeLists.txt file:
 In case CMake can't find your SFGUI installation, you can still specify the
 path manually by setting the SFGUI_ROOT CMake variable.
 
-Keep in mind that you still have to link to GLEW and SFML (at least system,
-windows and graphics).
+Keep in mind that you still have to link to SFML (at least system, windows and
+graphics).
 
 
 3. DOCUMENTATION

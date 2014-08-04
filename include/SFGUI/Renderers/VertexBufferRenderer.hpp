@@ -88,7 +88,7 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 		bool m_vbo_supported;
 		bool m_fbo_supported;
 
-		static bool m_glew_initialized;
+		static bool m_gl_initialized;
 };
 
 }
