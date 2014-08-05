@@ -1,7 +1,7 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/CheckButton.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 
@@ -54,7 +54,7 @@ std::unique_ptr<RenderQueue> BREW::CreateCheckButtonDrawable( std::shared_ptr<co
 
 	// Label.
 	if( check->GetLabel().getSize() > 0 ) {
-		auto metrics = GetTextMetrics( check->GetLabel(), *font, font_size );
+		auto metrics = GetTextStringMetrics( check->GetLabel(), *font, font_size );
 		metrics.y = GetFontLineHeight( *font, font_size );
 
 		sf::Text text( check->GetLabel(), *font, font_size );

@@ -1,12 +1,10 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/Primitive.hpp>
-#include <memory>
 
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/OpenGL.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <vector>
+#include <memory>
 
 namespace sf {
 class Shape;
@@ -18,6 +16,7 @@ class VertexArray;
 namespace sfg {
 
 class RendererViewport;
+class Primitive;
 
 /** Simple container for sf::Drawables.
  */
@@ -37,7 +36,10 @@ class SFGUI_API RenderQueue {
 		 */
 		void Add( std::unique_ptr<RenderQueue> queue );
 
-		void Add( Primitive::Ptr primitive );
+		/** Add a primitive to this queue.
+		 * @param primitive Primitive to add.
+		 */
+		void Add( std::shared_ptr<Primitive> primitive );
 
 		/** Get position of the drawable.
 		 * @return Position of the drawable.
@@ -52,7 +54,7 @@ class SFGUI_API RenderQueue {
 		/** Get the primitives in this queue.
 		 * @return Primitives in this queue.
 		 */
-		const std::vector<Primitive::Ptr>& GetPrimitives() const;
+		const std::vector<std::shared_ptr<Primitive>>& GetPrimitives() const;
 
 		/** Get the Z layer this object should be rendered in.
 		 * Larger values are rendered later. Default: 0.
@@ -79,18 +81,18 @@ class SFGUI_API RenderQueue {
 		/** Set viewport of this std::unique_ptr<RenderQueue>.
 		 * @param viewport New viewport of this std::unique_ptr<RenderQueue>.
 		 */
-		void SetViewport( RendererViewport::Ptr viewport );
+		void SetViewport( std::shared_ptr<RendererViewport> viewport );
 
 		/** Get viewport of this std::unique_ptr<RenderQueue>.
 		 * @return Viewport of this std::unique_ptr<RenderQueue>.
 		 */
-		RendererViewport::Ptr GetViewport() const;
+		std::shared_ptr<RendererViewport> GetViewport() const;
 
 	private:
-		std::vector<Primitive::Ptr> m_primitives;
+		std::vector<std::shared_ptr<Primitive>> m_primitives;
 
 		sf::Vector2f m_position;
-		RendererViewport::Ptr m_viewport;
+		std::shared_ptr<RendererViewport> m_viewport;
 
 		int m_z_order;
 		int m_level;

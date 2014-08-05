@@ -1,10 +1,9 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Frame.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Text.hpp>
-#include <cmath>
 
 namespace sfg {
 namespace eng {
@@ -57,7 +56,7 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 	auto alignment = frame->GetAlignment().x;
 
 	if( frame->GetLabel().getSize() > 0 ) {
-		auto metrics = GetTextMetrics( frame->GetLabel(), *font, font_size );
+		auto metrics = GetTextStringMetrics( frame->GetLabel(), *font, font_size );
 		metrics.x += ( 2 * label_padding );
 
 		label_start_x += ( alignment * ( frame->GetAllocation().width - 2 * line_height - metrics.x ) );

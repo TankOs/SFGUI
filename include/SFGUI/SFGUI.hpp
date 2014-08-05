@@ -1,40 +1,16 @@
 #pragma once
 
-// This header CAN be used for convenience to include all widgets and some
-// other classes SFGUI provides.
+#include <SFGUI/Config.hpp>
 
-#include <SFGUI/Bin.hpp>
-#include <SFGUI/Box.hpp>
-#include <SFGUI/Button.hpp>
-#include <SFGUI/Context.hpp>
-#include <SFGUI/Desktop.hpp>
-#include <SFGUI/Engine.hpp>
-#include <SFGUI/Entry.hpp>
-#include <SFGUI/Fixed.hpp>
-#include <SFGUI/Label.hpp>
-#include <SFGUI/Range.hpp>
-#include <SFGUI/Scale.hpp>
-#include <SFGUI/Scrollbar.hpp>
-#include <SFGUI/ScrolledWindow.hpp>
-#include <SFGUI/Table.hpp>
-#include <SFGUI/Window.hpp>
-#include <SFGUI/ToggleButton.hpp>
-#include <SFGUI/CheckButton.hpp>
-#include <SFGUI/RadioButton.hpp>
-#include <SFGUI/Viewport.hpp>
-#include <SFGUI/ProgressBar.hpp>
-#include <SFGUI/Separator.hpp>
-#include <SFGUI/Frame.hpp>
-#include <SFGUI/Image.hpp>
-#include <SFGUI/Alignment.hpp>
-#include <SFGUI/Notebook.hpp>
-#include <SFGUI/Spinner.hpp>
-#include <SFGUI/ComboBox.hpp>
-#include <SFGUI/Canvas.hpp>
-#include <SFGUI/SpinButton.hpp>
-#include <SFGUI/Renderer.hpp>
+namespace sf {
+class Window;
+class RenderWindow;
+class RenderTexture;
+}
 
 namespace sfg {
+
+class Renderer;
 
 /** A class to shield us from evil SFML and MSVC.
  */

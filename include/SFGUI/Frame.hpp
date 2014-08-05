@@ -1,8 +1,10 @@
 #pragma once
+
 #include <SFGUI/Bin.hpp>
 #include <SFGUI/Misc.hpp>
-#include <memory>
+
 #include <SFML/System/String.hpp>
+#include <memory>
 
 namespace sfg {
 

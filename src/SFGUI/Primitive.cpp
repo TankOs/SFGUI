@@ -1,6 +1,9 @@
 #include <SFGUI/Primitive.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/Signal.hpp>
+
+#include <SFML/OpenGL.hpp>
 
 namespace sfg {
 

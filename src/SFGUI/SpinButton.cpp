@@ -1,7 +1,8 @@
 #include <SFGUI/SpinButton.hpp>
+#include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
-#include <SFGUI/Engines/BREW.hpp>
 
 #include <SFML/Graphics/Font.hpp>
 #include <cmath>
@@ -292,7 +293,7 @@ void SpinButton::Configure( Adjustment::Ptr adjustment, float step, unsigned int
 }
 
 void SpinButton::UpdateTextFromAdjustment() {
-	std::stringstream sstr;
+	std::ostringstream sstr;
 	sstr << std::fixed << std::setprecision( static_cast<int>( m_digits ) ) << m_adjustment->GetValue();
 	Entry::SetText( sstr.str() );
 
@@ -305,7 +306,7 @@ void SpinButton::UpdateAdjustmentFromText() {
 		return;
 	}
 
-	std::stringstream text( GetText().toAnsiString() );
+	std::istringstream text( GetText().toAnsiString() );
 
 	float value;
 

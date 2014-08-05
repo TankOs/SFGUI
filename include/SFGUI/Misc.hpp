@@ -1,8 +1,9 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+
+#include <SFML/System/Vector2.hpp>
 #include <memory>
-#include <SFML/System.hpp>
 
 namespace sfg {
 

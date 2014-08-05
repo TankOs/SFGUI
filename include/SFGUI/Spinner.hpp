@@ -1,7 +1,8 @@
 #pragma once
+
 #include <SFGUI/Widget.hpp>
+
 #include <memory>
-#include <SFML/System.hpp>
 
 namespace sfg {
 

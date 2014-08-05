@@ -1,5 +1,6 @@
 #include <SFGUI/Frame.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
 
 namespace sfg {
@@ -32,7 +33,7 @@ sf::Vector2f Frame::CalculateRequisition() {
 	float label_padding( Context::Get().GetEngine().GetProperty<float>( "LabelPadding", shared_from_this() ) );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
-	sf::Vector2f requisition( Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size ) );
+	sf::Vector2f requisition( Context::Get().GetEngine().GetTextStringMetrics( m_label, font, font_size ) );
 	requisition.x += 2 * label_padding + 4 * border_width;
 	requisition.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 4 * border_width;
 

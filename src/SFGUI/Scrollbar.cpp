@@ -1,6 +1,9 @@
 #include <SFGUI/Scrollbar.hpp>
+#include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
+
 #include <limits>
 
 namespace sfg {

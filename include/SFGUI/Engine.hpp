@@ -1,28 +1,28 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/Widget.hpp>
-#include <SFGUI/Selector.hpp>
 #include <SFGUI/ResourceManager.hpp>
-#include <SFGUI/Parsers/ThemeParser/Parse.hpp>
-#include <memory>
 
-#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Config.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <string>
 #include <map>
 #include <vector>
 #include <stdexcept>
+#include <memory>
 
 namespace sf {
+class String;
+class Color;
+class Font;
+
 SFGUI_API std::ostream& operator<<( std::ostream& stream, const Color& color );
 SFGUI_API std::istream& operator>>( std::istream& stream, Color& color );
-
-class String;
-class Font;
 }
 
 namespace sfg {
 
+class Widget;
 class Window;
 class Button;
 class Label;
@@ -40,6 +40,17 @@ class Notebook;
 class Spinner;
 class ComboBox;
 class SpinButton;
+
+class Selector;
+class RenderQueue;
+
+namespace parser {
+namespace theme {
+class Rule;
+
+typedef std::vector<Rule> Theme;
+}
+}
 
 /** Abstract base class for widget rendering.
  */
@@ -181,7 +192,7 @@ class SFGUI_API Engine {
 		 * @param font_size Font size.
 		 * @return Metrics.
 		 */
-		sf::Vector2f GetTextMetrics( const std::basic_string<sf::Uint32>& string, const sf::Font& font, unsigned int font_size ) const;
+		sf::Vector2f GetTextStringMetrics( const std::basic_string<sf::Uint32>& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Get metrics of a text string.
 		 * @param string String.
@@ -189,7 +200,7 @@ class SFGUI_API Engine {
 		 * @param font_size Font size.
 		 * @return Metrics.
 		 */
-		sf::Vector2f GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
+		sf::Vector2f GetTextStringMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Clear all properties.
 		 */
@@ -213,7 +224,7 @@ class SFGUI_API Engine {
 		 * @throws BadValue when value couldn't be converted to string.
 		 */
 		template <typename T>
-		bool SetProperty( Selector::Ptr selector, const std::string& property, const T& value );
+		bool SetProperty( std::shared_ptr<Selector> selector, const std::string& property, const T& value );
 
 		/** Set property.
 		 * @param selector Valid selector object.
@@ -221,7 +232,7 @@ class SFGUI_API Engine {
 		 * @param value Value.
 		 * @return true on success, false when: Invalid selector or invalid property.
 		 */
-		bool SetProperty( Selector::Ptr selector, const std::string& property, const std::string& value );
+		bool SetProperty( std::shared_ptr<Selector> selector, const std::string& property, const std::string& value );
 
 		/** Set multiple properties at once.
 		 * @param properties CSS-like rule declarations.
@@ -235,7 +246,7 @@ class SFGUI_API Engine {
 		 * @return Value or T() in case property doesn't exist.
 		 */
 		template <typename T>
-		T GetProperty( const std::string& property, std::shared_ptr<const Widget> widget = Widget::Ptr() ) const;
+		T GetProperty( const std::string& property, std::shared_ptr<const Widget> widget = std::shared_ptr<const Widget>() ) const;
 
 		/** Load a theme from file.
 		 * @param filename Filename.
@@ -272,12 +283,12 @@ class SFGUI_API Engine {
 		void SetAutoRefresh( bool enable );
 
 	private:
-		typedef std::pair<Selector::PtrConst, std::string> SelectorValuePair;
+		typedef std::pair<std::shared_ptr<const Selector>, std::string> SelectorValuePair;
 		typedef std::vector<SelectorValuePair> SelectorValueList;
 		typedef std::map<const std::string, SelectorValueList> WidgetNameMap;
 		typedef std::map<const std::string, WidgetNameMap> PropertyMap;
 
-		const std::string* GetValue( const std::string& property, Widget::PtrConst widget ) const;
+		const std::string* GetValue( const std::string& property, std::shared_ptr<const Widget> widget ) const;
 
 		/** Get maximum line height and baseline offset of a font.
 		 * @param font Font.

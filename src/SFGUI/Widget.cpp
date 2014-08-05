@@ -2,7 +2,10 @@
 #include <SFGUI/Container.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/RendererViewport.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Context.hpp>
+
+#include <SFML/Window/Event.hpp>
 #include <cmath>
 #include <limits>
 

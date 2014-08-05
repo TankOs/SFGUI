@@ -1,7 +1,11 @@
 #include <SFGUI/Engine.hpp>
+#include <SFGUI/Selector.hpp>
+#include <SFGUI/Widget.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Parsers/ThemeParser/Parse.hpp>
 
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <fstream>
 #include <algorithm>
 #include <cstdlib>
@@ -107,7 +111,7 @@ float Engine::GetFontLineSpacing( const sf::Font& font, unsigned int font_size )
 	return static_cast<float>( font.getLineSpacing( font_size ) );
 }
 
-sf::Vector2f Engine::GetTextMetrics( const std::basic_string<sf::Uint32>& string, const sf::Font& font, unsigned int font_size ) const {
+sf::Vector2f Engine::GetTextStringMetrics( const std::basic_string<sf::Uint32>& string, const sf::Font& font, unsigned int font_size ) const {
 	// SFML is incapable of giving us the metrics we need so we have to do it ourselves.
 	auto horizontal_spacing = static_cast<float>( font.getGlyph( L' ', font_size, false ).advance );
 	auto vertical_spacing = static_cast<float>( font.getLineSpacing( font_size ) );
@@ -153,7 +157,7 @@ sf::Vector2f Engine::GetTextMetrics( const std::basic_string<sf::Uint32>& string
 	return metrics;
 }
 
-sf::Vector2f Engine::GetTextMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {
+sf::Vector2f Engine::GetTextStringMetrics( const sf::String& string, const sf::Font& font, unsigned int font_size ) const {
 	// SFML is incapable of giving us the metrics we need so we have to do it ourselves.
 	auto horizontal_spacing = static_cast<float>( font.getGlyph( L' ', font_size, false ).advance );
 	auto vertical_spacing = static_cast<float>( font.getLineSpacing( font_size ) );

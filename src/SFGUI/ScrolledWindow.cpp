@@ -1,12 +1,14 @@
-#include <SFGUI/Config.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
+#include <SFGUI/Viewport.hpp>
+#include <SFGUI/Adjustment.hpp>
+#include <SFGUI/Scrollbar.hpp>
 
 namespace sfg {
 
 ScrolledWindow::ScrolledWindow( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment ) :
-	Container(),
 	m_content_allocation(),
 	m_horizontal_scrollbar(),
 	m_vertical_scrollbar(),
@@ -61,11 +63,11 @@ void ScrolledWindow::SetVerticalAdjustment( Adjustment::Ptr adjustment ) {
 	Invalidate();
 }
 
-std::uint8_t ScrolledWindow::GetScrollbarPolicy() const {
+char ScrolledWindow::GetScrollbarPolicy() const {
 	return m_policy;
 }
 
-void ScrolledWindow::SetScrollbarPolicy( std::uint8_t policy ) {
+void ScrolledWindow::SetScrollbarPolicy( char policy ) {
 	m_policy = policy;
 
 	RecalculateContentAllocation();

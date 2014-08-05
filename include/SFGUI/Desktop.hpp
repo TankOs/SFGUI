@@ -4,8 +4,6 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/View.hpp>
 #include <memory>
 #include <string>
 #include <deque>

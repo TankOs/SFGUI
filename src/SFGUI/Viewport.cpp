@@ -1,6 +1,10 @@
 #include <SFGUI/Viewport.hpp>
+#include <SFGUI/Adjustment.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
+
+#include <SFML/Window/Event.hpp>
 #include <cmath>
 
 namespace sfg {

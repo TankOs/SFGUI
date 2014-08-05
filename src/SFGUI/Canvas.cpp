@@ -1,6 +1,14 @@
 #include <SFGUI/Canvas.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Container.hpp>
+#include <SFGUI/RendererViewport.hpp>
+#include <SFGUI/RenderQueue.hpp>
+
+#include <SFML/Graphics/Vertex.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Window/Context.hpp>
+#include <SFML/OpenGL.hpp>
 #include <cmath>
 
 namespace sfg {

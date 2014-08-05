@@ -1,4 +1,5 @@
 #include <SFGUI/TableCell.hpp>
+#include <SFGUI/Widget.hpp>
 
 namespace sfg {
 namespace priv {

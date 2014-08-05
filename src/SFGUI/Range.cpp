@@ -1,4 +1,5 @@
 #include <SFGUI/Range.hpp>
+#include <SFGUI/Adjustment.hpp>
 
 namespace sfg {
 

@@ -1,7 +1,6 @@
 #include <SFGUI/Selector.hpp>
 #include <SFGUI/Container.hpp>
-
-#include <cctype>
+#include <SFGUI/Widget.hpp>
 
 namespace sfg {
 

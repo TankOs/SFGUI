@@ -9,6 +9,13 @@
 
 #include <SFGUI/Renderers/VertexBufferRenderer.hpp>
 #include <SFGUI/RendererViewport.hpp>
+#include <SFGUI/Signal.hpp>
+
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Window/Context.hpp>
+#include <SFML/System/Vector3.hpp>
+#include <SFML/OpenGL.hpp>
 
 namespace sfg {
 

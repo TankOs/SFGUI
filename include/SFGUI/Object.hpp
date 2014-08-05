@@ -2,6 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Signal.hpp>
+
 #include <memory>
 
 namespace sfg {

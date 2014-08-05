@@ -1,10 +1,12 @@
 #pragma once
-#include <SFGUI/Config.hpp>
+
 #include <SFGUI/Bin.hpp>
-#include <SFGUI/Adjustment.hpp>
+
 #include <memory>
 
 namespace sfg {
+
+class Adjustment;
 
 /** Viewport.
  */
@@ -23,7 +25,7 @@ class SFGUI_API Viewport : public Bin {
 		 * @param vertical_adjustment Vertical adjustment.
 		 * @return Viewport.
 		 */
-		static Ptr Create( Adjustment::Ptr horizontal_adjustment, Adjustment::Ptr vertical_adjustment );
+		static Ptr Create( std::shared_ptr<Adjustment> horizontal_adjustment, std::shared_ptr<Adjustment> vertical_adjustment );
 
 		/** Get absolute position on virtual screen: always (0,0)
 		 * @return Absolute position on virtual screen: always (0,0).
@@ -33,22 +35,22 @@ class SFGUI_API Viewport : public Bin {
 		/** Get the horizontal Adjustment for this Viewport.
 		 * @return Horizontal Adjustment for this Viewport.
 		 */
-		Adjustment::Ptr GetHorizontalAdjustment() const;
+		std::shared_ptr<Adjustment> GetHorizontalAdjustment() const;
 
 		/** Set the horizontal adjustment of this Viewport
 		 * @param horizontal_adjustment Horizontal Adjustment
 		 */
-		void SetHorizontalAdjustment( Adjustment::Ptr horizontal_adjustment );
+		void SetHorizontalAdjustment( std::shared_ptr<Adjustment> horizontal_adjustment );
 
 		/** Get the vertical Adjustment for this Viewport.
 		 * @return Vertical Adjustment for this Viewport.
 		 */
-		Adjustment::Ptr GetVerticalAdjustment() const;
+		std::shared_ptr<Adjustment> GetVerticalAdjustment() const;
 
 		/** Set the vertical adjustment of this Viewport
 		 * @param vertical_adjustment Vertical Adjustment
 		 */
-		void SetVerticalAdjustment( Adjustment::Ptr vertical_adjustment );
+		void SetVerticalAdjustment( std::shared_ptr<Adjustment> vertical_adjustment );
 
 		/** Handle SFML event.
 		 * Handle an SFML event and fire proper signals.
@@ -87,8 +89,8 @@ class SFGUI_API Viewport : public Bin {
 
 		void UpdateView();
 
-		Adjustment::Ptr m_horizontal_adjustment;
-		Adjustment::Ptr m_vertical_adjustment;
+		std::shared_ptr<Adjustment> m_horizontal_adjustment;
+		std::shared_ptr<Adjustment> m_vertical_adjustment;
 
 		unsigned int m_horizontal_adjustment_signal_serial;
 		unsigned int m_vertical_adjustment_signal_serial;

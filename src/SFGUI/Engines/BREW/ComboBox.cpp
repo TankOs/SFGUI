@@ -1,10 +1,9 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/ComboBox.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Text.hpp>
-#include <cmath>
 
 namespace sfg {
 namespace eng {

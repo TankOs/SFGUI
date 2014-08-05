@@ -1,8 +1,9 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/ProgressBar.hpp>
-#include <cmath>
+#include <SFGUI/RenderQueue.hpp>
+
+#include <algorithm>
 
 namespace sfg {
 namespace eng {

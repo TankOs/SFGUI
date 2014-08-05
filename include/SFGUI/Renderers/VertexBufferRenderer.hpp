@@ -1,10 +1,12 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/Renderer.hpp>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
+#include <SFML/System/Vector2.hpp>
+
+namespace sf {
+class Color;
+}
 
 namespace sfg {
 
@@ -59,22 +61,22 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 		std::vector<sf::Vector2f> m_vertex_data;
 		std::vector<sf::Color> m_color_data;
 		std::vector<sf::Vector2f> m_texture_data;
-		std::vector<GLuint> m_index_data;
+		std::vector<unsigned int> m_index_data;
 
 		std::vector<Batch> m_batches;
 
-		GLuint m_frame_buffer;
-		GLuint m_frame_buffer_texture;
+		unsigned int m_frame_buffer;
+		unsigned int m_frame_buffer_texture;
 
-		GLuint m_display_list;
+		unsigned int m_display_list;
 
-		GLuint m_vertex_vbo;
-		GLuint m_color_vbo;
-		GLuint m_texture_vbo;
-		GLuint m_index_vbo;
+		unsigned int m_vertex_vbo;
+		unsigned int m_color_vbo;
+		unsigned int m_texture_vbo;
+		unsigned int m_index_vbo;
 
-		GLsizei m_last_vertex_count;
-		GLsizei m_last_index_count;
+		int m_last_vertex_count;
+		int m_last_index_count;
 
 		float m_alpha_threshold;
 

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/Renderer.hpp>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
+#include <SFML/System/Vector2.hpp>
+
+namespace sf {
+class Color;
+}
 
 namespace sfg {
 

@@ -1,11 +1,7 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/RenderQueue.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 
-#include <SFML/Graphics/ConvexShape.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include <cmath>
 
 namespace sfg {

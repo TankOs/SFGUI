@@ -2,6 +2,7 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Image.hpp>
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/Container.hpp>
+
 #include <memory>
 
 namespace sfg {

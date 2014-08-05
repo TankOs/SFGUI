@@ -1,14 +1,16 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <memory>
-#include <SFGUI/Signal.hpp>
-#include <SFGUI/RendererViewport.hpp>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Image.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <memory>
 
 namespace sfg {
+
+class Signal;
+class RendererViewport;
 
 /** Renderer primitive.
  */
@@ -76,12 +78,12 @@ class SFGUI_API Primitive {
 		/** Set viewport this primitive should be drawn in.
 		 * @param viewport Viewport this primitive should be drawn in.
 		 */
-		void SetViewport( RendererViewport::Ptr viewport );
+		void SetViewport( std::shared_ptr<RendererViewport> viewport );
 
 		/** Get viewport this primitive is drawn in.
 		 * @return Viewport this primitive is drawn in.
 		 */
-		RendererViewport::Ptr GetViewport() const;
+		std::shared_ptr<RendererViewport> GetViewport() const;
 
 		/** Set draw layer of this primitive.
 		 * @param layer Draw layer of this primitive.
@@ -118,7 +120,7 @@ class SFGUI_API Primitive {
 		/** Get indices in this primitive.
 		 * @return Indices in this primitive.
 		 */
-		const std::vector<GLuint>& GetIndices() const;
+		const std::vector<unsigned int>& GetIndices() const;
 
 		/** Set whether the primitive is synced with the VBO.
 		 * @param synced true to flag that primitive is synced with the VBO.
@@ -164,7 +166,7 @@ class SFGUI_API Primitive {
 
 		std::vector<Vertex> m_vertices;
 		std::vector<std::shared_ptr<Texture> > m_textures;
-		std::vector<GLuint> m_indices;
+		std::vector<unsigned int> m_indices;
 
 		bool m_synced;
 		bool m_visible;

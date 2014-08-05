@@ -1,10 +1,21 @@
 #pragma once
-#include <SFGUI/Config.hpp>
+
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/RendererViewport.hpp>
+
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 #include <memory>
 
+namespace sf {
+class Vertex;
+class RenderTexture;
+class Drawable;
+}
+
 namespace sfg {
+
+class RendererViewport;
 
 /** Canvas.
  */
@@ -84,7 +95,7 @@ class SFGUI_API Canvas : public Widget {
 		std::shared_ptr<RendererViewport> m_custom_viewport;
 		std::shared_ptr<sf::RenderTexture> m_render_texture;
 
-		GLuint m_display_list;
+		unsigned int m_display_list;
 
 		bool m_depth;
 		bool m_resize;

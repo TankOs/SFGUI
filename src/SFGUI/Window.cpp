@@ -1,18 +1,20 @@
 #include <SFGUI/Window.hpp>
-#include <SFGUI/Engine.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
+#include <SFGUI/Engine.hpp>
+
 #include <limits>
 
 namespace sfg {
 
-Window::Window( std::uint8_t style ) :
+Window::Window( char style ) :
 	m_style( style ),
 	m_dragging( false ),
 	m_resizing( false )
 {
 }
 
-Window::Ptr Window::Create( std::uint8_t style ) {
+Window::Ptr Window::Create( char style ) {
 	Window::Ptr window( new Window( style ) );
 
 	window->RequestResize();
@@ -25,11 +27,7 @@ std::unique_ptr<RenderQueue> Window::InvalidateImpl() const {
 		GetChild()->SetAllocation( GetClientRect() );
 	}
 
-	return std::move(
-		Context::Get().GetEngine().CreateWindowDrawable(
-			std::dynamic_pointer_cast<const Window>( shared_from_this() )
-		)
-	);
+	return Context::Get().GetEngine().CreateWindowDrawable( std::dynamic_pointer_cast<const Window>( shared_from_this() ) );
 }
 
 void Window::SetTitle( const sf::String& title ) {
@@ -74,7 +72,7 @@ void Window::HandleSizeChange() {
 	GetChild()->SetAllocation( GetClientRect() );
 }
 
-void Window::SetStyle( std::uint8_t style ) {
+void Window::SetStyle( char style ) {
 	m_style = style;
 
 	// Make sure dragging and resizing operations are cancelled.
@@ -89,7 +87,7 @@ void Window::SetStyle( std::uint8_t style ) {
 	}
 }
 
-std::uint8_t Window::GetStyle() const {
+char Window::GetStyle() const {
 	return m_style;
 }
 

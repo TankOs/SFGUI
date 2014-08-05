@@ -1,7 +1,8 @@
 #pragma once
-#include <SFGUI/Container.hpp>
-#include <memory>
 
+#include <SFGUI/Container.hpp>
+
+#include <memory>
 #include <map>
 
 namespace sfg {

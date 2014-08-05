@@ -1,8 +1,9 @@
 #include <SFGUI/Table.hpp>
+#include <SFGUI/TableCell.hpp>
+#include <SFGUI/TableOptions.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
-#include <set>
 #include <cassert>
 
 namespace sfg {

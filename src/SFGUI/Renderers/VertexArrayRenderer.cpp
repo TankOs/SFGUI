@@ -1,5 +1,10 @@
 #include <SFGUI/Renderers/VertexArrayRenderer.hpp>
 #include <SFGUI/RendererViewport.hpp>
+#include <SFGUI/Signal.hpp>
+
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/OpenGL.hpp>
 
 namespace sfg {
 

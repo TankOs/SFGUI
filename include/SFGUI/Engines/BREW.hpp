@@ -3,6 +3,8 @@
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <SFML/Graphics/Rect.hpp>
+
 namespace sf {
 class ConvexShape;
 }

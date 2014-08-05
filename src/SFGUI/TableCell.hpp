@@ -1,11 +1,14 @@
 #pragma once
 
-#include <SFGUI/Widget.hpp>
-#include <SFGUI/Container.hpp>
-
+#include <SFML/Config.hpp>
 #include <SFML/Graphics/Rect.hpp>
 
+#include <memory>
+
 namespace sfg {
+
+class Widget;
+
 namespace priv {
 
 /** Table cell.
@@ -20,9 +23,9 @@ class TableCell {
 		 * @param y_options_ Y options.
 		 * @param padding_ Padding.
 		 */
-		TableCell( Widget::Ptr child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ );
+		TableCell( std::shared_ptr<Widget> child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ );
 
-		sfg::Widget::Ptr child;
+		std::shared_ptr<Widget> child;
 		sf::Rect<sf::Uint32> rect;
 		int x_options;
 		int y_options;

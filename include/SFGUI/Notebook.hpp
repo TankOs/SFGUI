@@ -1,8 +1,9 @@
 #pragma once
+
 #include <SFGUI/Container.hpp>
+
 #include <memory>
 #include <deque>
-#include <cstdint>
 
 namespace sfg {
 
@@ -16,7 +17,7 @@ class SFGUI_API Notebook : public Container {
 
 		/** Tab Position
 		 */
-		enum class TabPosition : std::uint8_t {
+		enum class TabPosition : char {
 			TOP = 0,
 			BOTTOM,
 			LEFT,

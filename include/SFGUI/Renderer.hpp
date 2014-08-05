@@ -1,15 +1,22 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <memory>
 #include <SFGUI/Primitive.hpp>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
 #include <vector>
 #include <map>
 #include <deque>
-#include <cstdint>
+#include <memory>
+
+namespace sf {
+class Window;
+class RenderTarget;
+class RenderWindow;
+class RenderTexture;
+class Texture;
+class Font;
+class Text;
+}
 
 namespace sfg {
 
@@ -19,7 +26,7 @@ class RendererViewport;
  */
 class SFGUI_API Renderer {
 	public:
-		enum InvalidateType : std::uint8_t {
+		enum InvalidateType : char {
 			INVALIDATE_VERTEX = 1 << 0, //!< Vertex data needs a sync.
 			INVALIDATE_COLOR = 1 << 1, //!< Color data needs a sync.
 			INVALIDATE_TEXTURE = 1 << 2, //!< Texture data needs a sync.

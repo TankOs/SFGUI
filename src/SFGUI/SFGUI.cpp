@@ -1,4 +1,6 @@
 #include <SFGUI/SFGUI.hpp>
+#include <SFGUI/Renderer.hpp>
+#include <SFGUI/Context.hpp>
 
 namespace sfg {
 

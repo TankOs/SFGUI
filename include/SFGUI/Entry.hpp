@@ -1,8 +1,9 @@
 #pragma once
+
 #include <SFGUI/Widget.hpp>
-#include <memory>
+
 #include <SFML/System/String.hpp>
-#include <SFML/System/Clock.hpp>
+#include <memory>
 
 namespace sfg {
 

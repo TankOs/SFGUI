@@ -1,7 +1,7 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/ToggleButton.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 
@@ -38,7 +38,7 @@ std::unique_ptr<RenderQueue> BREW::CreateToggleButtonDrawable( std::shared_ptr<c
 
 	// Label.
 	if( button->GetLabel().getSize() > 0 ) {
-		auto metrics = GetTextMetrics( button->GetLabel(), *font, font_size );
+		auto metrics = GetTextStringMetrics( button->GetLabel(), *font, font_size );
 		metrics.y = GetFontLineHeight( *font, font_size );
 
 		sf::Text text( button->GetLabel(), *font, font_size );

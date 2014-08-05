@@ -44,7 +44,6 @@ set(
 	"${INCLUDE_PATH}/SFGUI/Config.hpp"
 	"${INCLUDE_PATH}/SFGUI/Container.hpp"
 	"${INCLUDE_PATH}/SFGUI/Context.hpp"
-	"${INCLUDE_PATH}/SFGUI/DejaVuSansFont.hpp"
 	"${INCLUDE_PATH}/SFGUI/Desktop.hpp"
 	"${INCLUDE_PATH}/SFGUI/Desktop.inl"
 	"${INCLUDE_PATH}/SFGUI/Engine.hpp"
@@ -68,6 +67,7 @@ set(
 	"${INCLUDE_PATH}/SFGUI/Range.hpp"
 	"${INCLUDE_PATH}/SFGUI/RenderQueue.hpp"
 	"${INCLUDE_PATH}/SFGUI/Renderer.hpp"
+	"${INCLUDE_PATH}/SFGUI/Renderers.hpp"
 	"${INCLUDE_PATH}/SFGUI/RendererViewport.hpp"
 	"${INCLUDE_PATH}/SFGUI/Renderers/VertexArrayRenderer.hpp"
 	"${INCLUDE_PATH}/SFGUI/Renderers/VertexBufferRenderer.hpp"
@@ -84,11 +84,10 @@ set(
 	"${INCLUDE_PATH}/SFGUI/SpinButton.hpp"
 	"${INCLUDE_PATH}/SFGUI/Spinner.hpp"
 	"${INCLUDE_PATH}/SFGUI/Table.hpp"
-	"${INCLUDE_PATH}/SFGUI/TableCell.hpp"
-	"${INCLUDE_PATH}/SFGUI/TableOptions.hpp"
 	"${INCLUDE_PATH}/SFGUI/ToggleButton.hpp"
 	"${INCLUDE_PATH}/SFGUI/Viewport.hpp"
 	"${INCLUDE_PATH}/SFGUI/Widget.hpp"
+	"${INCLUDE_PATH}/SFGUI/Widgets.hpp"
 	"${INCLUDE_PATH}/SFGUI/Window.hpp"
 	"${SOURCE_PATH}/SFGUI/Adjustment.cpp"
 	"${SOURCE_PATH}/SFGUI/Alignment.cpp"
@@ -100,6 +99,7 @@ set(
 	"${SOURCE_PATH}/SFGUI/ComboBox.cpp"
 	"${SOURCE_PATH}/SFGUI/Container.cpp"
 	"${SOURCE_PATH}/SFGUI/Context.cpp"
+	"${SOURCE_PATH}/SFGUI/DejaVuSansFont.hpp"
 	"${SOURCE_PATH}/SFGUI/Desktop.cpp"
 	"${SOURCE_PATH}/SFGUI/Engine.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW.cpp"
@@ -160,7 +160,9 @@ set(
 	"${SOURCE_PATH}/SFGUI/Spinner.cpp"
 	"${SOURCE_PATH}/SFGUI/Table.cpp"
 	"${SOURCE_PATH}/SFGUI/TableCell.cpp"
+	"${SOURCE_PATH}/SFGUI/TableCell.hpp"
 	"${SOURCE_PATH}/SFGUI/TableOptions.cpp"
+	"${SOURCE_PATH}/SFGUI/TableOptions.hpp"
 	"${SOURCE_PATH}/SFGUI/ToggleButton.cpp"
 	"${SOURCE_PATH}/SFGUI/Viewport.cpp"
 	"${SOURCE_PATH}/SFGUI/Widget.cpp"
@@ -171,7 +173,7 @@ if( SFGUI_INCLUDE_FONT )
 	set(
 		SOURCES
 		${SOURCES}
-		"src/SFGUI/DejaVuSansFont.cpp"
+		"${SOURCE_PATH}/SFGUI/DejaVuSansFont.cpp"
 	)
 endif()
 

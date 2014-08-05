@@ -1,5 +1,8 @@
 #include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
+#include <SFGUI/RenderQueue.hpp>
+
+#include <SFML/Graphics/Color.hpp>
 
 namespace sfg {
 namespace eng {

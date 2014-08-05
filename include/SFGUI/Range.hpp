@@ -1,11 +1,12 @@
 #pragma once
-#include <SFGUI/Config.hpp>
+
 #include <SFGUI/Widget.hpp>
-#include <SFGUI/Adjustment.hpp>
+
 #include <memory>
-#include <cstdint>
 
 namespace sfg {
+
+class Adjustment;
 
 /** Range widget, base class for scrollbars and sliders.
  */
@@ -16,7 +17,7 @@ class SFGUI_API Range : public Widget {
 
 		/** Orientation.
 		 */
-		enum class Orientation : std::uint8_t {
+		enum class Orientation : char {
 			HORIZONTAL = 0, //!< Horizontal range widget.
 			VERTICAL //!< Vertical range widget.
 		};
@@ -24,12 +25,12 @@ class SFGUI_API Range : public Widget {
 		/** Get the Adjustment for this Range widget.
 		 * @return Adjustment for this Range widget.
 		 */
-		Adjustment::Ptr GetAdjustment() const;
+		std::shared_ptr<Adjustment> GetAdjustment() const;
 
 		/** Set the Adjustment for this Range widget.
 		 * @param adjustment new Adjustment.
 		 */
-		void SetAdjustment( Adjustment::Ptr adjustment );
+		void SetAdjustment( std::shared_ptr<Adjustment> adjustment );
 
 		/** Get the value of this Range widget.
 		 * @return Value of this Range widget.
@@ -66,7 +67,7 @@ class SFGUI_API Range : public Widget {
 	private:
 		void HandleAdjustmentChange();
 
-		Adjustment::Ptr m_adjustment;
+		std::shared_ptr<Adjustment> m_adjustment;
 
 		unsigned int m_change_connection;
 

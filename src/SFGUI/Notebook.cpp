@@ -1,5 +1,6 @@
 #include <SFGUI/Notebook.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
 
 namespace sfg {

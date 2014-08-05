@@ -1,7 +1,7 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/SpinButton.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 
@@ -100,7 +100,7 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 		}
 
 		// Get metrics.
-		sf::Vector2f metrics( GetTextMetrics( cursor_string, *font, font_size ) );
+		sf::Vector2f metrics( GetTextStringMetrics( cursor_string, *font, font_size ) );
 
 		queue->Add(
 			Renderer::Get().CreateRect(

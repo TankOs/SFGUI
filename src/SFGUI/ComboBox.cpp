@@ -2,7 +2,12 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/Scrollbar.hpp>
+#include <SFGUI/Adjustment.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
+#include <SFML/System/String.hpp>
+#include <SFML/Window/Event.hpp>
 #include <limits>
 
 namespace sfg {
@@ -313,7 +318,7 @@ sf::Vector2f ComboBox::CalculateRequisition() {
 	// Determine highest needed width of all items.
 	sf::Vector2f metrics( 0.f, 0.f );
 	for ( IndexType item = 0; item < GetItemCount(); ++item ) {
-		metrics.x = std::max( metrics.x, Context::Get().GetEngine().GetTextMetrics( m_entries[static_cast<std::size_t>( item )], font, font_size ).x );
+		metrics.x = std::max( metrics.x, Context::Get().GetEngine().GetTextStringMetrics( m_entries[static_cast<std::size_t>( item )], font, font_size ).x );
 	}
 
 	metrics.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );

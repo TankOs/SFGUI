@@ -1,7 +1,9 @@
 #include <SFGUI/Scale.hpp>
+#include <SFGUI/Adjustment.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
-#include <SFGUI/Engines/BREW.hpp>
+
 #include <limits>
 
 namespace sfg {

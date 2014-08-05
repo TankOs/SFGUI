@@ -24,7 +24,7 @@ T Engine::GetProperty( const std::string& property, std::shared_ptr<const Widget
 
 	// Convert value.
 	T out_value;
-	std::stringstream sstr( *value );
+	std::istringstream sstr( *value );
 	sstr >> out_value;
 
 	if( sstr.fail() ) {
@@ -41,7 +41,7 @@ T Engine::GetProperty( const std::string& property, std::shared_ptr<const Widget
 
 template <typename T>
 bool Engine::SetProperty( const std::string& selector, const std::string& property, const T& value ) {
-	std::stringstream properties;
+	std::ostringstream properties;
 
 	properties << selector << " {\n\t" << property << ": " << value << ";\n}";
 
@@ -49,8 +49,8 @@ bool Engine::SetProperty( const std::string& selector, const std::string& proper
 }
 
 template <typename T>
-bool Engine::SetProperty( Selector::Ptr selector, const std::string& property, const T& value ) {
-	std::stringstream sstr;
+bool Engine::SetProperty( std::shared_ptr<Selector> selector, const std::string& property, const T& value ) {
+	std::ostringstream sstr;
 	sstr << value;
 
 	if( sstr.fail() ) {

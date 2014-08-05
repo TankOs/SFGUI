@@ -1,7 +1,7 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Window.hpp>
 #include <SFGUI/Renderer.hpp>
-#include <SFGUI/Context.hpp>
+#include <SFGUI/Window.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <SFML/Graphics/Text.hpp>
 

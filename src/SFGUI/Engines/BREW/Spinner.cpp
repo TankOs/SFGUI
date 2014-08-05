@@ -2,8 +2,10 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Spinner.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 #include <cmath>
+#include <algorithm>
 
 namespace sfg {
 namespace eng {

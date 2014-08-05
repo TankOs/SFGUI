@@ -1,10 +1,13 @@
 #pragma once
+
 #include <SFGUI/Bin.hpp>
-#include <SFGUI/Image.hpp>
-#include <memory>
+
 #include <SFML/System/String.hpp>
+#include <memory>
 
 namespace sfg {
+
+class Image;
 
 /** Pushbutton.
  */
@@ -34,12 +37,12 @@ class SFGUI_API Button : public Bin {
 		/** Set Image of the button.
 		 * @param image Image of the button.
 		 */
-		void SetImage( Image::Ptr image );
+		void SetImage( std::shared_ptr<Image> image );
 
 		/** Get contained Image.
 		 * @return Contained Image.
 		 */
-		const Image::Ptr GetImage() const;
+		std::shared_ptr<const Image> GetImage() const;
 
 		/** Clear Image of the button.
 		 */

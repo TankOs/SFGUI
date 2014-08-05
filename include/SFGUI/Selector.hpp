@@ -2,11 +2,10 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <memory>
 
+#include <memory>
 #include <string>
 #include <stdexcept>
-#include <cstdint>
 
 namespace sfg {
 
@@ -19,7 +18,7 @@ class SFGUI_API Selector {
 		typedef std::shared_ptr<Selector> Ptr; ///< Shared pointer.
 		typedef std::shared_ptr<Selector> PtrConst; ///< Shared pointer (const object).
 
-		enum class HierarchyType : std::uint8_t {
+		enum class HierarchyType : char {
 			INVALID = 0, //!< Invalid hierarchy type;
 			ROOT, //!< Current simple selector is the root of the selector.
 			CHILD, //!< Current simple selector is a child of the parent.

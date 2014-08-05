@@ -1,6 +1,8 @@
 #include <SFGUI/Button.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
+#include <SFGUI/Image.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 namespace sfg {
 
@@ -29,7 +31,7 @@ void Button::SetImage( Image::Ptr image ) {
 	Add( image );
 }
 
-const Image::Ptr Button::GetImage() const {
+Image::PtrConst Button::GetImage() const {
 	return std::static_pointer_cast<Image>( GetChild() );
 }
 
@@ -79,7 +81,7 @@ sf::Vector2f Button::CalculateRequisition() {
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
-	auto requisition = Context::Get().GetEngine().GetTextMetrics( m_label, font, font_size );
+	auto requisition = Context::Get().GetEngine().GetTextStringMetrics( m_label, font, font_size );
 	requisition.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	requisition.x += 2 * padding;

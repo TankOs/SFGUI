@@ -1,6 +1,4 @@
 #include <SFGUI/RadioButton.hpp>
-#include <SFGUI/Context.hpp>
-#include <SFGUI/Engine.hpp>
 
 namespace sfg {
 

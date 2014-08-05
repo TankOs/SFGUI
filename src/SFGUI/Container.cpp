@@ -1,5 +1,7 @@
 #include <SFGUI/Container.hpp>
 
+#include <SFML/Window/Event.hpp>
+
 namespace sfg {
 
 void Container::Add( Widget::Ptr widget ) {

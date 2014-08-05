@@ -1,14 +1,17 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+
 #include <memory>
-#include <SFGUI/Engine.hpp>
-#include <SFGUI/Engines/BREW.hpp>
 
 namespace sfg {
 
 class Engine;
 class Widget;
+
+namespace eng {
+class BREW;
+}
 
 /** GUI context.
  * A context saves several semi-global information for widgets, such as the

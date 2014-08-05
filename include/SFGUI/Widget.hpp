@@ -1,19 +1,23 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/Object.hpp>
-#include <memory>
-#include <SFGUI/RenderQueue.hpp>
 
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Window/Event.hpp>
-#include <map>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <string>
-#include <cstdint>
+#include <memory>
+
+namespace sf {
+class Event;
+}
 
 namespace sfg {
 
 class Container;
+class RendererViewport;
+class RenderQueue;
 
 /** Base class for widgets.
  */
@@ -25,7 +29,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 
 		/** Widget state.
 		 */
-		enum class State : std::uint8_t {
+		enum class State : char {
 			NORMAL = 0, /*!< Normal. */
 			ACTIVE, /*!< Active, e.g. when a button is pressed. */
 			PRELIGHT, /*!< Prelight, e.g. when the mouse moves over a widget. */
@@ -244,12 +248,12 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Set viewport of this widget.
 		 * @param viewport Viewport of this widget.
 		 */
-		void SetViewport( RendererViewport::Ptr viewport );
+		void SetViewport( std::shared_ptr<RendererViewport> viewport );
 
 		/** Get viewport of this widget.
 		 * @return Viewport of this widget.
 		 */
-		RendererViewport::Ptr GetViewport() const;
+		std::shared_ptr<RendererViewport> GetViewport() const;
 
 		/** Get the Z layer this widget should be rendered in.
 		 * Larger values are rendered later. Default: 0.

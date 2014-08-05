@@ -1,11 +1,12 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/Bin.hpp>
-#include <memory>
-#include <SFML/Graphics/Drawable.hpp>
+
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <SFML/System/String.hpp>
-#include <cstdint>
+#include <SFML/System/Vector2.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -16,7 +17,7 @@ class SFGUI_API Window : public Bin {
 		typedef std::shared_ptr<Window> Ptr; //!< Shared pointer.
 		typedef std::shared_ptr<const Window> PtrConst; //!< Shared pointer.
 
-		enum Style : std::uint8_t {
+		enum Style : char {
 			NO_STYLE = 0, //!< Transparent window.
 			TITLEBAR = 1 << 0, //!< Titlebar.
 			BACKGROUND = 1 << 1, //!< Background.
@@ -28,7 +29,7 @@ class SFGUI_API Window : public Bin {
 		/** Create window.
 		 * @param style Style the Window should have. Defaults to TopLevel.
 		 */
-		static Ptr Create( std::uint8_t style = Style::TOPLEVEL );
+		static Ptr Create( char style = Style::TOPLEVEL );
 
 		virtual const std::string& GetName() const override;
 
@@ -51,12 +52,12 @@ class SFGUI_API Window : public Bin {
 		 * Can be a combination of Window::Style values.
 		 * @param style New style.
 		 */
-		void SetStyle( std::uint8_t style );
+		void SetStyle( char style );
 
 		/** Get window style.
 		 * @return Window style.
 		 */
-		std::uint8_t GetStyle() const;
+		char GetStyle() const;
 
 		/** Check if the window has a specific style.
 		 * @param style Style to check.
@@ -68,7 +69,7 @@ class SFGUI_API Window : public Bin {
 		/** Constructor.
 		 * @param style Window style.
 		 */
-		Window( std::uint8_t style );
+		Window( char style );
 
 		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
@@ -83,7 +84,7 @@ class SFGUI_API Window : public Bin {
 		sf::Vector2f m_drag_offset;
 
 		sf::String m_title;
-		std::uint8_t m_style;
+		char m_style;
 
 		bool m_dragging;
 		bool m_resizing;

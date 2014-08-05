@@ -1,9 +1,16 @@
 #include <SFGUI/Renderer.hpp>
-#include <SFGUI/Renderers/VertexArrayRenderer.hpp>
-#include <SFGUI/Renderers/VertexBufferRenderer.hpp>
+#include <SFGUI/Renderers.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Engine.hpp>
 #include <SFGUI/RendererViewport.hpp>
 
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Window/Context.hpp>
+#include <SFML/OpenGL.hpp>
 #include <cmath>
 #include <cstring>
 #include <cassert>

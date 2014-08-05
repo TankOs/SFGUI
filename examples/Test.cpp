@@ -1,10 +1,10 @@
 #include <SFGUI/SFGUI.hpp>
-#include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Renderers/VertexBufferRenderer.hpp>
-#include <SFGUI/Renderers/VertexArrayRenderer.hpp>
+#include <SFGUI/Widgets.hpp>
+#include <SFGUI/Renderers.hpp>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
+#include <SFML/OpenGL.hpp>
 #include <sstream>
 #include <cmath>
 #include <memory>

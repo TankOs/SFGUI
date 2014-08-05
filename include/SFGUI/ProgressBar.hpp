@@ -1,11 +1,8 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/Widget.hpp>
-#include <memory>
-#include <cstdint>
 
-#include <SFML/System/String.hpp>
+#include <memory>
 
 namespace sfg {
 
@@ -18,7 +15,7 @@ class SFGUI_API ProgressBar : public Widget {
 
 		/** Orientation.
 		 */
-		enum class Orientation : std::uint8_t {
+		enum class Orientation : char {
 			HORIZONTAL = 0, ///< Horizontal.
 			VERTICAL ///< Vertical.
 		};

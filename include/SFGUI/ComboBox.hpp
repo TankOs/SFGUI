@@ -1,11 +1,17 @@
 #pragma once
+
 #include <SFGUI/Bin.hpp>
-#include <SFGUI/Scrollbar.hpp>
-#include <memory>
-#include <SFML/System/String.hpp>
+
 #include <vector>
+#include <memory>
+
+namespace sf {
+class String;
+}
 
 namespace sfg {
+
+class Scrollbar;
 
 /** Combobox.
  */
@@ -116,7 +122,7 @@ class SFGUI_API ComboBox : public Bin {
 		virtual void HandleUpdate( float seconds ) override;
 		void ChangeStartEntry();
 
-		Scrollbar::Ptr m_scrollbar;
+		std::shared_ptr<Scrollbar> m_scrollbar;
 
 		IndexType m_active_item;
 		IndexType m_highlighted_item;

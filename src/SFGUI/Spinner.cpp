@@ -1,7 +1,9 @@
 #include <SFGUI/Spinner.hpp>
 #include <SFGUI/Context.hpp>
-#include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
+
+#include <SFML/System/Vector2.hpp>
 
 namespace sfg {
 

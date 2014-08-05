@@ -1,4 +1,6 @@
 #include <SFGUI/SFGUI.hpp>
+#include <SFGUI/Widgets.hpp>
+
 #include <SFML/Graphics.hpp>
 
 const int SCREEN_WIDTH = 800;

@@ -1,7 +1,7 @@
 #include <SFGUI/Desktop.hpp>
-#include <SFGUI/Container.hpp>
+#include <SFGUI/Widget.hpp>
 
-#include <SFML/Window.hpp>
+#include <SFML/Window/Event.hpp>
 #include <limits>
 #include <iterator>
 

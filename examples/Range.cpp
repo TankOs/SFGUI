@@ -1,11 +1,11 @@
-#include <sstream>
-
-#include <SFML/Graphics.hpp>
-
 // Always include the necessary header files.
-// Including SFGUI/SFGUI.hpp includes everything
+// Including SFGUI/Widgets.hpp includes everything
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
+#include <SFGUI/Widgets.hpp>
+
+#include <SFML/Graphics.hpp>
+#include <sstream>
 
 class RangeExample {
 	public:

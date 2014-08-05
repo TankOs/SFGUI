@@ -1,10 +1,12 @@
 #pragma once
-#include <SFGUI/Config.hpp>
+
 #include <SFGUI/Range.hpp>
+
 #include <memory>
-#include <SFML/System/Clock.hpp>
 
 namespace sfg {
+
+class Adjustment;
 
 /** Scrollbar base.
  */
@@ -26,7 +28,7 @@ class SFGUI_API Scrollbar : public Range {
 		 * @param orientation Orientation.
 		 * @return Scrollbar widget.
 		 */
-		static Ptr Create( Adjustment::Ptr adjustment, Orientation orientation = Orientation::HORIZONTAL );
+		static Ptr Create( std::shared_ptr<Adjustment> adjustment, Orientation orientation = Orientation::HORIZONTAL );
 
 		/** Get slider rectangle ( position and dimensions )
 		 * @return slider rect

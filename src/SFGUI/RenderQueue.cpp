@@ -1,6 +1,7 @@
 #include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/Primitive.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shape.hpp>

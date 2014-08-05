@@ -1,7 +1,7 @@
 #include <SFGUI/Entry.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
-#include <SFGUI/Engines/BREW.hpp>
 
 #include <SFML/Graphics/Font.hpp>
 #include <cmath>
@@ -89,7 +89,7 @@ int Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 	auto length = static_cast<int>( string.size() );
 
 	for( cursor_position = 0; cursor_position < length; cursor_position++ ) {
-		auto text_length = Context::Get().GetEngine().GetTextMetrics( string.substr( 0, static_cast<std::size_t>( cursor_position + 1 ) ), font, font_size ).x;
+		auto text_length = Context::Get().GetEngine().GetTextStringMetrics( string.substr( 0, static_cast<std::size_t>( cursor_position + 1 ) ), font, font_size ).x;
 		auto new_delta = std::fabs( text_start + text_length - static_cast<float>( mouse_pos_x ) );
 		if( new_delta < last_delta ) {
 			last_delta = new_delta;
@@ -122,7 +122,7 @@ void Entry::RecalculateVisibleString() const {
 		string.replace( 0, string.size(), string.size(), m_text_placeholder );
 	}
 
-	auto length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
+	auto length = Context::Get().GetEngine().GetTextStringMetrics( string, font, font_size ).x;
 
 	// While the string is too long for the given space keep chopping off characters
 	// on the right end of the string until the cursor is reached, then start
@@ -136,7 +136,7 @@ void Entry::RecalculateVisibleString() const {
 			m_visible_offset++;
 		}
 
-		length = Context::Get().GetEngine().GetTextMetrics( string, font, font_size ).x;
+		length = Context::Get().GetEngine().GetTextStringMetrics( string, font, font_size ).x;
 	}
 
 	m_visible_string = string;

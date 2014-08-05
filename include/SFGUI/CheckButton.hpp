@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/ToggleButton.hpp>
 
 #include <memory>

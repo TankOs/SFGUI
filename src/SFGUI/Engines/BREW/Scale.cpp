@@ -1,7 +1,7 @@
 #include <SFGUI/Engines/BREW.hpp>
-#include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Scale.hpp>
+#include <SFGUI/RenderQueue.hpp>
 
 namespace sfg {
 namespace eng {

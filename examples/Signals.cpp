@@ -1,11 +1,11 @@
-#include <SFML/Graphics.hpp>
-
-#include <sstream>
-
 // Always include the necessary header files.
-// Including SFGUI/SFGUI.hpp includes everything
+// Including SFGUI/Widgets.hpp includes everything
 // you can possibly need automatically.
 #include <SFGUI/SFGUI.hpp>
+#include <SFGUI/Widgets.hpp>
+
+#include <SFML/Graphics.hpp>
+#include <sstream>
 
 // This is only done here for demonstration purposes.
 // DO NOT DECLARE STATIC OR GLOBAL WIDGETS IN YOUR PROGRAMS.

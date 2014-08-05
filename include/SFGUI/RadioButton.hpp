@@ -1,9 +1,8 @@
 #pragma once
 
-#include <SFGUI/Config.hpp>
 #include <SFGUI/CheckButton.hpp>
-#include <memory>
 
+#include <memory>
 #include <set>
 
 namespace sfg {

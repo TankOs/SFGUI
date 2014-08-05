@@ -1,8 +1,9 @@
 #pragma once
+
 #include <SFGUI/Container.hpp>
+
 #include <memory>
 #include <deque>
-#include <cstdint>
 
 namespace sfg {
 
@@ -16,7 +17,7 @@ class SFGUI_API Box : public Container {
 
 		/** Box orientation.
 		 */
-		enum class Orientation : std::uint8_t {
+		enum class Orientation : char {
 			HORIZONTAL = 0, //!< Arrange horizontally.
 			VERTICAL //!< Arrange vertically.
 		};
