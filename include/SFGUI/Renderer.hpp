@@ -1,8 +1,9 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
-#include <SFGUI/Primitive.hpp>
 
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Rect.hpp>
 #include <vector>
 #include <map>
 #include <deque>
@@ -16,11 +17,19 @@ class RenderTexture;
 class Texture;
 class Font;
 class Text;
+class Image;
 }
 
 namespace sfg {
 
+namespace priv {
+class RendererTextureNode;
+}
+
 class RendererViewport;
+class Primitive;
+class PrimitiveTexture;
+class Signal;
 
 /** SFGUI Renderer interface.
  */
@@ -64,7 +73,7 @@ class SFGUI_API Renderer {
 
 		/** Dtor.
 		 */
-		virtual ~Renderer() = default;
+		virtual ~Renderer();
 
 		/** Get default viewport that covers the entire window.
 		 * @return Default viewport that covers the entire window.
@@ -80,7 +89,7 @@ class SFGUI_API Renderer {
 		 * @param text sf::Text describing the text to be drawn.
 		 * @return New text primitive.
 		 */
-		Primitive::Ptr CreateText( const sf::Text& text );
+		std::shared_ptr<Primitive> CreateText( const sf::Text& text );
 
 		/** Create and register a new quad primitive with the renderer.
 		 * @param top_left Top left corner of the quad.
@@ -90,7 +99,7 @@ class SFGUI_API Renderer {
 		 * @param color Color of the quad.
 		 * @return New quad primitive.
 		 */
-		Primitive::Ptr CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
+		std::shared_ptr<Primitive> CreateQuad( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
 		                           const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
 		                           const sf::Color& color = sf::Color::White );
 
@@ -103,7 +112,7 @@ class SFGUI_API Renderer {
 		 * @param border_color_shift Amount to shift border colors by to create a 3D effect.
 		 * @return New pane primitive.
 		 */
-		Primitive::Ptr CreatePane( const sf::Vector2f& position, const sf::Vector2f& size, float border_width,
+		std::shared_ptr<Primitive> CreatePane( const sf::Vector2f& position, const sf::Vector2f& size, float border_width,
 		                           const sf::Color& color = sf::Color::White, const sf::Color& border_color = sf::Color::Black,
 		                           int border_color_shift = 0 );
 
@@ -113,14 +122,14 @@ class SFGUI_API Renderer {
 		 * @param color Color of the rect.
 		 * @return New rect primitive.
 		 */
-		Primitive::Ptr CreateRect( const sf::Vector2f& top_left, const sf::Vector2f& bottom_right, const sf::Color& color = sf::Color::White );
+		std::shared_ptr<Primitive> CreateRect( const sf::Vector2f& top_left, const sf::Vector2f& bottom_right, const sf::Color& color = sf::Color::White );
 
 		/** Create and register a new rect primitive with the renderer.
 		 * @param rect sf::FloatRect describing the rect to be constructed.
 		 * @param color Color of the rect.
 		 * @return New rect primitive.
 		 */
-		Primitive::Ptr CreateRect( const sf::FloatRect& rect, const sf::Color& color = sf::Color::White );
+		std::shared_ptr<Primitive> CreateRect( const sf::FloatRect& rect, const sf::Color& color = sf::Color::White );
 
 		/** Create and register a new triangle primitive with the renderer.
 		 * Keep in mind that the points have to be specified in counter-clockwise order.
@@ -130,7 +139,7 @@ class SFGUI_API Renderer {
 		 * @param color Color of the triangle.
 		 * @return New triangle primitive.
 		 */
-		Primitive::Ptr CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color = sf::Color::White );
+		std::shared_ptr<Primitive> CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color = sf::Color::White );
 
 		/** Create and register a new sprite primitive with the renderer.
 		 * Sprite primitives are primitives that have a bound texture that
@@ -142,7 +151,7 @@ class SFGUI_API Renderer {
 		 * @param rotation_turns Turns to rotate the texture by in COUNTERCLOCKWISE direction. 1 turn is 90 degrees, -1 turn is -90 degrees etc. 0 to not rotate.
 		 * @return New sprite primitive.
 		 */
-		Primitive::Ptr CreateSprite( const sf::FloatRect& rect, Primitive::Texture::Ptr texture, const sf::FloatRect& subrect = sf::FloatRect( 0.f, 0.f, 0.f, 0.f ), int rotation_turns = 0 );
+		std::shared_ptr<Primitive> CreateSprite( const sf::FloatRect& rect, std::shared_ptr<PrimitiveTexture> texture, const sf::FloatRect& subrect = sf::FloatRect( 0.f, 0.f, 0.f, 0.f ), int rotation_turns = 0 );
 
 		/** Create and register a new line primitive with the renderer.
 		 * @param begin Starting point of the line.
@@ -151,23 +160,23 @@ class SFGUI_API Renderer {
 		 * @param thickness Thickness of the line.
 		 * @return New line primitive.
 		 */
-		Primitive::Ptr CreateLine( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& color = sf::Color::White, float thickness = 1.f );
+		std::shared_ptr<Primitive> CreateLine( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& color = sf::Color::White, float thickness = 1.f );
 
 		/** Create a canvas to draw custom GL stuff on.
 		 * @param callback Signal containing draw routines to call.
 		 * @return New canvas primitive.
 		 */
-		Primitive::Ptr CreateGLCanvas( std::shared_ptr<Signal> callback );
+		std::shared_ptr<Primitive> CreateGLCanvas( std::shared_ptr<Signal> callback );
 
 		/** Register a primitive with the renderer.
 		 * @param primitive Primitive to be registered.
 		 */
-		void AddPrimitive( Primitive::Ptr primitive );
+		void AddPrimitive( std::shared_ptr<Primitive> primitive );
 
 		/** Unregister a primitive from the renderer.
 		 * @param primitive Primitive to be unregistered.
 		 */
-		void RemovePrimitive( Primitive::Ptr primitive );
+		void RemovePrimitive( std::shared_ptr<Primitive> primitive );
 
 		/// @cond
 
@@ -183,13 +192,13 @@ class SFGUI_API Renderer {
 		 * @param texture sf::Texture containing the texture data.
 		 * @return Shared handle to the allocated texture.
 		 */
-		Primitive::Texture::Ptr LoadTexture( const sf::Texture& texture );
+		std::shared_ptr<PrimitiveTexture> LoadTexture( const sf::Texture& texture );
 
 		/** Load an sf::Image into the atlas and return a handle to the allocated texture.
 		 * @param image sf::Image containing the image data.
 		 * @return Shared handle to the allocated texture.
 		 */
-		Primitive::Texture::Ptr LoadTexture( const sf::Image& image );
+		std::shared_ptr<PrimitiveTexture> LoadTexture( const sf::Image& image );
 
 		/** Unload the image at the given offset from the texture atlas.
 		 * @param offset Offset of the image in the texture atlas.
@@ -252,22 +261,6 @@ class SFGUI_API Renderer {
 		virtual const std::string& GetName() const = 0;
 
 	protected:
-		struct Batch {
-			std::shared_ptr<RendererViewport> viewport;
-			std::shared_ptr<Signal> custom_draw_callback;
-			int atlas_page;
-			int start_index;
-			int index_count;
-			int min_index;
-			int max_index;
-			bool custom_draw;
-		};
-
-		struct TextureNode {
-			sf::Vector2i offset;
-			sf::Vector2i size;
-		};
-
 		typedef std::pair<void*, unsigned int> FontID;
 
 		/** Ctor.
@@ -282,7 +275,7 @@ class SFGUI_API Renderer {
 
 		void SortPrimitives();
 
-		std::vector<Primitive::Ptr> m_primitives;
+		std::vector<std::shared_ptr<Primitive>> m_primitives;
 		std::vector<std::unique_ptr<sf::Texture>> m_texture_atlas;
 
 		std::shared_ptr<RendererViewport> m_default_viewport;
@@ -303,13 +296,13 @@ class SFGUI_API Renderer {
 
 		void WipeStateCache( sf::RenderTarget& target ) const;
 
-		std::deque<TextureNode> m_textures;
-		std::map<FontID, Primitive::Texture::Ptr> m_fonts;
+		std::deque<priv::RendererTextureNode> m_textures;
+		std::map<FontID, std::shared_ptr<PrimitiveTexture>> m_fonts;
 		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
 
 		static std::shared_ptr<Renderer> m_instance;
 
-		Primitive::Texture::Ptr m_pseudo_texture;
+		std::shared_ptr<PrimitiveTexture> m_pseudo_texture;
 
 		mutable sf::Vector2i m_last_window_size;
 

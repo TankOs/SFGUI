@@ -2,7 +2,12 @@
 #include <SFGUI/Renderers.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
+#include <SFGUI/RendererBatch.hpp>
+#include <SFGUI/RendererTextureNode.hpp>
 #include <SFGUI/RendererViewport.hpp>
+#include <SFGUI/Primitive.hpp>
+#include <SFGUI/PrimitiveTexture.hpp>
+#include <SFGUI/PrimitiveVertex.hpp>
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -46,13 +51,16 @@ Renderer::Renderer() :
 	m_pseudo_texture = LoadTexture( pseudo_image );
 }
 
+Renderer::~Renderer() {
+}
+
 Renderer& Renderer::Create() {
 	if( !m_instance ) {
 		if( VertexBufferRenderer::IsAvailable() ) {
-			m_instance = std::make_shared<VertexBufferRenderer>();
+			m_instance = VertexBufferRenderer::Create();
 		}
 		else {
-			m_instance = std::make_shared<VertexArrayRenderer>();
+			m_instance = VertexArrayRenderer::Create();
 		}
 	}
 
@@ -138,10 +146,10 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 
 		const auto& glyph = font.getGlyph( current_character, character_size, false );
 
-		Primitive::Vertex vertex0;
-		Primitive::Vertex vertex1;
-		Primitive::Vertex vertex2;
-		Primitive::Vertex vertex3;
+		PrimitiveVertex vertex0;
+		PrimitiveVertex vertex1;
+		PrimitiveVertex vertex2;
+		PrimitiveVertex vertex3;
 
 		vertex0.position = position + sf::Vector2f( static_cast<float>( glyph.bounds.left ), static_cast<float>( glyph.bounds.top ) );
 		vertex1.position = position + sf::Vector2f( static_cast<float>( glyph.bounds.left ), static_cast<float>( glyph.bounds.top + glyph.bounds.height ) );
@@ -187,10 +195,10 @@ Primitive::Ptr Renderer::CreateQuad( const sf::Vector2f& top_left, const sf::Vec
                                      const sf::Color& color ) {
 	auto primitive = std::make_shared<Primitive>( 4 );
 
-	Primitive::Vertex vertex0;
-	Primitive::Vertex vertex1;
-	Primitive::Vertex vertex2;
-	Primitive::Vertex vertex3;
+	PrimitiveVertex vertex0;
+	PrimitiveVertex vertex1;
+	PrimitiveVertex vertex2;
+	PrimitiveVertex vertex3;
 
 	vertex0.position = sf::Vector2f( std::floor( top_left.x + .5f ), std::floor( top_left.y + .5f ) );
 	vertex1.position = sf::Vector2f( std::floor( bottom_left.x + .5f ), std::floor( bottom_left.y + .5f ) );
@@ -321,9 +329,9 @@ Primitive::Ptr Renderer::CreateRect( const sf::FloatRect& rect, const sf::Color&
 Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::Vector2f& point1, const sf::Vector2f& point2, const sf::Color& color ) {
 	auto primitive = std::make_shared<Primitive>( 3 );
 
-	Primitive::Vertex vertex0;
-	Primitive::Vertex vertex1;
-	Primitive::Vertex vertex2;
+	PrimitiveVertex vertex0;
+	PrimitiveVertex vertex1;
+	PrimitiveVertex vertex2;
 
 	vertex0.position = point0;
 	vertex1.position = point1;
@@ -346,15 +354,15 @@ Primitive::Ptr Renderer::CreateTriangle( const sf::Vector2f& point0, const sf::V
 	return primitive;
 }
 
-Primitive::Ptr Renderer::CreateSprite( const sf::FloatRect& rect, Primitive::Texture::Ptr texture, const sf::FloatRect& subrect, int rotation_turns ) {
+Primitive::Ptr Renderer::CreateSprite( const sf::FloatRect& rect, PrimitiveTexture::Ptr texture, const sf::FloatRect& subrect, int rotation_turns ) {
 	auto offset = texture->offset;
 
 	auto primitive = std::make_shared<Primitive>( 4 );
 
-	Primitive::Vertex vertex0;
-	Primitive::Vertex vertex1;
-	Primitive::Vertex vertex2;
-	Primitive::Vertex vertex3;
+	PrimitiveVertex vertex0;
+	PrimitiveVertex vertex1;
+	PrimitiveVertex vertex2;
+	PrimitiveVertex vertex3;
 
 	vertex0.position = sf::Vector2f( std::floor( rect.left + .5f ), std::floor( rect.top + .5f ) );
 	vertex1.position = sf::Vector2f( std::floor( rect.left + .5f ), std::floor( rect.top + .5f ) + std::floor( rect.height + .5f ) );
@@ -610,7 +618,7 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 
 	FontID id( face, size );
 
-	std::map<FontID, Primitive::Texture::Ptr >::iterator iter( m_fonts.find( id ) );
+	std::map<FontID, PrimitiveTexture::Ptr >::iterator iter( m_fonts.find( id ) );
 
 	if( iter != m_fonts.end() ) {
 		return iter->second->offset;
@@ -637,11 +645,11 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 	return handle->offset;
 }
 
-Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Texture& texture ) {
+PrimitiveTexture::Ptr Renderer::LoadTexture( const sf::Texture& texture ) {
 	return LoadTexture( texture.copyToImage() );
 }
 
-Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
+PrimitiveTexture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 	// We insert padding between atlas elements to prevent
 	// texture filtering from screwing up our images.
 	// If 1 pixel isn't enough, increase.
@@ -654,7 +662,7 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
 #endif
-		return std::make_shared<Primitive::Texture>();
+		return std::make_shared<PrimitiveTexture>();
 	}
 
 	// Look for a nice insertion point for our new texture.
@@ -740,12 +748,12 @@ Primitive::Texture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 
 	Invalidate( INVALIDATE_TEXTURE );
 
-	auto handle = std::make_shared<Primitive::Texture>();
+	auto handle = std::make_shared<PrimitiveTexture>();
 
 	handle->offset = static_cast<sf::Vector2f>( offset );
 	handle->size = image.getSize();
 
-	TextureNode texture_node;
+	priv::RendererTextureNode texture_node;
 	texture_node.offset = offset;
 	texture_node.size = static_cast<sf::Vector2i>( image.getSize() ) + sf::Vector2i( 0, padding );
 
@@ -831,7 +839,7 @@ void Renderer::AddPrimitive( Primitive::Ptr primitive ) {
 
 	// Check for alpha values in primitive.
 	// Disable depth test if any found.
-	const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+	const std::vector<PrimitiveVertex>& vertices( primitive->GetVertices() );
 	const std::vector<GLuint>& indices( primitive->GetIndices() );
 
 	m_vertex_count += static_cast<int>( vertices.size() );
@@ -846,7 +854,7 @@ void Renderer::RemovePrimitive( Primitive::Ptr primitive ) {
 	std::vector<Primitive::Ptr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), primitive ) );
 
 	if( iter != m_primitives.end() ) {
-		const std::vector<Primitive::Vertex>& vertices( (*iter)->GetVertices() );
+		const std::vector<PrimitiveVertex>& vertices( (*iter)->GetVertices() );
 		const std::vector<GLuint>& indices( (*iter)->GetIndices() );
 
 		assert( m_vertex_count >= static_cast<int>( vertices.size() ) );

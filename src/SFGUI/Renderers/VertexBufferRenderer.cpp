@@ -8,8 +8,11 @@
 #undef None
 
 #include <SFGUI/Renderers/VertexBufferRenderer.hpp>
+#include <SFGUI/RendererBatch.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Signal.hpp>
+#include <SFGUI/Primitive.hpp>
+#include <SFGUI/PrimitiveVertex.hpp>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -104,6 +107,10 @@ VertexBufferRenderer::~VertexBufferRenderer() {
 		GLEXT_glDeleteBuffers( 1, &m_color_vbo );
 		GLEXT_glDeleteBuffers( 1, &m_vertex_vbo );
 	}
+}
+
+VertexBufferRenderer::Ptr VertexBufferRenderer::Create() {
+	return Ptr( new VertexBufferRenderer );
 }
 
 const std::string& VertexBufferRenderer::GetName() const {
@@ -298,7 +305,7 @@ void VertexBufferRenderer::RefreshVBO() {
 	m_last_index_count = 0;
 
 	// Default viewport
-	Batch current_batch;
+	priv::RendererBatch current_batch;
 	current_batch.viewport = m_default_viewport;
 	current_batch.atlas_page = 0;
 	current_batch.start_index = 0;
@@ -370,7 +377,7 @@ void VertexBufferRenderer::RefreshVBO() {
 		}
 		else {
 			// Process primitive's vertices and indices
-			const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+			const std::vector<PrimitiveVertex>& vertices( primitive->GetVertices() );
 			const std::vector<GLuint>& indices( primitive->GetIndices() );
 
 			sf::Vector2f position( 0.f, 0.f );

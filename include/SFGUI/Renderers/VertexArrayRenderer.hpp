@@ -10,13 +10,21 @@ class Color;
 
 namespace sfg {
 
+namespace priv {
+class RendererBatch;
+}
+
 /** SFGUI Vertex Array renderer.
  */
 class SFGUI_API VertexArrayRenderer : public Renderer {
 	public:
-		/** Ctor.
+		typedef std::shared_ptr<VertexArrayRenderer> Ptr;
+		typedef std::shared_ptr<const VertexArrayRenderer> PtrConst;
+
+		/** Create VertexArrayRenderer.
+		 * @return VertexArrayRenderer.
 		 */
-		VertexArrayRenderer();
+		static Ptr Create();
 
 		/** Enable and select alpha testing threshold.
 		 * @param alpha_threshold Threshold at which fragments will get discarded if their alpha value is less than or equal to. Set to 0.f to disable.
@@ -31,6 +39,10 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		virtual const std::string& GetName() const override;
 
 	protected:
+		/** Ctor.
+		 */
+		VertexArrayRenderer();
+
 		virtual void InvalidateImpl( unsigned char datasets ) override;
 		virtual void DisplayImpl() const override;
 
@@ -42,7 +54,7 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		std::vector<sf::Vector2f> m_texture_data;
 		std::vector<int> m_index_data;
 
-		std::vector<Batch> m_batches;
+		std::vector<priv::RendererBatch> m_batches;
 
 		int m_last_vertex_count;
 		int m_last_index_count;

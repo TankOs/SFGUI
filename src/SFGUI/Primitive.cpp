@@ -1,56 +1,11 @@
 #include <SFGUI/Primitive.hpp>
+#include <SFGUI/PrimitiveTexture.hpp>
+#include <SFGUI/PrimitiveVertex.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Signal.hpp>
 
-#include <SFML/OpenGL.hpp>
-
 namespace sfg {
-
-Primitive::Vertex::Vertex() :
-	color( sf::Color::White )
-{
-}
-
-Primitive::Vertex::Vertex( const Primitive::Vertex& other ) :
-	position( other.position ),
-	color( other.color ),
-	texture_coordinate( other.texture_coordinate )
-{
-}
-
-bool Primitive::Vertex::operator==( const Primitive::Vertex& other ) const {
-	if( position != other.position ) {
-		return false;
-	}
-
-	if( texture_coordinate != other.texture_coordinate ) {
-		return false;
-	}
-
-	if( color != other.color ) {
-		return false;
-	}
-
-	return true;
-}
-
-Primitive::Texture::~Texture() {
-	if( sfg::Renderer::Exists() ) {
-		sfg::Renderer::Get().UnloadImage( offset );
-	}
-}
-
-void Primitive::Texture::Update( const sf::Image& data ) {
-	if( data.getSize() != size ) {
-#if defined( SFGUI_DEBUG )
-		std::cerr << "Tried to update texture with mismatching image size.\n";
-#endif
-		return;
-	}
-
-	sfg::Renderer::Get().UpdateImage( offset, data );
-}
 
 Primitive::Primitive( std::size_t vertex_reserve ) :
 	m_layer( 0 ),
@@ -73,11 +28,11 @@ void Primitive::Add( Primitive& primitive ) {
 	}
 
 	for( const auto& index : primitive.GetIndices() ) {
-		m_indices.push_back( static_cast<GLuint>( current_index + index ) );
+		m_indices.push_back( static_cast<unsigned int>( current_index + index ) );
 	}
 }
 
-void Primitive::AddVertex( const Vertex& vertex ) {
+void Primitive::AddVertex( const PrimitiveVertex& vertex ) {
 	m_synced = false;
 
 	auto vertice_count = m_vertices.size();
@@ -87,7 +42,7 @@ void Primitive::AddVertex( const Vertex& vertex ) {
 		for( std::size_t index = 0; index < vertice_count; ++index ) {
 			if( m_vertices[index] == vertex ) {
 				// Vertex already part of this primitive. Index it.
-				m_indices.push_back( static_cast<GLuint>( index ) );
+				m_indices.push_back( static_cast<unsigned int>( index ) );
 
 				return;
 			}
@@ -98,7 +53,7 @@ void Primitive::AddVertex( const Vertex& vertex ) {
 	m_vertices.push_back( vertex );
 }
 
-void Primitive::AddTexture( Texture::Ptr texture ) {
+void Primitive::AddTexture( PrimitiveTexture::Ptr texture ) {
 	m_textures.push_back( texture );
 }
 
@@ -142,15 +97,15 @@ int Primitive::GetLevel() const {
 	return m_level;
 }
 
-std::vector<Primitive::Vertex>& Primitive::GetVertices() {
+std::vector<PrimitiveVertex>& Primitive::GetVertices() {
 	return m_vertices;
 }
 
-std::vector<Primitive::Texture::Ptr>& Primitive::GetTextures() {
+std::vector<PrimitiveTexture::Ptr>& Primitive::GetTextures() {
 	return m_textures;
 }
 
-const std::vector<GLuint>& Primitive::GetIndices() const {
+const std::vector<unsigned int>& Primitive::GetIndices() const {
 	return m_indices;
 }
 

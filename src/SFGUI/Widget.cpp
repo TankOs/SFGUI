@@ -4,6 +4,7 @@
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Primitive.hpp>
 
 #include <SFML/Window/Event.hpp>
 #include <cmath>

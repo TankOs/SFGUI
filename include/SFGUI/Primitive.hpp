@@ -2,48 +2,22 @@
 
 #include <SFGUI/Config.hpp>
 
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Image.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <vector>
 #include <memory>
 
 namespace sfg {
 
 class Signal;
 class RendererViewport;
+class PrimitiveTexture;
+class PrimitiveVertex;
 
 /** Renderer primitive.
  */
 class SFGUI_API Primitive {
 	public:
 		typedef std::shared_ptr<Primitive> Ptr; //!< Shared pointer.
-
-		/** Primitive vertex
-		 */
-		struct Vertex {
-			sf::Vector2f position;
-			sf::Color color;
-			sf::Vector2f texture_coordinate;
-
-			Vertex();
-
-			Vertex( const Vertex& other );
-
-			bool operator==( const Vertex& other ) const;
-		};
-
-		/** Primitive Texture
-		 */
-		struct Texture {
-			typedef std::shared_ptr<Texture> Ptr; //!< Shared pointer.
-
-			sf::Vector2f offset;
-			sf::Vector2u size;
-
-			void Update( const sf::Image& data );
-
-			~Texture();
-		};
 
 		/** Ctor.
 		 * @param vertex_reserve Optional parameter hinting at how many vertices will be added to this primitive.
@@ -58,12 +32,12 @@ class SFGUI_API Primitive {
 		/** Add vertex to this primitive.
 		 * @param vertex Vertex to add.
 		 */
-		void AddVertex( const Vertex& vertex );
+		void AddVertex( const PrimitiveVertex& vertex );
 
 		/** Add texture to this primitive.
 		 * @param texture Texture to add.
 		 */
-		void AddTexture( Texture::Ptr texture );
+		void AddTexture( std::shared_ptr<PrimitiveTexture> texture );
 
 		/** Set position of this primitive.
 		 * @param position Position of this primitive.
@@ -110,12 +84,12 @@ class SFGUI_API Primitive {
 		/** Get vertices in this primitive.
 		 * @return Vertices in this primitive.
 		 */
-		std::vector<Vertex>& GetVertices();
+		std::vector<PrimitiveVertex>& GetVertices();
 
 		/** Get textures in this primitive.
 		 * @return Textures in this primitive.
 		 */
-		std::vector<Texture::Ptr>& GetTextures();
+		std::vector<std::shared_ptr<PrimitiveTexture>>& GetTextures();
 
 		/** Get indices in this primitive.
 		 * @return Indices in this primitive.
@@ -164,8 +138,8 @@ class SFGUI_API Primitive {
 		int m_layer;
 		int m_level;
 
-		std::vector<Vertex> m_vertices;
-		std::vector<std::shared_ptr<Texture> > m_textures;
+		std::vector<PrimitiveVertex> m_vertices;
+		std::vector<std::shared_ptr<PrimitiveTexture>> m_textures;
 		std::vector<unsigned int> m_indices;
 
 		bool m_synced;

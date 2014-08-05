@@ -1,6 +1,9 @@
 #include <SFGUI/Renderers/VertexArrayRenderer.hpp>
+#include <SFGUI/RendererBatch.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Signal.hpp>
+#include <SFGUI/Primitive.hpp>
+#include <SFGUI/PrimitiveVertex.hpp>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -14,6 +17,10 @@ VertexArrayRenderer::VertexArrayRenderer() :
 	m_alpha_threshold( 0.f ),
 	m_dirty( true ),
 	m_cull( false ) {
+}
+
+VertexArrayRenderer::Ptr VertexArrayRenderer::Create() {
+	return Ptr( new VertexArrayRenderer );
 }
 
 const std::string& VertexArrayRenderer::GetName() const {
@@ -142,7 +149,7 @@ void VertexArrayRenderer::RefreshArray() {
 	auto primitives_size = m_primitives.size();
 
 	// Default viewport
-	Batch current_batch;
+	priv::RendererBatch current_batch;
 	current_batch.viewport = m_default_viewport;
 	current_batch.atlas_page = 0;
 	current_batch.start_index = 0;
@@ -214,7 +221,7 @@ void VertexArrayRenderer::RefreshArray() {
 		}
 		else {
 			// Process primitive's vertices and indices
-			const std::vector<Primitive::Vertex>& vertices( primitive->GetVertices() );
+			const std::vector<PrimitiveVertex>& vertices( primitive->GetVertices() );
 			const std::vector<GLuint>& indices( primitive->GetIndices() );
 
 			sf::Vector2f position( 0.f, 0.f );

@@ -654,7 +654,7 @@ void SampleApp::OnMirrorImageClick() {
 
 void SampleApp::OnSwitchRendererClick() {
 	if( ( sfg::Renderer::Get().GetName() == "Vertex Array Renderer" ) && sfg::VertexBufferRenderer::IsAvailable() ) {
-		std::shared_ptr<sfg::VertexBufferRenderer> renderer( new sfg::VertexBufferRenderer );
+		auto renderer = sfg::VertexBufferRenderer::Create();
 
 		sfg::Renderer::Set( renderer );
 
@@ -663,7 +663,7 @@ void SampleApp::OnSwitchRendererClick() {
 		renderer->TuneCull( true );
 	}
 	else {
-		std::shared_ptr<sfg::VertexArrayRenderer> renderer( new sfg::VertexArrayRenderer );
+		auto renderer = sfg::VertexArrayRenderer::Create();
 
 		sfg::Renderer::Set( renderer );
 

@@ -10,13 +10,21 @@ class Color;
 
 namespace sfg {
 
+namespace priv {
+class RendererBatch;
+}
+
 /** SFGUI Vertex Buffer renderer.
  */
 class SFGUI_API VertexBufferRenderer : public Renderer {
 	public:
-		/** Ctor.
+		typedef std::shared_ptr<VertexBufferRenderer> Ptr;
+		typedef std::shared_ptr<const VertexBufferRenderer> PtrConst;
+
+		/** Create VertexBufferRenderer.
+		 * @return VertexBufferRenderer.
 		 */
-		VertexBufferRenderer();
+		static Ptr Create();
 
 		/** Dtor.
 		 */
@@ -45,6 +53,10 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 		virtual const std::string& GetName() const override;
 
 	protected:
+		/** Ctor.
+		 */
+		VertexBufferRenderer();
+
 		virtual void InvalidateImpl( unsigned char datasets ) override;
 		virtual void InvalidateWindow() override;
 		virtual void DisplayImpl() const override;
@@ -63,7 +75,7 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 		std::vector<sf::Vector2f> m_texture_data;
 		std::vector<unsigned int> m_index_data;
 
-		std::vector<Batch> m_batches;
+		std::vector<priv::RendererBatch> m_batches;
 
 		unsigned int m_frame_buffer;
 		unsigned int m_frame_buffer_texture;

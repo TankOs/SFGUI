@@ -3,6 +3,8 @@
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/RenderQueue.hpp>
+#include <SFGUI/Primitive.hpp>
+#include <SFGUI/PrimitiveTexture.hpp>
 
 #include <SFML/Graphics/Image.hpp>
 

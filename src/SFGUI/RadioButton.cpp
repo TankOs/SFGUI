@@ -1,8 +1,9 @@
 #include <SFGUI/RadioButton.hpp>
+#include <SFGUI/RadioButtonGroup.hpp>
 
 namespace sfg {
 
-RadioButton::Ptr RadioButton::Create( const sf::String& label, RadioButton::RadioButtonGroup::Ptr group ) {
+RadioButton::Ptr RadioButton::Create( const sf::String& label, RadioButtonGroup::Ptr group ) {
 	auto widget = Ptr( new RadioButton );
 
 	widget->SetLabel( label );
@@ -17,11 +18,11 @@ RadioButton::Ptr RadioButton::Create( const sf::String& label, RadioButton::Radi
 	return widget;
 }
 
-RadioButton::RadioButtonGroup::Ptr RadioButton::GetGroup() const {
+RadioButtonGroup::Ptr RadioButton::GetGroup() const {
 	return m_group;
 }
 
-void RadioButton::SetGroup( RadioButton::RadioButtonGroup::Ptr group ) {
+void RadioButton::SetGroup( RadioButtonGroup::Ptr group ) {
 	auto weak_this = std::weak_ptr<RadioButton>( std::static_pointer_cast<RadioButton>( shared_from_this() ) );
 
 	if( m_group ) {
@@ -63,14 +64,6 @@ void RadioButton::HandleMouseClick( sf::Mouse::Button button, int x, int y ) {
 const std::string& RadioButton::GetName() const {
 	static const std::string name( "RadioButton" );
 	return name;
-}
-
-RadioButton::RadioButtonGroup::Ptr RadioButton::RadioButtonGroup::Create() {
-	return Ptr( new RadioButtonGroup );
-}
-
-RadioButton::RadioButtonGroup::ContainerType& RadioButton::RadioButtonGroup::GetMembers() {
-	return m_members;
 }
 
 }
