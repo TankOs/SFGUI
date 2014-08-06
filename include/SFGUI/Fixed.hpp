@@ -19,7 +19,7 @@ class SFGUI_API Fixed : public Container {
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Add a widget to this fixed at given position.
 		 * @param widget Widget to add.
@@ -38,7 +38,7 @@ class SFGUI_API Fixed : public Container {
 		 */
 		Fixed() = default;
 
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		typedef std::map<Widget::Ptr, sf::Vector2f> ChildrenPositionMap;

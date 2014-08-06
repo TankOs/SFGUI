@@ -21,7 +21,7 @@ class SFGUI_API Image : public Widget, public Misc {
 		 */
 		static Ptr Create( const sf::Image& image = sf::Image() );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set associated sf::Image.
 		 * @param image New sf::Image.

@@ -36,15 +36,15 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		 */
 		void TuneCull( bool enable );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 	protected:
 		/** Ctor.
 		 */
 		VertexArrayRenderer();
 
-		virtual void InvalidateImpl( unsigned char datasets ) override;
-		virtual void DisplayImpl() const override;
+		void InvalidateImpl( unsigned char datasets ) override;
+		void DisplayImpl() const override;
 
 	private:
 		void RefreshArray();

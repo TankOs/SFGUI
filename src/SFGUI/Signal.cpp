@@ -1,9 +1,13 @@
 #include <SFGUI/Signal.hpp>
 
-namespace sfg {
+namespace {
 
-unsigned int Signal::m_serial = 1;
-Signal::SignalID Signal::m_last_guid = 0;
+unsigned int serial = 1;
+sfg::Signal::SignalID last_guid = 0;
+
+}
+
+namespace sfg {
 
 Signal::Signal( Signal&& other ) :
 	m_delegates( std::move( other.m_delegates ) )
@@ -20,8 +24,8 @@ unsigned int Signal::Connect( std::function<void()> delegate ) {
 		m_delegates.reset( new DelegateMap );
 	}
 
-	(*m_delegates)[m_serial] = delegate;
-	return m_serial++;
+	(*m_delegates)[serial] = delegate;
+	return serial++;
 }
 
 void Signal::operator()() const {
@@ -47,7 +51,7 @@ void Signal::Disconnect( unsigned int serial ) {
 }
 
 Signal::SignalID Signal::GetGUID() {
-	return ++m_last_guid;
+	return ++last_guid;
 }
 
 Signal& SignalContainer::operator[]( const Signal::SignalID& id ) {

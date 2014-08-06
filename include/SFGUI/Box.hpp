@@ -29,7 +29,7 @@ class SFGUI_API Box : public Container {
 		 */
 		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL, float spacing = 0.f );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Add a widget to the end of the box.
 		 * Alias to PackEnd(...) for backward compatibility.

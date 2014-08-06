@@ -19,12 +19,12 @@ class SFGUI_API ToggleButton : public Button {
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set active.
 		 * @param active Active.
 		 */
-		virtual void SetActive( bool active );
+		void SetActive( bool active );
 
 		/** Check if active.
 		 * @return true if active.
@@ -35,9 +35,9 @@ class SFGUI_API ToggleButton : public Button {
 		static Signal::SignalID OnToggle; //!< Fired when toggled.
 
 	protected:
-		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
-		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y ) override;
+		void HandleMouseClick( sf::Mouse::Button button, int x, int y ) override;
 
 		/** Ctor.
 		 */

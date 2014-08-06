@@ -1,9 +1,13 @@
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Renderer.hpp>
 
-namespace sfg {
+namespace {
 
-std::size_t RendererViewport::last_id = 0;
+std::size_t last_id = 0;
+
+}
+
+namespace sfg {
 
 RendererViewport::RendererViewport()
 {

@@ -19,7 +19,7 @@ class SFGUI_API Bin : public Container {
 		Widget::Ptr GetChild() const;
 
 	protected:
-		virtual bool HandleAdd( Widget::Ptr child ) override;
+		bool HandleAdd( Widget::Ptr child ) override;
 };
 
 }

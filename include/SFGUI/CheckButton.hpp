@@ -18,7 +18,7 @@ class SFGUI_API CheckButton : public ToggleButton {
 		 */
 		static Ptr Create( const sf::String& label );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 	protected:
 		/** Ctor.
@@ -26,7 +26,7 @@ class SFGUI_API CheckButton : public ToggleButton {
 		CheckButton() = default;
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 		void HandleSizeChange();
 };
 

@@ -56,9 +56,7 @@ class SFGUI_API Signal {
 	private:
 		typedef std::map<unsigned int, std::function<void()>> DelegateMap;
 
-		static unsigned int m_serial;
 		std::unique_ptr<DelegateMap> m_delegates;
-		static SignalID m_last_guid;
 };
 
 /** Widget signal container

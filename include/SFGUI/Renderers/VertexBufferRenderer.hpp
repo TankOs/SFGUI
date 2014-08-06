@@ -50,16 +50,16 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 		 */
 		void TuneUseFBO( bool enable );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 	protected:
 		/** Ctor.
 		 */
 		VertexBufferRenderer();
 
-		virtual void InvalidateImpl( unsigned char datasets ) override;
-		virtual void InvalidateWindow() override;
-		virtual void DisplayImpl() const override;
+		void InvalidateImpl( unsigned char datasets ) override;
+		void InvalidateWindow() override;
+		void DisplayImpl() const override;
 
 	private:
 		void InvalidateVBO( unsigned char datasets );
@@ -101,8 +101,6 @@ class SFGUI_API VertexBufferRenderer : public Renderer {
 
 		bool m_vbo_supported;
 		bool m_fbo_supported;
-
-		static bool m_gl_initialized;
 };
 
 }

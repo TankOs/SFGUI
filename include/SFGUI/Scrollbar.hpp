@@ -21,7 +21,7 @@ class SFGUI_API Scrollbar : public Range {
 		 */
 		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Create scrollbar widget.
 		 * @param adjustment The adjustment to use.
@@ -54,9 +54,9 @@ class SFGUI_API Scrollbar : public Range {
 		 */
 		Scrollbar( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
-		virtual void HandleMouseMoveEvent( int x, int y ) override;
-		virtual void HandleUpdate( float seconds ) override;
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleMouseMoveEvent( int x, int y ) override;
+		void HandleUpdate( float seconds ) override;
 
 		float m_elapsed_time;
 

@@ -51,7 +51,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		 */
 		static Ptr Create( std::shared_ptr<Adjustment> horizontal_adjustment, std::shared_ptr<Adjustment> vertical_adjustment );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Get the horizontal Adjustment for this Scrolled Window.
 		 * @return Horizontal Adjustment for this Scrolled Window.
@@ -116,7 +116,7 @@ class SFGUI_API ScrolledWindow : public Container {
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
 		 */
-		virtual void HandleChildInvalidate( Widget::PtrConst child ) const override;
+		void HandleChildInvalidate( Widget::PtrConst child ) const override;
 
 	protected:
 		std::unique_ptr<RenderQueue> InvalidateImpl() const override;

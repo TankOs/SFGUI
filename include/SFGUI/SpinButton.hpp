@@ -30,7 +30,7 @@ class SFGUI_API SpinButton : public Entry {
 		 */
 		static Ptr Create( std::shared_ptr<Adjustment> adjustment );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Check if decrease stepper is pressed
 		 * @return true if decrease stepper is pressed
@@ -110,12 +110,12 @@ class SFGUI_API SpinButton : public Entry {
 		void UpdateTextFromAdjustment();
 		void UpdateAdjustmentFromText();
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
-		virtual void HandleUpdate( float seconds ) override;
-		virtual void HandleTextEvent( sf::Uint32 character ) override;
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
-		virtual void HandleSizeChange() override;
-		virtual void HandleFocusChange( Widget::Ptr focused_widget ) override;
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleUpdate( float seconds ) override;
+		void HandleTextEvent( sf::Uint32 character ) override;
+		void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
+		void HandleSizeChange() override;
+		void HandleFocusChange( Widget::Ptr focused_widget ) override;
 
 		std::shared_ptr<Adjustment> m_adjustment;
 

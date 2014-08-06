@@ -22,7 +22,7 @@ class SFGUI_API Button : public Bin {
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set label.
 		 * @param label Label.
@@ -53,19 +53,19 @@ class SFGUI_API Button : public Bin {
 		 */
 		Button() = default;
 
-		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
-		virtual sf::Vector2f CalculateRequisition() override;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
+		sf::Vector2f CalculateRequisition() override;
 
-		virtual bool HandleAdd( Widget::Ptr child ) override;
+		bool HandleAdd( Widget::Ptr child ) override;
 
 		void HandleSizeChange();
 
-		virtual void HandleStateChange( State old_state ) override;
+		void HandleStateChange( State old_state ) override;
 
 	private:
 		void HandleMouseEnter( int x, int y );
 		void HandleMouseLeave( int x, int y );
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void AllocateChild();
 
 		sf::String m_label;

@@ -68,11 +68,11 @@ class SFGUI_API Canvas : public Widget {
 		 */
 		void Draw( const sf::Vertex* vertices, unsigned int vertex_count, sf::PrimitiveType type, const sf::RenderStates& states = sf::RenderStates::Default );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange() override;
+		void HandleAbsolutePositionChange() override;
 
 		/** Force a redraw of the canvas.
 		 * This will inform the Renderer to update the GUI with the current canvas contents.
@@ -82,11 +82,11 @@ class SFGUI_API Canvas : public Widget {
 	protected:
 		Canvas( bool depth );
 
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
-		virtual void HandleSizeChange() override;
+		void HandleSizeChange() override;
 
-		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
 	private:
 		void DrawRenderTexture();

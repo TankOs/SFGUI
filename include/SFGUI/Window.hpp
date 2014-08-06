@@ -31,7 +31,7 @@ class SFGUI_API Window : public Bin {
 		 */
 		static Ptr Create( char style = Style::TOPLEVEL );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set window title.
 		 * @param title Title.
@@ -71,9 +71,9 @@ class SFGUI_API Window : public Bin {
 		 */
 		Window( char style );
 
-		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		void HandleSizeChange();

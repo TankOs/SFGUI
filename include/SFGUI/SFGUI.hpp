@@ -52,9 +52,6 @@ class SFGUI_API SFGUI {
 		 * @return true if an SFGUI object was created.
 		 */
 		static bool IsAlive();
-
-	private:
-		static bool m_alive;
 };
 
 }

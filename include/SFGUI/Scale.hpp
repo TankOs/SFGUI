@@ -19,7 +19,7 @@ class SFGUI_API Scale : public Range {
 		 */
 		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Create scale widget.
 		 * @param min Minimum value.
@@ -44,8 +44,8 @@ class SFGUI_API Scale : public Range {
 		 */
 		Scale( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
-		virtual void HandleMouseMoveEvent( int x, int y ) override;
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleMouseMoveEvent( int x, int y ) override;
 
 		std::unique_ptr<sf::Vector2f> m_drag_offset;
 		bool m_dragging;

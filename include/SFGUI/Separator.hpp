@@ -26,7 +26,7 @@ class SFGUI_API Separator : public Widget {
 		 */
 		static Ptr Create( Orientation orientation = Orientation::HORIZONTAL );
 
-		virtual const std::string& GetName() const override;
+		 const std::string& GetName() const override;
 
 		/** Get the orientation of this separator widget
 		 * @return orientation of this separator widget

@@ -65,8 +65,6 @@ class RendererViewport {
 		sf::Vector2f m_size;
 
 		std::size_t m_id;
-
-		static std::size_t last_id;
 };
 
 }

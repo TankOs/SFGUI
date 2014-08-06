@@ -29,7 +29,7 @@ class SFGUI_API Notebook : public Container {
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Appends a new page at the end of the Notebook.
 		 * @param child Widget in the new page.

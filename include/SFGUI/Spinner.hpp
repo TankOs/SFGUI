@@ -18,7 +18,7 @@ class SFGUI_API Spinner : public Widget {
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Start the spinner.
 		 */

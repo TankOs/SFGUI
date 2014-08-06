@@ -20,8 +20,6 @@
 #include <SFML/System/Vector3.hpp>
 #include <SFML/OpenGL.hpp>
 
-namespace sfg {
-
 #define GLEXT_framebuffer_object sfgogl_ext_EXT_framebuffer_object
 
 #define GLEXT_GL_FRAMEBUFFER GL_FRAMEBUFFER_EXT
@@ -46,7 +44,13 @@ namespace sfg {
 #define GLEXT_glBufferData glBufferDataARB
 #define GLEXT_glBufferSubData glBufferSubDataARB
 
-bool VertexBufferRenderer::m_gl_initialized = false;
+namespace {
+
+bool gl_initialized = false;
+
+}
+
+namespace sfg {
 
 VertexBufferRenderer::VertexBufferRenderer() :
 	m_frame_buffer( 0 ),
@@ -66,7 +70,7 @@ VertexBufferRenderer::VertexBufferRenderer() :
 	// with GLLoader or else it will report missing extensions sometimes.
 	sf::Context context;
 
-	if( !m_gl_initialized ) {
+	if( !gl_initialized ) {
 		auto result = sfgogl_LoadFunctions() - sfgogl_LOAD_SUCCEEDED;
 
 		if( result ) {
@@ -76,7 +80,7 @@ VertexBufferRenderer::VertexBufferRenderer() :
 			return;
 		}
 
-		m_gl_initialized = true;
+		gl_initialized = true;
 	}
 
 	if( GLEXT_vertex_buffer_object ) {
@@ -123,7 +127,7 @@ bool VertexBufferRenderer::IsAvailable() {
 	// with GLLoader or else it will report missing extensions sometimes.
 	sf::Context context;
 
-	if( !m_gl_initialized ) {
+	if( !gl_initialized ) {
 		auto result = sfgogl_LoadFunctions() - sfgogl_LOAD_SUCCEEDED;
 
 		if( result ) {
@@ -133,7 +137,7 @@ bool VertexBufferRenderer::IsAvailable() {
 			return false;
 		}
 
-		m_gl_initialized = true;
+		gl_initialized = true;
 	}
 
 	if( GLEXT_vertex_buffer_object ) {
@@ -316,7 +320,7 @@ void VertexBufferRenderer::RefreshVBO() {
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
 
-	const auto max_texture_size = m_max_texture_size;
+	const auto max_texture_size = GetMaxTextureSize();
 	const auto default_texture_size = m_texture_atlas[0]->getSize();
 
 	for( const auto& primitive_ptr : m_primitives ) {

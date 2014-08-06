@@ -21,7 +21,7 @@ class SFGUI_API Label : public Widget, public Misc {
 		 */
 		static Ptr Create( const sf::String& text = L"" );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set text.
 		 * @param text New text.
@@ -57,8 +57,8 @@ class SFGUI_API Label : public Widget, public Misc {
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
-		virtual void HandleRequisitionChange() override;
-		virtual void HandleSizeChange() override;
+		void HandleRequisitionChange() override;
+		void HandleSizeChange() override;
 
 	private:
 		void WrapText();

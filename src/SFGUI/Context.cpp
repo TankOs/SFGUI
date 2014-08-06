@@ -2,14 +2,18 @@
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Engines/BREW.hpp>
 
+namespace {
+
+sfg::Context* active_context = nullptr;
+std::shared_ptr<sfg::eng::BREW> default_engine;
+
+}
+
 namespace sfg {
 
-Context* Context::m_active_context( 0 );
-std::shared_ptr<eng::BREW> Context::m_default_engine;
-
 Context& Context::Get() {
-	if( m_active_context ) {
-		return *m_active_context;
+	if( active_context ) {
+		return *active_context;
 	}
 
 	static Context context;
@@ -18,20 +22,20 @@ Context& Context::Get() {
 }
 
 bool Context::Activate( Context& context ) {
-	if( m_active_context ) {
+	if( active_context ) {
 		return false;
 	}
 
-	m_active_context = &context;
+	active_context = &context;
 	return true;
 }
 
 bool Context::Deactivate() {
-	if( !m_active_context ) {
+	if( !active_context ) {
 		return false;
 	}
 
-	m_active_context = 0;
+	active_context = 0;
 	return true;
 }
 
@@ -41,17 +45,17 @@ Context::Context() :
 }
 
 Engine& Context::GetDefaultEngine() {
-	if( !m_default_engine ) {
-		m_default_engine = std::make_shared<eng::BREW>();
+	if( !default_engine ) {
+		default_engine = std::make_shared<eng::BREW>();
 	}
 
-	return *m_default_engine;
+	return *default_engine;
 }
 
 /// @cond
 
 void Context::DestroyDefaultEngine() {
-	m_default_engine.reset();
+	default_engine.reset();
 }
 
 /// @endcond

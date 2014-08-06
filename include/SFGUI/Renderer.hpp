@@ -275,6 +275,8 @@ class SFGUI_API Renderer {
 
 		void SortPrimitives();
 
+		int GetMaxTextureSize() const;
+
 		std::vector<std::shared_ptr<Primitive>> m_primitives;
 		std::vector<std::unique_ptr<sf::Texture>> m_texture_atlas;
 
@@ -284,9 +286,6 @@ class SFGUI_API Renderer {
 		int m_index_count;
 
 		mutable sf::Vector2i m_window_size;
-
-		static int m_max_texture_size;
-
 		mutable bool m_force_redraw;
 
 	private:
@@ -300,12 +299,9 @@ class SFGUI_API Renderer {
 		std::map<FontID, std::shared_ptr<PrimitiveTexture>> m_fonts;
 		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
 
-		static std::shared_ptr<Renderer> m_instance;
-
 		std::shared_ptr<PrimitiveTexture> m_pseudo_texture;
 
 		mutable sf::Vector2i m_last_window_size;
-
 		bool m_primitives_sorted;
 };
 

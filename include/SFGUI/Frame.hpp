@@ -21,7 +21,7 @@ class SFGUI_API Frame : public Bin, public Misc {
 		 */
 		static Ptr Create( const sf::String& label = L"" );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set label.
 		 * @param label Label.
@@ -38,8 +38,8 @@ class SFGUI_API Frame : public Bin, public Misc {
 		 */
 		Frame() = default;
 
-		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
-		virtual sf::Vector2f CalculateRequisition() override;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
 		void HandleSizeChange();

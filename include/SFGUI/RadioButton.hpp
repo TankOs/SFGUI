@@ -34,16 +34,16 @@ class SFGUI_API RadioButton : public CheckButton {
 		/** Set active.
 		 * @param active Active.
 		 */
-		virtual void SetActive( bool active );
+		void SetActive( bool active );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 	protected:
 		/** Ctor.
 		 */
 		RadioButton() = default;
 
-		virtual void HandleMouseClick( sf::Mouse::Button button, int x, int y ) override;
+		void HandleMouseClick( sf::Mouse::Button button, int x, int y ) override;
 
 	private:
 		std::shared_ptr<RadioButtonGroup> m_group;

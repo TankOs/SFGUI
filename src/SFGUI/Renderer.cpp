@@ -20,10 +20,14 @@
 #include <cstring>
 #include <cassert>
 
-namespace sfg {
+namespace {
 
-std::shared_ptr<Renderer> Renderer::m_instance = std::shared_ptr<Renderer>();
-int Renderer::m_max_texture_size = 0;
+std::shared_ptr<sfg::Renderer> instance;
+int max_texture_size = 0;
+
+}
+
+namespace sfg {
 
 Renderer::Renderer() :
 	m_vertex_count( 0 ),
@@ -38,7 +42,7 @@ Renderer::Renderer() :
 		// Needed to determine maximum texture size.
 		sf::Context context;
 
-		m_max_texture_size = static_cast<int>( sf::Texture::getMaximumSize() );
+		max_texture_size = static_cast<int>( sf::Texture::getMaximumSize() );
 
 		checked_max_texture_size = true;
 	}
@@ -55,41 +59,41 @@ Renderer::~Renderer() {
 }
 
 Renderer& Renderer::Create() {
-	if( !m_instance ) {
+	if( !instance ) {
 		if( VertexBufferRenderer::IsAvailable() ) {
-			m_instance = VertexBufferRenderer::Create();
+			instance = VertexBufferRenderer::Create();
 		}
 		else {
-			m_instance = VertexArrayRenderer::Create();
+			instance = VertexArrayRenderer::Create();
 		}
 	}
 
-	return *m_instance;
+	return *instance;
 }
 
 Renderer& Renderer::Get() {
-	if( !m_instance ) {
+	if( !instance ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "Renderer not created yet. Did you create an sfg::SFGUI object?\n";
 #endif
 		Create();
 	}
 
-	return *m_instance;
+	return *instance;
 }
 
 void Renderer::Set( std::shared_ptr<Renderer> renderer ) {
 	if( renderer ) {
-		m_instance = renderer;
+		instance = renderer;
 	}
 }
 
 void Renderer::Destroy() {
-	m_instance.reset();
+	instance.reset();
 }
 
 bool Renderer::Exists() {
-	return static_cast<bool>( m_instance );
+	return static_cast<bool>( instance );
 }
 
 RendererViewport::Ptr Renderer::GetDefaultViewport() {
@@ -658,9 +662,9 @@ PrimitiveTexture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 	auto required_vertical_size = static_cast<int>( image.getSize().y ) + padding;
 	auto required_horizontal_size = static_cast<int>( image.getSize().x );
 
-	if( ( required_horizontal_size > m_max_texture_size ) || ( required_vertical_size > static_cast<int>( m_max_texture_size ) ) ) {
+	if( ( required_horizontal_size > max_texture_size ) || ( required_vertical_size > static_cast<int>( max_texture_size ) ) ) {
 #if defined( SFGUI_DEBUG )
-		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << m_max_texture_size << "x" << m_max_texture_size << ").\n";
+		std::cerr << "SFGUI warning: The image you are using is larger than the maximum size supported by your GPU (" << max_texture_size << "x" << max_texture_size << ").\n";
 #endif
 		return std::make_shared<PrimitiveTexture>();
 	}
@@ -683,14 +687,14 @@ PrimitiveTexture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		atlas_last_occupied_location = texture_iter->offset.y + texture_iter->size.y;
 	}
 
-	auto current_page_index = atlas_last_occupied_location / m_max_texture_size;
-	auto current_page_last_occupied_location = atlas_last_occupied_location % m_max_texture_size;
+	auto current_page_index = atlas_last_occupied_location / max_texture_size;
+	auto current_page_last_occupied_location = atlas_last_occupied_location % max_texture_size;
 
 	// Cache the "temporary" sf::Image so its internal std::vector
 	// does not have to constantly be allocated anew.
 	static sf::Image new_image;
 
-	if( m_texture_atlas.empty() || ( current_page_last_occupied_location + required_vertical_size > m_max_texture_size ) ) {
+	if( m_texture_atlas.empty() || ( current_page_last_occupied_location + required_vertical_size > max_texture_size ) ) {
 		// We need a new atlas page.
 
 		auto new_texture = std::unique_ptr<sf::Texture>( new sf::Texture );
@@ -700,7 +704,7 @@ PrimitiveTexture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		static auto create_maximal = true;
 
 		if( create_maximal ) {
-			if( !new_texture->create( 1u, static_cast<unsigned int>( m_max_texture_size ) ) ) {
+			if( !new_texture->create( 1u, static_cast<unsigned int>( max_texture_size ) ) ) {
 				create_maximal = false;
 			}
 		}
@@ -711,7 +715,7 @@ PrimitiveTexture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 			auto current_page = m_texture_atlas[static_cast<std::size_t>( current_page_index )].get();
 			auto old_image = current_page->copyToImage();
 
-			new_image.create( old_image.getSize().x, static_cast<unsigned int>( m_max_texture_size ), sf::Color::White );
+			new_image.create( old_image.getSize().x, static_cast<unsigned int>( max_texture_size ), sf::Color::White );
 			new_image.copy( old_image, 0u, 0u );
 			new_image.copy( image, 0u, static_cast<unsigned int>( current_page_last_occupied_location ) );
 
@@ -744,7 +748,7 @@ PrimitiveTexture::Ptr Renderer::LoadTexture( const sf::Image& image ) {
 		current_page->update( image, 0u, static_cast<unsigned int>( current_page_last_occupied_location ) );
 	}
 
-	auto offset = sf::Vector2i( 0, current_page_index * m_max_texture_size + current_page_last_occupied_location );
+	auto offset = sf::Vector2i( 0, current_page_index * max_texture_size + current_page_last_occupied_location );
 
 	Invalidate( INVALIDATE_TEXTURE );
 
@@ -795,9 +799,9 @@ void Renderer::UpdateImage( const sf::Vector2f& offset, const sf::Image& data ) 
 				return;
 			}
 
-			auto page = static_cast<std::size_t>( int_offset.y / m_max_texture_size );
+			auto page = static_cast<std::size_t>( int_offset.y / max_texture_size );
 
-			m_texture_atlas[page]->update( data, 0u, static_cast<unsigned int>( int_offset.y % m_max_texture_size ) );
+			m_texture_atlas[page]->update( data, 0u, static_cast<unsigned int>( int_offset.y % max_texture_size ) );
 
 			return;
 		}
@@ -893,6 +897,10 @@ void Renderer::InvalidateImpl( unsigned char /*datasets*/ ) {
 }
 
 void Renderer::InvalidateWindow() {
+}
+
+int Renderer::GetMaxTextureSize() const {
+	return max_texture_size;
 }
 
 }

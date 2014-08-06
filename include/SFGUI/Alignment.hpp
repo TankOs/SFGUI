@@ -19,7 +19,7 @@ class SFGUI_API Alignment : public Bin, public Misc {
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set scale
 		 * @param scale Scale (0..1 for x and y).
@@ -36,11 +36,11 @@ class SFGUI_API Alignment : public Bin, public Misc {
 		 */
 		Alignment();
 
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
 	private:
-		virtual void HandleSizeChange();
-		virtual void HandleAlignmentChange( const sf::Vector2f& old_alignment );
+		void HandleSizeChange() override;
+		void HandleAlignmentChange( const sf::Vector2f& old_alignment ) override;
 
 		void UpdateChild();
 

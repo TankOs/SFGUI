@@ -467,12 +467,6 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 
 		std::weak_ptr<Container> m_parent;
 
-		static std::weak_ptr<Widget> m_focus_widget;
-		static std::weak_ptr<Widget> m_active_widget;
-		static std::weak_ptr<Widget> m_modal_widget;
-
-		static std::vector<Widget*> m_root_widgets;
-
 		std::unique_ptr<ClassId> m_class_id;
 
 		int m_hierarchy_level;

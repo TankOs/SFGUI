@@ -28,7 +28,7 @@ class SFGUI_API ComboBox : public Bin {
 		 */
 		static Ptr Create();
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Get selected item.
 		 * @return Active item or NONE if none selected.
@@ -114,12 +114,12 @@ class SFGUI_API ComboBox : public Bin {
 		sf::Vector2f CalculateRequisition() override;
 
 	private:
-		virtual void HandleMouseEnter( int x, int y );
-		virtual void HandleMouseLeave( int x, int y );
-		virtual void HandleMouseMoveEvent( int x, int y ) override;
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
-		virtual void HandleStateChange( State old_state ) override;
-		virtual void HandleUpdate( float seconds ) override;
+		void HandleMouseEnter( int x, int y ) override;
+		void HandleMouseLeave( int x, int y ) override;
+		void HandleMouseMoveEvent( int x, int y ) override;
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleStateChange( State old_state ) override;
+		void HandleUpdate( float seconds ) override;
 		void ChangeStartEntry();
 
 		std::shared_ptr<Scrollbar> m_scrollbar;

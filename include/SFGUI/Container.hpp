@@ -46,7 +46,7 @@ class SFGUI_API Container : public Widget {
 
 		void Refresh();
 
-		virtual void HandleEvent( const sf::Event& event ) override;
+		void HandleEvent( const sf::Event& event ) override;
 
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
@@ -55,7 +55,7 @@ class SFGUI_API Container : public Widget {
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange() override;
+		void HandleAbsolutePositionChange() override;
 
 	protected:
 		/** Handle adding children.
@@ -71,19 +71,19 @@ class SFGUI_API Container : public Widget {
 
 		/** Handle visibility change.
 		 */
-		virtual void HandleGlobalVisibilityChange() override;
+		void HandleGlobalVisibilityChange() override;
 
 		/** Handle update.
 		 */
-		virtual void HandleUpdate( float seconds ) override;
+		void HandleUpdate( float seconds ) override;
 
 		/** Handle hierarchy level change.
 		 */
-		virtual void HandleSetHierarchyLevel() override;
+		void HandleSetHierarchyLevel() override;
 
 		/** Handle viewport change.
 		 */
-		virtual void HandleViewportUpdate() override;
+		void HandleViewportUpdate() override;
 
 	private:
 		WidgetsList m_children;

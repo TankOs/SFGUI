@@ -20,7 +20,7 @@ class SFGUI_API Entry : public Widget {
 		 */
 		static Ptr Create( const sf::String& text = L"" );
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Set text.
 		 * @param text Text.
@@ -101,14 +101,14 @@ class SFGUI_API Entry : public Widget {
 		void SetTextMargin( float margin );
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
-		virtual sf::Vector2f CalculateRequisition() override;
+		sf::Vector2f CalculateRequisition() override;
 
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
-		virtual void HandleUpdate( float seconds ) override;
-		virtual void HandleTextEvent( sf::Uint32 character ) override;
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
-		virtual void HandleSizeChange() override;
-		virtual void HandleFocusChange( Widget::Ptr focused_widget ) override;
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleUpdate( float seconds ) override;
+		void HandleTextEvent( sf::Uint32 character ) override;
+		void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
+		void HandleSizeChange() override;
+		void HandleFocusChange( Widget::Ptr focused_widget ) override;
 
 	private:
 		/** Get closest cursor position to x coordinate.
@@ -126,8 +126,8 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void MoveCursor( int delta );
 
-		virtual void HandleMouseEnter( int x, int y ) override;
-		virtual void HandleMouseLeave( int x, int y ) override;
+		void HandleMouseEnter( int x, int y ) override;
+		void HandleMouseLeave( int x, int y ) override;
 
 		// Data structures holding the total content of the Entry and the visible portion of it
 		sf::String m_string;

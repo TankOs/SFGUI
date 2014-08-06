@@ -160,7 +160,7 @@ void VertexArrayRenderer::RefreshArray() {
 
 	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
 
-	const auto max_texture_size = m_max_texture_size;
+	const auto max_texture_size = GetMaxTextureSize();
 	const auto default_texture_size = m_texture_atlas[0]->getSize();
 
 	for( std::size_t primitive_index = 1; primitive_index != primitives_size + 1; primitive_index += 1 ) {

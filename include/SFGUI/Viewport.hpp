@@ -30,7 +30,7 @@ class SFGUI_API Viewport : public Bin {
 		/** Get absolute position on virtual screen: always (0,0)
 		 * @return Absolute position on virtual screen: always (0,0).
 		 */
-		virtual sf::Vector2f GetAbsolutePosition() const override;
+		sf::Vector2f GetAbsolutePosition() const override;
 
 		/** Get the horizontal Adjustment for this Viewport.
 		 * @return Horizontal Adjustment for this Viewport.
@@ -56,13 +56,13 @@ class SFGUI_API Viewport : public Bin {
 		 * Handle an SFML event and fire proper signals.
 		 * @return true when event has been processed (eaten).
 		 */
-		virtual void HandleEvent( const sf::Event& event ) override;
+		void HandleEvent( const sf::Event& event ) override;
 
-		virtual const std::string& GetName() const override;
+		const std::string& GetName() const override;
 
 		/** Handle changing of absolute position
 		 */
-		virtual void HandleAbsolutePositionChange() override;
+		void HandleAbsolutePositionChange() override;
 
 		/** Get requisition of the child widget of the Viewport if present.
 		 * @return requisition of the child widget of the Viewport or (0.f, 0.f) if not present.
@@ -71,14 +71,14 @@ class SFGUI_API Viewport : public Bin {
 
 	protected:
 		sf::Vector2f CalculateRequisition() override;
-		virtual void HandleSizeChange() override;
-		virtual bool HandleAdd( Widget::Ptr child ) override;
+		void HandleSizeChange() override;
+		bool HandleAdd( Widget::Ptr child ) override;
 
 		/** Handle viewport change.
 		 */
-		virtual void HandleViewportUpdate() override;
+		void HandleViewportUpdate() override;
 
-		virtual std::unique_ptr<RenderQueue> InvalidateImpl() const override;
+		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 
 	private:
 		/** Ctor.
