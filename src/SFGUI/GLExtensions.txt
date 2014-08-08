@@ -9,6 +9,7 @@ EXT_blend_minmax
 EXT_blend_subtract
 EXT_blend_func_separate
 ARB_vertex_buffer_object
+ARB_vertex_program
 ARB_fragment_program
 ARB_shading_language_100
 ARB_shader_objects
@@ -17,4 +18,7 @@ ARB_fragment_shader
 ARB_texture_non_power_of_two
 EXT_blend_equation_separate
 EXT_framebuffer_object
+ARB_vertex_array_object
 ARB_geometry_shader4
+ARB_explicit_attrib_location
+ARB_explicit_uniform_location

@@ -26,6 +26,21 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		 */
 		static Ptr Create();
 
+		/** Draw the GUI to an sf::Window.
+		 * @param target sf::Window to draw to.
+		 */
+		void Display( sf::Window& target ) const override;
+
+		/** Draw the GUI to an sf::RenderWindow.
+		 * @param target sf::RenderWindow to draw to.
+		 */
+		void Display( sf::RenderWindow& target ) const override;
+
+		/** Draw the GUI to an sf::RenderTexture.
+		 * @param target sf::RenderTexture to draw to.
+		 */
+		void Display( sf::RenderTexture& target ) const override;
+
 		/** Enable and select alpha testing threshold.
 		 * @param alpha_threshold Threshold at which fragments will get discarded if their alpha value is less than or equal to. Set to 0.f to disable.
 		 */
@@ -44,9 +59,10 @@ class SFGUI_API VertexArrayRenderer : public Renderer {
 		VertexArrayRenderer();
 
 		void InvalidateImpl( unsigned char datasets ) override;
-		void DisplayImpl() const override;
 
 	private:
+		void DisplayImpl() const override;
+
 		void RefreshArray();
 
 		std::vector<sf::Vector2f> m_vertex_data;

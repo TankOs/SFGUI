@@ -7,7 +7,7 @@
 // X headers define None which is used by SFML's window style.
 #undef None
 
-#include <SFGUI/Renderers/VertexBufferRenderer.hpp>
+#include <SFGUI/Renderers/NonLegacyRenderer.hpp>
 #include <SFGUI/RendererBatch.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/Signal.hpp>
@@ -15,78 +15,142 @@
 #include <SFGUI/PrimitiveVertex.hpp>
 #include <SFGUI/GLCheck.hpp>
 
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/System/Vector3.hpp>
+#include <cassert>
 
+// ARB_vertex_buffer_object
+#define GLEXT_vertex_buffer_object sfgogl_ext_ARB_vertex_buffer_object
+
+#define GLEXT_GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
+#define GLEXT_GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
+#define GLEXT_GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
+#define GLEXT_GL_STATIC_DRAW GL_STATIC_DRAW_ARB
+
+#define GLEXT_glBindBuffer glBindBufferARB
+#define GLEXT_glDeleteBuffers glDeleteBuffersARB
+#define GLEXT_glGenBuffers glGenBuffersARB
+#define GLEXT_glBufferData glBufferDataARB
+#define GLEXT_glBufferSubData glBufferSubDataARB
+
+// ARB_vertex_program
+#define GLEXT_vertex_program sfgogl_ext_ARB_vertex_program
+
+#define GLEXT_GL_PROGRAM_OBJECT GL_PROGRAM_OBJECT_ARB
+
+#define GLEXT_glGetHandle glGetHandleARB
+#define GLEXT_glUseProgramObject glUseProgramObjectARB
+#define GLEXT_glVertexAttribPointer glVertexAttribPointerARB
+#define GLEXT_glEnableVertexAttribArray glEnableVertexAttribArrayARB
+#define GLEXT_glDisableVertexAttribArray glDisableVertexAttribArrayARB
+
+// ARB_vertex_shader (ensured by sf::Shader::isAvailable())
+#define GLEXT_glGetAttribLocation glGetAttribLocationARB
+
+// ARB_vertex_array_object
+#define GLEXT_vertex_array_object sfgogl_ext_ARB_vertex_array_object
+
+#define GLEXT_glIsVertexArray glIsVertexArray
+#define GLEXT_glBindVertexArray glBindVertexArray
+#define GLEXT_glDeleteVertexArrays glDeleteVertexArrays
+#define GLEXT_glGenVertexArrays glGenVertexArrays
+
+// EXT_framebuffer_object
 #define GLEXT_framebuffer_object sfgogl_ext_EXT_framebuffer_object
 
 #define GLEXT_GL_FRAMEBUFFER GL_FRAMEBUFFER_EXT
 #define GLEXT_GL_FRAMEBUFFER_COMPLETE GL_FRAMEBUFFER_COMPLETE_EXT
 #define GLEXT_GL_COLOR_ATTACHMENT0 GL_COLOR_ATTACHMENT0_EXT
 
-#define GLEXT_glGenFramebuffers glGenFramebuffersEXT
-#define GLEXT_glDeleteFramebuffers glDeleteFramebuffersEXT
 #define GLEXT_glBindFramebuffer glBindFramebufferEXT
+#define GLEXT_glDeleteFramebuffers glDeleteFramebuffersEXT
+#define GLEXT_glGenFramebuffers glGenFramebuffersEXT
 #define GLEXT_glFramebufferTexture2D glFramebufferTexture2DEXT
 #define GLEXT_glCheckFramebufferStatus glCheckFramebufferStatusEXT
-
-#define GLEXT_vertex_buffer_object sfgogl_ext_ARB_vertex_buffer_object
-
-#define GLEXT_GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
-#define GLEXT_GL_ELEMENT_ARRAY_BUFFER GL_ELEMENT_ARRAY_BUFFER_ARB
-#define GLEXT_GL_DYNAMIC_DRAW GL_DYNAMIC_DRAW_ARB
-
-#define GLEXT_glGenBuffers glGenBuffersARB
-#define GLEXT_glDeleteBuffers glDeleteBuffersARB
-#define GLEXT_glBindBuffer glBindBufferARB
-#define GLEXT_glBufferData glBufferDataARB
-#define GLEXT_glBufferSubData glBufferSubDataARB
 
 namespace {
 
 bool gl_initialized = false;
 
+bool vbo_supported = false;
+bool vao_supported = false;
+bool vap_supported = false;
+bool shader_supported = false;
+bool fbo_supported = false;
+
+unsigned int GetAttributeLocation( const sf::Shader& shader, std::string name ) {
+	auto previous_program = CheckGLError( GLEXT_glGetHandle( GLEXT_GL_PROGRAM_OBJECT ) );
+
+	sf::Shader::bind( &shader );
+
+	auto program = CheckGLError( GLEXT_glGetHandle( GLEXT_GL_PROGRAM_OBJECT ) );
+
+	auto location = CheckGLError( GLEXT_glGetAttribLocation( program, name.c_str() ) );
+
+	CheckGLError( GLEXT_glUseProgramObject( previous_program ) );
+
+#if defined( SFGUI_DEBUG )
+	if( location < 0 ) {
+		std::cerr << "SFGUI warning: Failed to get location of attribute \"" << name << "\".\n";
+	}
+#endif
+
+	assert( location >= 0 );
+
+	return static_cast<unsigned int>( location );
+}
+
 }
 
 namespace sfg {
 
-VertexBufferRenderer::VertexBufferRenderer() :
-	m_frame_buffer( 0 ),
-	m_frame_buffer_texture( 0 ),
-	m_display_list( 0 ),
+NonLegacyRenderer::NonLegacyRenderer() :
+	m_previous_window_size( -1, -1 ),
 	m_last_vertex_count( 0 ),
 	m_last_index_count( 0 ),
-	m_alpha_threshold( 0.f ),
 	m_vbo_sync_type( INVALIDATE_ALL ),
 	m_vbo_synced( false ),
 	m_cull( false ),
-	m_use_fbo( false ),
-	m_vbo_supported( false ),
-	m_fbo_supported( false ) {
+	m_use_fbo( false ) {
+	if( IsAvailable() ) {
+		auto load_result = m_shader.loadFromMemory(
+			"#version 130\n"
+			"uniform mat4 mvp_matrix;\n"
+			"in vec2 vertex;\n"
+			"in vec4 color;\n"
+			"in vec2 texture_coordinate;\n"
+			"out vec4 vertex_color;\n"
+			"out vec2 vertex_texture_coordinate;\n"
+			"void main() {\n"
+			"\tgl_Position = mvp_matrix * vec4(vertex.xy, 1.f, 1.f);\n"
+			"\tvertex_color = color;\n"
+			"\tvertex_texture_coordinate = texture_coordinate;\n"
+			"}\n",
+			"#version 130\n"
+			"uniform sampler2D texture0;\n"
+			"in vec4 vertex_color;\n"
+			"in vec2 vertex_texture_coordinate;\n"
+			"out vec4 fragment_color;\n"
+			"void main() {\n"
+			"\tfragment_color = vertex_color * texture(texture0, vertex_texture_coordinate);\n"
+			"}\n"
+		);
 
-	// Make sure we have a valid GL context before messing around
-	// with GLLoader or else it will report missing extensions sometimes.
-	sf::Context context;
+		if( !load_result ) {
+			shader_supported = false;
 
-	if( !gl_initialized ) {
-		auto result = sfgogl_LoadFunctions() - sfgogl_LOAD_SUCCEEDED;
-
-		if( result ) {
 #if defined( SFGUI_DEBUG )
-			std::cerr << "GL extension initialization failed. Missing " << result << " functions.\n";
+			std::cerr << "Non-legacy renderer unavailable.\n";
 #endif
+
 			return;
 		}
 
-		gl_initialized = true;
-	}
-
-	if( GLEXT_vertex_buffer_object ) {
-		m_vbo_supported = true;
+		m_vertex_location = GetAttributeLocation( m_shader, "vertex" );
+		m_color_location = GetAttributeLocation( m_shader, "color" );
+		m_texture_coordinate_location = GetAttributeLocation( m_shader, "texture_coordinate" );
 
 		CheckGLError( GLEXT_glGenBuffers( 1, &m_vertex_vbo ) );
 		CheckGLError( GLEXT_glGenBuffers( 1, &m_color_vbo ) );
@@ -95,123 +159,133 @@ VertexBufferRenderer::VertexBufferRenderer() :
 	}
 	else {
 #if defined( SFGUI_DEBUG )
-		std::cerr << "VBO extension unavailable.\n";
+		std::cerr << "Non-legacy renderer unavailable.\n";
 #endif
 	}
-
-	if( GLEXT_framebuffer_object ) {
-		m_fbo_supported = true;
-	}
 }
 
-VertexBufferRenderer::~VertexBufferRenderer() {
+NonLegacyRenderer::~NonLegacyRenderer() {
 	DestroyFBO();
 
-	if( m_vbo_supported ) {
-		CheckGLError( GLEXT_glDeleteBuffers( 1, &m_index_vbo ) );
-		CheckGLError( GLEXT_glDeleteBuffers( 1, &m_texture_vbo ) );
-		CheckGLError( GLEXT_glDeleteBuffers( 1, &m_color_vbo ) );
-		CheckGLError( GLEXT_glDeleteBuffers( 1, &m_vertex_vbo ) );
-	}
+	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_index_vbo ) );
+	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_texture_vbo ) );
+	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_color_vbo ) );
+	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_vertex_vbo ) );
+
+	CheckGLError( GLEXT_glDeleteVertexArrays( 1, &m_vao ) );
 }
 
-VertexBufferRenderer::Ptr VertexBufferRenderer::Create() {
-	return Ptr( new VertexBufferRenderer );
+NonLegacyRenderer::Ptr NonLegacyRenderer::Create() {
+	return Ptr( new NonLegacyRenderer );
 }
 
-const std::string& VertexBufferRenderer::GetName() const {
-	static const std::string name( "Vertex Buffer Renderer" );
+const std::string& NonLegacyRenderer::GetName() const {
+	static const std::string name( "Non-Legacy Renderer" );
 	return name;
 }
 
-bool VertexBufferRenderer::IsAvailable() {
-	// Make sure we have a valid GL context before messing around
-	// with GLLoader or else it will report missing extensions sometimes.
-	sf::Context context;
+bool NonLegacyRenderer::IsAvailable() {
+	static bool checked = false;
 
-	if( !gl_initialized ) {
-		auto result = sfgogl_LoadFunctions() - sfgogl_LOAD_SUCCEEDED;
+	if( !checked ) {
+		// Make sure we have a valid GL context before messing around
+		// with GLLoader or else it will report missing extensions sometimes.
+		sf::Context context;
 
-		if( result ) {
+		if( !gl_initialized ) {
+			auto result = sfgogl_LoadFunctions() - sfgogl_LOAD_SUCCEEDED;
+
+			if( result ) {
 #if defined( SFGUI_DEBUG )
-			std::cerr << "GL extension initialization failed. Missing " << result << " functions.\n";
+				std::cerr << "GL extension initialization failed. Missing " << result << " functions.\n";
 #endif
-			return false;
+				return false;
+			}
+
+			gl_initialized = true;
 		}
 
-		gl_initialized = true;
+		if( GLEXT_vertex_buffer_object ) {
+			vbo_supported = true;
+		}
+
+		if( GLEXT_vertex_program ) {
+			vap_supported = true;
+		}
+
+		if( sf::Shader::isAvailable() ) {
+			shader_supported = true;
+		}
+
+		if( GLEXT_vertex_array_object ) {
+			vao_supported = true;
+		}
+
+		if( GLEXT_framebuffer_object ) {
+			fbo_supported = true;
+		}
+
+		checked = true;
 	}
 
-	if( GLEXT_vertex_buffer_object ) {
+	if( vbo_supported && vap_supported && shader_supported && vao_supported ) {
 		return true;
 	}
 
 	return false;
 }
 
-void VertexBufferRenderer::Display( sf::Window& target ) const {
+void NonLegacyRenderer::Display( sf::Window& target ) const {
 	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
 
 	target.setActive( true );
 
-	CheckGLError( glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT ) );
-	CheckGLError( glPushAttrib( GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT ) );
+	auto blend_enabled = CheckGLError( glIsEnabled( GL_BLEND ) );
 
-	// Since we have no idea what the attribute environment
-	// of the user looks like, we need to pretend to be SFML
-	// by setting up it's GL attribute environment.
-	CheckGLError( glEnable( GL_TEXTURE_2D ) );
-	CheckGLError( glEnable( GL_BLEND ) );
-	CheckGLError( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
-
-	CheckGLError( glEnableClientState( GL_VERTEX_ARRAY ) );
-	CheckGLError( glEnableClientState( GL_COLOR_ARRAY ) );
-	CheckGLError( glEnableClientState( GL_TEXTURE_COORD_ARRAY ) );
-
-	DisplayImpl();
-
-	CheckGLError( glPopAttrib() );
-	CheckGLError( glPopClientAttrib() );
-}
-
-void VertexBufferRenderer::Display( sf::RenderWindow& target ) const {
-	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
-
-	target.setActive( true );
-
-	DisplayImpl();
-
-	WipeStateCache( target );
-}
-
-void VertexBufferRenderer::Display( sf::RenderTexture& target ) const {
-	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
-
-	target.setActive( true );
-
-	DisplayImpl();
-
-	WipeStateCache( target );
-}
-
-void VertexBufferRenderer::DisplayImpl() const {
-	if( !m_vbo_supported ) {
-		return;
+	if( !blend_enabled ) {
+		glEnable( GL_BLEND );
 	}
 
-	CheckGLError( glMatrixMode( GL_MODELVIEW ) );
-	CheckGLError( glPushMatrix() );
-	CheckGLError( glLoadIdentity() );
+	GLenum source_factor;
+	GLenum destination_factor;
+	CheckGLError( glGetIntegerv( GL_BLEND_SRC, reinterpret_cast<GLint*>( &source_factor ) ) );
+	CheckGLError( glGetIntegerv( GL_BLEND_DST, reinterpret_cast<GLint*>( &destination_factor ) ) );
 
-	CheckGLError( glMatrixMode( GL_PROJECTION ) );
-	CheckGLError( glPushMatrix() );
-	CheckGLError( glLoadIdentity() );
+	if( ( source_factor != GL_SRC_ALPHA ) || ( destination_factor != GL_ONE_MINUS_SRC_ALPHA ) ) {
+		CheckGLError( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+	}
 
-	// When SFML dies (closes) it sets the window size to 0 for some reason.
-	// That then causes glOrtho errors.
+	DisplayImpl();
 
-	// SFML doesn't seem to bother updating the OpenGL viewport when
-	// it's window resizes and nothing is drawn directly through SFML...
+	if( !blend_enabled ) {
+		CheckGLError( glDisable( GL_BLEND ) );
+	}
+
+	if( ( source_factor != GL_SRC_ALPHA ) || ( destination_factor != GL_ONE_MINUS_SRC_ALPHA ) ) {
+		CheckGLError( glBlendFunc( source_factor, destination_factor ) );
+	}
+}
+
+void NonLegacyRenderer::Display( sf::RenderWindow& target ) const {
+	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
+
+	target.setActive( true );
+
+	DisplayImpl();
+}
+
+void NonLegacyRenderer::Display( sf::RenderTexture& target ) const {
+	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
+
+	target.setActive( true );
+
+	DisplayImpl();
+}
+
+void NonLegacyRenderer::DisplayImpl() const {
+	if( !IsAvailable() ) {
+		return;
+	}
 
 	if( m_last_window_size != m_window_size ) {
 		CheckGLError( glViewport( 0, 0, m_window_size.x, m_window_size.y ) );
@@ -219,21 +293,13 @@ void VertexBufferRenderer::DisplayImpl() const {
 		m_last_window_size = m_window_size;
 
 		if( m_window_size.x && m_window_size.y ) {
-			const_cast<VertexBufferRenderer*>( this )->Invalidate( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
+			const_cast<NonLegacyRenderer*>( this )->Invalidate( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 
-			const_cast<VertexBufferRenderer*>( this )->SetupFBO( m_window_size.x, m_window_size.y );
+			auto view = sf::View( static_cast<sf::Vector2f>( m_window_size / 2 ), static_cast<sf::Vector2f>( m_window_size ) );
+			m_shader.setParameter( "mvp_matrix", view.getTransform() );
+
+			const_cast<NonLegacyRenderer*>( this )->SetupFBO( m_window_size.x, m_window_size.y );
 		}
-	}
-
-	CheckGLError( glOrtho( 0.0f, static_cast<GLdouble>( m_window_size.x ? m_window_size.x : 1 ), static_cast<GLdouble>( m_window_size.y ? m_window_size.y : 1 ), 0.0f, -1.0f, 64.0f ) );
-
-	CheckGLError( glMatrixMode( GL_TEXTURE ) );
-	CheckGLError( glPushMatrix() );
-	CheckGLError( glLoadIdentity() );
-
-	if( m_alpha_threshold > 0.f ) {
-		CheckGLError( glAlphaFunc( GL_GREATER, m_alpha_threshold ) );
-		CheckGLError( glEnable( GL_ALPHA_TEST ) );
 	}
 
 	if( !m_vbo_synced ) {
@@ -249,7 +315,11 @@ void VertexBufferRenderer::DisplayImpl() const {
 		// again this might be all wrong...
 
 		// Refresh VBO data if out of sync
-		const_cast<VertexBufferRenderer*>( this )->RefreshVBO();
+		const_cast<NonLegacyRenderer*>( this )->RefreshVBO();
+	}
+
+	if( !GLEXT_glIsVertexArray( m_vao ) ) {
+		const_cast<NonLegacyRenderer*>( this )->SetupVAO();
 	}
 
 	if( !m_use_fbo || !m_vbo_synced || m_force_redraw ) {
@@ -259,33 +329,20 @@ void VertexBufferRenderer::DisplayImpl() const {
 		// Further, we stick all referenced textures into our giant atlas
 		// so we don't have to rebind during the draw.
 
-		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_vertex_vbo ) );
-		CheckGLError( glVertexPointer( 2, GL_FLOAT, 0, 0 ) );
-
-		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_color_vbo ) );
-		CheckGLError( glColorPointer( 4, GL_UNSIGNED_BYTE, 0, 0 ) );
-
-		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_texture_vbo ) );
-		CheckGLError( glTexCoordPointer( 2, GL_FLOAT, 0, 0 ) );
-
-		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, m_index_vbo ) );
-
-		// Not needed, constantly kept enabled by SFML... -_-
-		//CheckGLError( glEnableClientState( GL_VERTEX_ARRAY ) );
-		//CheckGLError( glEnableClientState( GL_COLOR_ARRAY ) );
-		//CheckGLError( glEnableClientState( GL_TEXTURE_COORD_ARRAY ) );
-
 		if( m_use_fbo ) {
 			CheckGLError( GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, m_frame_buffer ) );
 
 			CheckGLError( glClear( GL_COLOR_BUFFER_BIT ) );
 		}
 
+		m_shader.setParameter( "texture0", *( m_texture_atlas[0] ) );
+		sf::Shader::bind( &m_shader );
+
+		CheckGLError( GLEXT_glBindVertexArray( m_vao ) );
+
 		CheckGLError( glEnable( GL_SCISSOR_TEST ) );
 
 		auto current_atlas_page = 0;
-
-		sf::Texture::bind( m_texture_atlas[0].get() );
 
 		for( const auto& batch : m_batches ) {
 			auto viewport = batch.viewport;
@@ -294,14 +351,16 @@ void VertexBufferRenderer::DisplayImpl() const {
 				auto destination = static_cast<sf::Vector2i>( viewport->GetDestinationOrigin() );
 				auto size = static_cast<sf::Vector2i>( viewport->GetSize() );
 
+				CheckGLError( GLEXT_glBindVertexArray( 0 ) );
+				sf::Shader::bind( nullptr );
 				CheckGLError( glViewport( destination.x, m_window_size.y - destination.y - size.y, size.x, size.y ) );
 
 				// Draw canvas.
 				( *batch.custom_draw_callback )();
 
 				CheckGLError( glViewport( 0, 0, m_window_size.x, m_window_size.y ) );
-
-				sf::Texture::bind( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )].get() );
+				sf::Shader::bind( &m_shader );
+				CheckGLError( GLEXT_glBindVertexArray( m_vao ) );
 			}
 			else {
 				if( viewport && ( ( *viewport ) != ( *m_default_viewport ) ) ) {
@@ -323,7 +382,7 @@ void VertexBufferRenderer::DisplayImpl() const {
 					if( batch.atlas_page != current_atlas_page ) {
 						current_atlas_page = batch.atlas_page;
 
-						sf::Texture::bind( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )].get() );
+						m_shader.setParameter( "texture0", *( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )] ) );
 					}
 
 					CheckGLError( glDrawRangeElements(
@@ -340,44 +399,53 @@ void VertexBufferRenderer::DisplayImpl() const {
 
 		CheckGLError( glDisable( GL_SCISSOR_TEST ) );
 
-
-		//CheckGLError( glDisableClientState( GL_TEXTURE_COORD_ARRAY ) );
-		//CheckGLError( glDisableClientState( GL_COLOR_ARRAY ) );
-		//CheckGLError( glDisableClientState( GL_VERTEX_ARRAY ) );
-
-		// Needed otherwise SFML will blow up...
-		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, 0 ) );
-		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, 0 ) );
+		m_force_redraw = false;
 
 		if( m_use_fbo ) {
 			CheckGLError( GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, 0 ) );
 
-			CheckGLError( glCallList( m_display_list ) );
-		}
+			sf::Shader::bind( &m_fbo_shader );
 
-		m_force_redraw = false;
+			auto is_vertex_array = CheckGLError( GLEXT_glIsVertexArray( m_fbo_vao ) );
+
+			if( !is_vertex_array ) {
+				const_cast<NonLegacyRenderer*>( this )->SetupFBOVAO();
+			}
+
+			CheckGLError( GLEXT_glBindVertexArray( m_fbo_vao ) );
+
+			assert( m_fbo_vbo != 0 );
+			assert( m_fbo_vao != 0 );
+
+			CheckGLError( glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ) );
+		}
 	}
 	else {
-		CheckGLError( glCallList( m_display_list ) );
+		sf::Shader::bind( &m_fbo_shader );
+
+		auto is_vertex_array = CheckGLError( GLEXT_glIsVertexArray( m_fbo_vao ) );
+
+		if( !is_vertex_array ) {
+			const_cast<NonLegacyRenderer*>( this )->SetupFBOVAO();
+		}
+
+		CheckGLError( GLEXT_glBindVertexArray( m_fbo_vao ) );
+
+		assert( m_fbo_vbo != 0 );
+		assert( m_fbo_vao != 0 );
+
+		CheckGLError( glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 ) );
 	}
+
+	// Needed otherwise SFML will blow up...
+	CheckGLError( GLEXT_glBindVertexArray( 0 ) );
+
+	sf::Shader::bind( nullptr );
 
 	m_vbo_synced = true;
-
-	if( m_alpha_threshold > 0.f ) {
-		CheckGLError( glDisable( GL_ALPHA_TEST ) );
-		CheckGLError( glAlphaFunc( GL_GREATER, 0.f ) );
-	}
-
-	CheckGLError( glPopMatrix() );
-
-	CheckGLError( glMatrixMode( GL_PROJECTION ) );
-	CheckGLError( glPopMatrix() );
-
-	CheckGLError( glMatrixMode( GL_MODELVIEW ) );
-	CheckGLError( glPopMatrix() );
 }
 
-void VertexBufferRenderer::RefreshVBO() {
+void NonLegacyRenderer::RefreshVBO() {
 	SortPrimitives();
 
 	m_vertex_data.clear();
@@ -605,12 +673,12 @@ void VertexBufferRenderer::RefreshVBO() {
 	m_vbo_sync_type = 0;
 }
 
-void VertexBufferRenderer::InvalidateVBO( unsigned char datasets ) {
+void NonLegacyRenderer::InvalidateVBO( unsigned char datasets ) {
 	m_vbo_sync_type |= datasets;
 	m_vbo_synced = false;
 }
 
-void VertexBufferRenderer::SetupFBO( int width, int height ) {
+void NonLegacyRenderer::SetupFBO( int width, int height ) {
 	if( !m_use_fbo || !width || !height ) {
 		DestroyFBO();
 
@@ -624,23 +692,19 @@ void VertexBufferRenderer::SetupFBO( int width, int height ) {
 
 	CheckGLError( GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, m_frame_buffer ) );
 
-	// Create FBO texture object.
-	if( !m_frame_buffer_texture ) {
-		CheckGLError( glGenTextures( 1, &m_frame_buffer_texture ) );
-	}
+	m_frame_buffer_texture.create( static_cast<unsigned int>( width ), static_cast<unsigned int>( height ) );
 
-	CheckGLError( glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture ) );
+	auto old_texture_id = 0u;
+	CheckGLError( glGetIntegerv( GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>( &old_texture_id ) ) );
 
-	CheckGLError( glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST ) );
-	CheckGLError( glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST ) );
-	CheckGLError( glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) );
-	CheckGLError( glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) );
+	sf::Texture::bind( &m_frame_buffer_texture );
 
-	CheckGLError( glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0 ) );
+	auto texture_id = 0u;
+	CheckGLError( glGetIntegerv( GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>( &texture_id ) ) );
 
-	CheckGLError( glBindTexture( GL_TEXTURE_2D, 0 ) );
+	CheckGLError( glBindTexture( GL_TEXTURE_2D, old_texture_id ) );
 
-	CheckGLError( GLEXT_glFramebufferTexture2D( GLEXT_GL_FRAMEBUFFER, GLEXT_GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_frame_buffer_texture, 0 ) );
+	CheckGLError( GLEXT_glFramebufferTexture2D( GLEXT_GL_FRAMEBUFFER, GLEXT_GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0 ) );
 
 	// Sanity check.
 	auto status = CheckGLError( GLEXT_glCheckFramebufferStatus( GLEXT_GL_FRAMEBUFFER ) );
@@ -652,81 +716,82 @@ void VertexBufferRenderer::SetupFBO( int width, int height ) {
 
 		DestroyFBO();
 
-		m_fbo_supported = false;
+		fbo_supported = false;
 		m_use_fbo = false;
 	}
 
 	CheckGLError( GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, 0 ) );
 
-	if( m_use_fbo && !m_display_list ) {
-		m_display_list = glGenLists( 1 );
+	if( m_use_fbo && !m_fbo_vbo && !m_fbo_vao ) {
+		auto load_result = m_fbo_shader.loadFromMemory(
+			"#version 130\n"
+			"in vec2 vertex;\n"
+			"in vec2 texture_coordinate;\n"
+			"out vec2 vertex_texture_coordinate;\n"
+			"void main() {\n"
+			"\tgl_Position = vec4(vertex.xy, 1.f, 1.f);\n"
+			"\tvertex_texture_coordinate = texture_coordinate;\n"
+			"}\n",
+			"#version 130\n"
+			"uniform sampler2D texture0;\n"
+			"in vec2 vertex_texture_coordinate;\n"
+			"out vec4 fragment_color;\n"
+			"void main() {\n"
+			"\tfragment_color = texture(texture0, vertex_texture_coordinate);\n"
+			"}\n"
+		);
 
-		// Do not fear the immediate-mode GL here, we only compile this once.
-		CheckGLError( glNewList( m_display_list, GL_COMPILE ) );
+		if( !load_result ) {
+			fbo_supported = false;
+			m_use_fbo = false;
 
-		CheckGLError( glMatrixMode( GL_PROJECTION ) );
-		CheckGLError( glPushMatrix() );
-		CheckGLError( glLoadIdentity() );
+			DestroyFBO();
 
-		CheckGLError( glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture ) );
+			return;
+		}
 
-		// Hard to believe, but GL_TRIANGLE_STRIP performs better
-		// in my tests than GL_QUADS, it seems cards might
-		// not always optimize by themselves after all.
-		CheckGLError( glBegin( GL_TRIANGLE_STRIP ) );
-		CheckGLError( glTexCoord2s( 1, 1 ) );
-		CheckGLError( glVertex2s( 1, 1 ) );
-		CheckGLError( glTexCoord2s( 0, 1 ) );
-		CheckGLError( glVertex2s( -1, 1 ) );
-		CheckGLError( glTexCoord2s( 1, 0 ) );
-		CheckGLError( glVertex2s( 1, -1 ) );
-		CheckGLError( glTexCoord2s( 0, 0 ) );
-		CheckGLError( glVertex2s( -1, -1 ) );
-		CheckGLError( glEnd() );
+		m_fbo_vertex_location = GetAttributeLocation( m_fbo_shader, "vertex" );
+		m_fbo_texture_coordinate_location = GetAttributeLocation( m_fbo_shader, "texture_coordinate" );
 
-		CheckGLError( glBindTexture( GL_TEXTURE_2D, 0 ) );
+		m_fbo_shader.setParameter( "texture0", m_frame_buffer_texture );
 
-		CheckGLError( glPopMatrix() );
-		CheckGLError( glMatrixMode( GL_TEXTURE ) );
+		CheckGLError( GLEXT_glGenBuffers( 1, &m_fbo_vbo ) );
+		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_fbo_vbo ) );
 
-		CheckGLError( glEndList() );
+		// GL_TRIANGLE_STRIP
+		GLbyte data[] = {
+			1, 1, 1, 1,
+			-1, 1, 0, 1,
+			1, -1, 1, 0,
+			-1, -1, 0, 0
+		};
+
+		CheckGLError( GLEXT_glBufferData( GLEXT_GL_ARRAY_BUFFER, sizeof( data ), data, GLEXT_GL_STATIC_DRAW ) );
+
+		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, 0 ) );
 	}
 }
 
-void VertexBufferRenderer::DestroyFBO() {
-	if( m_display_list ) {
-		CheckGLError( glDeleteLists( m_display_list, 1 ) );
-	}
+void NonLegacyRenderer::DestroyFBO() {
+	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_fbo_vbo ) );
+	m_fbo_vbo = 0;
 
-	if( m_frame_buffer_texture ) {
-		CheckGLError( glDeleteTextures( 1, &m_frame_buffer_texture ) );
-
-		m_frame_buffer_texture = 0;
-	}
-
-	if( m_frame_buffer ) {
-		CheckGLError( GLEXT_glDeleteFramebuffers( 1, &m_frame_buffer ) );
-
-		m_frame_buffer = 0;
-	}
+	CheckGLError( GLEXT_glDeleteFramebuffers( 1, &m_frame_buffer ) );
+	m_frame_buffer = 0;
 }
 
-void VertexBufferRenderer::TuneAlphaThreshold( float alpha_threshold ) {
-	m_alpha_threshold = alpha_threshold;
-}
-
-void VertexBufferRenderer::TuneCull( bool enable ) {
+void NonLegacyRenderer::TuneCull( bool enable ) {
 	m_cull = enable;
 }
 
-void VertexBufferRenderer::TuneUseFBO( bool enable ) {
-	if( !m_fbo_supported && enable ) {
+void NonLegacyRenderer::TuneUseFBO( bool enable ) {
+	if( !fbo_supported && enable ) {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "FBO extension unavailable.\n";
 #endif
 	}
 
-	m_use_fbo = enable && m_fbo_supported;
+	m_use_fbo = enable && fbo_supported;
 
 	if( m_use_fbo ) {
 		SetupFBO( m_window_size.x, m_window_size.y );
@@ -736,8 +801,68 @@ void VertexBufferRenderer::TuneUseFBO( bool enable ) {
 	}
 }
 
-void VertexBufferRenderer::InvalidateImpl( unsigned char datasets ) {
+void NonLegacyRenderer::InvalidateImpl( unsigned char datasets ) {
 	InvalidateVBO( datasets );
+}
+
+void NonLegacyRenderer::SetupVAO() {
+	CheckGLError( GLEXT_glGenVertexArrays( 1, &m_vao ) );
+	CheckGLError( GLEXT_glBindVertexArray( m_vao ) );
+
+	assert( m_vertex_vbo != 0 );
+	assert( m_color_vbo != 0 );
+	assert( m_texture_vbo != 0 );
+	assert( m_index_vbo != 0 );
+	assert( m_vao != 0 );
+
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_vertex_vbo ) );
+	CheckGLError( GLEXT_glEnableVertexAttribArray( m_vertex_location ) );
+	CheckGLError( GLEXT_glVertexAttribPointer( m_vertex_location, 2, GL_FLOAT, GL_FALSE, 0, 0 ) );
+
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_color_vbo ) );
+	CheckGLError( GLEXT_glEnableVertexAttribArray( m_color_location ) );
+	CheckGLError( GLEXT_glVertexAttribPointer( m_color_location, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, 0 ) );
+
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_texture_vbo ) );
+	CheckGLError( GLEXT_glEnableVertexAttribArray( m_texture_coordinate_location ) );
+	CheckGLError( GLEXT_glVertexAttribPointer( m_texture_coordinate_location, 2, GL_FLOAT, GL_FALSE, 0, 0 ) );
+
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, m_index_vbo ) );
+
+	CheckGLError( GLEXT_glBindVertexArray( 0 ) );
+
+	CheckGLError( GLEXT_glDisableVertexAttribArray( m_texture_coordinate_location ) );
+	CheckGLError( GLEXT_glDisableVertexAttribArray( m_color_location ) );
+	CheckGLError( GLEXT_glDisableVertexAttribArray( m_vertex_location ) );
+
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ELEMENT_ARRAY_BUFFER, 0 ) );
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, 0 ) );
+}
+
+void NonLegacyRenderer::SetupFBOVAO() {
+	if( !m_fbo_vbo ) {
+		return;
+	}
+
+	CheckGLError( GLEXT_glGenVertexArrays( 1, &m_fbo_vao ) );
+	CheckGLError( GLEXT_glBindVertexArray( m_fbo_vao ) );
+
+	assert( m_fbo_vbo != 0 );
+	assert( m_fbo_vao != 0 );
+
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_fbo_vbo ) );
+
+	CheckGLError( GLEXT_glEnableVertexAttribArray( m_fbo_vertex_location ) );
+	CheckGLError( GLEXT_glEnableVertexAttribArray( m_fbo_texture_coordinate_location ) );
+	CheckGLError( GLEXT_glVertexAttribPointer( m_fbo_vertex_location, 2, GL_BYTE, GL_FALSE, 4 * sizeof( GLbyte ), reinterpret_cast<GLvoid*>( 0 ) ) );
+	CheckGLError( GLEXT_glVertexAttribPointer( m_fbo_texture_coordinate_location, 2, GL_BYTE, GL_FALSE, 4 * sizeof( GLbyte ), reinterpret_cast<GLvoid*>( 2 * sizeof( GLbyte ) ) ) );
+
+	CheckGLError( GLEXT_glBindVertexArray( 0 ) );
+
+	CheckGLError( GLEXT_glDisableVertexAttribArray( m_fbo_texture_coordinate_location ) );
+	CheckGLError( GLEXT_glDisableVertexAttribArray( m_fbo_vertex_location ) );
+
+	CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, 0 ) );
 }
 
 }

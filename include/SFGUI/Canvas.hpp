@@ -11,6 +11,7 @@ namespace sf {
 class Vertex;
 class RenderTexture;
 class Drawable;
+class Shader;
 }
 
 namespace sfg {
@@ -91,11 +92,21 @@ class SFGUI_API Canvas : public Widget {
 	private:
 		void DrawRenderTexture();
 
+		void SetupVBO();
+		void SetupVAO();
+		void SetupShader();
+
 		std::shared_ptr<Signal> m_custom_draw_callback;
 		std::shared_ptr<RendererViewport> m_custom_viewport;
 		std::shared_ptr<sf::RenderTexture> m_render_texture;
+		std::unique_ptr<sf::Shader> m_shader;
+		unsigned int m_vertex_location = 0;
+		unsigned int m_texture_coordinate_location = 0;
 
-		unsigned int m_display_list;
+		unsigned int m_display_list = 0;
+
+		unsigned int m_vbo = 0;
+		unsigned int m_vao = 0;
 
 		bool m_depth;
 		bool m_resize;

@@ -50,6 +50,7 @@ class SampleApp {
 		sfg::Image::Ptr m_image;
 		sfg::Canvas::Ptr m_gl_canvas;
 		sfg::Canvas::Ptr m_sfml_canvas;
+		sfg::Button::Ptr m_switch_renderer;
 
 		sfg::Desktop m_desktop;
 
@@ -143,15 +144,27 @@ void SampleApp::Run() {
 	//m_window.SetFramerateLimit( 60 );
 	//m_window.EnableVerticalSync( true );
 
+	std::string renderer_string;
+
 	// Tune Renderer
+	if( m_sfgui.GetRenderer().GetName() == "Non-Legacy Renderer" ) {
+		static_cast<sfg::NonLegacyRenderer*>( &m_sfgui.GetRenderer() )->TuneUseFBO( true );
+		static_cast<sfg::NonLegacyRenderer*>( &m_sfgui.GetRenderer() )->TuneCull( true );
+
+		renderer_string = "NLR";
+	}
 	if( m_sfgui.GetRenderer().GetName() == "Vertex Buffer Renderer" ) {
 		static_cast<sfg::VertexBufferRenderer*>( &m_sfgui.GetRenderer() )->TuneUseFBO( true );
 		static_cast<sfg::VertexBufferRenderer*>( &m_sfgui.GetRenderer() )->TuneAlphaThreshold( .2f );
 		static_cast<sfg::VertexBufferRenderer*>( &m_sfgui.GetRenderer() )->TuneCull( true );
+
+		renderer_string = "VBR";
 	}
 	else if( m_sfgui.GetRenderer().GetName() == "Vertex Array Renderer" ) {
 		static_cast<sfg::VertexArrayRenderer*>( &m_sfgui.GetRenderer() )->TuneAlphaThreshold( .2f );
 		static_cast<sfg::VertexArrayRenderer*>( &m_sfgui.GetRenderer() )->TuneCull( true );
+
+		renderer_string = "VAR";
 	}
 
 	// Create widgets.
@@ -283,9 +296,9 @@ void SampleApp::Run() {
 
 	boxtoolbar2->Pack( m_combo_box, true );
 
-	auto switch_renderer = sfg::Button::Create( "Switch Renderer" );
+	m_switch_renderer = sfg::Button::Create( "Renderer: " + renderer_string );
 
-	boxtoolbar2->Pack( switch_renderer, false );
+	boxtoolbar2->Pack( m_switch_renderer, false );
 
 	auto frame2 = sfg::Frame::Create( L"Toolbar 2" );
 	frame2->Add( boxtoolbar2 );
@@ -408,7 +421,7 @@ void SampleApp::Run() {
 	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &SampleApp::OnAdjustmentChange, this ) );
 	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleSpinner, this ) );
 	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnMirrorImageClick, this ) );
-	switch_renderer->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnSwitchRendererClick, this ) );
+	m_switch_renderer->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnSwitchRendererClick, this ) );
 
 	spinbutton->SetValue( 20.f );
 	spinbutton->GetAdjustment()->SetMinorStep( .8f );
@@ -653,7 +666,7 @@ void SampleApp::OnMirrorImageClick() {
 }
 
 void SampleApp::OnSwitchRendererClick() {
-	if( ( sfg::Renderer::Get().GetName() == "Vertex Array Renderer" ) && sfg::VertexBufferRenderer::IsAvailable() ) {
+	if( sfg::Renderer::Get().GetName() == "Non-Legacy Renderer" ) {
 		auto renderer = sfg::VertexBufferRenderer::Create();
 
 		sfg::Renderer::Set( renderer );
@@ -661,17 +674,52 @@ void SampleApp::OnSwitchRendererClick() {
 		renderer->TuneUseFBO( true );
 		renderer->TuneAlphaThreshold( .2f );
 		renderer->TuneCull( true );
+
+		m_switch_renderer->SetLabel( "Renderer: VBR" );
+
+		m_desktop.Refresh();
+		return;
 	}
-	else {
+
+	if( sfg::Renderer::Get().GetName() == "Vertex Buffer Renderer" ) {
 		auto renderer = sfg::VertexArrayRenderer::Create();
 
 		sfg::Renderer::Set( renderer );
 
 		renderer->TuneAlphaThreshold( .2f );
 		renderer->TuneCull( true );
+
+		m_switch_renderer->SetLabel( "Renderer: VAR" );
+
+		m_desktop.Refresh();
+		return;
 	}
 
-	m_desktop.Refresh();
+	if( sfg::NonLegacyRenderer::IsAvailable() ) {
+		auto renderer = sfg::NonLegacyRenderer::Create();
+
+		sfg::Renderer::Set( renderer );
+
+		renderer->TuneUseFBO( true );
+		renderer->TuneCull( true );
+
+		m_switch_renderer->SetLabel( "Renderer: NLR" );
+
+		m_desktop.Refresh();
+	}
+	else if( sfg::VertexBufferRenderer::IsAvailable() ) {
+		auto renderer = sfg::VertexBufferRenderer::Create();
+
+		sfg::Renderer::Set( renderer );
+
+		renderer->TuneUseFBO( true );
+		renderer->TuneAlphaThreshold( .2f );
+		renderer->TuneCull( true );
+
+		m_switch_renderer->SetLabel( "Renderer: VBR" );
+
+		m_desktop.Refresh();
+	}
 }
 
 void SampleApp::RenderCustomGL() {

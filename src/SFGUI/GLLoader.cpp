@@ -44,12 +44,10 @@ static PROC WinGetProcAddress(const char *name)
 
 /* Linux, FreeBSD, other */
 #ifndef IntGetProcAddress
-	extern void ( * glXGetProcAddressARB (const GLubyte *procName)) (void);
+	#include <GL/glx.h>
 
 	#define IntGetProcAddress(name) (*glXGetProcAddressARB)((const GLubyte*)name)
 #endif
-
-/* TODO: Need to eventually use eglGetProcAddress */
 
 int sfgogl_ext_SGIS_texture_edge_clamp = sfgogl_LOAD_FAILED;
 int sfgogl_ext_ARB_multitexture = sfgogl_LOAD_FAILED;
@@ -57,6 +55,7 @@ int sfgogl_ext_EXT_blend_minmax = sfgogl_LOAD_FAILED;
 int sfgogl_ext_EXT_blend_subtract = sfgogl_LOAD_FAILED;
 int sfgogl_ext_EXT_blend_func_separate = sfgogl_LOAD_FAILED;
 int sfgogl_ext_ARB_vertex_buffer_object = sfgogl_LOAD_FAILED;
+int sfgogl_ext_ARB_vertex_program = sfgogl_LOAD_FAILED;
 int sfgogl_ext_ARB_fragment_program = sfgogl_LOAD_FAILED;
 int sfgogl_ext_ARB_shading_language_100 = sfgogl_LOAD_FAILED;
 int sfgogl_ext_ARB_shader_objects = sfgogl_LOAD_FAILED;
@@ -65,7 +64,10 @@ int sfgogl_ext_ARB_fragment_shader = sfgogl_LOAD_FAILED;
 int sfgogl_ext_ARB_texture_non_power_of_two = sfgogl_LOAD_FAILED;
 int sfgogl_ext_EXT_blend_equation_separate = sfgogl_LOAD_FAILED;
 int sfgogl_ext_EXT_framebuffer_object = sfgogl_LOAD_FAILED;
+int sfgogl_ext_ARB_vertex_array_object = sfgogl_LOAD_FAILED;
 int sfgogl_ext_ARB_geometry_shader4 = sfgogl_LOAD_FAILED;
+int sfgogl_ext_ARB_explicit_attrib_location = sfgogl_LOAD_FAILED;
+int sfgogl_ext_ARB_explicit_uniform_location = sfgogl_LOAD_FAILED;
 
 void (CODEGEN_FUNCPTR *sfg_ptrc_glActiveTextureARB)(GLenum) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glClientActiveTextureARB)(GLenum) = NULL;
@@ -238,6 +240,8 @@ static int Load_ARB_vertex_buffer_object(void)
 
 void (CODEGEN_FUNCPTR *sfg_ptrc_glBindProgramARB)(GLenum, GLuint) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glDeleteProgramsARB)(GLsizei, const GLuint *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glDisableVertexAttribArrayARB)(GLuint) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glEnableVertexAttribArrayARB)(GLuint) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glGenProgramsARB)(GLsizei, GLuint *) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glGetProgramEnvParameterdvARB)(GLenum, GLuint, GLdouble *) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glGetProgramEnvParameterfvARB)(GLenum, GLuint, GLfloat *) = NULL;
@@ -245,6 +249,10 @@ void (CODEGEN_FUNCPTR *sfg_ptrc_glGetProgramLocalParameterdvARB)(GLenum, GLuint,
 void (CODEGEN_FUNCPTR *sfg_ptrc_glGetProgramLocalParameterfvARB)(GLenum, GLuint, GLfloat *) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glGetProgramStringARB)(GLenum, GLenum, GLvoid *) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glGetProgramivARB)(GLenum, GLenum, GLint *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glGetVertexAttribPointervARB)(GLuint, GLenum, GLvoid **) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glGetVertexAttribdvARB)(GLuint, GLenum, GLdouble *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glGetVertexAttribfvARB)(GLuint, GLenum, GLfloat *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glGetVertexAttribivARB)(GLuint, GLenum, GLint *) = NULL;
 GLboolean (CODEGEN_FUNCPTR *sfg_ptrc_glIsProgramARB)(GLuint) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glProgramEnvParameter4dARB)(GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glProgramEnvParameter4dvARB)(GLenum, GLuint, const GLdouble *) = NULL;
@@ -255,6 +263,174 @@ void (CODEGEN_FUNCPTR *sfg_ptrc_glProgramLocalParameter4dvARB)(GLenum, GLuint, c
 void (CODEGEN_FUNCPTR *sfg_ptrc_glProgramLocalParameter4fARB)(GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glProgramLocalParameter4fvARB)(GLenum, GLuint, const GLfloat *) = NULL;
 void (CODEGEN_FUNCPTR *sfg_ptrc_glProgramStringARB)(GLenum, GLenum, GLsizei, const GLvoid *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib1dARB)(GLuint, GLdouble) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib1dvARB)(GLuint, const GLdouble *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib1fARB)(GLuint, GLfloat) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib1fvARB)(GLuint, const GLfloat *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib1sARB)(GLuint, GLshort) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib1svARB)(GLuint, const GLshort *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib2dARB)(GLuint, GLdouble, GLdouble) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib2dvARB)(GLuint, const GLdouble *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib2fARB)(GLuint, GLfloat, GLfloat) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib2fvARB)(GLuint, const GLfloat *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib2sARB)(GLuint, GLshort, GLshort) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib2svARB)(GLuint, const GLshort *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib3dARB)(GLuint, GLdouble, GLdouble, GLdouble) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib3dvARB)(GLuint, const GLdouble *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib3fARB)(GLuint, GLfloat, GLfloat, GLfloat) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib3fvARB)(GLuint, const GLfloat *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib3sARB)(GLuint, GLshort, GLshort, GLshort) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib3svARB)(GLuint, const GLshort *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4NbvARB)(GLuint, const GLbyte *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4NivARB)(GLuint, const GLint *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4NsvARB)(GLuint, const GLshort *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4NubARB)(GLuint, GLubyte, GLubyte, GLubyte, GLubyte) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4NubvARB)(GLuint, const GLubyte *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4NuivARB)(GLuint, const GLuint *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4NusvARB)(GLuint, const GLushort *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4bvARB)(GLuint, const GLbyte *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4dARB)(GLuint, GLdouble, GLdouble, GLdouble, GLdouble) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4dvARB)(GLuint, const GLdouble *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4fARB)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4fvARB)(GLuint, const GLfloat *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4ivARB)(GLuint, const GLint *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4sARB)(GLuint, GLshort, GLshort, GLshort, GLshort) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4svARB)(GLuint, const GLshort *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4ubvARB)(GLuint, const GLubyte *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4uivARB)(GLuint, const GLuint *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttrib4usvARB)(GLuint, const GLushort *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glVertexAttribPointerARB)(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid *) = NULL;
+
+static int Load_ARB_vertex_program(void)
+{
+	int numFailed = 0;
+	sfg_ptrc_glBindProgramARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint))IntGetProcAddress("glBindProgramARB");
+	if(!sfg_ptrc_glBindProgramARB) numFailed++;
+	sfg_ptrc_glDeleteProgramsARB = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLuint *))IntGetProcAddress("glDeleteProgramsARB");
+	if(!sfg_ptrc_glDeleteProgramsARB) numFailed++;
+	sfg_ptrc_glDisableVertexAttribArrayARB = (void (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glDisableVertexAttribArrayARB");
+	if(!sfg_ptrc_glDisableVertexAttribArrayARB) numFailed++;
+	sfg_ptrc_glEnableVertexAttribArrayARB = (void (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glEnableVertexAttribArrayARB");
+	if(!sfg_ptrc_glEnableVertexAttribArrayARB) numFailed++;
+	sfg_ptrc_glGenProgramsARB = (void (CODEGEN_FUNCPTR *)(GLsizei, GLuint *))IntGetProcAddress("glGenProgramsARB");
+	if(!sfg_ptrc_glGenProgramsARB) numFailed++;
+	sfg_ptrc_glGetProgramEnvParameterdvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLdouble *))IntGetProcAddress("glGetProgramEnvParameterdvARB");
+	if(!sfg_ptrc_glGetProgramEnvParameterdvARB) numFailed++;
+	sfg_ptrc_glGetProgramEnvParameterfvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLfloat *))IntGetProcAddress("glGetProgramEnvParameterfvARB");
+	if(!sfg_ptrc_glGetProgramEnvParameterfvARB) numFailed++;
+	sfg_ptrc_glGetProgramLocalParameterdvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLdouble *))IntGetProcAddress("glGetProgramLocalParameterdvARB");
+	if(!sfg_ptrc_glGetProgramLocalParameterdvARB) numFailed++;
+	sfg_ptrc_glGetProgramLocalParameterfvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLfloat *))IntGetProcAddress("glGetProgramLocalParameterfvARB");
+	if(!sfg_ptrc_glGetProgramLocalParameterfvARB) numFailed++;
+	sfg_ptrc_glGetProgramStringARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLvoid *))IntGetProcAddress("glGetProgramStringARB");
+	if(!sfg_ptrc_glGetProgramStringARB) numFailed++;
+	sfg_ptrc_glGetProgramivARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLint *))IntGetProcAddress("glGetProgramivARB");
+	if(!sfg_ptrc_glGetProgramivARB) numFailed++;
+	sfg_ptrc_glGetVertexAttribPointervARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLvoid **))IntGetProcAddress("glGetVertexAttribPointervARB");
+	if(!sfg_ptrc_glGetVertexAttribPointervARB) numFailed++;
+	sfg_ptrc_glGetVertexAttribdvARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLdouble *))IntGetProcAddress("glGetVertexAttribdvARB");
+	if(!sfg_ptrc_glGetVertexAttribdvARB) numFailed++;
+	sfg_ptrc_glGetVertexAttribfvARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLfloat *))IntGetProcAddress("glGetVertexAttribfvARB");
+	if(!sfg_ptrc_glGetVertexAttribfvARB) numFailed++;
+	sfg_ptrc_glGetVertexAttribivARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLenum, GLint *))IntGetProcAddress("glGetVertexAttribivARB");
+	if(!sfg_ptrc_glGetVertexAttribivARB) numFailed++;
+	sfg_ptrc_glIsProgramARB = (GLboolean (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glIsProgramARB");
+	if(!sfg_ptrc_glIsProgramARB) numFailed++;
+	sfg_ptrc_glProgramEnvParameter4dARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble))IntGetProcAddress("glProgramEnvParameter4dARB");
+	if(!sfg_ptrc_glProgramEnvParameter4dARB) numFailed++;
+	sfg_ptrc_glProgramEnvParameter4dvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, const GLdouble *))IntGetProcAddress("glProgramEnvParameter4dvARB");
+	if(!sfg_ptrc_glProgramEnvParameter4dvARB) numFailed++;
+	sfg_ptrc_glProgramEnvParameter4fARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat))IntGetProcAddress("glProgramEnvParameter4fARB");
+	if(!sfg_ptrc_glProgramEnvParameter4fARB) numFailed++;
+	sfg_ptrc_glProgramEnvParameter4fvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, const GLfloat *))IntGetProcAddress("glProgramEnvParameter4fvARB");
+	if(!sfg_ptrc_glProgramEnvParameter4fvARB) numFailed++;
+	sfg_ptrc_glProgramLocalParameter4dARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLdouble, GLdouble, GLdouble, GLdouble))IntGetProcAddress("glProgramLocalParameter4dARB");
+	if(!sfg_ptrc_glProgramLocalParameter4dARB) numFailed++;
+	sfg_ptrc_glProgramLocalParameter4dvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, const GLdouble *))IntGetProcAddress("glProgramLocalParameter4dvARB");
+	if(!sfg_ptrc_glProgramLocalParameter4dvARB) numFailed++;
+	sfg_ptrc_glProgramLocalParameter4fARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, GLfloat, GLfloat, GLfloat, GLfloat))IntGetProcAddress("glProgramLocalParameter4fARB");
+	if(!sfg_ptrc_glProgramLocalParameter4fARB) numFailed++;
+	sfg_ptrc_glProgramLocalParameter4fvARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLuint, const GLfloat *))IntGetProcAddress("glProgramLocalParameter4fvARB");
+	if(!sfg_ptrc_glProgramLocalParameter4fvARB) numFailed++;
+	sfg_ptrc_glProgramStringARB = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLsizei, const GLvoid *))IntGetProcAddress("glProgramStringARB");
+	if(!sfg_ptrc_glProgramStringARB) numFailed++;
+	sfg_ptrc_glVertexAttrib1dARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLdouble))IntGetProcAddress("glVertexAttrib1dARB");
+	if(!sfg_ptrc_glVertexAttrib1dARB) numFailed++;
+	sfg_ptrc_glVertexAttrib1dvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLdouble *))IntGetProcAddress("glVertexAttrib1dvARB");
+	if(!sfg_ptrc_glVertexAttrib1dvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib1fARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLfloat))IntGetProcAddress("glVertexAttrib1fARB");
+	if(!sfg_ptrc_glVertexAttrib1fARB) numFailed++;
+	sfg_ptrc_glVertexAttrib1fvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLfloat *))IntGetProcAddress("glVertexAttrib1fvARB");
+	if(!sfg_ptrc_glVertexAttrib1fvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib1sARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLshort))IntGetProcAddress("glVertexAttrib1sARB");
+	if(!sfg_ptrc_glVertexAttrib1sARB) numFailed++;
+	sfg_ptrc_glVertexAttrib1svARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLshort *))IntGetProcAddress("glVertexAttrib1svARB");
+	if(!sfg_ptrc_glVertexAttrib1svARB) numFailed++;
+	sfg_ptrc_glVertexAttrib2dARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLdouble, GLdouble))IntGetProcAddress("glVertexAttrib2dARB");
+	if(!sfg_ptrc_glVertexAttrib2dARB) numFailed++;
+	sfg_ptrc_glVertexAttrib2dvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLdouble *))IntGetProcAddress("glVertexAttrib2dvARB");
+	if(!sfg_ptrc_glVertexAttrib2dvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib2fARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLfloat, GLfloat))IntGetProcAddress("glVertexAttrib2fARB");
+	if(!sfg_ptrc_glVertexAttrib2fARB) numFailed++;
+	sfg_ptrc_glVertexAttrib2fvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLfloat *))IntGetProcAddress("glVertexAttrib2fvARB");
+	if(!sfg_ptrc_glVertexAttrib2fvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib2sARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLshort, GLshort))IntGetProcAddress("glVertexAttrib2sARB");
+	if(!sfg_ptrc_glVertexAttrib2sARB) numFailed++;
+	sfg_ptrc_glVertexAttrib2svARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLshort *))IntGetProcAddress("glVertexAttrib2svARB");
+	if(!sfg_ptrc_glVertexAttrib2svARB) numFailed++;
+	sfg_ptrc_glVertexAttrib3dARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLdouble, GLdouble, GLdouble))IntGetProcAddress("glVertexAttrib3dARB");
+	if(!sfg_ptrc_glVertexAttrib3dARB) numFailed++;
+	sfg_ptrc_glVertexAttrib3dvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLdouble *))IntGetProcAddress("glVertexAttrib3dvARB");
+	if(!sfg_ptrc_glVertexAttrib3dvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib3fARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLfloat, GLfloat, GLfloat))IntGetProcAddress("glVertexAttrib3fARB");
+	if(!sfg_ptrc_glVertexAttrib3fARB) numFailed++;
+	sfg_ptrc_glVertexAttrib3fvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLfloat *))IntGetProcAddress("glVertexAttrib3fvARB");
+	if(!sfg_ptrc_glVertexAttrib3fvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib3sARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLshort, GLshort, GLshort))IntGetProcAddress("glVertexAttrib3sARB");
+	if(!sfg_ptrc_glVertexAttrib3sARB) numFailed++;
+	sfg_ptrc_glVertexAttrib3svARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLshort *))IntGetProcAddress("glVertexAttrib3svARB");
+	if(!sfg_ptrc_glVertexAttrib3svARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4NbvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLbyte *))IntGetProcAddress("glVertexAttrib4NbvARB");
+	if(!sfg_ptrc_glVertexAttrib4NbvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4NivARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLint *))IntGetProcAddress("glVertexAttrib4NivARB");
+	if(!sfg_ptrc_glVertexAttrib4NivARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4NsvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLshort *))IntGetProcAddress("glVertexAttrib4NsvARB");
+	if(!sfg_ptrc_glVertexAttrib4NsvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4NubARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLubyte, GLubyte, GLubyte, GLubyte))IntGetProcAddress("glVertexAttrib4NubARB");
+	if(!sfg_ptrc_glVertexAttrib4NubARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4NubvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLubyte *))IntGetProcAddress("glVertexAttrib4NubvARB");
+	if(!sfg_ptrc_glVertexAttrib4NubvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4NuivARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLuint *))IntGetProcAddress("glVertexAttrib4NuivARB");
+	if(!sfg_ptrc_glVertexAttrib4NuivARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4NusvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLushort *))IntGetProcAddress("glVertexAttrib4NusvARB");
+	if(!sfg_ptrc_glVertexAttrib4NusvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4bvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLbyte *))IntGetProcAddress("glVertexAttrib4bvARB");
+	if(!sfg_ptrc_glVertexAttrib4bvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4dARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLdouble, GLdouble, GLdouble, GLdouble))IntGetProcAddress("glVertexAttrib4dARB");
+	if(!sfg_ptrc_glVertexAttrib4dARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4dvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLdouble *))IntGetProcAddress("glVertexAttrib4dvARB");
+	if(!sfg_ptrc_glVertexAttrib4dvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4fARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLfloat, GLfloat, GLfloat, GLfloat))IntGetProcAddress("glVertexAttrib4fARB");
+	if(!sfg_ptrc_glVertexAttrib4fARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4fvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLfloat *))IntGetProcAddress("glVertexAttrib4fvARB");
+	if(!sfg_ptrc_glVertexAttrib4fvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4ivARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLint *))IntGetProcAddress("glVertexAttrib4ivARB");
+	if(!sfg_ptrc_glVertexAttrib4ivARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4sARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLshort, GLshort, GLshort, GLshort))IntGetProcAddress("glVertexAttrib4sARB");
+	if(!sfg_ptrc_glVertexAttrib4sARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4svARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLshort *))IntGetProcAddress("glVertexAttrib4svARB");
+	if(!sfg_ptrc_glVertexAttrib4svARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4ubvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLubyte *))IntGetProcAddress("glVertexAttrib4ubvARB");
+	if(!sfg_ptrc_glVertexAttrib4ubvARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4uivARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLuint *))IntGetProcAddress("glVertexAttrib4uivARB");
+	if(!sfg_ptrc_glVertexAttrib4uivARB) numFailed++;
+	sfg_ptrc_glVertexAttrib4usvARB = (void (CODEGEN_FUNCPTR *)(GLuint, const GLushort *))IntGetProcAddress("glVertexAttrib4usvARB");
+	if(!sfg_ptrc_glVertexAttrib4usvARB) numFailed++;
+	sfg_ptrc_glVertexAttribPointerARB = (void (CODEGEN_FUNCPTR *)(GLuint, GLint, GLenum, GLboolean, GLsizei, const GLvoid *))IntGetProcAddress("glVertexAttribPointerARB");
+	if(!sfg_ptrc_glVertexAttribPointerARB) numFailed++;
+	return numFailed;
+}
+
 
 static int Load_ARB_fragment_program(void)
 {
@@ -505,6 +681,25 @@ static int Load_EXT_framebuffer_object(void)
 	if(!sfg_ptrc_glIsRenderbufferEXT) numFailed++;
 	sfg_ptrc_glRenderbufferStorageEXT = (void (CODEGEN_FUNCPTR *)(GLenum, GLenum, GLsizei, GLsizei))IntGetProcAddress("glRenderbufferStorageEXT");
 	if(!sfg_ptrc_glRenderbufferStorageEXT) numFailed++;
+	return numFailed;
+}
+
+void (CODEGEN_FUNCPTR *sfg_ptrc_glBindVertexArray)(GLuint) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glDeleteVertexArrays)(GLsizei, const GLuint *) = NULL;
+void (CODEGEN_FUNCPTR *sfg_ptrc_glGenVertexArrays)(GLsizei, GLuint *) = NULL;
+GLboolean (CODEGEN_FUNCPTR *sfg_ptrc_glIsVertexArray)(GLuint) = NULL;
+
+static int Load_ARB_vertex_array_object(void)
+{
+	int numFailed = 0;
+	sfg_ptrc_glBindVertexArray = (void (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glBindVertexArray");
+	if(!sfg_ptrc_glBindVertexArray) numFailed++;
+	sfg_ptrc_glDeleteVertexArrays = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLuint *))IntGetProcAddress("glDeleteVertexArrays");
+	if(!sfg_ptrc_glDeleteVertexArrays) numFailed++;
+	sfg_ptrc_glGenVertexArrays = (void (CODEGEN_FUNCPTR *)(GLsizei, GLuint *))IntGetProcAddress("glGenVertexArrays");
+	if(!sfg_ptrc_glGenVertexArrays) numFailed++;
+	sfg_ptrc_glIsVertexArray = (GLboolean (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glIsVertexArray");
+	if(!sfg_ptrc_glIsVertexArray) numFailed++;
 	return numFailed;
 }
 
@@ -1570,13 +1765,14 @@ typedef struct sfgogl_StrToExtMap_s
 	PFN_LOADFUNCPOINTERS LoadExtension;
 } sfgogl_StrToExtMap;
 
-static sfgogl_StrToExtMap ExtensionMap[15] = {
+static sfgogl_StrToExtMap ExtensionMap[19] = {
 	{"GL_SGIS_texture_edge_clamp", &sfgogl_ext_SGIS_texture_edge_clamp, NULL},
 	{"GL_ARB_multitexture", &sfgogl_ext_ARB_multitexture, Load_ARB_multitexture},
 	{"GL_EXT_blend_minmax", &sfgogl_ext_EXT_blend_minmax, Load_EXT_blend_minmax},
 	{"GL_EXT_blend_subtract", &sfgogl_ext_EXT_blend_subtract, NULL},
 	{"GL_EXT_blend_func_separate", &sfgogl_ext_EXT_blend_func_separate, Load_EXT_blend_func_separate},
 	{"GL_ARB_vertex_buffer_object", &sfgogl_ext_ARB_vertex_buffer_object, Load_ARB_vertex_buffer_object},
+	{"GL_ARB_vertex_program", &sfgogl_ext_ARB_vertex_program, Load_ARB_vertex_program},
 	{"GL_ARB_fragment_program", &sfgogl_ext_ARB_fragment_program, Load_ARB_fragment_program},
 	{"GL_ARB_shading_language_100", &sfgogl_ext_ARB_shading_language_100, NULL},
 	{"GL_ARB_shader_objects", &sfgogl_ext_ARB_shader_objects, Load_ARB_shader_objects},
@@ -1585,10 +1781,13 @@ static sfgogl_StrToExtMap ExtensionMap[15] = {
 	{"GL_ARB_texture_non_power_of_two", &sfgogl_ext_ARB_texture_non_power_of_two, NULL},
 	{"GL_EXT_blend_equation_separate", &sfgogl_ext_EXT_blend_equation_separate, Load_EXT_blend_equation_separate},
 	{"GL_EXT_framebuffer_object", &sfgogl_ext_EXT_framebuffer_object, Load_EXT_framebuffer_object},
-	{"GL_ARB_geometry_shader4", &sfgogl_ext_ARB_geometry_shader4, Load_ARB_geometry_shader4}
+	{"GL_ARB_vertex_array_object", &sfgogl_ext_ARB_vertex_array_object, Load_ARB_vertex_array_object},
+	{"GL_ARB_geometry_shader4", &sfgogl_ext_ARB_geometry_shader4, Load_ARB_geometry_shader4},
+	{"GL_ARB_explicit_attrib_location", &sfgogl_ext_ARB_explicit_attrib_location, NULL},
+	{"GL_ARB_explicit_uniform_location", &sfgogl_ext_ARB_explicit_uniform_location, NULL}
 };
 
-static int g_extensionMapSize = 15;
+static int g_extensionMapSize = 19;
 
 static sfgogl_StrToExtMap *FindExtEntry(const char *extensionName)
 {
@@ -1611,6 +1810,7 @@ static void ClearExtensionVars(void)
 	sfgogl_ext_EXT_blend_subtract = sfgogl_LOAD_FAILED;
 	sfgogl_ext_EXT_blend_func_separate = sfgogl_LOAD_FAILED;
 	sfgogl_ext_ARB_vertex_buffer_object = sfgogl_LOAD_FAILED;
+	sfgogl_ext_ARB_vertex_program = sfgogl_LOAD_FAILED;
 	sfgogl_ext_ARB_fragment_program = sfgogl_LOAD_FAILED;
 	sfgogl_ext_ARB_shading_language_100 = sfgogl_LOAD_FAILED;
 	sfgogl_ext_ARB_shader_objects = sfgogl_LOAD_FAILED;
@@ -1619,7 +1819,10 @@ static void ClearExtensionVars(void)
 	sfgogl_ext_ARB_texture_non_power_of_two = sfgogl_LOAD_FAILED;
 	sfgogl_ext_EXT_blend_equation_separate = sfgogl_LOAD_FAILED;
 	sfgogl_ext_EXT_framebuffer_object = sfgogl_LOAD_FAILED;
+	sfgogl_ext_ARB_vertex_array_object = sfgogl_LOAD_FAILED;
 	sfgogl_ext_ARB_geometry_shader4 = sfgogl_LOAD_FAILED;
+	sfgogl_ext_ARB_explicit_attrib_location = sfgogl_LOAD_FAILED;
+	sfgogl_ext_ARB_explicit_uniform_location = sfgogl_LOAD_FAILED;
 }
 
 

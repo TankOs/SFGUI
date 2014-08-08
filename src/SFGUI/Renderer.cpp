@@ -9,13 +9,10 @@
 #include <SFGUI/PrimitiveTexture.hpp>
 #include <SFGUI/PrimitiveVertex.hpp>
 
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Window/Context.hpp>
-#include <SFML/OpenGL.hpp>
 #include <cmath>
 #include <cstring>
 #include <cassert>
@@ -32,9 +29,7 @@ namespace sfg {
 Renderer::Renderer() :
 	m_vertex_count( 0 ),
 	m_index_count( 0 ),
-	m_window_size( 0, 0 ),
 	m_force_redraw( false ),
-	m_last_window_size( 0, 0 ),
 	m_primitives_sorted( false ) {
 	static auto checked_max_texture_size = false;
 
@@ -60,7 +55,10 @@ Renderer::~Renderer() {
 
 Renderer& Renderer::Create() {
 	if( !instance ) {
-		if( VertexBufferRenderer::IsAvailable() ) {
+		if( NonLegacyRenderer::IsAvailable() ) {
+			instance = NonLegacyRenderer::Create();
+		}
+		else if( VertexBufferRenderer::IsAvailable() ) {
 			instance = VertexBufferRenderer::Create();
 		}
 		else {
@@ -456,111 +454,6 @@ Primitive::Ptr Renderer::CreateGLCanvas( std::shared_ptr<Signal> callback ) {
 	return primitive;
 }
 
-void Renderer::Display( sf::Window& target ) const {
-	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
-
-	target.setActive( true );
-
-	glPushClientAttrib( GL_CLIENT_VERTEX_ARRAY_BIT );
-	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT );
-
-	// Since we have no idea what the attribute environment
-	// of the user looks like, we need to pretend to be SFML
-	// by setting up it's GL attribute environment.
-	glEnable( GL_TEXTURE_2D );
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glEnableClientState( GL_COLOR_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	SetupGL();
-
-	DisplayImpl();
-
-	RestoreGL();
-
-	glPopAttrib();
-	glPopClientAttrib();
-}
-
-void Renderer::Display( sf::RenderWindow& target ) const {
-	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
-
-	target.setActive( true );
-
-	SetupGL();
-
-	DisplayImpl();
-
-	RestoreGL();
-
-	WipeStateCache( target );
-}
-
-void Renderer::Display( sf::RenderTexture& target ) const {
-	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
-
-	target.setActive( true );
-
-	SetupGL();
-
-	DisplayImpl();
-
-	RestoreGL();
-
-	WipeStateCache( target );
-}
-
-void Renderer::SetupGL() const {
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-	glLoadIdentity();
-
-	glMatrixMode( GL_PROJECTION );
-	glPushMatrix();
-	glLoadIdentity();
-
-	// When SFML dies (closes) it sets the window size to 0 for some reason.
-	// That then causes glOrtho errors.
-
-	// SFML doesn't seem to bother updating the OpenGL viewport when
-	// it's window resizes and nothing is drawn directly through SFML...
-
-	if( m_last_window_size != m_window_size ) {
-		glViewport( 0, 0, m_window_size.x, m_window_size.y );
-
-		m_last_window_size = m_window_size;
-
-		if( m_window_size.x && m_window_size.y ) {
-			const_cast<Renderer*>( this )->Invalidate( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
-
-			const_cast<Renderer*>( this )->InvalidateWindow();
-		}
-	}
-
-	glOrtho( 0.0f, static_cast<GLdouble>( m_window_size.x ? m_window_size.x : 1 ), static_cast<GLdouble>( m_window_size.y ? m_window_size.y : 1 ), 0.0f, -1.0f, 64.0f );
-
-	glMatrixMode( GL_TEXTURE );
-	glPushMatrix();
-	glLoadIdentity();
-
-	glEnable( GL_CULL_FACE );
-}
-
-void Renderer::RestoreGL() const {
-	glDisable( GL_CULL_FACE );
-
-	glPopMatrix();
-
-	glMatrixMode( GL_PROJECTION );
-	glPopMatrix();
-
-	glMatrixMode( GL_MODELVIEW );
-	glPopMatrix();
-}
-
 void Renderer::WipeStateCache( sf::RenderTarget& target ) const {
 	// Make SFML disable it's **************** vertex cache without us
 	// having to call ResetGLStates() and disturbing OpenGL needlessly.
@@ -844,7 +737,7 @@ void Renderer::AddPrimitive( Primitive::Ptr primitive ) {
 	// Check for alpha values in primitive.
 	// Disable depth test if any found.
 	const std::vector<PrimitiveVertex>& vertices( primitive->GetVertices() );
-	const std::vector<GLuint>& indices( primitive->GetIndices() );
+	const std::vector<unsigned int>& indices( primitive->GetIndices() );
 
 	m_vertex_count += static_cast<int>( vertices.size() );
 	m_index_count += static_cast<int>( indices.size() );
@@ -859,7 +752,7 @@ void Renderer::RemovePrimitive( Primitive::Ptr primitive ) {
 
 	if( iter != m_primitives.end() ) {
 		const std::vector<PrimitiveVertex>& vertices( (*iter)->GetVertices() );
-		const std::vector<GLuint>& indices( (*iter)->GetIndices() );
+		const std::vector<unsigned int>& indices( (*iter)->GetIndices() );
 
 		assert( m_vertex_count >= static_cast<int>( vertices.size() ) );
 		assert( m_index_count >= static_cast<int>( indices.size() ) );
@@ -894,9 +787,6 @@ void Renderer::AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound ) {
 }
 
 void Renderer::InvalidateImpl( unsigned char /*datasets*/ ) {
-}
-
-void Renderer::InvalidateWindow() {
 }
 
 int Renderer::GetMaxTextureSize() const {

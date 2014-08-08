@@ -223,17 +223,17 @@ class SFGUI_API Renderer {
 		/** Draw the GUI to an sf::Window.
 		 * @param target sf::Window to draw to.
 		 */
-		void Display( sf::Window& target ) const;
+		virtual void Display( sf::Window& target ) const = 0;
 
 		/** Draw the GUI to an sf::RenderWindow.
 		 * @param target sf::RenderWindow to draw to.
 		 */
-		void Display( sf::RenderWindow& target ) const;
+		virtual void Display( sf::RenderWindow& target ) const = 0;
 
 		/** Draw the GUI to an sf::RenderTexture.
 		 * @param target sf::RenderTexture to draw to.
 		 */
-		void Display( sf::RenderTexture& target ) const;
+		virtual void Display( sf::RenderTexture& target ) const = 0;
 
 		/** Force the renderer to discard its cache's FBO image and redraw.
 		 */
@@ -269,13 +269,11 @@ class SFGUI_API Renderer {
 
 		virtual void InvalidateImpl( unsigned char datasets );
 
-		virtual void InvalidateWindow();
-
-		virtual void DisplayImpl() const = 0;
-
 		void SortPrimitives();
 
 		int GetMaxTextureSize() const;
+
+		void WipeStateCache( sf::RenderTarget& target ) const;
 
 		std::vector<std::shared_ptr<Primitive>> m_primitives;
 		std::vector<std::unique_ptr<sf::Texture>> m_texture_atlas;
@@ -286,14 +284,11 @@ class SFGUI_API Renderer {
 		int m_index_count;
 
 		mutable sf::Vector2i m_window_size;
+		mutable sf::Vector2i m_last_window_size;
 		mutable bool m_force_redraw;
 
 	private:
-		void SetupGL() const;
-
-		void RestoreGL() const;
-
-		void WipeStateCache( sf::RenderTarget& target ) const;
+		virtual void DisplayImpl() const = 0;
 
 		std::deque<priv::RendererTextureNode> m_textures;
 		std::map<FontID, std::shared_ptr<PrimitiveTexture>> m_fonts;
@@ -301,7 +296,6 @@ class SFGUI_API Renderer {
 
 		std::shared_ptr<PrimitiveTexture> m_pseudo_texture;
 
-		mutable sf::Vector2i m_last_window_size;
 		bool m_primitives_sorted;
 };
 
