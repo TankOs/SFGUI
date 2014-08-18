@@ -24,6 +24,11 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules
 find_package( OpenGL REQUIRED )
 find_package( SFML 2 REQUIRED COMPONENTS graphics window system )
 
+# Find X11 for glX on Linux, checking for UNIX would match other UNIX systems as well
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+	find_package( X11 REQUIRED )
+endif()
+
 if( SFGUI_INCLUDE_FONT )
 	add_definitions( -DSFGUI_INCLUDE_FONT )
 endif()
@@ -258,7 +263,11 @@ elseif( APPLE )
 	include_directories( SYSTEM /System/Library/Frameworks/CoreFoundation.framework/Headers )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
+elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${X11_LIBRARIES} )
+	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 else()
+	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 endif()
 
