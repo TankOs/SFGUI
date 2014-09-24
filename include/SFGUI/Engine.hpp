@@ -46,7 +46,7 @@ class RenderQueue;
 
 namespace parser {
 namespace theme {
-class Rule;
+struct Rule;
 
 typedef std::vector<Rule> Theme;
 }

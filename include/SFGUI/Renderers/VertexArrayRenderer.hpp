@@ -11,7 +11,7 @@ class Color;
 namespace sfg {
 
 namespace priv {
-class RendererBatch;
+struct RendererBatch;
 }
 
 /** SFGUI Vertex Array renderer.

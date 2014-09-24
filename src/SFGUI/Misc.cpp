@@ -1,5 +1,7 @@
 #include <SFGUI/Misc.hpp>
 
+#include <algorithm>
+
 namespace sfg {
 
 void Misc::SetAlignment( const sf::Vector2f& alignment ) {

@@ -163,7 +163,6 @@ set(
 	"${SOURCE_PATH}/SFGUI/Renderers/NonLegacyRenderer.cpp"
 	"${SOURCE_PATH}/SFGUI/Renderers/VertexArrayRenderer.cpp"
 	"${SOURCE_PATH}/SFGUI/Renderers/VertexBufferRenderer.cpp"
-	"${SOURCE_PATH}/SFGUI/ResourceLoader.cpp"
 	"${SOURCE_PATH}/SFGUI/ResourceManager.cpp"
 	"${SOURCE_PATH}/SFGUI/SFGUI.cpp"
 	"${SOURCE_PATH}/SFGUI/Scale.cpp"

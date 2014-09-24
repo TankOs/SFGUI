@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+#include <SFGUI/RendererTextureNode.hpp>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -21,10 +22,6 @@ class Image;
 }
 
 namespace sfg {
-
-namespace priv {
-class RendererTextureNode;
-}
 
 class RendererViewport;
 class Primitive;

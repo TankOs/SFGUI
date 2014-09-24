@@ -3,6 +3,7 @@
 #include <SFGUI/Widget.hpp>
 
 #include <memory>
+#include <cstdint>
 
 namespace sfg {
 

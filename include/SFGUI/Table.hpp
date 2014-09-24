@@ -1,17 +1,15 @@
 #pragma once
 
 #include <SFGUI/Container.hpp>
+#include <SFGUI/TableOptions.hpp>
+#include <SFGUI/TableCell.hpp>
 
 #include <list>
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 namespace sfg {
-
-namespace priv {
-class TableCell;
-class TableOptions;
-}
 
 /** Table layout widget.
  * The table layout widget arranges widges in rows and columns, where cells are

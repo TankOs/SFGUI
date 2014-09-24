@@ -8,6 +8,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace sf {
 class Event;
