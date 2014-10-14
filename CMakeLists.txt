@@ -11,11 +11,7 @@ set( SFGUI_BUILD_SHARED_LIBS true CACHE BOOL "Build shared library." )
 set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build examples." )
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include default font in library (DejaVuSans)." )
-
-# Make sure to look for the static SFML libraries
-if( NOT SFGUI_BUILD_SHARED_LIBS )
-	set( SFML_STATIC_LIBRARIES true )
-endif()
+set( SFML_STATIC_LIBRARIES true CACHE BOOL "Do you want to link SFML statically?" )
 
 # Tell CMake where to find additional find modules
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/" )

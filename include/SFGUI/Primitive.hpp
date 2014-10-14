@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFGUI/Config.hpp>
+#include <SFGUI/PrimitiveVertex.hpp>
 
 #include <SFML/System/Vector2.hpp>
 #include <vector>
@@ -11,7 +12,6 @@ namespace sfg {
 class Signal;
 class RendererViewport;
 class PrimitiveTexture;
-class PrimitiveVertex;
 
 /** Renderer primitive.
  */

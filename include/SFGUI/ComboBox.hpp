@@ -2,12 +2,9 @@
 
 #include <SFGUI/Bin.hpp>
 
+#include <SFML/System/String.hpp>
 #include <vector>
 #include <memory>
-
-namespace sf {
-class String;
-}
 
 namespace sfg {
 
