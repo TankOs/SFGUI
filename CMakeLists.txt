@@ -255,6 +255,7 @@ if( WIN32 )
 	endif()
 
 	set( SHARE_PATH "." )
+	set( LIB_PATH "lib" )
 elseif( APPLE )
 	find_library( COREFOUNDATION_LIBRARY CoreFoundation )
 	mark_as_advanced( COREFOUNDATION_LIBRARY )
@@ -262,12 +263,20 @@ elseif( APPLE )
 	include_directories( SYSTEM /System/Library/Frameworks/CoreFoundation.framework/Headers )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
+	set( LIB_PATH "lib" )
 elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${X11_LIBRARIES} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
+	
+	if( LIB_SUFFIX )
+		set( LIB_PATH "lib${LIB_SUFFIX}" )
+	else()
+		set( LIB_PATH "lib" )
+	endif()
 else()
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
+	set( LIB_PATH "lib" )
 endif()
 
 if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
@@ -295,8 +304,8 @@ endif()
 install(
 	TARGETS sfgui
 	RUNTIME DESTINATION bin COMPONENT bin
-	LIBRARY DESTINATION lib COMPONENT bin
-	ARCHIVE DESTINATION lib COMPONENT dev
+	LIBRARY DESTINATION "${LIB_PATH}" COMPONENT bin
+	ARCHIVE DESTINATION "${LIB_PATH}" COMPONENT dev
 )
 
 install(
