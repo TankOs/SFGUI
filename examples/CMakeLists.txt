@@ -44,7 +44,7 @@ build_example( "SFGUI-Test" "Test.cpp" )
 # Don't try to copy if the directories are the same.
 if( NOT ( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" ) )
 	add_custom_command(
-		TARGET "test"
+		TARGET "SFGUI-Test"
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)
