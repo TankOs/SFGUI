@@ -50,6 +50,9 @@ void DesktopExample::Run() {
 	// We have to do this because we don't use SFML to draw.
 	render_window.resetGLStates();
 
+	// Init.
+	m_desktop.SetProperty( "Button#create_window", "FontSize", 18.f );
+
 	//// Main window ////
 	// Widgets.
 	m_window->SetTitle( "SFGUI Desktop Example" );
@@ -68,9 +71,6 @@ void DesktopExample::Run() {
 
 	// Signals.
 	create_window_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &DesktopExample::OnCreateWindowClick, this ) );
-
-	// Init.
-	m_desktop.SetProperty( "Button#create_window", "FontSize", 18.f );
 
 	while( render_window.isOpen() ) {
 		while( render_window.pollEvent( event ) ) {

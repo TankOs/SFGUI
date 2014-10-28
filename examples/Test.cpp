@@ -167,6 +167,34 @@ void SampleApp::Run() {
 		renderer_string = "VAR";
 	}
 
+	// Play around with resource manager.
+	std::shared_ptr<sf::Font> my_font = std::make_shared<sf::Font>();
+	my_font->loadFromFile( "data/linden_hill.otf" );
+	m_desktop.GetEngine().GetResourceManager().AddFont( "custom_font", my_font );
+
+	// Set properties.
+	// Multiple properties can be set at once to save calls.
+
+	// m_desktop.SetProperty( "Button#close:Normal", "Color", sf::Color::Yellow );
+	// #close is sufficient since there is only 1 widget with this id
+	// m_desktop.SetProperty( "#close", "FontName", "data/linden_hill.otf" );
+	// m_desktop.SetProperty( "#close", "FontSize", 15.f );
+
+	// We will batch the above properties into this call.
+	m_desktop.SetProperties(
+		"Window#second_window > Box > Label {"
+		"	FontName: custom_font;"
+		"	FontSize: 18;"
+		"}"
+		"Button#close:Normal {"
+		"	Color: #FFFF00FF;"
+		"}"
+		"#close {"
+		"	FontName: data/linden_hill.otf;"
+		"	FontSize: 15;"
+		"}"
+	);
+
 	// Create widgets.
 	m_wndmain = sfg::Window::Create( sfg::Window::Style::TITLEBAR | sfg::Window::Style::BACKGROUND | sfg::Window::Style::RESIZE );
 	m_wndmain->SetTitle( L"Example application" );
@@ -484,25 +512,6 @@ void SampleApp::Run() {
 	// Add window to desktop
 	m_desktop.Add( m_wndmain );
 
-	// Play around with resource manager.
-	std::shared_ptr<sf::Font> my_font = std::make_shared<sf::Font>();
-	my_font->loadFromFile( "data/linden_hill.otf" );
-	m_desktop.GetEngine().GetResourceManager().AddFont( "custom_font", my_font );
-
-	// Set properties.
-	m_desktop.SetProperty( "Button#close:Normal", "Color", sf::Color::Yellow );
-	// #close is sufficient since there is only 1 widget with this id
-	m_desktop.SetProperty( "#close", "FontName", "data/linden_hill.otf" );
-	m_desktop.SetProperty( "#close", "FontSize", 15.f );
-
-	// Multiple properties can be set at once to save calls.
-	m_desktop.SetProperties(
-		"Window#second_window > Box > Label {"
-		"	FontName: custom_font;"
-		"	FontSize: 18;"
-		"}"
-	);
-
 	m_fps_counter = 0;
 	m_fps_clock.restart();
 
@@ -513,6 +522,8 @@ void SampleApp::Run() {
 	std::size_t frame_times_index = 0;
 
 	std::fill( std::begin( frame_times ), std::end( frame_times ), 0 );
+
+	m_desktop.Update( 0.f );
 
 	while( m_window.isOpen() ) {
 		while( m_window.pollEvent( event ) ) {

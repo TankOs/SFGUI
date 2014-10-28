@@ -107,6 +107,21 @@ void GuessMyNumber::Run() {
 	// We have to do this because we don't use SFML to draw.
 	render_window.resetGLStates();
 
+	// Custom properties.
+	sfg::Context::Get().GetEngine().SetProperties(
+		"Button#guess {"
+		"	BackgroundColor: #006400FF;"
+		"	BorderColor: #006400FF;"
+		"}"
+		"Button#guess:Prelight {"
+		"	BackgroundColor: #008200FF;"
+		"	BorderColor: #008200FF;"
+		"}"
+		"Button#guess > Label {"
+		"	FontSize: 20;"
+		"}"
+	);
+
 	// Create widgets.
 	auto window = sfg::Window::Create();
 	window->SetTitle( TITLE );
@@ -148,13 +163,6 @@ void GuessMyNumber::Run() {
 			static_cast<float>( render_window.getSize().y / 2 ) - window->GetAllocation().height / 2.f
 		)
 	);
-
-	// Custom properties.
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess", "BackgroundColor", sf::Color( 0, 100, 0 ) );
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess", "BorderColor", sf::Color( 0, 100, 0 ) );
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess:Prelight", "BackgroundColor", sf::Color( 0, 130, 0 ) );
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess:Prelight", "BorderColor", sf::Color( 0, 130, 0 ) );
-	sfg::Context::Get().GetEngine().SetProperty( "Button#guess > Label", "FontSize", 20.f );
 
 	// Make sure all properties are applied.
 	window->Refresh();

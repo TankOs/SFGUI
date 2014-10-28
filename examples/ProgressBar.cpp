@@ -59,6 +59,10 @@ void ProgressBarExample::Run() {
 	// Our clock
 	sf::Clock clock;
 
+	// Update an initial time to construct the GUI before drawing begins.
+	// This makes sure that there are no frames in which no GUI is visible.
+	window->Update( 0.f );
+
 	// Start the game loop
 	while ( app_window.isOpen() ) {
 		// Process events
