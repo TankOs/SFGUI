@@ -74,6 +74,46 @@ unsigned int GetAttributeLocation( const sf::Shader& shader, std::string name ) 
 	return static_cast<unsigned int>( location );
 }
 
+void WipeStateCache( sf::RenderTarget& target ) {
+	// Make SFML disable it's **************** vertex cache without us
+	// having to call ResetGLStates() and disturbing OpenGL needlessly.
+	// This would be sooo much easier if we could somehow set
+	// myCache.UseVertexCache = false;
+	// in window by ourself every frame.
+	// SFML doesn't like to play nice with other VBO / Vertex Array
+	// users, that's for sure... It assumes that the array pointers
+	// don't get changed between calls to Draw() unless ResetGLStates()
+	// is explicitly called in between. Why do we need to call OpenGL
+	// 10+ times just to reset something this simple? No logic.
+
+	//static sf::VertexArray resetter_array( sf::TrianglesStrip, 5 );
+	//window.Draw( resetter_array );
+
+	// Or... even more evil... use memset to blank the StatesCache of
+	// the RenderWindow with zeros. Thankfully, because we are using
+	// the data structures directly from the SFML headers, if Laurent
+	// decides to change their size one day we won't even notice.
+	struct StatesCache {
+		bool glStatesSet;
+		bool ViewChanged;
+		sf::BlendMode LastBlendMode;
+		sf::Uint64 LastTextureId;
+		bool UseVertexCache;
+		sf::Vertex VertexCache[4];
+	};
+
+	// All your cache are belong to us.
+	memset( reinterpret_cast<char*>( &target ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ) + 1, 0, sizeof( StatesCache ) - 1 );
+
+	// This is to make it forget it's cached viewport.
+	// Seriously... caching the viewport? Come on...
+	memset( reinterpret_cast<char*>( &target ) + sizeof( sf::RenderTarget ) - sizeof( StatesCache ) + 1, 1, 1 );
+
+	// Since we wiped SFML's cache of its bound texture, we
+	// should make sure that it stays coherent with reality :).
+	sf::Texture::bind( 0 );
+}
+
 }
 
 namespace sfg {
@@ -236,6 +276,8 @@ void Canvas::Clear( const sf::Color& color, bool depth ) {
 	m_resize = false;
 
 	m_render_texture->setActive( true );
+
+	WipeStateCache( *m_render_texture );
 
 	CheckGLError( glClearColor( color.r / 255.f, color.g / 255.f, color.b / 255.f, color.a / 255.f ) );
 	CheckGLError( glClear( GL_COLOR_BUFFER_BIT | ( depth ? GL_DEPTH_BUFFER_BIT : 0 ) ) );
