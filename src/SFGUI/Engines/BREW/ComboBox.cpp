@@ -40,7 +40,7 @@ std::unique_ptr<RenderQueue> BREW::CreateComboBoxDrawable( std::shared_ptr<const
 		)
 	);
 
-	if( combo_box->IsPoppedUp() ) {
+	if( combo_box->IsDropDownDisplayed() ) {
 		const sf::Vector2f item_size(
 			combo_box->GetAllocation().width - 2 * border_width,
 			line_height + 2 * padding
@@ -50,7 +50,7 @@ std::unique_ptr<RenderQueue> BREW::CreateComboBoxDrawable( std::shared_ptr<const
 			combo_box->GetAllocation().height
 		);
 
-		auto expanded_height = static_cast<float>( combo_box->GetDisplayedItems() ) * item_size.y;
+		auto expanded_height = static_cast<float>( combo_box->GetDisplayedItemCount() ) * item_size.y;
 
 		// Popup Pane
 		queue->Add(
@@ -65,7 +65,7 @@ std::unique_ptr<RenderQueue> BREW::CreateComboBoxDrawable( std::shared_ptr<const
 		);
 
 		// Labels.
-		for( ComboBox::IndexType item_index = combo_box->GetStartItemIndex(); item_index < combo_box->GetStartItemIndex() + combo_box->GetDisplayedItems(); ++item_index ) {
+		for( ComboBox::IndexType item_index = combo_box->GetDisplayedItemStart(); item_index < combo_box->GetDisplayedItemStart() + combo_box->GetDisplayedItemCount(); ++item_index ) {
 			if( combo_box->GetItem( item_index ).getSize() == 0 ) {
 				continue;
 			}

@@ -11,6 +11,8 @@ class ComboBoxExample {
 	public:
 		void OnComboSelect();
 		void OnAddItemClick();
+		void OnRemoveItemClick();
+		void OnClearClick();
 
 		void Run();
 
@@ -41,6 +43,14 @@ void ComboBoxExample::OnAddItemClick() {
 	++counter;
 }
 
+void ComboBoxExample::OnRemoveItemClick() {
+	m_combo_box->RemoveItem( 0 );
+}
+
+void ComboBoxExample::OnClearClick() {
+	m_combo_box->Clear();
+}
+
 void ComboBoxExample::Run() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Combo Box Example", sf::Style::Titlebar | sf::Style::Close );
@@ -61,11 +71,15 @@ void ComboBoxExample::Run() {
 
 	m_sel_label = sfg::Label::Create( L"Please select an item!" );
 
-	auto button = sfg::Button::Create( L"Add item" );
+	auto add_button = sfg::Button::Create( L"Add item" );
+	auto remove_button = sfg::Button::Create( L"Remove first item" );
+	auto clear_button = sfg::Button::Create( L"Clear items" );
 
 	auto hbox = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5 );
 	hbox->Pack( m_combo_box );
-	hbox->Pack( button, false );
+	hbox->Pack( add_button, false );
+	hbox->Pack( remove_button, false );
+	hbox->Pack( clear_button, false );
 
 	auto vbox = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5 );
 	vbox->Pack( hbox, false );
@@ -79,7 +93,9 @@ void ComboBoxExample::Run() {
 	// notify us when it is clicked.
 	m_combo_box->GetSignal( sfg::ComboBox::OnSelect ).Connect( std::bind( &ComboBoxExample::OnComboSelect, this ) );
 
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ComboBoxExample::OnAddItemClick, this ) );
+	add_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ComboBoxExample::OnAddItemClick, this ) );
+	remove_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ComboBoxExample::OnRemoveItemClick, this ) );
+	clear_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ComboBoxExample::OnClearClick, this ) );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.
