@@ -12,6 +12,7 @@ class Vertex;
 class RenderTexture;
 class Drawable;
 class Shader;
+class View;
 }
 
 namespace sfg {
@@ -68,6 +69,16 @@ class SFGUI_API Canvas : public Widget {
 		 * @param states Render states to use for drawing.
 		 */
 		void Draw( const sf::Vertex* vertices, unsigned int vertex_count, sf::PrimitiveType type, const sf::RenderStates& states = sf::RenderStates::Default );
+
+		/** Set the sf::View that the canvas should use when performing SFML drawing.
+		 * @param The sf::View that the canvas should when performing SFML drawing.
+		 */
+		void SetView( const sf::View& view );
+
+		/** Get the sf::View that the canvas uses when performing SFML drawing.
+		 * @return The sf::View that the canvas uses when performing SFML drawing.
+		 */
+		sf::View GetView() const;
 
 		const std::string& GetName() const override;
 

@@ -20,12 +20,17 @@ int main() {
 	// Create our OpenGL canvas window
 	auto opengl_window = sfg::Window::Create();
 	opengl_window->SetTitle( "OpenGL canvas" );
-	opengl_window->SetPosition( sf::Vector2f( 100.f, 100.f ) );
+	opengl_window->SetPosition( sf::Vector2f( 50.f, 50.f ) );
 
 	// Create our SFML canvas window
 	auto sfml_window = sfg::Window::Create();
 	sfml_window->SetTitle( "SFML canvas" );
-	sfml_window->SetPosition( sf::Vector2f( 400.f, 100.f ) );
+	sfml_window->SetPosition( sf::Vector2f( 300.f, 50.f ) );
+
+	// Create our SFML scrollable canvas window
+	auto sfml_scrollable_window = sfg::Window::Create( sfg::Window::Style::TITLEBAR | sfg::Window::Style::BACKGROUND );
+	sfml_scrollable_window->SetTitle( "SFML scrollable canvas" );
+	sfml_scrollable_window->SetPosition( sf::Vector2f( 300.f, 200.f ) );
 
 	// Create the Canvases.
 	// Passing true in to Create() tells SFGUI
@@ -34,10 +39,22 @@ int main() {
 	// Specifying nothing defaults to no depth buffer.
 	auto opengl_canvas = sfg::Canvas::Create( true );
 	auto sfml_canvas = sfg::Canvas::Create();
+	auto sfml_scrollable_canvas = sfg::Canvas::Create();
+
+	// Create a pair of scrollbars.
+	auto horizontal_scrollbar = sfg::Scrollbar::Create( sfg::Scrollbar::Orientation::HORIZONTAL );
+	auto vertical_scrollbar = sfg::Scrollbar::Create( sfg::Scrollbar::Orientation::VERTICAL );
+
+	// Create a table to put the scrollbars and scrollable canvas in.
+	auto table = sfg::Table::Create();
+	table->Attach( sfml_scrollable_canvas, sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
+	table->Attach( vertical_scrollbar, sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), 0, sfg::Table::FILL );
+	table->Attach( horizontal_scrollbar, sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, 0 );
 
 	// Add the Canvases to the windows.
 	opengl_window->Add( opengl_canvas );
 	sfml_window->Add( sfml_canvas );
+	sfml_scrollable_window->Add( table );
 
 	// Create an sf::Sprite for demonstration purposes.
 	sf::Texture texture;
@@ -45,18 +62,56 @@ int main() {
 	sf::Sprite sprite;
 	sprite.setTexture( texture );
 
+	// Create an sf::RectangleShape for demonstration purposes.
+	sf::RectangleShape rectangle_shape( sf::Vector2f( 218.f * 20, 84.f * 20 ) );
+	rectangle_shape.setTexture( &texture );
+
+	const static auto scrollable_canvas_size = 300.f;
+
+	// Create an sf::View to control which part of our rectangle is drawn.
+	sf::View view( sf::Vector2f( 100.f, 100.f ), sf::Vector2f( scrollable_canvas_size, scrollable_canvas_size ) );
+
+	// Link the adjustments to our view.
+	auto horizontal_adjustment = horizontal_scrollbar->GetAdjustment();
+	auto vertical_adjustment = vertical_scrollbar->GetAdjustment();
+	horizontal_adjustment->SetLower( scrollable_canvas_size / 2.f );
+	horizontal_adjustment->SetUpper( 218.f * 20 - scrollable_canvas_size / 2.f );
+	horizontal_adjustment->SetMinorStep( 20.f );
+	horizontal_adjustment->SetMajorStep( scrollable_canvas_size );
+	horizontal_adjustment->SetPageSize( scrollable_canvas_size );
+	vertical_adjustment->SetLower( scrollable_canvas_size / 2.f );
+	vertical_adjustment->SetUpper( 84.f * 20 - scrollable_canvas_size / 2.f );
+	vertical_adjustment->SetMinorStep( 20.f );
+	vertical_adjustment->SetMajorStep( scrollable_canvas_size );
+	vertical_adjustment->SetPageSize( scrollable_canvas_size );
+
+	horizontal_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( [&view, &horizontal_adjustment]() {
+		view.setCenter( horizontal_adjustment->GetValue(), view.getCenter().y );
+	} );
+
+	vertical_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( [&view, &vertical_adjustment]() {
+		view.setCenter( view.getCenter().x, vertical_adjustment->GetValue() );
+	} );
+
 	// Because Canvases provide a virtual surface to draw
 	// on much like a ScrolledWindow, specifying their
 	// minimum requisition is necessary.
 	opengl_canvas->SetRequisition( sf::Vector2f( 200.f, 150.f ) );
 	sfml_canvas->SetRequisition( sf::Vector2f( texture.getSize() ) );
+	sfml_scrollable_canvas->SetRequisition( sf::Vector2f( scrollable_canvas_size, scrollable_canvas_size ) );
 
 	// Create a desktop to contain our Windows.
 	sfg::Desktop desktop;
 	desktop.Add( opengl_window );
 	desktop.Add( sfml_window );
+	desktop.Add( sfml_scrollable_window );
 
 	sf::Clock clock;
+	sf::Clock rotation_clock;
+
+	// Update an initial time to construct the GUI before drawing begins.
+	// This makes sure that there are no frames in which no GUI is visible.
+	desktop.Update( 0.f );
 
 	// Start the game loop
 	while ( app_window.isOpen() ) {
@@ -73,9 +128,13 @@ int main() {
 			}
 		}
 
-		// Update the GUI, note that you shouldn't normally
-		// pass 0 seconds to the update method.
-		desktop.Update( 0.f );
+		// Update the GUI every 5ms
+		if( clock.getElapsedTime().asMicroseconds() >= 5000 ) {
+			// Update() takes the elapsed time in seconds.
+			desktop.Update( static_cast<float>( clock.getElapsedTime().asMicroseconds() ) / 1000000.f );
+
+			clock.restart();
+		}
 
 		// Clear screen
 		app_window.clear();
@@ -104,7 +163,7 @@ int main() {
 
 		glTranslatef( 0.f, 0.f, -2.f );
 
-		glRotatef( clock.getElapsedTime().asSeconds() * 30.f, 0.f, 0.f, 1.f );
+		glRotatef( rotation_clock.getElapsedTime().asSeconds() * 30.f, 0.f, 0.f, 1.f );
 
 		glDisable( GL_TEXTURE_2D );
 
@@ -153,6 +212,17 @@ int main() {
 
 		sfml_canvas->Display();
 		sfml_canvas->Unbind();
+
+		// Then the scrollable Canvas for SFML rendering.
+		sfml_scrollable_canvas->Bind();
+		sfml_scrollable_canvas->Clear( sf::Color( 0, 0, 0, 0 ) );
+
+		// Draw the SFML Sprite.
+		sfml_scrollable_canvas->SetView( view );
+		sfml_scrollable_canvas->Draw( rectangle_shape );
+
+		sfml_scrollable_canvas->Display();
+		sfml_scrollable_canvas->Unbind();
 
 		// This is important.
 		app_window.setActive( true );

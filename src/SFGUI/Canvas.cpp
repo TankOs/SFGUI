@@ -301,6 +301,22 @@ void Canvas::Draw( const sf::Vertex* vertices, unsigned int vertex_count, sf::Pr
 	m_render_texture->draw( vertices, vertex_count, type, states );
 }
 
+void Canvas::SetView( const sf::View& view ) {
+	if( !m_render_texture ) {
+		return;
+	}
+
+	m_render_texture->setView( view );
+}
+
+sf::View Canvas::GetView() const {
+	if( !m_render_texture ) {
+		return sf::View();
+	}
+
+	return m_render_texture->getView();
+}
+
 void Canvas::Bind() {
 	auto allocation = GetAllocation();
 
