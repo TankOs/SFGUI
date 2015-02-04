@@ -333,6 +333,10 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 	m_forward_scroll_prelight = false;
 	m_backward_scroll_prelight = false;
 
+	if( !GetDisplayedTabCount() ) {
+		return;
+	}
+
 	sf::Vector2f tab_size( GetNthTabLabel( 0 )->GetAllocation().width, GetNthTabLabel( 0 )->GetAllocation().height );
 
 	sf::FloatRect scroll_button_allocation( GetAllocation() );
