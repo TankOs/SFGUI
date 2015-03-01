@@ -116,7 +116,12 @@ class MyCustomWidget : public sfg::Widget {
 						sf::Vector2f( GetAllocation().width / 4.f, GetAllocation().height / 4.f ),
 						sf::Vector2f( GetAllocation().width / 2.f, GetAllocation().height / 2.f ),
 						5.f,
-						sf::Color( m_color_distribution( m_generator ), m_color_distribution( m_generator ), m_color_distribution( m_generator ), 255 ),
+						sf::Color(
+							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
+							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
+							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
+							255
+						),
 						inner_border_color,
 						20.f
 					)
@@ -216,7 +221,7 @@ class MyCustomWidget : public sfg::Widget {
 		std::random_device m_random_device;
 		mutable std::mt19937 m_generator;
 		mutable std::uniform_int_distribution<> m_distribution;
-		mutable std::uniform_int_distribution<sf::Uint8> m_color_distribution;
+		mutable std::uniform_int_distribution<> m_color_distribution;
 };
 
 class CustomWidget {
