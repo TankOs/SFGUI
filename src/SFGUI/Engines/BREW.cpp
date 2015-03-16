@@ -38,6 +38,8 @@ void BREW::ResetProperties() {
 	SetProperty( "Window", "HandleSize", 10.f );
 	SetProperty( "Window", "ShadowDistance", 3.f );
 	SetProperty( "Window", "ShadowAlpha", 100.f );
+	SetProperty( "Window", "CloseHeight", 10.f );
+	SetProperty( "Window", "CloseThickness", 3.f );
 
 	// Button-specific.
 	SetProperty( "Button", "BackgroundColor", sf::Color( 0x55, 0x57, 0x52 ) );

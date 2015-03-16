@@ -7,6 +7,9 @@
 
 namespace sfg {
 
+// Signals.
+Signal::SignalID Window::OnCloseButton = 0;
+
 Window::Window( char style ) :
 	m_style( style ),
 	m_dragging( false ),
@@ -155,6 +158,23 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 
 	if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 		if( HasStyle( TITLEBAR ) && !m_dragging ) {
+			if( HasStyle( CLOSE ) ) {
+				auto close_height( Context::Get().GetEngine().GetProperty<float>( "CloseHeight", shared_from_this() ) );
+
+				auto button_margin = ( title_height - close_height ) / 2.f;
+
+				auto close_rect = sf::FloatRect(
+					GetAllocation().left + GetAllocation().width - button_margin - close_height,
+					GetAllocation().top + button_margin,
+					close_height,
+					close_height
+				);
+
+				if( close_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+					GetSignals().Emit( OnCloseButton );
+				}
+			}
+
 			m_dragging = true;
 			m_resizing = false;
 

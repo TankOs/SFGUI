@@ -20,6 +20,8 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 	auto handle_size = GetProperty<float>( "HandleSize", window );
 	auto shadow_alpha = GetProperty<sf::Uint8>( "ShadowAlpha", window );
 	auto title_font_size = GetProperty<unsigned int>( "FontSize", window );
+	auto close_height = GetProperty<float>( "CloseHeight", window );
+	auto close_thickness = GetProperty<float>( "CloseThickness", window );
 	const auto& title_font_name = GetProperty<std::string>( "FontName", window );
 	const auto& title_font = GetResourceManager().GetFont( title_font_name );
 
@@ -89,8 +91,43 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 			)
 		);
 
+		if( window->HasStyle( Window::CLOSE ) ) {
+			auto button_margin = ( title_size - close_height ) / 2.f;
+			auto corner_extent = std::sqrt( ( close_thickness * close_thickness ) / 2.f ) / 2.f;
+
+			queue->Add(
+				Renderer::Get().CreateLine(
+					sf::Vector2f(
+						std::floor( window->GetAllocation().width - border_width - button_margin - close_height + corner_extent + .5f ),
+						std::floor( border_width + button_margin + corner_extent + .5f )
+					),
+					sf::Vector2f(
+						std::floor( window->GetAllocation().width - border_width - button_margin - corner_extent + .5f ),
+						std::floor( border_width + title_size - button_margin - corner_extent + .5f )
+					),
+					title_text_color,
+					close_thickness
+				)
+			);
+
+			queue->Add(
+				Renderer::Get().CreateLine(
+					sf::Vector2f(
+						std::floor( window->GetAllocation().width - border_width - button_margin - close_height + corner_extent + .5f ),
+						std::floor( border_width + title_size - button_margin - corner_extent + .5f )
+					),
+					sf::Vector2f(
+						std::floor( window->GetAllocation().width - border_width - button_margin - corner_extent + .5f ),
+						std::floor( border_width + button_margin + corner_extent + .5f )
+					),
+					title_text_color,
+					close_thickness
+				)
+			);
+		}
+
 		// Find out visible text, count in "...".
-		float avail_width( window->GetAllocation().width - 2.f * border_width - 2.f * title_padding );
+		float avail_width( window->GetAllocation().width - 2.f * border_width - 2.f * title_padding - ( window->HasStyle( Window::CLOSE ) ? title_size : 0 ) );
 
 		sf::Text title_text( window->GetTitle(), *title_font, title_font_size );
 

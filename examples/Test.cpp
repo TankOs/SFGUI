@@ -196,7 +196,7 @@ void SampleApp::Run() {
 	);
 
 	// Create widgets.
-	m_wndmain = sfg::Window::Create( sfg::Window::Style::TITLEBAR | sfg::Window::Style::BACKGROUND | sfg::Window::Style::RESIZE );
+	m_wndmain = sfg::Window::Create( sfg::Window::Style::TITLEBAR | sfg::Window::Style::BACKGROUND | sfg::Window::Style::RESIZE | sfg::Window::Style::CLOSE );
 	m_wndmain->SetTitle( L"Example application" );
 
 	auto btnaddbuttonh = sfg::Button::Create( L"Add button horizontally" );
@@ -439,6 +439,7 @@ void SampleApp::Run() {
 	m_wndmain->Add( notebook1 );
 
 	// Signals.
+	m_wndmain->GetSignal( sfg::Window::OnCloseButton ).Connect( std::bind( &SampleApp::OnHideWindowClicked, this ) );
 	btnaddbuttonh->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnAddButtonHClick, this ) );
 	btnaddbuttonv->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnAddButtonVClick, this ) );
 	m_titlebar_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleTitlebarClick, this ) );

@@ -23,6 +23,7 @@ class SFGUI_API Window : public Bin {
 			BACKGROUND = 1 << 1, //!< Background.
 			RESIZE = 1 << 2, //!< Resizable.
 			SHADOW = 1 << 3, //!< Display Shadow.
+			CLOSE = 1 << 4, //!< Display close button.
 			TOPLEVEL = TITLEBAR | BACKGROUND | RESIZE //!< Toplevel window.
 		};
 
@@ -64,6 +65,9 @@ class SFGUI_API Window : public Bin {
 		 * @return true when window has desired style.
 		 */
 		bool HasStyle( Style style ) const;
+
+		// Signals.
+		static Signal::SignalID OnCloseButton; //!< Fired when close button is pressed.
 
 	protected:
 		/** Constructor.
