@@ -13,6 +13,8 @@ Signal::SignalID Widget::OnStateChange = 0;
 Signal::SignalID Widget::OnGainFocus = 0;
 Signal::SignalID Widget::OnLostFocus = 0;
 
+Signal::SignalID Widget::OnCloseButton = 0;
+
 Signal::SignalID Widget::OnExpose = 0;
 
 Signal::SignalID Widget::OnSizeAllocate = 0;

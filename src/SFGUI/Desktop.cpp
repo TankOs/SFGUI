@@ -85,6 +85,8 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 			}
 			break;
 		}
+		
+		if( widget->IsModal() ) break;
 	}
 
 	// Restore previous context.

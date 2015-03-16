@@ -88,12 +88,14 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 				title_background_color
 			)
 		);
-
-		// Find out visible text, count in "...".
-		float avail_width( window->GetAllocation().width - 2.f * border_width - 2.f * title_padding );
-
+		bool closebtn = window->HasStyle( Window::CLOSE );
+		
 		sf::Text title_text( window->GetTitle(), *title_font, title_font_size );
-
+		sf::Text close_button( "X", *title_font, title_font_size );
+		
+		// Find out visible text, count in "...".
+		float avail_width( window->GetAllocation().width - 2.f * border_width - 2.f * title_padding - closebtn?close_button.getLocalBounds().width-2:0);
+		
 		if( title_text.getLocalBounds().width > avail_width ) {
 			sf::Text dots( "...", *title_font, title_font_size );
 			const sf::String& title_string( window->GetTitle() );
@@ -120,11 +122,29 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 			border_width + title_padding,
 			border_width + title_size / 2.f - static_cast<float>( title_font_size ) / 2.f
 		);
-
+		
 		title_text.setPosition( title_position );
 		title_text.setColor( title_text_color );
-
+		
 		queue->Add( Renderer::Get().CreateText( title_text ) );
+
+		if(closebtn)
+		{
+			sf::Vector2f cb_position(
+				window->GetAllocation().width - border_width - title_padding - close_button.getLocalBounds().width,
+				title_position.y
+			);
+			float* tab = (float*)window->m_closebtn_rect;
+			tab[0] = cb_position.x;
+			tab[1] = cb_position.y;
+			tab[2] = close_button.getLocalBounds().width;
+			tab[3] = close_button.getLocalBounds().height;
+			
+			close_button.setPosition( cb_position );
+			close_button.setColor( title_text_color );
+			queue->Add( Renderer::Get().CreateText( close_button ) );
+		}
+
 	}
 
 	return queue;

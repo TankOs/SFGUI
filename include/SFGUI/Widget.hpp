@@ -273,6 +273,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		static Signal::SignalID OnGainFocus; //!< Fired when focus gained.
 		static Signal::SignalID OnLostFocus; //!< Fired when focus lost.
 
+        static Signal::SignalID OnCloseButton; //!< Fired when close button gets pressed.
 		static Signal::SignalID OnExpose; //!< Fired when widget is being rendered.
 
 		static Signal::SignalID OnSizeAllocate; //!< Fired when widget's allocation changed.
@@ -292,6 +293,21 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		static Signal::SignalID OnKeyPress; //!< Fired when a key is pressed while State == Active.
 		static Signal::SignalID OnKeyRelease; //!< Fired when a key is released while State == Active.
 		static Signal::SignalID OnText; //!< Fired when text is entered while State == Active.
+
+		/** Check if this widget is the modal widget.
+		 * @return true if this widget is the modal widget.
+		 */
+		bool IsModal() const;
+
+        /** Set this widget as the current modal widget.
+		 * Consumes all events.
+		 */
+		void GrabModal();
+
+		/** Unset this widget as the current modal widget.
+		 * Restores normal event propagation.
+		 */
+		void ReleaseModal();
 
 	protected:
 		/** Constructor.
@@ -428,21 +444,6 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @return true if widget has focus.
 		 */
 		static bool HasFocus( PtrConst widget );
-
-		/** Set this widget as the current modal widget.
-		 * Consumes all events.
-		 */
-		void GrabModal();
-
-		/** Unset this widget as the current modal widget.
-		 * Restores normal event propagation.
-		 */
-		void ReleaseModal();
-
-		/** Check if this widget is the modal widget.
-		 * @return true if this widget is the modal widget.
-		 */
-		bool IsModal() const;
 
 	private:
 		struct ClassId {
