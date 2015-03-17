@@ -139,7 +139,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 		m_resizing = false;
 		return;
 	}
-	
+
 	unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& title_font( *Context::Get().GetEngine().GetResourceManager().GetFont( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) ) );
 	float title_height(
@@ -154,10 +154,10 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 		GetAllocation().width,
 		title_height
 	);
-	
+
 	if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 		if( HasStyle( TITLEBAR ) && !m_dragging && HasStyle( MOVABLE ) ) {
-			
+
 			if( HasStyle( CLOSE ) && sf::FloatRect(GetAllocation().left+m_closebtn_rect[0],
 				GetAllocation().top+m_closebtn_rect[1], m_closebtn_rect[2], m_closebtn_rect[3]).contains
 				( static_cast<float>( x ), static_cast<float>( y ) ) )
@@ -165,7 +165,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 					GetSignals().Emit( OnCloseButton );
 					delete this;
 				}
-			
+
 			m_dragging = true;
 			m_resizing = false;
 
