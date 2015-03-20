@@ -1,6 +1,7 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Window.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Context.hpp>
 
 #include <SFML/Graphics/Text.hpp>

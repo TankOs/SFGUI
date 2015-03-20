@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/ScrolledWindow.hpp>
 
 namespace sfg {

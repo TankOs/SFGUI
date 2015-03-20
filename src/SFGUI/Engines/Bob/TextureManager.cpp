@@ -13,7 +13,7 @@ TextureManager::~TextureManager()
 {
 }
 
-std::shared_ptr< Primitive::Texture > TextureManager::GetTexture( std::shared_ptr<const sf::Image> image )
+PrimitiveTexture::Ptr TextureManager::GetTexture( std::shared_ptr<const sf::Image> image )
 {
 	TextureMap::const_iterator it( m_textures.find( image ) );
 	if( it != m_textures.end() ) {
@@ -21,10 +21,10 @@ std::shared_ptr< Primitive::Texture > TextureManager::GetTexture( std::shared_pt
 	}
 
 	if( !image ){
-		return std::shared_ptr< Primitive::Texture >();
+		return PrimitiveTexture::Ptr();
 	}
 
-	std::shared_ptr< Primitive::Texture > texture_handle( Renderer::Get().LoadTexture( *image ) );
+	PrimitiveTexture::Ptr texture_handle( Renderer::Get().LoadTexture( *image ) );
 	m_textures[image] = texture_handle;
 
 	return texture_handle;

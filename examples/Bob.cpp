@@ -1,4 +1,6 @@
 #include <SFGUI/SFGUI.hpp>
+#include <SFGUI/Widgets.hpp>
+#include <SFGUI/Engines/BREW.hpp>
 #include <SFGUI/Engines/Bob.hpp>
 
 #include <SFML/Graphics.hpp>

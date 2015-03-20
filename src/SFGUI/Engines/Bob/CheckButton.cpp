@@ -1,6 +1,7 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/CheckButton.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -44,7 +45,7 @@ std::unique_ptr<RenderQueue> Bob::CreateCheckButtonDrawable( std::shared_ptr<con
 	if( check->GetLabel().getSize() > 0 ) {
 		sf::Text text( check->GetLabel(), font, font_size );
 
-		sf::Vector2f metrics = GetTextMetrics( check->GetLabel(), font, font_size );
+		sf::Vector2f metrics = GetTextStringMetrics( check->GetLabel(), font, font_size );
 		metrics.y = GetFontLineHeight( font, font_size );
 		text.setPosition( box_size + spacing,
 						  check->GetAllocation().height / 2.f - metrics.y / 2.f );

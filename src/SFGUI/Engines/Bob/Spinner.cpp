@@ -1,5 +1,6 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Spinner.hpp>
 
 #include <SFML/Graphics/Transform.hpp>
@@ -14,7 +15,7 @@ std::unique_ptr<RenderQueue> Bob::CreateSpinnerDrawable( std::shared_ptr<const S
     if( !image )
 		return queue;
 
-   	std::shared_ptr< Primitive::Texture > texture( m_texture_manager.GetTexture( image ) );
+   	PrimitiveTexture::Ptr texture( m_texture_manager.GetTexture( image ) );
 	if( !texture )
 		return queue;
 
@@ -35,7 +36,7 @@ std::unique_ptr<RenderQueue> Bob::CreateSpinnerDrawable( std::shared_ptr<const S
 	mat.translate( offset );
 	mat.rotate( ( static_cast<float>( spinner->GetStage() ) / static_cast<float>( steps ) ) * 360.f, dim / 2.f );
 
-	Primitive::Vertex vertex0, vertex1, vertex2, vertex3;
+	PrimitiveVertex vertex0, vertex1, vertex2, vertex3;
 
 	vertex0.position = mat.transformPoint( sf::Vector2f( 0, 0 ) );
 	vertex1.position = mat.transformPoint( sf::Vector2f( 0, dim.y ) );

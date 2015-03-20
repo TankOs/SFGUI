@@ -2,6 +2,7 @@
 
 #include <SFGUI/Config.hpp>
 #include <SFGUI/Primitive.hpp>
+#include <SFGUI/PrimitiveTexture.hpp>
 
 #include <map>
 #include <memory>
@@ -51,10 +52,10 @@ class SFGUI_API TextureManager{
 		/// @endcond
 
 		/** Get a texture from a given image.
-		 * @param  image Image to load.
+		 * @param  image Image to load.b
 		 * @return Pointer to the loaded texture.
 		 */
-		Primitive::Texture::Ptr GetTexture( std::shared_ptr<const sf::Image> image );
+		PrimitiveTexture::Ptr GetTexture( std::shared_ptr<const sf::Image> image );
 
 		/** Unload texture from a previously loaded image.
 		 * @param  image Image to Unload.
@@ -67,7 +68,7 @@ class SFGUI_API TextureManager{
 		void swap( TextureManager& rhs );
 
 	private:
-		typedef Primitive::Texture::Ptr TextureHandle;
+		typedef PrimitiveTexture::Ptr TextureHandle;
 		typedef std::map< std::shared_ptr<const sf::Image>, TextureHandle > TextureMap;
 
 		TextureMap m_textures;

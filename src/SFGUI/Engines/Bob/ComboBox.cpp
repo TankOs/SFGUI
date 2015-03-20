@@ -1,6 +1,7 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/ComboBox.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -38,7 +39,7 @@ std::unique_ptr<RenderQueue> Bob::CreateComboBoxDrawable( std::shared_ptr<const 
 
 	// Arrow.
 	auto arrow_image( GetResourceManager().GetImage( GetProperty<std::string>( "ArrowImage", combo_box ) ) );
-	Primitive::Texture::Ptr arrow_texture( m_texture_manager.GetTexture( arrow_image ) );
+	PrimitiveTexture::Ptr arrow_texture( m_texture_manager.GetTexture( arrow_image ) );
 
 	sf::Vector2f arrow_size = static_cast<sf::Vector2f>( arrow_image->getSize() );
 
@@ -48,11 +49,11 @@ std::unique_ptr<RenderQueue> Bob::CreateComboBoxDrawable( std::shared_ptr<const 
 															 arrow_size.y ),
 											  arrow_texture, sf::FloatRect() ) );
 
-	if( combo_box->IsPoppedUp() ) {
+	if( combo_box->IsDropDownDisplayed() ) {
 		const sf::Vector2f item_size( combo_box->GetAllocation().width, line_height + 2 * padding );
 		sf::Vector2f item_position( 0.f, combo_box->GetAllocation().height );
 
-		auto expanded_height = static_cast<float>( combo_box->GetDisplayedItems() ) * item_size.y;
+		auto expanded_height = static_cast<float>( combo_box->GetDisplayedItemCount() ) * item_size.y;
 
 		// Popup Pane
 		queue->Add( CreateSpritebox( sf::FloatRect( 0.f, combo_box->GetAllocation().height, combo_box->GetAllocation().width, expanded_height ),
@@ -61,7 +62,7 @@ std::unique_ptr<RenderQueue> Bob::CreateComboBoxDrawable( std::shared_ptr<const 
 
 
 		// Items.
-		for( ComboBox::IndexType item_index = combo_box->GetStartItemIndex(); item_index < combo_box->GetStartItemIndex() + combo_box->GetDisplayedItems(); ++item_index ) {
+		for( ComboBox::IndexType item_index = combo_box->GetDisplayedItemStart(); item_index < combo_box->GetDisplayedItemStart() + combo_box->GetDisplayedItemCount(); ++item_index ) {
 			if( combo_box->GetItem( item_index ).getSize() == 0 ) {
 				continue;
 			}

@@ -1,7 +1,10 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Entry.hpp>
+
+#include <SFML/Graphics/Text.hpp>
 
 namespace sfg {
 namespace eng {
@@ -36,7 +39,7 @@ std::unique_ptr<RenderQueue> Bob::CreateEntryDrawable( std::shared_ptr<const Ent
 		}
 
 		// Get metrics.
-		sf::Vector2f metrics( GetTextMetrics( cursor_string, font, font_size ) );
+		sf::Vector2f metrics( GetTextStringMetrics( cursor_string, font, font_size ) );
 
 		queue->Add(
 			Renderer::Get().CreateRect(

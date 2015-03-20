@@ -1,7 +1,10 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/PrimitiveVertex.hpp>
 
 #include <cmath>
+
+#include <SFML/Graphics/Transform.hpp>
 
 namespace sfg {
 namespace eng {
@@ -88,7 +91,7 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 	if( !image )
 		return primitive;
 
-	std::shared_ptr< Primitive::Texture > texture( m_texture_manager.GetTexture( image ) );
+	PrimitiveTexture::Ptr texture( m_texture_manager.GetTexture( image ) );
 	if( !texture )
 		return primitive;
 
@@ -171,7 +174,7 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 
     primitive->AddTexture( texture );
 
-	Primitive::Vertex vertex0, vertex1, vertex2, vertex3;
+	PrimitiveVertex vertex0, vertex1, vertex2, vertex3;
 
     for( unsigned int x = 0; x < horizontal; ++x ){
         for( unsigned int y = 0; y < vertical; ++y ){

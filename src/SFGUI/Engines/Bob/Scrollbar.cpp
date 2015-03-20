@@ -2,9 +2,12 @@
 
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Scrollbar.hpp>
 
 #include <cmath>
+
+#include <SFML/Graphics/Image.hpp>
 
 namespace sfg {
 namespace eng {
@@ -76,7 +79,7 @@ std::unique_ptr<RenderQueue> Bob::CreateScrollbarDrawable( std::shared_ptr<const
 
 	// Arrows
 	std::shared_ptr<const sf::Image> arrow_image( GetResourceManager().GetImage( GetProperty<std::string>( "ArrowImage", scrollbar ) ) );
-	Primitive::Texture::Ptr arrow_texture( m_texture_manager.GetTexture( arrow_image ) );
+	PrimitiveTexture::Ptr arrow_texture( m_texture_manager.GetTexture( arrow_image ) );
 	if( arrow_image ){
 		sf::Vector2f arrow_size;
 		if( orientation == Scrollbar::Orientation::HORIZONTAL ) {

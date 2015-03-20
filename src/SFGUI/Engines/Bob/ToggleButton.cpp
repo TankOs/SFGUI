@@ -1,6 +1,7 @@
 #include <SFGUI/Engines/Bob.hpp>
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/ToggleButton.hpp>
 
 #include <SFML/Graphics/Text.hpp>
@@ -28,7 +29,7 @@ std::unique_ptr<RenderQueue> Bob::CreateToggleButtonDrawable( std::shared_ptr<co
 		float spacing( GetProperty<float>( "Spacing", button ) );
 
 		const sf::Font& font( *GetResourceManager().GetFont( font_name ) );
-		sf::Vector2f metrics = GetTextMetrics( button->GetLabel(), font, font_size );
+		sf::Vector2f metrics = GetTextStringMetrics( button->GetLabel(), font, font_size );
 		metrics.y = GetFontLineHeight( font, font_size );
 
 		sf::Text text( button->GetLabel(), font, font_size );
