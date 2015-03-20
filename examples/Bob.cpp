@@ -15,10 +15,12 @@ class BobExample {
 		static const unsigned int SCREEN_HEIGHT;
 
 		std::string m_engine_name;
+		std::map<std::string, std::string> m_themes;
 
 		void OnButtonClick();
 		void OnAdjustmentChange();
 		void OnToggleSpinner();
+		void OnThemeSelected();
 
 		sfg::SFGUI m_sfgui;
 
@@ -54,8 +56,11 @@ BobExample::BobExample() :
 	//The desktop manages the engine
 	m_desktop.UseEngine<sfg::eng::Bob>();
 
+	m_themes["Grey"] = "data/bob/grey/grey.theme";
+	m_themes["Black"] ="data/bob/black/black.theme";
+
 	//Load a theme, or else you won't see anything
-	m_desktop.LoadThemeFromFile( "data/bob/grey.theme" );
+	m_desktop.LoadThemeFromFile( m_themes["Grey"] );
 }
 
 void BobExample::Run() {
@@ -111,11 +116,15 @@ void BobExample::Run() {
 	m_toggle_button->SetActive( true );
 
 	m_combo_box = sfg::ComboBox::Create();
-	for( int i = 0; i < 50; ++i ) {
-		std::stringstream sstr;
-		sstr << "Item " << i;
 
-		m_combo_box->AppendItem( sstr.str() );
+	// Add all themes to the combobox.
+	for( auto pair : m_themes ) {
+		m_combo_box->AppendItem( pair.first );
+
+		// Set "Grey" as selected item
+		if( pair.first == "Grey" ) {
+			m_combo_box->SelectItem( m_combo_box->GetItemCount() - 1 );
+		}
 	}
 
 	auto separatorh = sfg::Separator::Create( sfg::Separator::Orientation::HORIZONTAL );
@@ -153,6 +162,7 @@ void BobExample::Run() {
 	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &BobExample::OnButtonClick, this ) );
 	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &BobExample::OnAdjustmentChange, this ) );
 	m_toggle_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &BobExample::OnToggleSpinner, this ) );
+	m_combo_box->GetSignal( sfg::ComboBox::OnSelect ).Connect( std::bind( &BobExample::OnThemeSelected, this ) );
 
 	m_scrollbar->SetValue( 30.f );
 
@@ -198,7 +208,7 @@ void BobExample::OnButtonClick() {
 
 		//Don't forget to load a theme again,
 		//since all properties are reset
-		m_desktop.LoadThemeFromFile( "data/bob/grey.theme" );
+		m_desktop.LoadThemeFromFile( m_themes[ m_combo_box->GetSelectedText() ] );
 	}
 }
 
@@ -209,5 +219,9 @@ void BobExample::OnToggleSpinner() {
 	else {
 		m_spinner->Stop();
 	}
+}
+
+void BobExample::OnThemeSelected() {
+	m_desktop.LoadThemeFromFile( m_themes[ m_combo_box->GetSelectedText() ] );
 }
 

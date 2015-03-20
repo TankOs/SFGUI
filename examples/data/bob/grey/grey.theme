@@ -1,0 +1,117 @@
+/* Default theme of the Bob engine */
+
+* {
+	FontSize: 14;
+	FontName: data/bob/grey/LiberationSerif-Regular.ttf;
+	Color: #000000ff;
+}
+
+Button {
+	Image: data/bob/grey/box.png;
+}
+
+Button:PRELIGHT {
+	Image: data/bob/grey/box_prelight.png;
+}
+
+Button:ACTIVE {
+	Image: data/bob/grey/box_active.png;
+}
+
+CheckButton {
+	BoxSize: 18;
+	CheckSize: 6;
+	Spacing: 5;
+	
+	Image: data/bob/grey/box.png;
+	CheckImage: data/bob/grey/check.png;
+}
+
+CheckButton:PRELIGHT {
+	Image: data/bob/grey/box_prelight.png;
+}
+
+CheckButton:ACTIVE {
+	Image: data/bob/grey/box_active.png;
+}
+
+ComboBox {
+	ItemPaddingHorizontally: 6;
+	HighlightPadding: 2;
+
+	FieldImage: data/bob/grey/box.png;
+	PopUpImage: data/bob/grey/box_active.png;
+	HighlightImage: data/bob/grey/combo_box_highlight.png;
+	ArrowImage: data/bob/grey/combo_box_arrow.png;
+}
+
+ComboBox:PRELIGHT {
+	FieldImage: data/bob/grey/box_prelight.png;
+}
+
+ComboBox:ACTIVE {
+	FieldImage: data/bob/grey/box_active.png;
+}
+
+Entry {
+	Image: data/bob/grey/entry.png;
+}
+
+ProgressBar {
+	BackgroundImage: data/bob/grey/progressbar_background.png;
+	BarImage: data/bob/grey/progressbar_bar.png;
+	BarPadding: 2;
+}
+
+Scale {
+	TroughImage: data/bob/grey/scale_trough.png;
+	SliderImage: data/bob/grey/slider.png;
+}
+
+Scrollbar {
+	ArrowImage: data/bob/grey/arrow.png;
+	StepperImage: data/bob/grey/scrollbar_box.png;
+	StepperPressedImage: data/bob/grey/scrollbar_box_active.png;
+	TroughImage: data/bob/grey/trough.png;
+	SliderImage: data/bob/grey/slider.png;
+}
+
+ScrolledWindow {
+	Image: data/bob/grey/window.png;
+	BorderWidth: 3;
+}
+
+Spinner {
+	Image: data/bob/grey/spinner.png;
+	SubRect: 1 1 64 64;
+	Steps: 8;
+	CycleDuration: 800;
+}
+
+ToggleButton {
+	Image: data/bob/grey/box.png;
+	ActiveImage: data/bob/grey/box_active.png;
+}
+
+ToggleButton:PRELIGHT {
+	Image: data/bob/grey/box_prelight.png;
+	ActiveImage: data/bob/grey/box_prelight.png;
+}
+
+ToggleButton:ACTIVE {
+	Image: data/bob/grey/box_active.png;
+	ActiveImage: data/bob/grey/box_active.png;
+}
+
+Separator {
+	Image: data/bob/grey/separator.png;
+}
+
+Window {
+	Image: data/bob/grey/window.png;
+	AreaImage: data/bob/grey/window_area.png;
+	TitleBarImage: data/bob/grey/window_title_bar.png;
+	
+	HandleImage: data/bob/grey/window_handle.png;
+	HandleSize: 10;
+}
