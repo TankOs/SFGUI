@@ -17,16 +17,16 @@ endif()
 find_package( Doxygen REQUIRED )
 
 # Configure Doxygen.
-set( DOXYGEN_OUTPUT_DIR ${PROJECT_BINARY_DIR}/doc )
-set( DOXYGEN_CONFIGURED_INPUT ${DOXYGEN_OUTPUT_DIR}/Doxyfile )
-configure_file( ${PROJECT_SOURCE_DIR}/doc/Doxyfile.in ${DOXYGEN_CONFIGURED_INPUT} @ONLY )
+set( DOXYGEN_OUTPUT_DIR "${PROJECT_BINARY_DIR}/doc" )
+set( DOXYGEN_CONFIGURED_INPUT "${DOXYGEN_OUTPUT_DIR}/Doxyfile" )
+configure_file( "${PROJECT_SOURCE_DIR}/doc/Doxyfile.in" "${DOXYGEN_CONFIGURED_INPUT}" @ONLY )
 
 add_custom_target(
 	doc ALL
-	COMMAND ${CMAKE_COMMAND} -E echo_append "Building API Documentation..."
-	COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_CONFIGURED_INPUT}
-	COMMAND ${CMAKE_COMMAND} -E echo "Done."
-	WORKING_DIRECTORY ${DOXYGEN_INPUT_DIR}
+	COMMAND "${CMAKE_COMMAND}" -E echo_append "Building API Documentation..."
+	COMMAND "${DOXYGEN_EXECUTABLE}" "${DOXYGEN_CONFIGURED_INPUT}"
+	COMMAND "${CMAKE_COMMAND}" -E echo "Done."
+	WORKING_DIRECTORY "${DOXYGEN_INPUT_DIR}"
 )
 
 if( WIN32 )

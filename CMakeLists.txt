@@ -21,7 +21,7 @@ find_package( OpenGL REQUIRED )
 find_package( SFML 2 REQUIRED COMPONENTS graphics window system )
 
 # Find X11 for glX on Linux, checking for UNIX would match other UNIX systems as well
-if( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+if( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
 	find_package( X11 REQUIRED )
 endif()
 
@@ -264,7 +264,7 @@ elseif( APPLE )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${COREFOUNDATION_LIBRARY} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 	set( LIB_PATH "lib" )
-elseif( ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
+elseif( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${X11_LIBRARIES} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 	
