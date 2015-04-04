@@ -23,7 +23,10 @@ class SFGUI_API Window : public Bin {
 			BACKGROUND = 1 << 1, //!< Background.
 			RESIZE = 1 << 2, //!< Resizable.
 			SHADOW = 1 << 3, //!< Display Shadow.
-			TOPLEVEL = TITLEBAR | BACKGROUND | RESIZE //!< Toplevel window.
+			CLOSE = 1 << 4, //!< Closable.
+			MOVABLE = 1 << 5, //!< Movable.
+			TOPLEVEL = TITLEBAR | CLOSE | BACKGROUND | RESIZE | MOVABLE, //!< Toplevel window.
+			DIALOG = TITLEBAR | BACKGROUND //!< Dialog window.
 		};
 
 		/** Create window.
@@ -64,6 +67,8 @@ class SFGUI_API Window : public Bin {
 		 * @return true when window has desired style.
 		 */
 		bool HasStyle( Style style ) const;
+
+        float m_closebtn_rect[4];
 
 	protected:
 		/** Constructor.

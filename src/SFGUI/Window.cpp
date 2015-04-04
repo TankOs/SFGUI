@@ -154,7 +154,16 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 	);
 
 	if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-		if( HasStyle( TITLEBAR ) && !m_dragging ) {
+		if( HasStyle( TITLEBAR ) && !m_dragging && HasStyle( MOVABLE ) ) {
+
+			if( HasStyle( CLOSE ) && sf::FloatRect(GetAllocation().left+m_closebtn_rect[0],
+				GetAllocation().top+m_closebtn_rect[1], m_closebtn_rect[2], m_closebtn_rect[3]).contains
+				( static_cast<float>( x ), static_cast<float>( y ) ) )
+				{
+					GetSignals().Emit( OnCloseButton );
+					delete this;
+				}
+
 			m_dragging = true;
 			m_resizing = false;
 
