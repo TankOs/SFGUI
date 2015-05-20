@@ -2,8 +2,8 @@ cmake_minimum_required( VERSION 2.8 )
 project( SFGUI )
 
 set( SFGUI_MAJOR_VERSION 0 )
-set( SFGUI_MINOR_VERSION 2 )
-set( SFGUI_REVISION_VERSION 3 )
+set( SFGUI_MINOR_VERSION 3 )
+set( SFGUI_REVISION_VERSION 0 )
 
 ### USER INPUT ###
 
@@ -11,14 +11,14 @@ set( SFGUI_BUILD_SHARED_LIBS true CACHE BOOL "Build shared library." )
 set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build examples." )
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include default font in library (DejaVuSans)." )
-set( SFML_STATIC_LIBRARIES true CACHE BOOL "Do you want to link SFML statically?" )
+set( SFML_STATIC_LIBRARIES false CACHE BOOL "Do you want to link SFML statically?" )
 
 # Tell CMake where to find additional find modules
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
 
 # Find packages.
 find_package( OpenGL REQUIRED )
-find_package( SFML 2 REQUIRED COMPONENTS graphics window system )
+find_package( SFML 2.3 REQUIRED COMPONENTS graphics window system )
 
 # Find X11 for glX on Linux, checking for UNIX would match other UNIX systems as well
 if( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
@@ -280,10 +280,10 @@ else()
 endif()
 
 if( CMAKE_CXX_COMPILER MATCHES ".*clang[+][+]" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
-	set( CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++ -Wall -Wextra -Wshadow -Wconversion -Wsign-conversion -Wunused-parameter -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
+	set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wsign-conversion -Wunused-parameter -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
 	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_C_FLAGS}" )
 elseif( CMAKE_COMPILER_IS_GNUCXX )
-	set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wsign-conversion -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
+	set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -Wshadow -Wconversion -Wsign-conversion -Wunused-parameter -Wno-long-long -pedantic ${CMAKE_CXX_FLAGS}" )
 	set( CMAKE_C_FLAGS "-Wall -Wextra -Wshadow -Wconversion -Wno-long-long -pedantic ${CMAKE_C_FLAGS}" )
 endif()
 

@@ -1,5 +1,55 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
+0.3.0
+
+Fixes:
+  - Added GLSL version check to NonLegacyRenderer::IsAvailable().
+  - Added missing CMake parameter quoting.
+  - Fixed Visual Studio compile error.
+  - Fixed crash when using a Notebook with no tabs.
+  - Fixed sfg::Canvas not clearing properly.
+  - Fixed test example files not being copied properly.
+  - Fixed example GUIs not being rendered for a brief period of time when run,
+    moved example theme specification blocks before widget creation to reflect
+    the recommended sequence of constructing the GUI in order to reduce the
+    time required to construct the GUI.
+  - Fixed building shared library in Visual Studio due to std::vector being
+    specified with an incomplete type, made selecting SFML's link type separate
+    from selecting SFGUI's link type, renamed "test" example to "SFGUI-Test" in
+    order to fix a CMake policy warning.
+  - Fixed errors compiling with Visual Studio, fixed warnings about
+    struct/class forward declaration mismatches, got rid of empty
+    ResourceLoader translation unit.
+  - Fixed broken GLX linking.
+  - Fixed glX symbols not being found because was X11 not being linked on
+    Linux, rewrote the FindSFGUI.cmake script.
+  - Fixed Scrollbars not calculating their slider size properly based on the
+    adjustment values, fixed ScrolledWindow sometimes displaying 2 scrollbars
+    instead of only 1 when both are set to automatic and the child viewport is
+    expanded
+  - Fixed SFGUI crashing when connecting a widget to an adjustment and letting
+    the widget get destroyed before the adjustment.
+  - Fixed ScrolledWindow not causing child scrollbars to resize properly,
+    prevented being able to overwrite ScrolledWindow viewport with another even
+    if it isn't added to the container.
+  - Fixed ComboBox trying to select entries with a negative index
+  - Added quotes to CMakeLists.txts where strings with spaces might occur
+  - Fixed static linking and added support for static runtime library.
+  - Fixed clang compiler flags.
+
+Enhancements:
+  - Replaced GLEW with a glLoadGen loader, got rid of GLU dependency.
+  - Implemented non-legacy renderer, moved all GL code out of Renderer and into
+    the Renderer implementations.
+  - Added window close button.
+  - Added custom widget example.
+  - Added support for getting/setting the SFML view of an sfg::Canvas.
+  - Implemented Clear(), Begin() and End() for ComboBoxes (including non-member
+    begin() and end() for native support of range-based for loops), renamed
+    some ComboBox methods and improved documentation, fixed ComboBox not
+    invalidating when elements were removed.
+  - Added support for LIB_SUFFIX on Linux.
+
 0.2.3
 
 Fixes:

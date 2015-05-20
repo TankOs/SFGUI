@@ -58,13 +58,13 @@ class SFGUI_API Button : public Bin {
 
 		bool HandleAdd( Widget::Ptr child ) override;
 
-		void HandleSizeChange();
+		void HandleSizeChange() override;
 
 		void HandleStateChange( State old_state ) override;
 
 	private:
-		void HandleMouseEnter( int x, int y );
-		void HandleMouseLeave( int x, int y );
+		void HandleMouseEnter( int x, int y ) override;
+		void HandleMouseLeave( int x, int y ) override;
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void AllocateChild();
 

@@ -85,7 +85,7 @@ class SFGUI_API Viewport : public Bin {
 		 */
 		Viewport();
 
-		void HandleRequisitionChange();
+		void HandleRequisitionChange() override;
 
 		void UpdateView();
 

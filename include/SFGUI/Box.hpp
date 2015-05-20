@@ -90,9 +90,9 @@ class SFGUI_API Box : public Container {
 		Box( Orientation orientation = Orientation::HORIZONTAL, float spacing = 0.f );
 
 		bool HandleAdd( Widget::Ptr child ) override;
-		void HandleRemove( Widget::Ptr child );
-		void HandleSizeChange();
-		void HandleRequisitionChange();
+		void HandleRemove( Widget::Ptr child ) override;
+		void HandleSizeChange() override;
+		void HandleRequisitionChange() override;
 
 		void AllocateChildren() const;
 		bool IsChildInteresting( Widget* child ) const;

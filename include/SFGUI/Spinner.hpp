@@ -47,7 +47,7 @@ class SFGUI_API Spinner : public Widget {
 		sf::Vector2f CalculateRequisition() override;
 
 	private:
-		void HandleUpdate( float seconds );
+		void HandleUpdate( float seconds ) override;
 
 		float m_elapsed_time;
 

@@ -42,7 +42,7 @@ class SFGUI_API Frame : public Bin, public Misc {
 		sf::Vector2f CalculateRequisition() override;
 
 	private:
-		void HandleSizeChange();
+		void HandleSizeChange() override;
 
 		sf::String m_label;
 };

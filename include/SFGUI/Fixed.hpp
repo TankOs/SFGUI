@@ -44,7 +44,7 @@ class SFGUI_API Fixed : public Container {
 		typedef std::map<Widget::Ptr, sf::Vector2f> ChildrenPositionMap;
 
 		bool HandleAdd( Widget::Ptr child ) override;
-		void HandleRemove( Widget::Ptr child );
+		void HandleRemove( Widget::Ptr child ) override;
 
 		ChildrenPositionMap m_children_position_map;
 };

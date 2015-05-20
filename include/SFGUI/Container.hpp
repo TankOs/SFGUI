@@ -44,7 +44,7 @@ class SFGUI_API Container : public Widget {
 		 */
 		const WidgetsList& GetChildren() const;
 
-		void Refresh();
+		void Refresh() override;
 
 		void HandleEvent( const sf::Event& event ) override;
 

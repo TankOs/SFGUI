@@ -178,7 +178,7 @@ class MyCustomWidget : public sfg::Widget {
 
 	private:
 		// This handler handles mouse enter events.
-		void HandleMouseEnter( int x, int y ) {
+		void HandleMouseEnter( int x, int y ) override {
 			SetLabel( sf::String( "Mouse Enter: " + std::to_string( x ) + "," + std::to_string( y ) ) );
 
 			if( GetState() == State::NORMAL ) {
@@ -187,7 +187,7 @@ class MyCustomWidget : public sfg::Widget {
 		}
 
 		// This handler handles mouse leave events.
-		void HandleMouseLeave( int x, int y ) {
+		void HandleMouseLeave( int x, int y ) override {
 			SetLabel( sf::String( "Mouse Leave: " + std::to_string( x ) + "," + std::to_string( y ) ) );
 
 			if( GetState() == State::PRELIGHT ) {

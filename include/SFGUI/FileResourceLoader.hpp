@@ -13,7 +13,7 @@ class SFGUI_API FileResourceLoader : public ResourceLoader {
 	public:
 		std::shared_ptr<const sf::Font> LoadFont( const std::string& path ) const override;
 		std::shared_ptr<const sf::Image> LoadImage( const std::string& path ) const override;
-		const std::string& GetIdentifier() const;
+		const std::string& GetIdentifier() const override;
 };
 
 }

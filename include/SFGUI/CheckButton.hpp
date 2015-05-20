@@ -27,7 +27,7 @@ class SFGUI_API CheckButton : public ToggleButton {
 
 		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
-		void HandleSizeChange();
+		void HandleSizeChange() override;
 };
 
 }

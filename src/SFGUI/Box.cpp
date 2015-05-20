@@ -57,7 +57,7 @@ void Box::ReorderChild( Widget::Ptr widget, std::size_t position ) {
 	position = std::min( position, m_box_children.size() - 1 );
 
 	ChildrenCont::iterator insertion_point( m_box_children.begin() );
-	std::advance( insertion_point, position );
+	std::advance( insertion_point, static_cast<ChildrenCont::difference_type>( position ) );
 	m_box_children.insert( insertion_point, *iter );
 	m_box_children.erase( iter );
 

@@ -105,8 +105,8 @@ if( SFGUI_FIND_VERSION AND SFGUI_INCLUDE_DIR )
 			set( SFGUI_VERSION_OK false )
 		endif()
 	else()
-		# SFGUI version is < 0.2.3
-		if( SFGUI_REQUESTED_VERSION GREATER 203 )
+		# SFGUI version is < 0.3.0
+		if( SFGUI_REQUESTED_VERSION GREATER 300 )
 			set( SFGUI_VERSION_OK false )
 			set( SFGUI_VERSION_MAJOR 0 )
 			set( SFGUI_VERSION_MINOR x )

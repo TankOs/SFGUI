@@ -80,9 +80,9 @@ class SFGUI_API Window : public Bin {
 		sf::Vector2f CalculateRequisition() override;
 
 	private:
-		void HandleSizeChange();
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
-		void HandleMouseMoveEvent( int x, int y );
+		void HandleSizeChange() override;
+		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleMouseMoveEvent( int x, int y ) override;
 		bool HandleAdd( Widget::Ptr child ) override;
 
 		sf::Vector2f m_drag_offset;
