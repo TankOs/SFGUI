@@ -19,6 +19,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Context.hpp>
 #include <SFML/System/Vector3.hpp>
+#include <sstream>
 #include <cassert>
 
 // ARB_vertex_buffer_object
@@ -45,6 +46,9 @@
 #define GLEXT_glVertexAttribPointer glVertexAttribPointerARB
 #define GLEXT_glEnableVertexAttribArray glEnableVertexAttribArrayARB
 #define GLEXT_glDisableVertexAttribArray glDisableVertexAttribArrayARB
+
+// ARB_shading_language_100 (ensured by sf::Shader::isAvailable())
+#define GLEXT_GL_SHADING_LANGUAGE_VERSION GL_SHADING_LANGUAGE_VERSION_ARB
 
 // ARB_vertex_shader (ensured by sf::Shader::isAvailable())
 #define GLEXT_glGetAttribLocation glGetAttribLocationARB
@@ -214,7 +218,17 @@ bool NonLegacyRenderer::IsAvailable() {
 		}
 
 		if( sf::Shader::isAvailable() ) {
-			shader_supported = true;
+			auto glsl_version_string = CheckGLError( glGetString( GLEXT_GL_SHADING_LANGUAGE_VERSION ) );
+
+			if( glsl_version_string ) {
+				std::stringstream sstr( reinterpret_cast<const char*>( glsl_version_string ) );
+				auto version = 0.0;
+				sstr >> version;
+
+				if( version > 1.29 ) {
+					shader_supported = true;
+				}
+			}
 		}
 
 		if( GLEXT_vertex_array_object ) {
