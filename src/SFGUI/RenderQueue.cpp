@@ -7,6 +7,7 @@
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <iterator>
 
 namespace sfg {
 
