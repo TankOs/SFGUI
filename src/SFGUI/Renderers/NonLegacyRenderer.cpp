@@ -121,13 +121,19 @@ NonLegacyRenderer::NonLegacyRenderer() :
 	if( IsAvailable() ) {
 		auto load_result = m_shader.loadFromMemory(
 			"#version 130\n"
-			"uniform mat4 mvp_matrix;\n"
+			"uniform vec2 viewport_parameters;\n"
 			"in vec2 vertex;\n"
 			"in vec4 color;\n"
 			"in vec2 texture_coordinate;\n"
 			"out vec4 vertex_color;\n"
 			"out vec2 vertex_texture_coordinate;\n"
 			"void main() {\n"
+			"\tmat4 mvp_matrix = mat4(1.f);\n"
+			"\tmvp_matrix[3][0] = -1.f;\n"
+			"\tmvp_matrix[3][1] = 1.f;\n"
+			"\tmvp_matrix[0][0] = viewport_parameters.x;\n"
+			"\tmvp_matrix[1][1] = viewport_parameters.y;\n"
+			"\tmvp_matrix[2][2] = -1.f;\n"
 			"\tgl_Position = mvp_matrix * vec4(vertex.xy, 1.f, 1.f);\n"
 			"\tvertex_color = color;\n"
 			"\tvertex_texture_coordinate = texture_coordinate;\n"
@@ -309,8 +315,7 @@ void NonLegacyRenderer::DisplayImpl() const {
 		if( m_window_size.x && m_window_size.y ) {
 			const_cast<NonLegacyRenderer*>( this )->Invalidate( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 
-			auto view = sf::View( static_cast<sf::Vector2f>( m_window_size / 2 ), static_cast<sf::Vector2f>( m_window_size ) );
-			m_shader.setParameter( "mvp_matrix", view.getTransform() );
+			m_shader.setParameter( "viewport_parameters", 2.f / static_cast<float>( m_window_size.x ), -2.f / static_cast<float>( m_window_size.y ) );
 
 			const_cast<NonLegacyRenderer*>( this )->SetupFBO( m_window_size.x, m_window_size.y );
 		}
