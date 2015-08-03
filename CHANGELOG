@@ -36,6 +36,8 @@ Fixes:
   - Added quotes to CMakeLists.txts where strings with spaces might occur
   - Fixed static linking and added support for static runtime library.
   - Fixed clang compiler flags.
+  - Fixed compilation with VS 2015.
+  - Fixed rendering glitches when viewport is resized.
 
 Enhancements:
   - Replaced GLEW with a glLoadGen loader, got rid of GLU dependency.
