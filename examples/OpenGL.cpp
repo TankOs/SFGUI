@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
+#include <cmath>
 
 int main() {
 	// An sf::Window for raw OpenGL rendering.
