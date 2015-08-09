@@ -383,7 +383,7 @@ bool Widget::HandleEvent( const sf::Event& event ) {
 				if( !IsMouseButtonDown() && IsMouseInWidget() ) {
 					SetMouseButtonDown( event.mouseButton.button );
 				}
-					
+
 				bHandled = HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
 
 				if( IsMouseInWidget() ) {
@@ -459,7 +459,7 @@ bool Widget::HandleEvent( const sf::Event& event ) {
 					GetSignals().Emit( OnText );
 				}
 				break;
-				
+
 			default:
 				break;
 		}
@@ -756,6 +756,7 @@ bool Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*
 
 
 bool Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
+    return false;
 }
 
 void Widget::HandlePositionChange() {
@@ -769,6 +770,7 @@ void Widget::HandleStateChange( State /*old_state*/ ) {
 }
 
 bool Widget::HandleTextEvent( sf::Uint32 /*character*/ ) {
+    return false;
 }
 
 void Widget::HandleMouseEnter( int /*x*/, int /*y*/ ) {

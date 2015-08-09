@@ -131,7 +131,7 @@ const std::string& Window::GetName() const {
 }
 
 bool Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
-	bool bHandled;
+    bool bHandled = false;
 	if( button != sf::Mouse::Left ) {
 		return bHandled;
 	}
