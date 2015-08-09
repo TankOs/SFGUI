@@ -47,7 +47,7 @@ bool Desktop::HandleEvent( const sf::Event& event ) {
 		Widget::Ptr widget( m_children[static_cast<std::size_t>( index )] );
 
 		// Skip widget if not visible or is insensitive.
-		if( !widget->IsLocallyVisible() || widget->GetState() == Widget::State::INSENSITIVE ) {
+		if( !widget->IsLocallyVisible() || !widget->IsEnabled() ) {
 			continue;
 		}
 

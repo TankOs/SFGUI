@@ -1,5 +1,15 @@
 Changelog for SFGUI, http://sfgui.sfml-dev.de/
 
+0.4.0
+
+Enhancements:
+  - HandleEvent now returns true/false to indicate whether or not an event is
+    handled. This allows the gui to trap events and prevent them from being
+    processed further by the application.
+  - Disabling a container now disables all child controls allowing them to 
+    render as disabled.
+  - [TODO] GUI Builder sample.
+
 0.3.0
 
 Fixes:

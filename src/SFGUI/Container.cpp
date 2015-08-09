@@ -8,6 +8,8 @@ void Container::Add( Widget::Ptr widget ) {
 	if( HandleAdd( widget ) ) {
 		widget->SetParent( shared_from_this() );
 		RequestResize();
+		if ( GetState() == State::INSENSITIVE || GetState() == State::PARENT_INSENSITIVE )
+			widget->SetState(State::PARENT_INSENSITIVE);
 	}
 }
 
@@ -15,6 +17,9 @@ void Container::Remove( Widget::Ptr widget ) {
 	WidgetsList::iterator iter( std::find( m_children.begin(), m_children.end(), widget ) );
 
 	if( iter != m_children.end() ) {
+		if ( GetState() == State::PARENT_INSENSITIVE )
+			widget->SetState(State::NORMAL);
+
 		m_children.erase( iter );
 		widget->SetParent( Widget::Ptr() );
 		HandleRemove( widget );
@@ -149,5 +154,31 @@ void Container::HandleViewportUpdate() {
 
 	Widget::HandleViewportUpdate();
 }
+
+void Container::HandleStateChange( State old_state ) {
+    State state = GetState();
+
+	Widget::HandleStateChange(old_state);
+
+	if ( state == State::INSENSITIVE || state == State::PARENT_INSENSITIVE ) {
+		// Unless we were previously something like it.
+		if ( (old_state == State::INSENSITIVE || old_state == State::PARENT_INSENSITIVE) )
+			return;
+
+		for( const auto& child : m_children ) {
+			if ( child->GetState() != State::PARENT_INSENSITIVE )
+				child->SetState( State::PARENT_INSENSITIVE );
+		}
+	}
+	else if ( (old_state == State::INSENSITIVE || old_state == State::PARENT_INSENSITIVE) )
+	{
+		for( const auto& child : m_children ) {
+			if ( child->GetState() == State::PARENT_INSENSITIVE )
+				child->SetState( State::NORMAL );
+		}		
+	}			
+}
+
+
 
 }

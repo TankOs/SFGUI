@@ -35,7 +35,8 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 			ACTIVE, /*!< Active, e.g. when a button is pressed. */
 			PRELIGHT, /*!< Prelight, e.g. when the mouse moves over a widget. */
 			SELECTED, /*!< Selected, e.g. when a list item in a list is selected. */
-			INSENSITIVE /*!< Insensitive, disabled widget. */
+			INSENSITIVE, /*!< Insensitive, disabled widget. */
+			PARENT_INSENSITIVE /* Disabled child widget. */
 		};
 
 		/** Destructor.
@@ -58,6 +59,16 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param show true to show, false to hide.
 		 */
 		void Show( bool show = true );
+	
+		/** Check to see if the widget is enabled.
+		 * @return true when enabled.
+		 */
+		bool IsEnabled() const;
+		
+		/** Enable or disable control.
+		 * @param true to enable or false to disable.
+		 */
+		void Enable( bool enable = true );		 
 
 		/** Get name of widget.
 		 * The name of a widget is a descriptive name of the widget itself. E.g.

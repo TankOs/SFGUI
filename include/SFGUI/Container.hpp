@@ -45,7 +45,7 @@ class SFGUI_API Container : public Widget {
 		const WidgetsList& GetChildren() const;
 
 		void Refresh() override;
-		
+
 		/** Handle event.
 		 * @param event SFML event.
 		 * @return true if event is handled.
@@ -88,6 +88,10 @@ class SFGUI_API Container : public Widget {
 		/** Handle viewport change.
 		 */
 		void HandleViewportUpdate() override;
+		
+		/** Handle state change.
+		 */
+		void HandleStateChange(State old_state) override;		
 
 	private:
 		WidgetsList m_children;

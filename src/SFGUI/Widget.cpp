@@ -294,7 +294,7 @@ bool Widget::HandleEvent( const sf::Event& event ) {
 	}
 
 	// Ignore the event if widget is insensitive
-	if ( GetState() == State::INSENSITIVE ) {
+	if ( !IsEnabled() ) {
 		return bHandled;
 	}
 
@@ -564,6 +564,18 @@ void Widget::Show( bool show ) {
 
 	RequestResize();
 }
+
+bool Widget::IsEnabled() const {
+	return GetState() != State::INSENSITIVE && GetState() != State::PARENT_INSENSITIVE;
+} 
+
+void Widget::Enable( bool enable ) {
+	State cur_state = GetState();
+	if ( enable && cur_state == State::INSENSITIVE )
+		SetState(State::NORMAL);
+	else if ( !enable && cur_state != State::PARENT_INSENSITIVE && cur_state != State::INSENSITIVE )
+		SetState(State::INSENSITIVE);
+}		 
 
 const sf::Vector2f& Widget::GetRequisition() const {
 	return m_requisition;
