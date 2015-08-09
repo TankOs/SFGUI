@@ -381,10 +381,11 @@ bool Widget::HandleEvent( const sf::Event& event ) {
 
 			case sf::Event::MouseButtonPressed:
 				if( !IsMouseButtonDown() && IsMouseInWidget() ) {
+					bHandled = true;
 					SetMouseButtonDown( event.mouseButton.button );
 				}
 
-				bHandled = HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
+				bHandled = HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y ) || bHandled;
 
 				if( IsMouseInWidget() ) {
 					if( event.mouseButton.button == sf::Mouse::Left ) {
@@ -404,6 +405,7 @@ bool Widget::HandleEvent( const sf::Event& event ) {
 
 					// When released inside the widget, the event can be considered a click.
 					if( IsMouseInWidget() ) {
+						bHandled = true;
 						HandleMouseClick( event.mouseButton.button, event.mouseButton.x, event.mouseButton.y );
 
 						if( event.mouseButton.button == sf::Mouse::Left ) {
@@ -415,7 +417,7 @@ bool Widget::HandleEvent( const sf::Event& event ) {
 					}
 				}
 
-				HandleMouseButtonEvent( event.mouseButton.button, false, event.mouseButton.x, event.mouseButton.y );
+				bHandled = HandleMouseButtonEvent( event.mouseButton.button, false, event.mouseButton.x, event.mouseButton.y ) || bHandled;
 
 				if( emit_left_click ) {
 					GetSignals().Emit( OnLeftClick );

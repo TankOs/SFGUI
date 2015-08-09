@@ -86,7 +86,7 @@ bool Container::HandleEvent( const sf::Event& event ) {
 	}
 
 	// Process event for own widget.
-	bHandled = Widget::HandleEvent( event );
+	bHandled = Widget::HandleEvent( event ) || bHandled;
 	return bHandled;
 }
 
