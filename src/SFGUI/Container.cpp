@@ -51,10 +51,11 @@ void Container::Refresh() {
 	Widget::Refresh();
 }
 
-void Container::HandleEvent( const sf::Event& event ) {
+bool Container::HandleEvent( const sf::Event& event ) {
+	bool bHandled = false;
 	// Ignore event when widget is not visible.
 	if( !IsGloballyVisible() ) {
-		return;
+		return bHandled;
 	}
 
 	// Create a copy of the event and transform mouse coordinates to local
@@ -76,11 +77,12 @@ void Container::HandleEvent( const sf::Event& event ) {
 
 	// Pass event to children.
 	for( const auto& child : m_children ) {
-		child->HandleEvent( local_event );
+		bHandled = child->HandleEvent( local_event ) || bHandled;
 	}
 
 	// Process event for own widget.
-	Widget::HandleEvent( event );
+	bHandled = Widget::HandleEvent( event );
+	return bHandled;
 }
 
 bool Container::HandleAdd( Widget::Ptr child ) {

@@ -173,8 +173,9 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * Handle an SFML event and fire proper signals. Normally reimplemented by
 		 * containers only.
 		 * @param event SFML event.
+		 * @return true if event is handled.
 		 */
-		virtual void HandleEvent( const sf::Event& event );
+		virtual bool HandleEvent( const sf::Event& event );
 
 		/** Get absolute position on screen.
 		 * @return Absolute position.
@@ -349,14 +350,16 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param press true if button was pressed, false if released.
 		 * @param x Mouse X position.
 		 * @param y Mouse Y position.
+		 * @return true if Handled.
 		 */
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 
 		/** Handle key event.
 		 * @param key Key.
 		 * @param press true if button was pressed, false if released.
+		 * @return true if Handled.
 		 */
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual bool HandleKeyEvent( sf::Keyboard::Key key, bool press );
 
 		/** Handle widget (relative) position changes.
 		 */
@@ -381,7 +384,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle text event.
 		 * @param character Character.
 		 */
-		virtual void HandleTextEvent( sf::Uint32 character );
+		virtual bool HandleTextEvent( sf::Uint32 character );
 
 		/** Handle mouse enter.
 		 * @param x Mouse X position.

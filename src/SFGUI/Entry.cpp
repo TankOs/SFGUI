@@ -159,27 +159,32 @@ void Entry::MoveCursor( int delta ) {
 	}
 }
 
-void Entry::HandleTextEvent( sf::Uint32 character ) {
+bool Entry::HandleTextEvent( sf::Uint32 character ) {
+	bool bHandled = character > 0x1f && character != 0x7f;
 	if( m_max_length > 0 && static_cast<int>( m_string.getSize() ) >= m_max_length ) {
-		return;
+		return bHandled;
 	}
 
-	if( character > 0x1f && character != 0x7f ) {
+	if( bHandled ) {
 		// not a control character
 		m_string.insert( static_cast<std::size_t>( m_cursor_position ), character );
 		MoveCursor( 1 );
 
 		GetSignals().Emit( OnTextChanged );
 	}
+	
+	return bHandled;
 }
 
-void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
+bool Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
+	bool bHandled = false;
 	if( !press || !HasFocus() ) {
-		return;
+		return bHandled;
 	}
 
 	switch( key ) {
 	case sf::Keyboard::BackSpace: { // backspace
+		bHandled = true;
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.erase( static_cast<std::size_t>( m_cursor_position - 1 ) );
 
@@ -203,6 +208,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 		}
 	} break;
 	case sf::Keyboard::Delete: {
+		bHandled = true;
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < static_cast<int>( m_string.getSize() ) ) ) {
 			m_string.erase( static_cast<std::size_t>( m_cursor_position ) );
 
@@ -225,25 +231,31 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 		}
 	} break;
 	case sf::Keyboard::Home: {
+		bHandled = true;
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
 			SetCursorPosition( 0 );
 		}
 	} break;
 	case sf::Keyboard::End: {
+		bHandled = true;
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
 			SetCursorPosition( static_cast<int>( m_string.getSize() ) );
 		}
 	} break;
 	case sf::Keyboard::Left: {
+		bHandled = true;
 		MoveCursor( -1 );
 	} break;
 	case sf::Keyboard::Right: {
+		bHandled = true;
 		MoveCursor( 1 );
 	} break;
 	default: break;
 	}
+	
+	return bHandled;
 }
 
 void Entry::HandleMouseEnter( int /*x*/, int /*y*/ ) {
@@ -258,18 +270,21 @@ void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	}
 }
 
-void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int /*y*/ ) {
+bool Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int /*y*/ ) {
+	bool bHandled = false;
 	if( !press || !IsMouseInWidget() ) {
-		return;
+		return bHandled;
 	}
 
 	if( button != sf::Mouse::Left ) {
 		// TODO: Maybe some more support for right clicking in the future.
-		return;
+		return bHandled;
 	}
 
+	bHandled = true;
 	GrabFocus();
 	SetCursorPosition( GetPositionFromMouseX( x ) );
+	return bHandled;
 }
 
 void Entry::HandleUpdate( float seconds ) {

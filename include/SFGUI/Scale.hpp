@@ -44,7 +44,7 @@ class SFGUI_API Scale : public Range {
 		 */
 		Scale( Orientation orientation = Orientation::HORIZONTAL );
 
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void HandleMouseMoveEvent( int x, int y ) override;
 
 		std::unique_ptr<sf::Vector2f> m_drag_offset;

@@ -59,8 +59,9 @@ class SFGUI_API Desktop {
 
 		/** Handle event.
 		 * @param event SFML event.
+		 * @return true if event is handled.
 		 */
-		void HandleEvent( const sf::Event& event );
+		bool HandleEvent( const sf::Event& event );
 
 		/** Add widget.
 		 * The added widget will be the new top widget.

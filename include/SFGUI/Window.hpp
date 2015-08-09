@@ -81,7 +81,7 @@ class SFGUI_API Window : public Bin {
 
 	private:
 		void HandleSizeChange() override;
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void HandleMouseMoveEvent( int x, int y ) override;
 		bool HandleAdd( Widget::Ptr child ) override;
 

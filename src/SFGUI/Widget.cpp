@@ -287,24 +287,25 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	}
 }
 
-void Widget::HandleEvent( const sf::Event& event ) {
+bool Widget::HandleEvent( const sf::Event& event ) {
+	bool bHandled = false;
 	if( !IsGloballyVisible() ) {
-		return;
+		return bHandled;
 	}
 
 	// Ignore the event if widget is insensitive
 	if ( GetState() == State::INSENSITIVE ) {
-		return;
+		return bHandled;
 	}
 
 	// Ignore the event if another widget is active.
 	if( !IsActiveWidget() && !IsActiveWidget( PtrConst() ) ) {
-		return;
+		return bHandled;
 	}
 
 	// Ignore the event if another widget is modal.
 	if( HasModal() && !IsModal() ) {
-		return;
+		return bHandled;
 	}
 
 	// Set widget active in context.
@@ -382,8 +383,8 @@ void Widget::HandleEvent( const sf::Event& event ) {
 				if( !IsMouseButtonDown() && IsMouseInWidget() ) {
 					SetMouseButtonDown( event.mouseButton.button );
 				}
-
-				HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
+					
+				bHandled = HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
 
 				if( IsMouseInWidget() ) {
 					if( event.mouseButton.button == sf::Mouse::Left ) {
@@ -437,7 +438,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			case sf::Event::KeyPressed:
 				if( HasFocus() ) {
 					// TODO: Delegate event too when widget's not active?
-					HandleKeyEvent( event.key.code, true );
+					bHandled = HandleKeyEvent( event.key.code, true );
 					GetSignals().Emit( OnKeyPress );
 				}
 
@@ -446,7 +447,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			case sf::Event::KeyReleased:
 				if( HasFocus() ) {
 					// TODO: Delegate event too when widget's not active?
-					HandleKeyEvent( event.key.code, false );
+					bHandled = HandleKeyEvent( event.key.code, false );
 					GetSignals().Emit( OnKeyRelease );
 				}
 				break;
@@ -454,11 +455,11 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			case sf::Event::TextEntered:
 				if( HasFocus() ) {
 					// TODO: Delegate event too when widget's not active?
-					HandleTextEvent( event.text.unicode );
+					bHandled = HandleTextEvent( event.text.unicode );
 					GetSignals().Emit( OnText );
 				}
 				break;
-
+				
 			default:
 				break;
 		}
@@ -467,6 +468,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 		SetState( State::NORMAL );
 		throw;
 	}
+	return bHandled;
 }
 
 void Widget::SetState( State state ) {
@@ -748,10 +750,12 @@ Widget::WidgetsList Widget::GetWidgetsByClass( const std::string& class_name ) {
 void Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
 }
 
-void Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
+bool Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
+	return false;
 }
 
-void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
+
+bool Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
 }
 
 void Widget::HandlePositionChange() {
@@ -764,7 +768,7 @@ void Widget::HandleStateChange( State /*old_state*/ ) {
 	Invalidate();
 }
 
-void Widget::HandleTextEvent( sf::Uint32 /*character*/ ) {
+bool Widget::HandleTextEvent( sf::Uint32 /*character*/ ) {
 }
 
 void Widget::HandleMouseEnter( int /*x*/, int /*y*/ ) {

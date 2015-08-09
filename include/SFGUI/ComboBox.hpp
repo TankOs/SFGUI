@@ -136,7 +136,7 @@ class SFGUI_API ComboBox : public Bin {
 		void HandleMouseEnter( int x, int y ) override;
 		void HandleMouseLeave( int x, int y ) override;
 		void HandleMouseMoveEvent( int x, int y ) override;
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void HandleStateChange( State old_state ) override;
 		void HandleUpdate( float seconds ) override;
 		void ChangeStartEntry();

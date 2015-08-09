@@ -56,7 +56,7 @@ class SFGUI_API Viewport : public Bin {
 		 * Handle an SFML event and fire proper signals.
 		 * @return true when event has been processed (eaten).
 		 */
-		void HandleEvent( const sf::Event& event ) override;
+        bool HandleEvent( const sf::Event& event ) override;
 
 		const std::string& GetName() const override;
 
