@@ -166,7 +166,7 @@ void Container::HandleStateChange( State old_state ) {
 			return;
 
 		for( const auto& child : m_children ) {
-			if ( child->GetState() != State::PARENT_INSENSITIVE )
+			if ( child->GetState() != State::PARENT_INSENSITIVE && child->GetState() != State::INSENSITIVE )
 				child->SetState( State::PARENT_INSENSITIVE );
 		}
 	}
