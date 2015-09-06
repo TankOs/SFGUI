@@ -55,6 +55,7 @@ class SFGUI_API Scrollbar : public Range {
 		Scrollbar( Orientation orientation = Orientation::HORIZONTAL );
 
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		void HandleMouseWheelEvent( int delta, int x, int y ) override;
 		void HandleMouseMoveEvent( int x, int y ) override;
 		void HandleUpdate( float seconds ) override;
 

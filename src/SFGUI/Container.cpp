@@ -61,6 +61,11 @@ void Container::HandleEvent( const sf::Event& event ) {
 	// coordinates if event is a mouse event.
 	sf::Event local_event( event );
 
+	if( local_event.type == sf::Event::MouseWheelMoved ) {
+		local_event.mouseWheel.x -= static_cast<int>( GetAllocation().left );
+		local_event.mouseWheel.y -= static_cast<int>( GetAllocation().top );
+	}
+	
 	if( local_event.type == sf::Event::MouseMoved ) {
 		local_event.mouseMove.x -= static_cast<int>( GetAllocation().left );
 		local_event.mouseMove.y -= static_cast<int>( GetAllocation().top );

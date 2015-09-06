@@ -35,6 +35,7 @@ Signal::SignalID Widget::OnSizeRequest = 0;
 Signal::SignalID Widget::OnMouseEnter = 0;
 Signal::SignalID Widget::OnMouseLeave = 0;
 Signal::SignalID Widget::OnMouseMove = 0;
+Signal::SignalID Widget::OnMouseWheelMoved = 0;
 Signal::SignalID Widget::OnMouseLeftPress = 0;
 Signal::SignalID Widget::OnMouseRightPress = 0;
 Signal::SignalID Widget::OnMouseLeftRelease = 0;
@@ -396,6 +397,15 @@ void Widget::HandleEvent( const sf::Event& event ) {
 
 				break;
 
+			case sf::Event::MouseWheelMoved:
+				HandleMouseWheelEvent( event.mouseWheel.delta, event.mouseWheel.x, event.mouseWheel.y );
+				
+				if( IsMouseInWidget() ) {
+					GetSignals().Emit( OnMouseWheelMoved );
+				}
+
+				break;
+				
 			case sf::Event::MouseButtonReleased:
 				// Only process as a click when mouse button has been pressed inside the widget before.
 				if( IsMouseButtonDown( event.mouseButton.button ) ) {
@@ -746,6 +756,9 @@ Widget::WidgetsList Widget::GetWidgetsByClass( const std::string& class_name ) {
 }
 
 void Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
+}
+
+void Widget::HandleMouseWheelEvent( int /*delta*/, int /*x*/, int /*y*/ ) {
 }
 
 void Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
