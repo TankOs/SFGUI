@@ -247,67 +247,95 @@ Primitive::Ptr Renderer::CreatePane( const sf::Vector2f& position, const sf::Vec
 	auto right = left + size.x;
 	auto bottom = top + size.y;
 
-	Primitive::Ptr rect(
-		CreateQuad(
-			sf::Vector2f( left + border_width, top + border_width ),
-			sf::Vector2f( left + border_width, bottom - border_width ),
-			sf::Vector2f( right - border_width, bottom - border_width ),
-			sf::Vector2f( right - border_width, top + border_width ),
-			color
-		)
+	auto add_quad = [&primitive]( const sf::Vector2f& top_left, const sf::Vector2f& bottom_left,
+                                  const sf::Vector2f& bottom_right, const sf::Vector2f& top_right,
+                                  const sf::Color& quad_color ) {
+		PrimitiveVertex vertex0;
+		PrimitiveVertex vertex1;
+		PrimitiveVertex vertex2;
+		PrimitiveVertex vertex3;
+
+		vertex0.position = sf::Vector2f( std::floor( top_left.x + .5f ), std::floor( top_left.y + .5f ) );
+		vertex1.position = sf::Vector2f( std::floor( bottom_left.x + .5f ), std::floor( bottom_left.y + .5f ) );
+		vertex2.position = sf::Vector2f( std::floor( top_right.x + .5f ), std::floor( top_right.y + .5f ) );
+		vertex3.position = sf::Vector2f( std::floor( bottom_right.x + .5f ), std::floor( bottom_right.y + .5f ) );
+
+		vertex0.color = quad_color;
+		vertex1.color = quad_color;
+		vertex2.color = quad_color;
+		vertex3.color = quad_color;
+
+		vertex0.texture_coordinate = sf::Vector2f( 0.f, 0.f );
+		vertex1.texture_coordinate = sf::Vector2f( 0.f, 1.f );
+		vertex2.texture_coordinate = sf::Vector2f( 1.f, 0.f );
+		vertex3.texture_coordinate = sf::Vector2f( 1.f, 1.f );
+
+		primitive->AddVertex( vertex0 );
+		primitive->AddVertex( vertex1 );
+		primitive->AddVertex( vertex2 );
+		primitive->AddVertex( vertex2 );
+		primitive->AddVertex( vertex1 );
+		primitive->AddVertex( vertex3 );
+	};
+
+	auto add_line = [&add_quad]( const sf::Vector2f& begin, const sf::Vector2f& end, const sf::Color& line_color, float thickness ) {
+		sf::Vector2f normal( end - begin );
+		sf::Vector2f unrotated_normal( normal );
+		std::swap( normal.x, normal.y );
+		auto length = std::sqrt( normal.x * normal.x + normal.y * normal.y );
+
+		if( !( length > 0.f ) ) {
+			return;
+		}
+
+		normal.x /= -length;
+		normal.y /= length;
+		unrotated_normal.x /= length;
+		unrotated_normal.y /= length;
+
+		sf::Vector2f corner0( begin + normal * ( thickness * .5f ) - unrotated_normal * ( thickness * .5f ) );
+		sf::Vector2f corner1( begin - normal * ( thickness * .5f ) - unrotated_normal * ( thickness * .5f ) );
+		sf::Vector2f corner2( end - normal * ( thickness * .5f ) + unrotated_normal * ( thickness * .5f ) );
+		sf::Vector2f corner3( end + normal * ( thickness * .5f ) + unrotated_normal * ( thickness * .5f ) );
+
+		add_quad( corner3, corner2, corner1, corner0, line_color );
+	};
+
+	add_quad(
+		sf::Vector2f( left + border_width, top + border_width ),
+		sf::Vector2f( left + border_width, bottom - border_width ),
+		sf::Vector2f( right - border_width, bottom - border_width ),
+		sf::Vector2f( right - border_width, top + border_width ),
+		color
 	);
 
-	Primitive::Ptr line_top(
-		CreateLine(
-			sf::Vector2f( left + border_width / 2.f, top + border_width / 2.f ),
-			sf::Vector2f( right - border_width / 2.f, top + border_width / 2.f ),
-			light_border,
-			border_width
-		)
+	add_line(
+		sf::Vector2f( left + border_width / 2.f, top + border_width / 2.f ),
+		sf::Vector2f( right - border_width / 2.f, top + border_width / 2.f ),
+		light_border,
+		border_width
 	);
 
-	Primitive::Ptr line_right(
-		CreateLine(
-			sf::Vector2f( right - border_width / 2.f, top + border_width / 2.f ),
-			sf::Vector2f( right - border_width / 2.f, bottom - border_width / 2.f ),
-			dark_border,
-			border_width
-		)
+	add_line(
+		sf::Vector2f( right - border_width / 2.f, top + border_width / 2.f ),
+		sf::Vector2f( right - border_width / 2.f, bottom - border_width / 2.f ),
+		dark_border,
+		border_width
 	);
 
-	Primitive::Ptr line_bottom(
-		CreateLine(
-			sf::Vector2f( right - border_width / 2.f, bottom - border_width / 2.f ),
-			sf::Vector2f( left + border_width / 2.f, bottom - border_width / 2.f ),
-			dark_border,
-			border_width
-		)
+	add_line(
+		sf::Vector2f( right - border_width / 2.f, bottom - border_width / 2.f ),
+		sf::Vector2f( left + border_width / 2.f, bottom - border_width / 2.f ),
+		dark_border,
+		border_width
 	);
 
-	Primitive::Ptr line_left(
-		CreateLine(
-			sf::Vector2f( left + border_width / 2.f, bottom - border_width / 2.f ),
-			sf::Vector2f( left + border_width / 2.f, top + border_width / 2.f ),
-			light_border,
-			border_width
-		)
+	add_line(
+		sf::Vector2f( left + border_width / 2.f, bottom - border_width / 2.f ),
+		sf::Vector2f( left + border_width / 2.f, top + border_width / 2.f ),
+		light_border,
+		border_width
 	);
-
-	primitive->Add( *rect.get() );
-	primitive->Add( *line_top.get() );
-	primitive->Add( *line_right.get() );
-	primitive->Add( *line_bottom.get() );
-	primitive->Add( *line_left.get() );
-
-	std::vector<Primitive::Ptr>::iterator iter( std::find( m_primitives.begin(), m_primitives.end(), rect ) );
-
-	assert( iter != m_primitives.end() );
-
-	iter = m_primitives.erase( iter ); // rect
-	iter = m_primitives.erase( iter ); // line_top
-	iter = m_primitives.erase( iter ); // line_right
-	iter = m_primitives.erase( iter ); // line_bottom
-	m_primitives.erase( iter ); // line_left
 
 	AddPrimitive( primitive );
 
