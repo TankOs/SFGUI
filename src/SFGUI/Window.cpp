@@ -172,6 +172,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 
 				if( close_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 					GetSignals().Emit( OnCloseButton );
+					return;
 				}
 			}
 
