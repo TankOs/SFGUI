@@ -92,20 +92,21 @@ sf::Vector2f Scrollbar::CalculateRequisition() {
 	return sf::Vector2f( mimimum_slider_length, mimimum_slider_length );
 }
 
-void Scrollbar::HandleMouseWheelEvent(int delta, int x, int y) {
-	if (GetOrientation() == Orientation::VERTICAL) {
-		auto slider_rect = GetSliderRect();
+void Scrollbar::HandleMouseWheelEvent( int delta, int x, int y ) {
+	if( GetOrientation() == Orientation::VERTICAL ) {
 		auto alloc = GetAllocation();
-		sf::FloatRect rect(0, 0, alloc.left + slider_rect.width, alloc.height);
+		sf::FloatRect rect(0.f, 0.f, alloc.left + GetSliderRect().width, alloc.height);
 	
-		if( rect.contains( static_cast<float>( x ), static_cast<float>( y ) )) {
+		if( rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			if( delta < 0 ) {
-				for (int i = 0; i < 5; ++i)
+				for (auto i = 0; i < 5; ++i) {
 					GetAdjustment()->Increment();
+				}
 				return;
 			} else {
-				for (int i = 0; i < 5; ++i)
+				for (auto i = 0; i < 5; ++i) {
 					GetAdjustment()->Decrement();
+				}
 				return;
 			}
 		}

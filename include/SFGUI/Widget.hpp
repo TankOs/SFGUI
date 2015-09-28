@@ -348,7 +348,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle mouse wheel move event.
 		 * @param delta Number of ticks the wheel has moved (positive is up, negative is down).
 		 * @param x Mouse X position.
-		 * @param y Mouse  Y position.
+		 * @param y Mouse Y position.
 		 */
 		virtual void HandleMouseWheelEvent( int delta, int x, int y );
 
