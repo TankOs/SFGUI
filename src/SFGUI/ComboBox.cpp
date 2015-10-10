@@ -307,7 +307,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 
 		auto emit_select = false;
 
-		if( ( m_highlighted_item != NONE ) && ( m_active_item != m_highlighted_item ) ) {
+		if( m_highlighted_item != NONE ) {
 			m_active_item = m_highlighted_item;
 			emit_select = true;
 		}
