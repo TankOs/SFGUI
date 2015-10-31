@@ -183,7 +183,7 @@ void ResourceManager::AddImage( const std::string& path, std::shared_ptr<const s
 }
 
 void ResourceManager::SetDefaultFont( std::shared_ptr<const sf::Font> font ) {
-	AddFont( "", font );
+	AddFont( "Default", font );
 }
 
 }
