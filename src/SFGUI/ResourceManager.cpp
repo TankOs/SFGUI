@@ -52,51 +52,22 @@ std::shared_ptr<const sf::Font> ResourceManager::GetFont( const std::string& pat
 	auto loader = GetMatchingLoader( path );
 
 	if( !loader ) {
-		std::shared_ptr<const sf::Font> font;
-
-		if( m_use_default_font ) {
-			auto font_iter = m_fonts.find( path );
-
-			if( font_iter == m_fonts.end() ) {
-#if defined( SFGUI_INCLUDE_FONT )
-				font = std::make_shared<sf::Font>( LoadDejaVuSansFont() );
-#else
+		std::shared_ptr<const sf::Font> font = GetFont( "Default" );
 #if defined( SFGUI_DEBUG )
-				std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
+		std::cerr << "SFGUI warning: Couldn't find a loader for the font \"" << path << "\".\n";
 #endif
-				font = std::make_shared<sf::Font>();
-#endif
-				m_fonts[path] = font;
-			}
-			else {
-				font = font_iter->second;
-			}
-
-		}
+		m_fonts[path] = font;
 		return font;
 	}
 
 	auto font = loader->LoadFont( GetFilename( path, *loader ) );
 
 	if( !font ) {
-		if( m_use_default_font ) {
-			auto font_iter = m_fonts.find( path );
-
-			if( font_iter == m_fonts.end() ) {
-#if defined( SFGUI_INCLUDE_FONT )
-				font = std::make_shared<sf::Font>( LoadDejaVuSansFont() );
-#else
+		std::shared_ptr<const sf::Font> font = GetFont( "Default" );
 #if defined( SFGUI_DEBUG )
-				std::cerr << "SFGUI warning: No default font available. (SFGUI_INCLUDE_FONT = FALSE)\n";
+		std::cerr << "SFGUI warning: Couldn't load the font \"" << path << "\".\n";
 #endif
-				font = std::make_shared<sf::Font>();
-#endif
-				m_fonts[path] = font;
-			}
-			else {
-				font = font_iter->second;
-			}
-		}
+		m_fonts[path] = font;
 		return font;
 	}
 
