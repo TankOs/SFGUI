@@ -21,10 +21,25 @@ std::unique_ptr<RenderQueue> BREW::CreateLabelDrawable( std::shared_ptr<const La
 
 	if( !label->GetLineWrap() ) {
 		// Calculate alignment when word wrap is disabled.
-		sf::Vector2f avail_space( label->GetAllocation().width - label->GetRequisition().x, label->GetAllocation().height - label->GetRequisition().y );
-		sf::Vector2f position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
+		auto metrics = GetTextStringMetrics( label->GetWrappedText(), *font, font_size );
+		metrics.y = GetFontLineHeight( *font, font_size );
 
-		vis_label.setPosition( position.x, position.y );
+		Misc::Alignment nAlignment = label->GetAlignment();
+		sf::Vector2f nPosition;
+		nPosition.x = label->GetAllocation().width / nAlignment.position.x;
+		nPosition.y = label->GetAllocation().height / nAlignment.position.y - metrics.y / 2.f;
+
+		switch ( nAlignment.justification ) {
+		case Misc::Justify::LEFT:
+			break;
+		case Misc::Justify::RIGHT:
+			nPosition.x -= metrics.x;
+		default:
+			nPosition.x += metrics.x / 2.f;
+			break;
+		}
+
+		vis_label.setPosition( nPosition.x, nPosition.y );
 	}
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );

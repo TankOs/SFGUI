@@ -39,7 +39,7 @@ void Alignment::HandleSizeChange() {
 	UpdateChild();
 }
 
-void Alignment::HandleAlignmentChange( const sf::Vector2f& /*old_alignment*/ ) {
+void Alignment::HandleAlignmentChange( const Misc::Alignment& /*old_alignment*/ ) {
 	UpdateChild();
 }
 
@@ -64,8 +64,8 @@ void Alignment::UpdateChild() {
 #endif
 	}
 
-	allocation.left = spare_space.x * GetAlignment().x;
-	allocation.top = spare_space.y * GetAlignment().y;
+	allocation.left = spare_space.x * GetAlignment().position.x;
+	allocation.top = spare_space.y * GetAlignment().position.y;
 	allocation.width -= spare_space.x;
 	allocation.height -= spare_space.y;
 

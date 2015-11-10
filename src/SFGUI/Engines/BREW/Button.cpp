@@ -45,22 +45,40 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 		sf::Text text( button->GetLabel(), *font, font_size );
 		auto offset = ( button->GetState() == Button::State::ACTIVE ) ? border_width : 0.f;
 		sfg::Widget::PtrConst child( button->GetChild() );
+		Misc::Alignment nAlignment = button->GetAlignment();
+		sf::Vector2f nPosition;
+		nPosition.y = button->GetAllocation().height / nAlignment.position.y - metrics.y / 2.f + offset;
 
 		if( !child ) {
-			text.setPosition(
-				button->GetAllocation().width / 2.f - metrics.x / 2.f + offset,
-				button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
-			);
+			nPosition.x = button->GetAllocation().width / nAlignment.position.x;
+				switch ( nAlignment.justification ) {
+			case Misc::Justify::LEFT:
+				nPosition.x += offset;
+				break;
+			case Misc::Justify::RIGHT:
+				nPosition.x -= metrics.x + offset;
+				break;
+			default:
+				nPosition.x += metrics.x / 2.f + offset;
+				break;
+			}
 		}
 		else {
 			float width( button->GetAllocation().width - spacing - child->GetAllocation().width );
-
-			text.setPosition(
-				child->GetAllocation().width + spacing + (width / 2.f - metrics.x / 2.f) + offset,
-				button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
-			);
+			nPosition.x = child->GetAllocation().width + spacing + width / nAlignment.position.x;
+			switch ( nAlignment.justification ) {
+			case Misc::Justify::LEFT:
+				nPosition.x +=  offset;
+				break;
+			case Misc::Justify::RIGHT:
+				nPosition.x -=  metrics.x + offset;
+				break;
+			default:
+				nPosition.x -= metrics.x / 2.f - offset;
+				break;
+			}
 		}
-
+		text.setPosition( nPosition.x, nPosition.y );
 		text.setColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}

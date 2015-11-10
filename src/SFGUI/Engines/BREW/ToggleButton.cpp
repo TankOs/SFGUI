@@ -44,11 +44,23 @@ std::unique_ptr<RenderQueue> BREW::CreateToggleButtonDrawable( std::shared_ptr<c
 		sf::Text text( button->GetLabel(), *font, font_size );
 		auto offset = ( ( button->GetState() == Button::State::ACTIVE ) || button->IsActive() ) ? border_width : 0.f;
 
-		text.setPosition(
-			button->GetAllocation().width / 2.f - metrics.x / 2.f + offset,
-			button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
-		);
+		Misc::Alignment nAlignment = button->GetAlignment();
+		sf::Vector2f nPosition;
+		nPosition.x = button->GetAllocation().width / nAlignment.position.x;
+		nPosition.y = button->GetAllocation().height / nAlignment.position.y - metrics.y / 2.f + offset;
 
+		switch ( nAlignment.justification ) {
+		case Misc::Justify::LEFT:
+			nPosition.x += offset;
+			break;
+		case Misc::Justify::RIGHT:
+			nPosition.x -= metrics.x + offset;
+		default:
+			nPosition.x += metrics.x / 2.f + offset;
+			break;
+		}
+
+		text.setPosition( nPosition.x, nPosition.y );
 		text.setColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFGUI/Button.hpp>
+#include <SFGUI/Misc.hpp>
 
 #include <memory>
 

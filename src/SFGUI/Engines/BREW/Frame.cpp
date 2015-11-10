@@ -53,7 +53,7 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 	auto label_start_x = line_height;
 	auto label_end_x = line_height;
 
-	auto alignment = frame->GetAlignment().x;
+	auto alignment = frame->GetAlignment().position.x;
 
 	if( frame->GetLabel().getSize() > 0 ) {
 		auto metrics = GetTextStringMetrics( frame->GetLabel(), *font, font_size );

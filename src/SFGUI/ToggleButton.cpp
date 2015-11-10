@@ -16,6 +16,7 @@ ToggleButton::ToggleButton() :
 ToggleButton::Ptr ToggleButton::Create( const sf::String& label ) {
 	Ptr button( new ToggleButton );
 	button->SetLabel( label );
+	button->SetAlignment( sf::Vector2f( 0.5f, 0.5f ), Misc::Justify::CENTRE );
 	return button;
 }
 

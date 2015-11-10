@@ -11,13 +11,14 @@ Label::Label( const sf::String& text ) :
 	m_text( text ),
 	m_wrap( false )
 {
-	SetAlignment( sf::Vector2f( .5f, .5f ) );
+	SetAlignment( sf::Vector2f( .5f, .5f ), Misc::Justify::CENTRE);
 	Invalidate();
 }
 
 Label::Ptr Label::Create( const sf::String& text ) {
 	Ptr label( new Label( text ) );
 	label->RequestResize();
+	label->SetAlignment( sf::Vector2f( 0.5f, 0.5f ), Misc::Justify::CENTRE );
 	return label;
 }
 
