@@ -47,11 +47,11 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 		sfg::Widget::PtrConst child( button->GetChild() );
 		Misc::Alignment nAlignment = button->GetAlignment();
 		sf::Vector2f nPosition;
-		nPosition.y = button->GetAllocation().height / nAlignment.position.y - metrics.y / 2.f + offset;
+		nPosition.y = button->GetAllocation().height * nAlignment.position.y - metrics.y / 2.f + offset;
 
 		if( !child ) {
-			nPosition.x = button->GetAllocation().width / nAlignment.position.x;
-				switch ( nAlignment.justification ) {
+			nPosition.x = button->GetAllocation().width * nAlignment.position.x;
+			switch ( nAlignment.justification ) {
 			case Misc::Justify::LEFT:
 				nPosition.x += offset;
 				break;
@@ -59,13 +59,13 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 				nPosition.x -= metrics.x + offset;
 				break;
 			default:
-				nPosition.x += metrics.x / 2.f + offset;
+				nPosition.x -= metrics.x / 2.f + offset;
 				break;
 			}
 		}
 		else {
 			float width( button->GetAllocation().width - spacing - child->GetAllocation().width );
-			nPosition.x = child->GetAllocation().width + spacing + width / nAlignment.position.x;
+			nPosition.x = child->GetAllocation().width + spacing + width * nAlignment.position.x;
 			switch ( nAlignment.justification ) {
 			case Misc::Justify::LEFT:
 				nPosition.x +=  offset;

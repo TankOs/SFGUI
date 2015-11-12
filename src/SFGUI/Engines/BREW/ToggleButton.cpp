@@ -46,8 +46,8 @@ std::unique_ptr<RenderQueue> BREW::CreateToggleButtonDrawable( std::shared_ptr<c
 
 		Misc::Alignment nAlignment = button->GetAlignment();
 		sf::Vector2f nPosition;
-		nPosition.x = button->GetAllocation().width / nAlignment.position.x;
-		nPosition.y = button->GetAllocation().height / nAlignment.position.y - metrics.y / 2.f + offset;
+		nPosition.x = button->GetAllocation().width * nAlignment.position.x;
+		nPosition.y = button->GetAllocation().height * nAlignment.position.y - metrics.y / 2.f + offset;
 
 		switch ( nAlignment.justification ) {
 		case Misc::Justify::LEFT:
@@ -55,8 +55,9 @@ std::unique_ptr<RenderQueue> BREW::CreateToggleButtonDrawable( std::shared_ptr<c
 			break;
 		case Misc::Justify::RIGHT:
 			nPosition.x -= metrics.x + offset;
+			break;
 		default:
-			nPosition.x += metrics.x / 2.f + offset;
+			nPosition.x -= metrics.x / 2.f + offset;
 			break;
 		}
 

@@ -26,19 +26,19 @@ std::unique_ptr<RenderQueue> BREW::CreateLabelDrawable( std::shared_ptr<const La
 
 		Misc::Alignment nAlignment = label->GetAlignment();
 		sf::Vector2f nPosition;
-		nPosition.x = label->GetAllocation().width / nAlignment.position.x;
-		nPosition.y = label->GetAllocation().height / nAlignment.position.y - metrics.y / 2.f;
+		nPosition.x = label->GetAllocation().width * nAlignment.position.x;
+		nPosition.y = label->GetAllocation().height * nAlignment.position.y - metrics.y / 2.f;
 
 		switch ( nAlignment.justification ) {
 		case Misc::Justify::LEFT:
 			break;
 		case Misc::Justify::RIGHT:
 			nPosition.x -= metrics.x;
+			break;
 		default:
-			nPosition.x += metrics.x / 2.f;
+			nPosition.x -= metrics.x / 2.f;
 			break;
 		}
-
 		vis_label.setPosition( nPosition.x, nPosition.y );
 	}
 
