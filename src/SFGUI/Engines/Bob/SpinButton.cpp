@@ -8,7 +8,7 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> Bob::CreateSpinButtonDrawable( std::shared_ptr<const SpinButton> /*spinbutton*/ ) const {
-    return nullptr;
+	return nullptr;
 }
 
 }

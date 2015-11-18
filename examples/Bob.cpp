@@ -55,13 +55,13 @@ BobExample::BobExample() :
 	m_desktop(),
 	m_window( sfg::Window::Create() )
 {
-	//The desktop manages the engine
+	// The desktop manages the engine
 	m_desktop.UseEngine<sfg::eng::Bob>();
 
 	m_themes["Grey"] = "data/bob/grey/grey.theme";
 	m_themes["Black"] ="data/bob/black/black.theme";
 
-	//Load a theme, or else you won't see anything
+	// Load a theme, or else you won't see anything
 	m_desktop.LoadThemeFromFile( m_themes["Grey"] );
 }
 
@@ -208,8 +208,8 @@ void BobExample::OnButtonClick() {
 		m_engine_name = "Bob";
 		m_desktop.UseEngine< sfg::eng::Bob >();
 
-		//Don't forget to load a theme again,
-		//since all properties are reset
+		// Don't forget to load a theme again,
+		// since all properties are reset
 		m_desktop.LoadThemeFromFile( m_themes[ m_combo_box->GetSelectedText() ] );
 	}
 }

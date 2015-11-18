@@ -19,7 +19,7 @@ std::unique_ptr<RenderQueue> Bob::CreateEntryDrawable( std::shared_ptr<const Ent
 
 	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	//Spritebox
+	// Spritebox
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, entry->GetAllocation().width, entry->GetAllocation().height ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "Image", entry ) ),
 								 GetProperty<UintRect>( "SubRect", entry ) ) );

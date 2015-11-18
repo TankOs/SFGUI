@@ -16,7 +16,7 @@ std::unique_ptr<RenderQueue> Bob::CreateButtonDrawable( std::shared_ptr<const Bu
 								 GetResourceManager().GetImage( GetProperty<std::string>( "Image", button ) ),
 								 GetProperty<UintRect>( "SubRect", button ) ) );
 
-	//Label
+	// Label
 	if( button->GetLabel().getSize() > 0 ) {
 		const std::string& font_name( GetProperty<std::string>( "FontName", button ) );
 		unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );

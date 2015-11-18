@@ -21,7 +21,7 @@ std::unique_ptr<RenderQueue> Bob::CreateToggleButtonDrawable( std::shared_ptr<co
 								 GetResourceManager().GetImage( GetProperty<std::string>( image_name, button ) ),
 								 GetProperty<UintRect>( "SubRect", button ) ) );
 
-	//Label
+	// Label
 	if( button->GetLabel().getSize() > 0 ) {
 		const std::string& font_name( GetProperty<std::string>( "FontName", button ) );
 		unsigned int font_size( GetProperty<unsigned int>( "FontSize", button ) );

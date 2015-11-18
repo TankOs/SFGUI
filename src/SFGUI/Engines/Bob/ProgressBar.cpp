@@ -12,12 +12,12 @@ namespace eng {
 std::unique_ptr<RenderQueue> Bob::CreateProgressBarDrawable( std::shared_ptr<const ProgressBar> progress_bar ) const {
 	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	//Background
+	// Background
 	queue->Add( CreateSpritebox( sf::FloatRect( 0.f, 0.f, progress_bar->GetAllocation().width, progress_bar->GetAllocation().height ),
 								 GetResourceManager().GetImage( GetProperty<std::string>( "BackgroundImage", progress_bar ) ),
 								 GetProperty<UintRect>( "BackgroundSubRect", progress_bar ) ) );
 
-	//Bar
+	// Bar
 	if( progress_bar->GetFraction() > 0.f ) {
 		float padding = GetProperty<float>( "BarPadding", progress_bar );
 

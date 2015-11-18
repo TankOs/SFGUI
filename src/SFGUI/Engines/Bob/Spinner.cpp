@@ -9,20 +9,20 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> Bob::CreateSpinnerDrawable( std::shared_ptr<const Spinner> spinner ) const {
-    std::unique_ptr<RenderQueue> queue( new RenderQueue );
+	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-    std::shared_ptr<const sf::Image> image = GetResourceManager().GetImage( GetProperty<std::string>( "Image", spinner ) );
-    if( !image )
+	std::shared_ptr<const sf::Image> image = GetResourceManager().GetImage( GetProperty<std::string>( "Image", spinner ) );
+	if( !image )
 		return queue;
 
-   	PrimitiveTexture::Ptr texture( m_texture_manager.GetTexture( image ) );
+	PrimitiveTexture::Ptr texture( m_texture_manager.GetTexture( image ) );
 	if( !texture )
 		return queue;
 
-    auto subRect = GetProperty<sf::FloatRect>( "SubRect", spinner );
-    if( subRect == sf::FloatRect() ) {
+	auto subRect = GetProperty<sf::FloatRect>( "SubRect", spinner );
+	if( subRect == sf::FloatRect() ) {
 		subRect = sf::FloatRect( 0.f, 0.f, static_cast<float>( texture->size.x ), static_cast<float>( texture->size.y ) );
-    }
+	}
 
 	// Only quadratic spinners.
 	float size = std::min( spinner->GetAllocation().width, spinner->GetAllocation().height );
@@ -61,7 +61,7 @@ std::unique_ptr<RenderQueue> Bob::CreateSpinnerDrawable( std::shared_ptr<const S
 	Renderer::Get().AddPrimitive( primitive );
 	queue->Add( primitive );
 
-    return queue;
+	return queue;
 }
 
 }

@@ -118,9 +118,9 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 
 	// Calculate the coordinates of the spritebox depending on the number of divisions
 
-    // Round for pixel perfect rendering
-    sf::Vector2f border_step( std::floor( float_sub_rect.width   / static_cast<float>( horizontal ) + 0.5f),
-                              std::floor( float_sub_rect.height  / static_cast<float>( vertical )   + 0.5f) );
+	// Round for pixel perfect rendering
+	sf::Vector2f border_step( std::floor( float_sub_rect.width   / static_cast<float>( horizontal ) + 0.5f),
+							  std::floor( float_sub_rect.height  / static_cast<float>( vertical )   + 0.5f) );
 
 	if (dimension.x < float_sub_rect.width ){
 		border_step.x = dimension.x / static_cast<float>( horizontal ) ;
@@ -129,20 +129,20 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 		border_step.y = dimension.y / static_cast<float>( vertical ) ;
 	}
 
-    std::vector<float> x_coords( horizontal + 1) , y_coords( vertical + 1 );
-    x_coords[0] = 0.f;
-    y_coords[0] = 0.f;
+	std::vector<float> x_coords( horizontal + 1) , y_coords( vertical + 1 );
+	x_coords[0] = 0.f;
+	y_coords[0] = 0.f;
 
-    // Make sure we don't cause a overflow for only one division in either direction
-    if( horizontal > 1 ){
+	// Make sure we don't cause a overflow for only one division in either direction
+	if( horizontal > 1 ){
 		x_coords[horizontal - 1] = dimension.x  - border_step.x;
-    }
-    if( vertical > 1){
+	}
+	if( vertical > 1){
 		y_coords[vertical - 1] = dimension.y - border_step.y;
-    }
+	}
 
-    x_coords[1] = border_step.x;
-    y_coords[1] = border_step.y;
+	x_coords[1] = border_step.x;
+	y_coords[1] = border_step.y;
 
 	x_coords[horizontal] = dimension.x;
 	y_coords[vertical]   = dimension.y;
@@ -172,12 +172,12 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 
 	sf::Vector2f texStep( float_sub_rect.width / static_cast<float>( horizontal ), float_sub_rect.height / static_cast<float>( vertical ) );
 
-    primitive->AddTexture( texture );
+	primitive->AddTexture( texture );
 
 	PrimitiveVertex vertex0, vertex1, vertex2, vertex3;
 
-    for( unsigned int x = 0; x < horizontal; ++x ){
-        for( unsigned int y = 0; y < vertical; ++y ){
+	for( unsigned int x = 0; x < horizontal; ++x ){
+		for( unsigned int y = 0; y < vertical; ++y ){
 			vertex0.position = inverse_transform.transformPoint( sf::Vector2f( x_coords[x],   y_coords[y]   ) + position );
 			vertex1.position = inverse_transform.transformPoint( sf::Vector2f( x_coords[x],   y_coords[y+1] ) + position );
 			vertex2.position = inverse_transform.transformPoint( sf::Vector2f( x_coords[x+1], y_coords[y]   ) + position );
@@ -194,12 +194,12 @@ Primitive::Ptr Bob::CreateSpritebox( const sf::FloatRect& rect, std::shared_ptr<
 			primitive->AddVertex( vertex2 );
 			primitive->AddVertex( vertex1 );
 			primitive->AddVertex( vertex3 );
-        }
-    }
+		}
+	}
 
 	Renderer::Get().AddPrimitive( primitive );
 
-    return primitive;
+	return primitive;
 }
 
 }

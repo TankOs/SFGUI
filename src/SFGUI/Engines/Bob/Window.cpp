@@ -43,7 +43,7 @@ std::unique_ptr<RenderQueue> Bob::CreateWindowDrawable( std::shared_ptr<const Wi
 				Renderer::Get().CreateSprite(
 					sf::FloatRect( window->GetAllocation().width  - static_cast<float>( handle_image->getSize().x ),
 								   window->GetAllocation().height - static_cast<float>( handle_image->getSize().y ),
-					               static_cast<float>( handle_image->getSize().x ),
+								   static_cast<float>( handle_image->getSize().x ),
 								   static_cast<float>( handle_image->getSize().y )
 					),
 					handle_texture
