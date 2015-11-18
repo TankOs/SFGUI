@@ -24,7 +24,7 @@ void Bob::ResetProperties() {
 	// Set defaults.
 	SetProperty( "*", "Color", sf::Color::Black );
 	SetProperty( "*", "FontSize", 14 );
-	SetProperty( "*", "FontName", "" ); // Uses SFGUI's default font when empty.
+	SetProperty( "*", "FontName", "Default" );
 	SetProperty( "*", "BackgroundColor", sf::Color::White );
 	SetProperty( "*", "Padding", 5.f );
 	SetProperty( "*", "SubRect", UintRect( 0, 0, 0, 0 ) );
