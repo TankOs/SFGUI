@@ -66,6 +66,11 @@ void Container::HandleEvent( const sf::Event& event ) {
 		local_event.mouseMove.y -= static_cast<int>( GetAllocation().top );
 	}
 
+	if( local_event.type == sf::Event::MouseWheelMoved ) {
+		local_event.mouseWheel.x -= static_cast<int>( GetAllocation().left );
+		local_event.mouseWheel.y -= static_cast<int>( GetAllocation().top );
+	}
+
 	if(
 		local_event.type == sf::Event::MouseButtonPressed ||
 		local_event.type == sf::Event::MouseButtonReleased

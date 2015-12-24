@@ -286,6 +286,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		static Signal::SignalID OnMouseEnter; //!< Fired when mouse entered widget.
 		static Signal::SignalID OnMouseLeave; //!< Fired when mouse left widget.
 		static Signal::SignalID OnMouseMove; //!< Fired when mouse moved over widget.
+		static Signal::SignalID OnMouseWheelMoved; //!< Fired when wheel moved.
 		static Signal::SignalID OnMouseLeftPress; //!< Fired when left button pressed.
 		static Signal::SignalID OnMouseRightPress; //!< Fired when right button pressed.
 		static Signal::SignalID OnMouseLeftRelease; //!< Fired when left button released.
@@ -343,6 +344,13 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param y Mouse Y position.
 		 */
 		virtual void HandleMouseMoveEvent( int x, int y );
+		
+		/** Handle mouse wheel move event.
+		 * @param delta Number of ticks the wheel has moved (positive is up, negative is down).
+		 * @param x Mouse X position.
+		 * @param y Mouse Y position.
+		 */
+		virtual void HandleMouseWheelEvent( int delta, int x, int y );
 
 		/** Handle mouse button event.
 		 * @param button Mouse button.
