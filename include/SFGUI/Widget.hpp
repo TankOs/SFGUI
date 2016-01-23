@@ -194,7 +194,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		virtual void UpdateDrawablePosition() const;
 
 		/** Set ID.
-		 * Mostly used for identification and by styles (#widget_id).
+		 * Mostly used for identification and by styles (\#widget_id).
 		 * @param id ID.
 		 */
 		void SetId( const std::string& id );
