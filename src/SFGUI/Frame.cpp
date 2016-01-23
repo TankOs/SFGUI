@@ -2,6 +2,7 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
+#include <algorithm>
 
 namespace sfg {
 
@@ -34,12 +35,12 @@ sf::Vector2f Frame::CalculateRequisition() {
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 
 	sf::Vector2f requisition( Context::Get().GetEngine().GetTextStringMetrics( m_label, font, font_size ) );
-	requisition.x += 2 * label_padding + 4 * border_width;
-	requisition.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 4 * border_width;
+	requisition.x += 2.f * label_padding + 4.f * border_width + 2.f * padding;
+	requisition.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 4.f * border_width;
 
 	auto child = GetChild();
 	if( child ) {
-		requisition.x += 2.f * padding + child->GetRequisition().x;
+		requisition.x = std::max( 4.f * border_width + 2.f * padding + child->GetRequisition().x, requisition.x );
 		requisition.y += 2.f * padding + child->GetRequisition().y;
 	}
 

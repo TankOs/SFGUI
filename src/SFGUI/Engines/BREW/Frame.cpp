@@ -9,6 +9,7 @@ namespace sfg {
 namespace eng {
 
 std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Frame> frame ) const {
+	auto padding = GetProperty<float>( "Padding", frame );
 	auto border_color = GetProperty<sf::Color>( "BorderColor", frame );
 	auto color = GetProperty<sf::Color>( "Color", frame );
 	auto border_width = GetProperty<float>( "BorderWidth", frame );
@@ -50,17 +51,17 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 		)
 	);
 
-	auto label_start_x = line_height;
-	auto label_end_x = line_height;
+	auto label_start_x = 0.f;
+	auto label_end_x = 0.f;
 
 	auto alignment = frame->GetAlignment().x;
 
 	if( frame->GetLabel().getSize() > 0 ) {
 		auto metrics = GetTextStringMetrics( frame->GetLabel(), *font, font_size );
-		metrics.x += ( 2 * label_padding );
+		metrics.x += 2.f * label_padding;
 
-		label_start_x += ( alignment * ( frame->GetAllocation().width - 2 * line_height - metrics.x ) );
-		label_end_x += ( metrics.x + alignment * ( frame->GetAllocation().width - 2 * line_height - metrics.x ) );
+		label_start_x = padding + ( alignment * ( frame->GetAllocation().width - 2.f * padding - metrics.x ) );
+		label_end_x = label_start_x + metrics.x;
 
 		sf::Text text( frame->GetLabel(), *font, font_size );
 		text.setPosition( label_start_x + label_padding, border_width / 2.f );
