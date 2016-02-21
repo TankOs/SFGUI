@@ -116,6 +116,7 @@ set(
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Frame.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Image.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Label.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/ListBox.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Notebook.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/ProgressBar.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Scale.cpp"
@@ -269,7 +270,7 @@ elseif( APPLE )
 elseif( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
 	target_link_libraries( sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} ${X11_LIBRARIES} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
-	
+
 	if( LIB_SUFFIX )
 		set( LIB_PATH "lib${LIB_SUFFIX}" )
 	else()

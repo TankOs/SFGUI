@@ -43,6 +43,7 @@ class SFGUI_API BREW : public Engine {
 		std::unique_ptr<RenderQueue> CreateSpinnerDrawable( std::shared_ptr<const Spinner> spinner ) const override;
 		std::unique_ptr<RenderQueue> CreateComboBoxDrawable( std::shared_ptr<const ComboBox> combo_box ) const override;
 		std::unique_ptr<RenderQueue> CreateSpinButtonDrawable( std::shared_ptr<const SpinButton> spinbutton ) const override;
+		std::unique_ptr<RenderQueue> CreateListBoxDrawable( std::shared_ptr<const ListBox> listbox ) const override;
 
 	private:
 		static std::unique_ptr<RenderQueue> CreateBorder( const sf::FloatRect& rect, float border_width, const sf::Color& light_color, const sf::Color& dark_color );

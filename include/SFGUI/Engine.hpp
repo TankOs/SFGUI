@@ -40,6 +40,7 @@ class Notebook;
 class Spinner;
 class ComboBox;
 class SpinButton;
+class ListBox;
 
 class Selector;
 class RenderQueue;
@@ -163,6 +164,12 @@ class SFGUI_API Engine {
 		 * @return New drawable object (unmanaged memory!).
 		 */
 		virtual std::unique_ptr<RenderQueue> CreateSpinButtonDrawable( std::shared_ptr<const SpinButton> spinbutton ) const = 0;
+
+		/** Create drawable for listbox widgets.
+		 * @param listbox Widget.
+		 * @return New drawable object (unmanaged memory!).
+		 */
+		virtual std::unique_ptr<RenderQueue> CreateListBoxDrawable( std::shared_ptr<const ListBox> listbox ) const = 0;
 
 		/** Get maximum line height.
 		 * @param font Font.

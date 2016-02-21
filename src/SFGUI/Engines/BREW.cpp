@@ -153,6 +153,12 @@ void BREW::ResetProperties() {
 	SetProperty( "SpinButton", "StepperSpeed", 10.f );
 	SetProperty( "SpinButton", "StepperRepeatDelay", 500 );
 
+	// ListBox-specific.
+	SetProperty( "ListBox", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
+	SetProperty( "ListBox", "Color", sf::Color::White );
+	SetProperty( "ListBox", "HighlightedColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "ListBox", "SelectedColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
+
 	// (Re)Enable automatic widget refreshing after we are done setting all these properties.
 	SetAutoRefresh( true );
 }

@@ -8,66 +8,89 @@
 
 int main() {
 	sfg::SFGUI sfgui;
-	sf::RenderWindow window(sf::VideoMode(640, 480), "ListBox Example");
+	sf::RenderWindow window(sf::VideoMode(800, 600), "ListBox Example");
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(30);
 
     sfg::Desktop desktop;
 
-	auto sfg_window = sfg::Window::Create();
-	sfg_window->SetTitle( "ListBoxExample" );
+	auto window1 = sfg::Window::Create();
+	window1->SetTitle( "ListBox with ItemTextPolicy::RESIZE_LISTBOX" );
 
-	auto box_outer = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 15.0f );
-	auto box_inner1 = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.0f );
-	auto box_inner2 = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.0f );
+	auto box1 = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
+	box1->SetSpacing( 5.f );
+	box1->PackEnd( sfg::Label::Create( "The minimum width\nof this ListBox\ncorresponds to the largest\nitem's text width." ), false, true );
 
-	auto label1 = sfg::Label::Create("I'm single-select list.");
-	auto label2 = sfg::Label::Create("I'm multi-select list.");
+	auto listbox1 = sfg::ListBox::Create();
+	listbox1->AppendItem( "This is the first item" );
+	listbox1->AppendItem( "Second item" );
+	listbox1->AppendItem( "Third item which is a bit large" );
+	listbox1->AppendItem( "Fourth item" );
+	listbox1->AppendItem( "Fifth item" );
+	listbox1->AppendItem( "Sixth item" );
+	listbox1->AppendItem( "Last one !" );
+	box1->PackEnd( listbox1 );
 
-	auto input1 = sfg::Entry::Create("");
-	auto input2 = sfg::Entry::Create("");
+	window1->Add( box1 );
 
-    auto list1 = sfg::ListBox::Create();
-        list1->AppendItem( "Item1" );
-        list1->AppendItem( "Item2" );
-        list1->AppendItem( "Item3" );
-    list1->GetSignal( sfg::ListBox::OnSelect ).Connect( std::bind( [list1, input1](){ if(list1->GetSelectedItemsCount()) input1->SetText(list1->GetSelectedItemText()); else input1->SetText(""); } ) );
+	auto window2 = sfg::Window::Create();
+	window2->SetTitle( "ListBox with ItemTextPolicy::SHRINK" );
 
-    auto list2 = sfg::ListBox::Create();
-        list2->AppendItem( "Item1" );
-        list2->AppendItem( "Item2" );
-        list2->AppendItem( "Item3" );
-    list2->multiselect = true;
-    list2->GetSignal( sfg::ListBox::OnSelect ).Connect( std::bind( [list2, input2](){
-        std::string str = "";
-        for(unsigned i=0; i<list2->GetSelectedItemsCount(); i++)
-        {
-            str += list2->GetSelectedItemText(i);
-            str += ' ';
-        }
-        input2->SetText(str);
-    } ) );
+	auto box2 = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
+	box2->SetSpacing( 5.f );
+	auto label2 = sfg::Label::Create( "The items' texts\nare shrinked if the\nListBox is not big\nenough." );
+	box2->PackEnd( label2, false, true );
 
-	box_outer->Pack(box_inner1);
-	box_outer->Pack(box_inner2);
+	auto listbox2 = sfg::ListBox::Create();
+	listbox2->AppendItem( "This is the first item (long text)" );
+	listbox2->AppendItem( "Second item" );
+	listbox2->AppendItem( "Third item which is very long !" );
+	listbox2->AppendItem( "Fourth item" );
+	listbox2->AppendItem( "Fifth item" );
+	listbox2->AppendItem( "Sixth item, again it's too large !" );
+	listbox2->AppendItem( "Last one !" );
+	listbox2->SetItemTextPolicy( sfg::ListBox::ItemTextPolicy::SHRINK );
+	box2->PackEnd( listbox2 );
 
-	box_inner1->Pack(label1);
-	box_inner1->Pack(list1);
-	box_inner1->Pack(input1);
+	window2->Add( box2 );
 
-	box_inner2->Pack(label2);
-	box_inner2->Pack(list2);
-	box_inner2->Pack(input2);
+	auto window3 = sfg::Window::Create();
+	window3->SetTitle( "ListBox with ItemTextPolicy::SHRINK" );
 
-	sfg_window->Add( box_outer );
-	desktop.Add( sfg_window );
+	auto box3 = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
+	box3->SetSpacing( 5.f );
+	auto label3 = sfg::Label::Create( "You can select multiple\nitems in this ListBox." );
+	box3->PackEnd( label3, false, true );
 
-	sfg_window->SetPosition(sf::Vector2f(window.getSize().x/2-sfg_window->GetRequisition().x/2, window.getSize().y/2-sfg_window->GetRequisition().y/2));
+	auto listbox3 = sfg::ListBox::Create();
+	listbox3->AppendItem( "First item" );
+	listbox3->AppendItem( "Second item" );
+	listbox3->AppendItem( "Third item" );
+	listbox3->AppendItem( "Fourth item" );
+	listbox3->AppendItem( "Fifth item" );
+	listbox3->AppendItem( "Sixth item" );
+	listbox3->AppendItem( "Last one !" );
+	listbox3->SetSelectionMode( sfg::ListBox::SelectionMode::MULTI_SELECTION );
+	listbox3->SetSelection( {1, 3, 4, 5} );
+	box3->PackEnd( listbox3 );
+
+	window3->Add( box3 );
+
+	desktop.Add( window1 );
+	desktop.Add( window2 );
+	desktop.Add( window3 );
+
+	sf::Vector2f windowSize( static_cast<float>( window.getSize().x ), static_cast<float>( window.getSize().y ) );
+
+	window2->SetPosition(sf::Vector2f(windowSize.x/2.f - window2->GetRequisition().x/2.f, windowSize.y/2.f - window2->GetRequisition().y/2.f));
+	window3->SetPosition(sf::Vector2f(windowSize.x - window3->GetRequisition().x - 100.f, windowSize.y - window3->GetRequisition().y - 100.f));
 
     sf::Event event;
     sf::Clock clock;
 
     window.resetGLStates();
+
+	int i = 0;
 
     while (window.isOpen())
         {
@@ -78,7 +101,23 @@ int main() {
                 {
                     case sf::Event::Closed:
                         window.close();
-                    break;
+                    	break;
+					case sf::Event::KeyPressed:
+						if( event.key.code == sf::Keyboard::R ) {
+							listbox3->RemoveItem(2);
+						} else if( event.key.code == sf::Keyboard::I ) {
+							listbox3->InsertItem(3, "Inserted item #" + std::to_string(i));
+							++i;
+						} else if( event.key.code == sf::Keyboard::A) {
+							listbox3->AppendItem("Appended item #" + std::to_string(i));
+							++i;
+						} else if( event.key.code == sf::Keyboard::P) {
+							listbox3->PrependItem("Prepended item #" + std::to_string(i));
+							++i;
+						}
+						break;
+					default:
+						break;
                 }
             }
             desktop.Update( clock.restart().asSeconds() );
