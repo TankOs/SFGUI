@@ -5,6 +5,9 @@
 
 namespace sfg {
 
+// Signals.
+Signal::SignalID Notebook::OnTabChange = 0;
+
 Notebook::Notebook() :
 	m_current_page( 0 ),
 	m_prelight_tab( -1 ),
@@ -171,6 +174,8 @@ void Notebook::RemovePage( IndexType page_number ) {
 
 	RecalculateSize();
 
+	auto old_page = m_current_page;
+
 	// Correct m_current_page if the removed page was before the current page.
 	// It can't be the current page because we took care of that already.
 	if( page_number < GetCurrentPage() ) {
@@ -179,6 +184,10 @@ void Notebook::RemovePage( IndexType page_number ) {
 
 	// The same for the displayed tabs
 	m_first_tab = std::max( m_first_tab - 1, 0 );
+
+	if( m_current_page != old_page ) {
+		GetSignals().Emit( OnTabChange );
+	}
 
 	Invalidate();
 }
@@ -194,6 +203,8 @@ Notebook::IndexType Notebook::GetPageOf( Widget::Ptr widget ) const {
 }
 
 void Notebook::NextPage() {
+	auto old_page = m_current_page;
+
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
 		m_children[static_cast<std::size_t>( m_current_page )].child->Show( false );
 	}
@@ -204,10 +215,16 @@ void Notebook::NextPage() {
 		m_children[static_cast<std::size_t>( m_current_page )].child->Show( true );
 	}
 
+	if( m_current_page != old_page ) {
+		GetSignals().Emit( OnTabChange );
+	}
+
 	Invalidate();
 }
 
 void Notebook::PreviousPage() {
+	auto old_page = m_current_page;
+
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
 		m_children[static_cast<std::size_t>( m_current_page )].child->Show( false );
 	}
@@ -216,6 +233,10 @@ void Notebook::PreviousPage() {
 
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
 		m_children[static_cast<std::size_t>( m_current_page )].child->Show( true );
+	}
+
+	if( m_current_page != old_page ) {
+		GetSignals().Emit( OnTabChange );
 	}
 
 	Invalidate();
@@ -287,6 +308,8 @@ void Notebook::SetTabLabel( Widget::Ptr child, Widget::Ptr tab_label ) {
 }
 
 void Notebook::SetCurrentPage( IndexType page_number ) {
+	auto old_page = m_current_page;
+
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
 		m_children[static_cast<std::size_t>( m_current_page )].child->Show( false );
 	}
@@ -300,6 +323,10 @@ void Notebook::SetCurrentPage( IndexType page_number ) {
 
 	if( ( m_current_page >= 0 ) && ( m_current_page < GetPageCount() ) ) {
 		m_children[static_cast<std::size_t>( m_current_page )].child->Show( true );
+	}
+
+	if( m_current_page != old_page ) {
+		GetSignals().Emit( OnTabChange );
 	}
 
 	Invalidate();

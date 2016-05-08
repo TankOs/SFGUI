@@ -169,6 +169,9 @@ class SFGUI_API Notebook : public Container {
 		 */
 		bool IsBackwardScrollPrelight() const;
 
+		// Signals.
+		static Signal::SignalID OnTabChange; //!< Fired when current tab is changed.
+
 	protected:
 		/** Ctor.
 		 */
