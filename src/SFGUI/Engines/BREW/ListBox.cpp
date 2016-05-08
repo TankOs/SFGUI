@@ -43,10 +43,15 @@ std::unique_ptr<RenderQueue> BREW::CreateListBoxDrawable( std::shared_ptr<const 
         auto& itemText = listbox->GetDisplayedItemText( i );
 
         auto metrics = GetTextStringMetrics( itemText, *font, font_size );
-		metrics.y = GetFontLineHeight( *font, font_size );
+		metrics.y = GetFontLineHeight( *font, font_size ); // Text only size
+
+        auto item_height = listbox->GetItemHeight(); // Height of an item (including the image)
 
         sf::Text text( itemText, *font, font_size );
-        text.setPosition(itemPosition);
+        text.setPosition(
+            itemPosition.x + ( listbox->GetImagesSize() != sf::Vector2f() ? text_padding + listbox->GetImagesSize().x : 0.f ),
+            itemPosition.y + item_height/2.f - metrics.y / 2.f
+        );
         text.setColor(text_color);
 
         if( listbox->IsItemSelected( i ) ) {
@@ -56,7 +61,7 @@ std::unique_ptr<RenderQueue> BREW::CreateListBoxDrawable( std::shared_ptr<const 
                         itemPosition.x - text_padding,
                         itemPosition.y - text_padding,
                         listbox->GetAllocation().width - 2 * border_width,
-                        std::min(metrics.y + text_padding * 2, listbox->GetAllocation().height - (itemPosition.y - text_padding) - border_width)
+                        std::min(item_height + text_padding * 2, listbox->GetAllocation().height - (itemPosition.y - text_padding) - border_width)
                         // Avoid the selection box to go further than the widget's height when the last displayed item padding space is not fully displayed.
                     ),
                     selected_color
@@ -69,7 +74,7 @@ std::unique_ptr<RenderQueue> BREW::CreateListBoxDrawable( std::shared_ptr<const 
                         itemPosition.x - text_padding,
                         itemPosition.y - text_padding,
                         listbox->GetAllocation().width - 2 * border_width,
-                        std::min(metrics.y + text_padding * 2, listbox->GetAllocation().height - (itemPosition.y - text_padding) - border_width)
+                        std::min(item_height + text_padding * 2, listbox->GetAllocation().height - (itemPosition.y - text_padding) - border_width)
                         // Avoid the highlight box to go further than the widget's height when the last displayed item padding space is not fully displayed.
                     ),
                     highlighted_color
@@ -77,9 +82,24 @@ std::unique_ptr<RenderQueue> BREW::CreateListBoxDrawable( std::shared_ptr<const 
             );
         }
 
+        if( listbox->GetImagesSize() != sf::Vector2f() && listbox->GetItemImage( i ).getSize() != sf::Vector2u() ) {
+            auto texture = Renderer::Get().LoadTexture( listbox->GetItemImage( i ) );
+            queue->Add(
+        		Renderer::Get().CreateSprite(
+        			sf::FloatRect(
+        				itemPosition.x,
+        				itemPosition.y,
+        				listbox->GetImagesSize().x,
+        				listbox->GetImagesSize().y
+        			),
+        			texture
+        		)
+        	);
+        }
+
         queue->Add( Renderer::Get().CreateText(text) );
 
-        itemPosition += sf::Vector2f( 0.f, metrics.y + text_padding * 2 );
+        itemPosition += sf::Vector2f( 0.f, item_height + text_padding * 2 );
     }
 
     return queue;

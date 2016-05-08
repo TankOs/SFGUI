@@ -12,6 +12,12 @@ int main() {
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(30);
 
+	sf::Image firstImage;
+	firstImage.loadFromFile("data/add.png");
+
+	sf::Image secondImage;
+	secondImage.loadFromFile("data/delete.png");
+
     sfg::Desktop desktop;
 
 	auto window1 = sfg::Window::Create();
@@ -30,6 +36,7 @@ int main() {
 	listbox1->AppendItem( "Sixth item" );
 	listbox1->AppendItem( "Last one !" );
 	box1->PackEnd( listbox1 );
+	listbox1->SetImagesSize(sf::Vector2f(32.f, 32.f));
 
 	window1->Add( box1 );
 
@@ -43,14 +50,15 @@ int main() {
 
 	auto listbox2 = sfg::ListBox::Create();
 	listbox2->AppendItem( "This is the first item (long text)" );
-	listbox2->AppendItem( "Second item" );
-	listbox2->AppendItem( "Third item which is very long !" );
+	listbox2->AppendItem( "Second item", firstImage );
+	listbox2->AppendItem( "Third item which is very long !", secondImage );
 	listbox2->AppendItem( "Fourth item" );
 	listbox2->AppendItem( "Fifth item" );
 	listbox2->AppendItem( "Sixth item, again it's too large !" );
 	listbox2->AppendItem( "Last one !" );
 	listbox2->SetItemTextPolicy( sfg::ListBox::ItemTextPolicy::SHRINK );
 	box2->PackEnd( listbox2 );
+	listbox2->SetImagesSize(sf::Vector2f(32.f, 32.f));
 
 	window2->Add( box2 );
 

@@ -3,6 +3,7 @@
 #include <SFGUI/Container.hpp>
 #include <SFGUI/Scrollbar.hpp>
 
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/System/String.hpp>
 
 #include <initializer_list>
@@ -14,6 +15,12 @@ namespace sfg {
 
 class SFGUI_API ListBox : public Container {
 	public:
+
+		struct Item {
+			sf::String text;
+			sf::Image image;
+		};
+
 		typedef std::shared_ptr<ListBox> Ptr; //!< Shared pointer.
 		typedef std::shared_ptr<const ListBox> PtrConst; //!< Shared pointer.
 		typedef int IndexType;
@@ -47,16 +54,18 @@ class SFGUI_API ListBox : public Container {
 
 		const std::string& GetName() const override;
 
-		void AppendItem( const sf::String& str );
-		void InsertItem( IndexType index, const sf::String& str );
-		void PrependItem( const sf::String& str );
-		void ChangeItem( IndexType index, const sf::String& str );
+		void AppendItem( const sf::String& str, const sf::Image& image = sf::Image() );
+		void InsertItem( IndexType index, const sf::String& str, const sf::Image& image = sf::Image() );
+		void PrependItem( const sf::String& str, const sf::Image& image = sf::Image() );
+		void ChangeItemText( IndexType index, const sf::String& str );
+		void ChangeItemImage( IndexType index, const sf::Image& image );
 		void RemoveItem( IndexType index );
 		void Clear();
 
 		IndexType GetItemsCount() const;
 		const sf::String& GetItemText( IndexType index ) const;
 		const sf::String& GetDisplayedItemText( IndexType index ) const;
+		const sf::Image& GetItemImage( IndexType index ) const;
 
 		IndexType GetHighlightedItem() const;
 
@@ -83,6 +92,11 @@ class SFGUI_API ListBox : public Container {
 
 		ItemTextPolicy GetItemTextPolicy() const;
 		void SetItemTextPolicy( ItemTextPolicy policy );
+
+		sf::Vector2f GetImagesSize() const;
+		void SetImagesSize(sf::Vector2f size);
+
+		float GetItemHeight() const;
 
         // Signals.
 		static Signal::SignalID OnSelect; //!< Fired when an entry is selected.
@@ -116,7 +130,7 @@ class SFGUI_API ListBox : public Container {
 
 		void OnScrollbarChanged();
 
-		std::vector<sf::String> m_items;
+		std::vector<Item> m_items;
 
 		SelectionMode m_selection_mode;
 		std::set<IndexType> m_selected_items;
@@ -131,6 +145,8 @@ class SFGUI_API ListBox : public Container {
 
 		ItemTextPolicy m_item_text_policy;
 		std::vector<sf::String> m_displayed_items_texts;
+
+		sf::Vector2f m_images_size;
 };
 
 }

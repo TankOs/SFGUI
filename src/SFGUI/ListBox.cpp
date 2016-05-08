@@ -12,6 +12,7 @@ namespace sfg {
 
 const ListBox::IndexType ListBox::NONE = -1;
 static const sf::String EMPTY = "";
+static const sf::Image EMPTY_IMAGE = sf::Image();
 
 Signal::SignalID ListBox::OnSelect = 0;
 
@@ -32,7 +33,8 @@ ListBox::ListBox() :
 	m_vertical_scrollbar(nullptr),
 	m_scrollbar_policy(ScrollbarPolicy::DEFAULT),
 	m_item_text_policy(ItemTextPolicy::DEFAULT),
-	m_displayed_items_texts()
+	m_displayed_items_texts(),
+	m_images_size()
 {
 	m_vertical_scrollbar = Scrollbar::Create(Scrollbar::Orientation::VERTICAL);
 	m_vertical_scrollbar->GetAdjustment()->GetSignal(sfg::Adjustment::OnChange).Connect(std::bind(&ListBox::OnScrollbarChanged, this));
@@ -52,15 +54,16 @@ sf::Vector2f ListBox::CalculateRequisition() {
 
 	// Calculate the max width of items
 	float items_max_width = 0.f;
-	for( const sf::String& item : m_items ) {
-		items_max_width = std::max(items_max_width, Context::Get().GetEngine().GetTextStringMetrics(item, *font, font_size).x);
+	for( const Item& item : m_items ) {
+		items_max_width = std::max(items_max_width, Context::Get().GetEngine().GetTextStringMetrics(item.text, *font, font_size).x);
 	}
 
 	return sf::Vector2f(
 		border_width * 2 + text_padding * 2
-		 	+ ( m_item_text_policy == ItemTextPolicy::RESIZE_LISTBOX ? items_max_width : dots_width )
-			+ ( IsScrollbarVisible() ? m_vertical_scrollbar->GetRequisition().x : 0 ),
-		std::max(m_vertical_scrollbar->GetRequisition().y, 50.f)
+			+ ( m_item_text_policy == ItemTextPolicy::RESIZE_LISTBOX ? items_max_width : dots_width )
+			+ ( IsScrollbarVisible() ? m_vertical_scrollbar->GetRequisition().x : 0.f )
+			+ ( GetImagesSize() != sf::Vector2f() ? m_images_size.x + text_padding : 0.f ), /* Add a supplementary text padding between the image and the text */
+		std::max(std::max(m_vertical_scrollbar->GetRequisition().y, 50.f), GetItemHeight() + 2*text_padding)
 	);
 }
 
@@ -69,8 +72,8 @@ const std::string& ListBox::GetName() const {
 	return name;
 }
 
-void ListBox::AppendItem( const sf::String& str ) {
-    m_items.push_back( str );
+void ListBox::AppendItem( const sf::String& str, const sf::Image& image ) {
+    m_items.push_back( Item{ str, image } );
 
 	UpdateDisplayedItems();
     RequestResize();
@@ -78,8 +81,8 @@ void ListBox::AppendItem( const sf::String& str ) {
     Invalidate();
 }
 
-void ListBox::InsertItem( IndexType index, const sf::String& str ) {
-	m_items.insert( m_items.begin() + index, str );
+void ListBox::InsertItem( IndexType index, const sf::String& str, const sf::Image& image ) {
+	m_items.insert( m_items.begin() + index, Item{ str, image } );
 
 	// Update next selected indexes (decrement them).
 	std::set<IndexType> new_selected_items;
@@ -102,8 +105,8 @@ void ListBox::InsertItem( IndexType index, const sf::String& str ) {
     Invalidate();
 }
 
-void ListBox::PrependItem( const sf::String& str ) {
-    m_items.insert( m_items.begin(), str );
+void ListBox::PrependItem( const sf::String& str, const sf::Image& image ) {
+    m_items.insert( m_items.begin(), Item{ str, image } );
 
 	// Update selected items indexes.
 	std::set<IndexType> new_selected_items;
@@ -123,14 +126,24 @@ void ListBox::PrependItem( const sf::String& str ) {
     Invalidate();
 }
 
-void ListBox::ChangeItem( IndexType index, const sf::String& str ) {
+void ListBox::ChangeItemText( IndexType index, const sf::String& str ) {
 	if( index >= static_cast<IndexType>( m_items.size() ) || index < 0 ) {
 		return;
 	}
 
-	m_items[ static_cast<std::size_t>( index ) ] = str;
+	m_items[ static_cast<std::size_t>( index ) ].text = str;
 
 	UpdateDisplayedItems();
+	Invalidate();
+}
+
+void ListBox::ChangeItemImage( IndexType index, const sf::Image& image ) {
+	if( index >= static_cast<IndexType>( m_items.size() ) || index < 0 ) {
+		return;
+	}
+
+	m_items[ static_cast<std::size_t>( index ) ].image = image;
+
 	Invalidate();
 }
 
@@ -184,7 +197,7 @@ const sf::String& ListBox::GetItemText( IndexType index ) const {
 		return EMPTY;
 	}
 
-	return m_items[ static_cast<std::size_t>( index )];
+	return m_items[ static_cast<std::size_t>( index )].text;
 }
 
 const sf::String& ListBox::GetDisplayedItemText( IndexType index ) const {
@@ -197,6 +210,14 @@ const sf::String& ListBox::GetDisplayedItemText( IndexType index ) const {
 	} else {
 		return m_displayed_items_texts[ static_cast<std::size_t>( index ) ];
 	}
+}
+
+const sf::Image& ListBox::GetItemImage( IndexType index ) const {
+	if( index >= static_cast<IndexType>( m_items.size() ) || index < 0 ) {
+		return EMPTY_IMAGE;
+	}
+
+	return m_items[ static_cast<std::size_t>( index )].image;
 }
 
 ListBox::IndexType ListBox::GetHighlightedItem() const {
@@ -275,7 +296,7 @@ ListBox::IndexType ListBox::GetSelectedItemIndex( IndexType index ) const {
 }
 
 const sf::String& ListBox::GetSelectedItemText( IndexType index ) const {
-	return m_items[ static_cast<std::size_t>( GetSelectedItemIndex( index ) ) ];
+	return m_items[ static_cast<std::size_t>( GetSelectedItemIndex( index ) ) ].text;
 }
 
 ListBox::IndexType ListBox::GetFirstDisplayedItemIndex() const {
@@ -327,6 +348,32 @@ void ListBox::SetItemTextPolicy( ItemTextPolicy policy ) {
 
 	RequestResize();
 	Invalidate();
+}
+
+sf::Vector2f ListBox::GetImagesSize() const {
+	return m_images_size;
+}
+
+void ListBox::SetImagesSize(sf::Vector2f size) {
+	m_images_size = size;
+
+	UpdateDisplayedItems();
+	UpdateScrollbarAdjustment();
+	UpdateScrollbarAllocation();
+
+	UpdateDisplayedItemsText();
+
+	Invalidate();
+}
+
+float ListBox::GetItemHeight() const {
+	auto text_padding = Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() );
+	const auto& font_name = Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() );
+	const auto& font = Context::Get().GetEngine().GetResourceManager().GetFont( font_name );
+	auto font_size = Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() );
+	auto line_height = Context::Get().GetEngine().GetFontLineHeight( *font, font_size );
+
+	return std::max(line_height, m_images_size.y);
 }
 
 void ListBox::HandleMouseEnter( int /*x*/, int /*y*/ ) {
@@ -416,7 +463,7 @@ ListBox::IndexType ListBox::GetItemAt( float y ) const {
 	const auto& font_name = Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() );
 	const auto& font = Context::Get().GetEngine().GetResourceManager().GetFont( font_name );
 	auto font_size = Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() );
-	auto line_height = Context::Get().GetEngine().GetFontLineHeight( *font, font_size );
+	auto line_height = GetItemHeight();
 
 	IndexType item_index = 0;
 	while(y > border_width + static_cast<float>( item_index ) * ( line_height + text_padding * 2 ) ) {
@@ -470,7 +517,7 @@ void ListBox::UpdateDisplayedItems() {
 	const auto& font_name = Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() );
 	const auto& font = Context::Get().GetEngine().GetResourceManager().GetFont( font_name );
 	auto font_size = Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() );
-	auto line_height = Context::Get().GetEngine().GetFontLineHeight( *font, font_size );
+	auto line_height = GetItemHeight();
 
 	// Update the displayed items count.
 	float items_height = 0.f;
@@ -531,17 +578,18 @@ void ListBox::UpdateDisplayedItemsText() {
 
 	float max_width = GetAllocation().width - border_width * 2 - text_padding * 2 - ( IsScrollbarVisible() ? m_vertical_scrollbar->GetAllocation().width : 0 );
 
-	for(auto& itemText : m_items) {
-		if( Context::Get().GetEngine().GetTextStringMetrics( itemText, *font, font_size ).x < max_width ) {
+	for(auto& item : m_items) {
+		if( Context::Get().GetEngine().GetTextStringMetrics( item.text, *font, font_size ).x < max_width - ( GetImagesSize() != sf::Vector2f() ? m_images_size.x + text_padding : 0.f ) ) {
 			// The item's text is fully displayable in the listbox's width.
-			m_displayed_items_texts.push_back( itemText );
+			m_displayed_items_texts.push_back( item.text );
 		} else {
 			// We need to shrink the text so that it will fit inside the listbox (and don't forget some width for "...").
 			sf::String displayableText;
 
-			while( displayableText.getSize() < itemText.getSize() &&
-				Context::Get().GetEngine().GetTextStringMetrics( displayableText, *font, font_size ).x <= max_width - dots_width ) {
-				displayableText += itemText[ displayableText.getSize() ];
+			while( displayableText.getSize() < item.text.getSize() &&
+				Context::Get().GetEngine().GetTextStringMetrics( displayableText, *font, font_size ).x
+				<= max_width - dots_width - ( GetImagesSize() != sf::Vector2f() ? m_images_size.x + text_padding : 0.f ) ) {
+				displayableText += item.text[ displayableText.getSize() ];
 			}
 
 			if(displayableText.getSize() > 0)
