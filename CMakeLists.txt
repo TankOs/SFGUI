@@ -20,6 +20,9 @@ set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules
 find_package( OpenGL REQUIRED )
 find_package( SFML 2.3 REQUIRED COMPONENTS graphics window system )
 
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/SFGUI/Config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/include/SFGUI/Config.hpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+
 # Find X11 for glX on Linux, checking for UNIX would match other UNIX systems as well
 if( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
 	find_package( X11 REQUIRED )
@@ -313,6 +316,11 @@ install(
 
 install(
 	DIRECTORY include
+	DESTINATION .
+)
+
+install(
+	DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include
 	DESTINATION .
 )
 
