@@ -12,6 +12,7 @@ set( SFGUI_BUILD_EXAMPLES true CACHE BOOL "Build examples." )
 set( SFGUI_BUILD_DOC false CACHE BOOL "Generate API documentation." )
 set( SFGUI_INCLUDE_FONT true CACHE BOOL "Include default font in library (DejaVuSans)." )
 set( SFML_STATIC_LIBRARIES false CACHE BOOL "Do you want to link SFML statically?" )
+set( SFGUI_BOOST_FILESYSTEM_SUPPORT false CACHE BOOL "Do you want SFGUI to support Boost.FileSystem? (enable FilePickerDialog widget)" )
 
 # Tell CMake where to find additional find modules
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/" )
@@ -54,6 +55,7 @@ set(
 	"${INCLUDE_PATH}/SFGUI/Engine.inl"
 	"${INCLUDE_PATH}/SFGUI/Engines/BREW.hpp"
 	"${INCLUDE_PATH}/SFGUI/Entry.hpp"
+	"${INCLUDE_PATH}/SFGUI/FilePickerDialog.hpp"
 	"${INCLUDE_PATH}/SFGUI/FileResourceLoader.hpp"
 	"${INCLUDE_PATH}/SFGUI/Fixed.hpp"
 	"${INCLUDE_PATH}/SFGUI/Frame.hpp"
@@ -132,6 +134,7 @@ set(
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Window.cpp"
 	"${SOURCE_PATH}/SFGUI/Entry.cpp"
 	"${SOURCE_PATH}/SFGUI/FileResourceLoader.cpp"
+	"${SOURCE_PATH}/SFGUI/FilePickerDialog.cpp"
 	"${SOURCE_PATH}/SFGUI/Fixed.cpp"
 	"${SOURCE_PATH}/SFGUI/Frame.cpp"
 	"${SOURCE_PATH}/SFGUI/GLCheck.cpp"
@@ -194,10 +197,15 @@ if( SFGUI_INCLUDE_FONT )
 	)
 endif()
 
+# Include directories
 include_directories( "${INCLUDE_PATH}" )
 include_directories( "${SOURCE_PATH}" )
 include_directories( SYSTEM "${SFML_INCLUDE_DIR}" )
 include_directories( SYSTEM "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
+if( SFGUI_BOOST_FILESYSTEM_SUPPORT )
+	find_package(Boost COMPONENTS system filesystem REQUIRED)
+	include_directories( SYSTEM ${Boost_INCLUDE_DIR} )
+endif()
 
 # Set the library output directory
 set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
@@ -214,6 +222,11 @@ else()
 	set_target_properties( sfgui PROPERTIES DEBUG_POSTFIX -s-d )
 	set_target_properties( sfgui PROPERTIES RELEASE_POSTFIX -s )
 	set_target_properties( sfgui PROPERTIES MINSIZEREL_POSTFIX -s )
+endif()
+
+# Link to Boost.FileSystem if enabled
+if( SFGUI_BOOST_FILESYSTEM_SUPPORT )
+	target_link_libraries( sfgui ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
 endif()
 
 # Tell the compiler to export when necessary.

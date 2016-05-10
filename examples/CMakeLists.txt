@@ -41,6 +41,12 @@ build_example( "CustomWidget" "CustomWidget.cpp" )
 build_example( "ListBox" "ListBox.cpp" )
 build_example( "SFGUI-Test" "Test.cpp" )
 
+if( SFGUI_BOOST_FILESYSTEM_SUPPORT )
+	build_example( "FilePickerDialog" "FilePickerDialog.cpp" )
+	include_directories( SYSTEM ${Boost_INCLUDE_DIR} )
+	target_link_libraries( FilePickerDialog ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
+endif()
+
 # Copy data directory to build cache directory to be able to run examples from
 # there. Useful for testing stuff.
 # Don't try to copy if the directories are the same.
@@ -50,13 +56,13 @@ if( NOT ( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" ) )
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)
-	
+
 	add_custom_command(
 		TARGET "Image"
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)
-	
+
 	add_custom_command(
 		TARGET "Canvas"
 		COMMAND "${CMAKE_COMMAND}"
