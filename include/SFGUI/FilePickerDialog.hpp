@@ -52,6 +52,7 @@ class SFGUI_API FilePickerDialog : public Window {
         void UpdateDirectoryPaths();
         void UpdateOkButtonState();
 
+        void OnLocationsListBoxSelectionChanged();
         void OnPathsListBoxSelectionChanged();
         void OnFilenameEntryTextChanged();
 };

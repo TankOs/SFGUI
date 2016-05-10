@@ -70,6 +70,7 @@ FilePickerDialog::FilePickerDialog( boost::filesystem::path initial_path ) :
     UpdateDirectoryPaths();
     UpdateOkButtonState();
 
+    m_locations_listbox->GetSignal( sfg::ListBox::OnSelect ).Connect( std::bind( &FilePickerDialog::OnLocationsListBoxSelectionChanged, this ) );
     m_directory_paths_listbox->GetSignal( sfg::ListBox::OnSelect ).Connect( std::bind( &FilePickerDialog::OnPathsListBoxSelectionChanged, this ) );
     m_filename_entry->GetSignal( sfg::Entry::OnTextChanged ).Connect( std::bind( &FilePickerDialog::OnFilenameEntryTextChanged, this ) );
 }
@@ -78,8 +79,11 @@ void FilePickerDialog::UpdateLocationsPaths() {
 #if BOOST_OS_WINDOWS
     //Test all possible drives and add the existing ones into the location list
     for( wchar_t driveLetter = L'A'; driveLetter != L'Z'; driveLetter++ ) {
-        if( fs::exists( fs::path( driveLetter + L':' + L'\\' ) ) ) {
-            m_locations_listbox->AppendItem( driveLetter + L':' + L'\\' );
+        std::wstring drivePath;
+        drivePath += driveLetter;
+        drivePath += L":\\";
+        if( fs::exists( fs::path( drivePath ) ) ) {
+            m_locations_listbox->AppendItem( drivePath );
         }
     }
 #elif BOOST_OS_LINUX
@@ -153,8 +157,21 @@ void FilePickerDialog::UpdateOkButtonState() {
     }
 }
 
+void FilePickerDialog::OnLocationsListBoxSelectionChanged() {
+    if( m_locations_listbox->GetSelectedItemsCount() > 0 ) {
+        fs::path selected_path = m_locations_listbox->GetSelectedItemText(0).toWideString();
+        if( fs::exists( selected_path ) ) {
+            m_current_path = selected_path;
+
+            UpdateCurrentDirectoryPath();
+            UpdateDirectoryPaths();
+            UpdateOkButtonState();
+        }
+    }
+}
+
 void FilePickerDialog::OnPathsListBoxSelectionChanged() {
-    if(m_directory_paths_listbox->GetSelectedItemsCount() > 0) {
+    if( m_directory_paths_listbox->GetSelectedItemsCount() > 0 ) {
         fs::path selected_path = m_directory_paths_listbox->GetSelectedItemText(0).toWideString();
 
         if( fs::is_directory( fs::absolute(selected_path, m_current_path) ) ) {
