@@ -29,6 +29,19 @@ int main() {
 	// Here we can set the window's title bar text.
 	window->SetTitle( "A really really really really long title" );
 
+	window->GetSignal( sfg::FilePickerDialog::OnCancel ).Connect(
+		[]()
+		{
+			std::cout << "Path selection cancelled !" << std::endl;
+		}
+	);
+	window->GetSignal( sfg::FilePickerDialog::OnOk ).Connect(
+		[window]()
+		{
+			std::cout << "Selected path : \"" << window->GetSelectedPath().toAnsiString() << "\"" << std::endl;
+		}
+	);
+
 	// For more things to set around the window refer to the
 	// API documentation.
 

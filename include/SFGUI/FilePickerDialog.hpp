@@ -22,6 +22,11 @@ class SFGUI_API FilePickerDialog : public Window {
 
         static Ptr Create( boost::filesystem::path initial_path );
 
+        sf::String GetSelectedPath() const;
+
+        static Signal::SignalID OnCancel;
+        static Signal::SignalID OnOk;
+
     protected:
         FilePickerDialog( boost::filesystem::path initial_path );
 
@@ -52,7 +57,11 @@ class SFGUI_API FilePickerDialog : public Window {
         void UpdateDirectoryPaths();
         void UpdateOkButtonState();
 
+        void CancelDialog();
+        void OkDialog();
+
         void OnLocationsListBoxSelectionChanged();
+        void OnCurrentDirectoryEntryTextChanged();
         void OnPathsListBoxSelectionChanged();
         void OnFilenameEntryTextChanged();
 };

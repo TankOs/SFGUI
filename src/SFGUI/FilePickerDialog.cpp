@@ -13,6 +13,9 @@ namespace fs = boost::filesystem;
 
 namespace sfg {
 
+Signal::SignalID FilePickerDialog::OnCancel = 0;
+Signal::SignalID FilePickerDialog::OnOk = 0;
+
 FilePickerDialog::Ptr FilePickerDialog::Create( boost::filesystem::path initial_path ) {
     auto ptr = Ptr( new FilePickerDialog( initial_path ) );
     ptr->Add(ptr->m_main_box);
@@ -48,7 +51,7 @@ FilePickerDialog::Ptr FilePickerDialog::Create( boost::filesystem::path initial_
 }
 
 FilePickerDialog::FilePickerDialog( boost::filesystem::path initial_path ) :
-    Window( Window::Style::TOPLEVEL ),
+    Window( Window::Style::TOPLEVEL | Window::Style::CLOSE ),
     m_main_box( sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.f ) ),
     m_panel_box( sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.f ) ),
     m_locations_listbox( sfg::ListBox::Create( ) ),
@@ -71,8 +74,26 @@ FilePickerDialog::FilePickerDialog( boost::filesystem::path initial_path ) :
     UpdateOkButtonState();
 
     m_locations_listbox->GetSignal( sfg::ListBox::OnSelect ).Connect( std::bind( &FilePickerDialog::OnLocationsListBoxSelectionChanged, this ) );
+    m_current_directory_entry->GetSignal( sfg::Entry::OnTextChanged ).Connect( std::bind( &FilePickerDialog::OnCurrentDirectoryEntryTextChanged, this ) );
     m_directory_paths_listbox->GetSignal( sfg::ListBox::OnSelect ).Connect( std::bind( &FilePickerDialog::OnPathsListBoxSelectionChanged, this ) );
     m_filename_entry->GetSignal( sfg::Entry::OnTextChanged ).Connect( std::bind( &FilePickerDialog::OnFilenameEntryTextChanged, this ) );
+
+    //Connect buttons and the close button
+    GetSignal( sfg::Window::OnCloseButton ).Connect( std::bind( &FilePickerDialog::CancelDialog, this ) );
+    m_cancel_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &FilePickerDialog::CancelDialog, this ) );
+    m_ok_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &FilePickerDialog::OkDialog, this ) );
+}
+
+sf::String FilePickerDialog::GetSelectedPath() const {
+    if( m_filename_entry->GetText().getSize() > 0 &&
+        fs::exists( fs::absolute( m_filename_entry->GetText().toWideString(), m_current_path ) ) &&
+        fs::is_regular_file( fs::absolute( m_filename_entry->GetText().toWideString(), m_current_path ) ) ) {
+
+        return sf::String( fs::canonical( m_filename_entry->GetText().toWideString(), m_current_path ).wstring() );
+    }
+    else {
+        return sf::String();
+    }
 }
 
 void FilePickerDialog::UpdateLocationsPaths() {
@@ -157,6 +178,18 @@ void FilePickerDialog::UpdateOkButtonState() {
     }
 }
 
+void FilePickerDialog::CancelDialog() {
+    Show(false);
+
+    GetSignals().Emit( OnCancel );
+}
+
+void FilePickerDialog::OkDialog() {
+    Show(false);
+
+    GetSignals().Emit( OnOk );
+}
+
 void FilePickerDialog::OnLocationsListBoxSelectionChanged() {
     if( m_locations_listbox->GetSelectedItemsCount() > 0 ) {
         fs::path selected_path = m_locations_listbox->GetSelectedItemText(0).toWideString();
@@ -168,6 +201,13 @@ void FilePickerDialog::OnLocationsListBoxSelectionChanged() {
             UpdateOkButtonState();
         }
     }
+}
+
+void FilePickerDialog::OnCurrentDirectoryEntryTextChanged() {
+    m_current_path = m_current_directory_entry->GetText().toWideString();
+
+    UpdateDirectoryPaths();
+    UpdateOkButtonState();
 }
 
 void FilePickerDialog::OnPathsListBoxSelectionChanged() {
