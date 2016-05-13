@@ -10,6 +10,7 @@ namespace sfg {
 
 // Signals.
 Signal::SignalID Entry::OnTextChanged = 0;
+Signal::SignalID Entry::OnReturnPressed = 0;
 
 Entry::Entry() :
 	m_string(),
@@ -241,6 +242,9 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	} break;
 	case sf::Keyboard::Right: {
 		MoveCursor( 1 );
+	} break;
+	case sf::Keyboard::Return: {
+		GetSignals().Emit( OnReturnPressed );
 	} break;
 	default: break;
 	}
