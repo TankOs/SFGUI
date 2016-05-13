@@ -367,7 +367,6 @@ void ListBox::SetImagesSize(sf::Vector2f size) {
 }
 
 float ListBox::GetItemHeight() const {
-	auto text_padding = Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() );
 	const auto& font_name = Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() );
 	const auto& font = Context::Get().GetEngine().GetResourceManager().GetFont( font_name );
 	auto font_size = Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() );
@@ -462,7 +461,6 @@ ListBox::IndexType ListBox::GetItemAt( float y ) const {
 	auto border_width = Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() );
 	const auto& font_name = Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() );
 	const auto& font = Context::Get().GetEngine().GetResourceManager().GetFont( font_name );
-	auto font_size = Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() );
 	auto line_height = GetItemHeight();
 
 	IndexType item_index = 0;
@@ -516,7 +514,6 @@ void ListBox::UpdateDisplayedItems() {
 	auto border_width = Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() );
 	const auto& font_name = Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() );
 	const auto& font = Context::Get().GetEngine().GetResourceManager().GetFont( font_name );
-	auto font_size = Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() );
 	auto line_height = GetItemHeight();
 
 	// Update the displayed items count.
