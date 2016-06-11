@@ -549,9 +549,11 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 		return iter->second->offset;
 	}
 
-	// Make sure all the glyphs we need are loaded.
-	for( sf::Uint32 codepoint = 0; codepoint < 0x0370; ++codepoint ) {
-		font.getGlyph( codepoint, size, false );
+	// If the user does not specify their own character sets, make sure all the glyphs we need are loaded.
+	if( m_character_sets.empty() ) {
+		for( sf::Uint32 codepoint = 0; codepoint < 0x0370; ++codepoint ) {
+			font.getGlyph( codepoint, size, false );
+		}
 	}
 
 	// Make a local copy to avoid unnecessary dereferencing.

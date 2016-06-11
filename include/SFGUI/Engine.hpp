@@ -272,6 +272,15 @@ class SFGUI_API Engine {
 		 */
 		ResourceManager& GetResourceManager() const;
 
+		/** Add a required character set to the character sets that the Engine will take into consideration for new fonts.
+		 * This is required if using a script whose glyphs are not smaller than codepoint 0x370
+		 * such as Greek, Cyrillic, Hebrew, Arabic etc.
+		 * By default, only the Latin script and its extensions are taken into consideration.
+		 * @param low_bound Lower boundary of the character set, i.e. the glyph with the smallest codepoint.
+		 * @param high_bound Higher boundary of the character set, i.e. the glyph with the largest codepoint.
+		 */
+		void AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound );
+
 	protected:
 		/** Ctor.
 		 */
@@ -302,6 +311,8 @@ class SFGUI_API Engine {
 		PropertyMap m_properties;
 
 		mutable ResourceManager m_resource_manager;
+
+		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
 
 		bool m_auto_refresh;
 };

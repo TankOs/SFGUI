@@ -88,10 +88,20 @@ sf::Vector2f Engine::GetFontHeightProperties( const sf::Font& font, unsigned int
 
 	sf::Vector2f properties( 0.f, 0.f );
 
-	for( sf::Uint32 current_character = 0; current_character < 0x0370; ++current_character ) {
-		const auto& glyph = font.getGlyph( current_character, font_size, false );
-		properties.x = std::max( properties.x, static_cast<float>( glyph.bounds.height ) );
-		properties.y = std::max( properties.y, static_cast<float>( -glyph.bounds.top ) );
+	if( m_character_sets.empty() ) {
+		for( sf::Uint32 current_character = 0; current_character < 0x0370; ++current_character ) {
+			const auto& glyph = font.getGlyph( current_character, font_size, false );
+			properties.x = std::max( properties.x, static_cast<float>( glyph.bounds.height ) );
+			properties.y = std::max( properties.y, static_cast<float>( -glyph.bounds.top ) );
+		}
+	}
+
+	for( const auto character_set : m_character_sets ) {
+		for( sf::Uint32 current_character = character_set.first; current_character < character_set.second; ++current_character ) {
+			const auto& glyph = font.getGlyph( current_character, font_size, false );
+			properties.x = std::max( properties.x, static_cast<float>( glyph.bounds.height ) );
+			properties.y = std::max( properties.y, static_cast<float>( -glyph.bounds.top ) );
+		}
 	}
 
 	height_property_cache[id] = properties;
@@ -294,6 +304,14 @@ const std::string* Engine::GetValue( const std::string& property, Widget::PtrCon
 
 ResourceManager& Engine::GetResourceManager() const {
 	return m_resource_manager;
+}
+
+void Engine::AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound ) {
+	if( high_bound <= low_bound ) {
+		return;
+	}
+
+	m_character_sets.emplace_back( std::make_pair( low_bound, high_bound ) );
 }
 
 bool Engine::SetProperty( sfg::Selector::Ptr selector, const std::string& property, const std::string& value ) {

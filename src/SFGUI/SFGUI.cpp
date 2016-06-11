@@ -1,6 +1,7 @@
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Context.hpp>
+#include <SFGUI/Engine.hpp>
 
 namespace {
 
@@ -41,6 +42,11 @@ Renderer& SFGUI::GetRenderer() {
 
 bool SFGUI::IsAlive() {
 	return alive;
+}
+
+void SFGUI::AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound ) {
+	Renderer::Get().AddCharacterSet( low_bound, high_bound );
+	Context::Get().GetEngine().AddCharacterSet( low_bound, high_bound );
 }
 
 }
