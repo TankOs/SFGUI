@@ -8,6 +8,7 @@ namespace sfg {
 Separator::Separator( Orientation orientation ) :
 	m_orientation( orientation )
 {
+	RequestResize();
 }
 
 Separator::Ptr Separator::Create( Orientation orientation ) {
