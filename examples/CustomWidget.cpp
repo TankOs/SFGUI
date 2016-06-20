@@ -196,17 +196,19 @@ class MyCustomWidget : public sfg::Widget {
 		}
 
 		// This handler handles mouse button events
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override {
+		bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override {
+			bool bHandled = false;
 			if( !IsMouseInWidget() ) {
 				if( GetState() == State::ACTIVE ) {
 					SetState( State::NORMAL );
 				}
 
-				return;
+				return bHandled;
 			}
 
 			if( button == sf::Mouse::Left ) {
 				if( press ) {
+					bHandled = true;
 					SetLabel( sf::String( "Mouse Left Press: " + std::to_string( x ) + "," + std::to_string( y ) ) );
 					SetState( State::ACTIVE );
 				}
@@ -214,6 +216,7 @@ class MyCustomWidget : public sfg::Widget {
 					SetState( State::PRELIGHT );
 				}
 			}
+			return bHandled;
 		}
 
 		sf::String m_label;

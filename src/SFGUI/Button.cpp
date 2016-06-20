@@ -55,13 +55,13 @@ void Button::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	}
 }
 
-void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
+bool Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
 	if( !IsMouseInWidget() ) {
 		if( GetState() == State::ACTIVE ) {
-			SetState( State::NORMAL );
+			SetState( State::NORMAL );		
 		}
-
-		return;
+		
+		return false;
 	}
 
 	if( button == sf::Mouse::Left ) {
@@ -72,6 +72,8 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 			SetState( State::PRELIGHT );
 		}
 	}
+	
+	return true;
 }
 
 sf::Vector2f Button::CalculateRequisition() {

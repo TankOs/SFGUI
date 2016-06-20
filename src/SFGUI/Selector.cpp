@@ -163,7 +163,9 @@ std::string Selector::BuildString() const {
 			case Widget::State::INSENSITIVE:
 				str += "INSENSITIVE";
 				break;
-
+			case Widget::State::PARENT_INSENSITIVE:
+				str += "INSENSITIVE";
+				break;
 			default:
 				str += "UNKNOWN";
 				break;
@@ -194,7 +196,7 @@ bool Selector::Matches( Widget::PtrConst widget ) const {
 		 ( ( m_widget.empty() || !m_widget.compare("*") || m_widget == widget->GetName() ) && //
 		 ( m_id.empty() || m_id == widget->GetId() ) && // Selector and widget match
 		 ( m_class.empty() || m_class  == widget->GetClass() ) && //
-		 ( !m_state || *m_state == widget->GetState() ) ) ) { //
+         ( !m_state || *m_state == widget->GetState() || (*m_state == Widget::State::INSENSITIVE && widget->GetState() == Widget::State::PARENT_INSENSITIVE)  ) ) ) { //
 		// Current stage is a pass...
 
 		// Differentiate between different hierarchy types

@@ -272,9 +272,10 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 	}
 }
 
-void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+bool ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+	bool bHandled = false;
 	if( ( x == std::numeric_limits<int>::min() ) || ( y == std::numeric_limits<int>::min() ) ) {
-		return;
+		return bHandled;
 	}
 
 	if( GetState() == State::ACTIVE ) {
@@ -288,7 +289,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 
 			ReleaseModal();
 			m_scrollbar->SetActiveWidget();
-			m_scrollbar->HandleEvent( event );
+			bHandled = m_scrollbar->HandleEvent( event );
 			SetActiveWidget();
 			GrabModal();
 
@@ -297,12 +298,12 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 			scrollbar_allocation.top += GetAllocation().top;
 
 			if( scrollbar_allocation.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-				return;
+				return bHandled;
 			}
 		}
 
 		if( !press || ( button != sf::Mouse::Left ) ) {
-			return;
+			return bHandled;
 		}
 
 		auto emit_select = false;
@@ -327,7 +328,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 			GetSignals().Emit( OnSelect );
 		}
 
-		return;
+		return bHandled;
 	}
 
 	if( press && ( button == sf::Mouse::Left ) && IsMouseInWidget() ) {
@@ -337,7 +338,9 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 
 		Invalidate();
 		GetSignals().Emit( OnOpen );
+		bHandled = true;
 	}
+	return bHandled;
 }
 
 sf::Vector2f ComboBox::CalculateRequisition() {

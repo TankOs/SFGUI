@@ -46,7 +46,11 @@ class SFGUI_API Container : public Widget {
 
 		void Refresh() override;
 
-		void HandleEvent( const sf::Event& event ) override;
+		/** Handle event.
+		 * @param event SFML event.
+		 * @return true if event is handled.
+		 */
+		bool HandleEvent( const sf::Event& event ) override;
 
 		/** Used to inform parent that a child has been invalidated
 		 * @param child Widget that was invalidated.
@@ -84,6 +88,10 @@ class SFGUI_API Container : public Widget {
 		/** Handle viewport change.
 		 */
 		void HandleViewportUpdate() override;
+		
+		/** Handle state change.
+		 */
+		void HandleStateChange(State old_state) override;		
 
 	private:
 		WidgetsList m_children;

@@ -130,15 +130,16 @@ const std::string& Window::GetName() const {
 	return name;
 }
 
-void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+bool Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+    bool bHandled = false;
 	if( button != sf::Mouse::Left ) {
-		return;
+		return bHandled;
 	}
 
 	if( !press ) {
 		m_dragging = false;
 		m_resizing = false;
-		return;
+		return bHandled;
 	}
 
 	unsigned int title_font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
@@ -157,6 +158,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 	);
 
 	if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		bHandled = true;
 		if( HasStyle( TITLEBAR ) && !m_dragging ) {
 			if( HasStyle( CLOSE ) ) {
 				auto close_height( Context::Get().GetEngine().GetProperty<float>( "CloseHeight", shared_from_this() ) );
@@ -194,6 +196,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 		area.height = handle_size;
 
 		if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			bHandled = true;
 			m_dragging = false;
 			m_resizing = true;
 
@@ -203,7 +206,7 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 			);
 		}
 	}
-
+	return bHandled;
 }
 
 void Window::HandleMouseMoveEvent( int x, int y ) {

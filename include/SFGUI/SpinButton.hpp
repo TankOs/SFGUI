@@ -110,10 +110,10 @@ class SFGUI_API SpinButton : public Entry {
 		void UpdateTextFromAdjustment();
 		void UpdateAdjustmentFromText();
 
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void HandleUpdate( float seconds ) override;
-		void HandleTextEvent( sf::Uint32 character ) override;
-		void HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
+		bool HandleTextEvent( sf::Uint32 character ) override;
+		bool HandleKeyEvent( sf::Keyboard::Key key, bool press ) override;
 		void HandleSizeChange() override;
 		void HandleFocusChange( Widget::Ptr focused_widget ) override;
 

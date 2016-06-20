@@ -192,7 +192,7 @@ class SFGUI_API Notebook : public Container {
 		typedef std::deque<ChildLabelPair> ChildrenList;
 
 		void HandleMouseMoveEvent( int x, int y ) override;
-		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
+		bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		bool HandleAdd( Widget::Ptr child ) override;
 		void HandleRemove( Widget::Ptr child ) override;
 		void HandleSizeChange() override;

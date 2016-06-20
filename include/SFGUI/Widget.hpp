@@ -35,7 +35,8 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 			ACTIVE, /*!< Active, e.g. when a button is pressed. */
 			PRELIGHT, /*!< Prelight, e.g. when the mouse moves over a widget. */
 			SELECTED, /*!< Selected, e.g. when a list item in a list is selected. */
-			INSENSITIVE /*!< Insensitive, disabled widget. */
+			INSENSITIVE, /*!< Insensitive, disabled widget. */
+			PARENT_INSENSITIVE /* Disabled child widget. */
 		};
 
 		/** Destructor.
@@ -58,6 +59,16 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param show true to show, false to hide.
 		 */
 		void Show( bool show = true );
+	
+		/** Check to see if the widget is enabled.
+		 * @return true when enabled.
+		 */
+		bool IsEnabled() const;
+		
+		/** Enable or disable control.
+		 * @param true to enable or false to disable.
+		 */
+		void Enable( bool enable = true );		 
 
 		/** Get name of widget.
 		 * The name of a widget is a descriptive name of the widget itself. E.g.
@@ -173,8 +184,9 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * Handle an SFML event and fire proper signals. Normally reimplemented by
 		 * containers only.
 		 * @param event SFML event.
+		 * @return true if event is handled.
 		 */
-		virtual void HandleEvent( const sf::Event& event );
+		virtual bool HandleEvent( const sf::Event& event );
 
 		/** Get absolute position on screen.
 		 * @return Absolute position.
@@ -349,14 +361,16 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param press true if button was pressed, false if released.
 		 * @param x Mouse X position.
 		 * @param y Mouse Y position.
+		 * @return true if Handled.
 		 */
-		virtual void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
+		virtual bool HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y );
 
 		/** Handle key event.
 		 * @param key Key.
 		 * @param press true if button was pressed, false if released.
+		 * @return true if Handled.
 		 */
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual bool HandleKeyEvent( sf::Keyboard::Key key, bool press );
 
 		/** Handle widget (relative) position changes.
 		 */
@@ -381,7 +395,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		/** Handle text event.
 		 * @param character Character.
 		 */
-		virtual void HandleTextEvent( sf::Uint32 character );
+		virtual bool HandleTextEvent( sf::Uint32 character );
 
 		/** Handle mouse enter.
 		 * @param x Mouse X position.

@@ -20,7 +20,8 @@ void Desktop::Update( float seconds ) {
 	Context::Deactivate();
 }
 
-void Desktop::HandleEvent( const sf::Event& event ) {
+bool Desktop::HandleEvent( const sf::Event& event ) {
+	bool bHandled = false;
 	// Activate context.
 	Context::Activate( m_context );
 
@@ -46,7 +47,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		Widget::Ptr widget( m_children[static_cast<std::size_t>( index )] );
 
 		// Skip widget if not visible or is insensitive.
-		if( !widget->IsLocallyVisible() || widget->GetState() == Widget::State::INSENSITIVE ) {
+		if( !widget->IsLocallyVisible() || !widget->IsEnabled() ) {
 			continue;
 		}
 
@@ -83,7 +84,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 			last_receiver = widget;
 		}
 
-		widget->HandleEvent( event );
+		bHandled = widget->HandleEvent( event );
 
 		if( check_inside && is_inside ) {
 			if( index < static_cast<int>( m_children.size() ) && widget == m_children[static_cast<std::size_t>( index )] ) {
@@ -91,10 +92,13 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 			}
 			break;
 		}
+		if ( bHandled )
+			break;
 	}
 
 	// Restore previous context.
 	Context::Deactivate();
+	return bHandled;
 }
 
 void Desktop::Add( std::shared_ptr<Widget> widget ) {

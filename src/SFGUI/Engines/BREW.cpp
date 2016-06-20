@@ -28,6 +28,7 @@ void BREW::ResetProperties() {
 	SetProperty( "*", "BorderWidth", 1.f );
 	SetProperty( "*", "Padding", 5.f );
 	SetProperty( "*", "Thickness", 2.f );
+	SetProperty( "*:INSENSITIVE", "Color", sf::Color( 0x96, 0x9b, 0x94 ) );
 
 	// Window-specific.
 	SetProperty( "Window", "Gap", 10.f );

@@ -64,9 +64,10 @@ sf::Vector2f Scale::CalculateRequisition() {
 	return sf::Vector2f( slider_width, slider_length * 2.f );
 }
 
-void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+bool Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
+	bool bHandled = false;
 	if( button != sf::Mouse::Left ) {
-		return;
+		return bHandled;
 	}
 
 	if( m_drag_offset ) {
@@ -75,10 +76,12 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 	}
 
 	if( !GetAllocation().contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-		return;
+		return bHandled;
 	}
 
 	if( press ) {
+		bHandled = true;
+		
 		if( !GetSliderRect().contains( static_cast<float>( x ) - GetAllocation().left, static_cast<float>( y ) - GetAllocation().top ) ) {
 			Adjustment::Ptr adjustment( GetAdjustment() );
 
@@ -121,6 +124,7 @@ void Scale::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 				static_cast<float>( y ) - ( GetAllocation().top + GetSliderRect().top + GetSliderRect().height / 2.f )
 		) );
 	}
+	return bHandled;
 }
 
 void Scale::HandleMouseMoveEvent( int x, int y ) {
