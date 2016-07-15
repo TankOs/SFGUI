@@ -62,7 +62,7 @@ std::unique_ptr<RenderQueue> BREW::CreateCheckButtonDrawable( std::shared_ptr<co
 			box_size + spacing,
 			check->GetAllocation().height / 2.f - metrics.y / 2.f
 		);
-		text.setColor( color );
+		text.setFillColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}
 

@@ -37,7 +37,7 @@ std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const En
 
 	auto line_height = GetFontLineHeight( *font, font_size );
 	sf::Text vis_label( entry->GetVisibleText(), *font, font_size );
-	vis_label.setColor( text_color );
+	vis_label.setFillColor( text_color );
 	vis_label.setPosition( text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f );
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );

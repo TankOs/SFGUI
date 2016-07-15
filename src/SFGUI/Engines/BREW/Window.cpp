@@ -161,7 +161,7 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 		);
 
 		title_text.setPosition( title_position );
-		title_text.setColor( title_text_color );
+		title_text.setFillColor( title_text_color );
 
 		queue->Add( Renderer::Get().CreateText( title_text ) );
 	}

@@ -87,7 +87,7 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 
 	auto line_height = GetFontLineHeight( *font, font_size );
 	sf::Text vis_label( spinbutton->GetVisibleText(), *font, font_size );
-	vis_label.setColor( text_color );
+	vis_label.setFillColor( text_color );
 	vis_label.setPosition( text_padding, spinbutton->GetAllocation().height / 2.f - line_height / 2.f );
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );

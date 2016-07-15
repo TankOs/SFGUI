@@ -105,7 +105,7 @@ RendererViewport::Ptr Renderer::CreateViewport() {
 Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 	const auto& font = *text.getFont();
 	auto character_size = text.getCharacterSize();
-	auto color = text.getColor();
+	auto color = text.getFillColor();
 
 	auto atlas_offset = LoadFont( font, character_size );
 

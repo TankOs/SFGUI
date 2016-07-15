@@ -61,7 +61,7 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 			);
 		}
 
-		text.setColor( color );
+		text.setFillColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}
 

@@ -130,7 +130,7 @@ class MyCustomWidget : public sfg::Widget {
 				sf::Text text( GetLabel(), *font, font_size );
 
 				// Set the text color to white.
-				text.setColor( sf::Color::White );
+				text.setFillColor( sf::Color::White );
 
 				// Randomize the applied offset a bit
 				auto x_offset = ( GetState() == State::ACTIVE ) ? static_cast<float>( m_distribution( m_generator ) ) : 0.f;
