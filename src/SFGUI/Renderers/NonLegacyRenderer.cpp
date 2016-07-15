@@ -315,7 +315,7 @@ void NonLegacyRenderer::DisplayImpl() const {
 		if( m_window_size.x && m_window_size.y ) {
 			const_cast<NonLegacyRenderer*>( this )->Invalidate( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 
-			m_shader.setParameter( "viewport_parameters", 2.f / static_cast<float>( m_window_size.x ), -2.f / static_cast<float>( m_window_size.y ) );
+			m_shader.setUniform( "viewport_parameters", sf::Glsl::Vec2( 2.f / static_cast<float>( m_window_size.x ), -2.f / static_cast<float>( m_window_size.y ) ) );
 
 			const_cast<NonLegacyRenderer*>( this )->SetupFBO( m_window_size.x, m_window_size.y );
 		}
@@ -354,7 +354,7 @@ void NonLegacyRenderer::DisplayImpl() const {
 			CheckGLError( glClear( GL_COLOR_BUFFER_BIT ) );
 		}
 
-		m_shader.setParameter( "texture0", *( m_texture_atlas[0] ) );
+		m_shader.setUniform( "texture0", *( m_texture_atlas[0] ) );
 		sf::Shader::bind( &m_shader );
 
 		CheckGLError( GLEXT_glBindVertexArray( m_vao ) );
@@ -401,7 +401,7 @@ void NonLegacyRenderer::DisplayImpl() const {
 					if( batch.atlas_page != current_atlas_page ) {
 						current_atlas_page = batch.atlas_page;
 
-						m_shader.setParameter( "texture0", *( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )] ) );
+						m_shader.setUniform( "texture0", *( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )] ) );
 					}
 
 					CheckGLError( glDrawRangeElements(
@@ -772,7 +772,7 @@ void NonLegacyRenderer::SetupFBO( int width, int height ) {
 		m_fbo_vertex_location = GetAttributeLocation( m_fbo_shader, "vertex" );
 		m_fbo_texture_coordinate_location = GetAttributeLocation( m_fbo_shader, "texture_coordinate" );
 
-		m_fbo_shader.setParameter( "texture0", m_frame_buffer_texture );
+		m_fbo_shader.setUniform( "texture0", m_frame_buffer_texture );
 
 		CheckGLError( GLEXT_glGenBuffers( 1, &m_fbo_vbo ) );
 		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_fbo_vbo ) );

@@ -87,7 +87,7 @@ std::unique_ptr<RenderQueue> BREW::CreateComboBoxDrawable( std::shared_ptr<const
 
 			sf::Text text( combo_box->GetItem( item_index ), *font, font_size );
 			text.setPosition( item_position.x + padding, item_position.y + padding );
-			text.setColor( color );
+			text.setFillColor( color );
 			queue->Add( Renderer::Get().CreateText( text ) );
 
 			item_position.y += item_size.y;
@@ -100,7 +100,7 @@ std::unique_ptr<RenderQueue> BREW::CreateComboBoxDrawable( std::shared_ptr<const
 			border_width + padding,
 			combo_box->GetAllocation().height / 2.f - line_height / 2.f
 		);
-		text.setColor( color );
+		text.setFillColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}
 

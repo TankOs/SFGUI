@@ -49,7 +49,7 @@ std::unique_ptr<RenderQueue> BREW::CreateToggleButtonDrawable( std::shared_ptr<c
 			button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
 		);
 
-		text.setColor( color );
+		text.setFillColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}
 

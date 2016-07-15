@@ -17,7 +17,7 @@ std::unique_ptr<RenderQueue> BREW::CreateLabelDrawable( std::shared_ptr<const La
 	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
 	sf::Text vis_label( label->GetWrappedText(), *font, font_size );
-	vis_label.setColor( font_color );
+	vis_label.setFillColor( font_color );
 
 	if( !label->GetLineWrap() ) {
 		// Calculate alignment when word wrap is disabled.
