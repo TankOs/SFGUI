@@ -1,8 +1,9 @@
+# Font licenses
+
 Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
 Glyphs imported from Arev fonts are (c) Tavmjong Bah (see below)
 
-Bitstream Vera Fonts Copyright
-------------------------------
+## Bitstream Vera Fonts Copyright
 
 Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is
 a trademark of Bitstream, Inc.
@@ -48,8 +49,7 @@ without prior written authorization from the Gnome Foundation or Bitstream
 Inc., respectively. For further information, contact: fonts at gnome dot
 org. 
 
-Arev Fonts Copyright
-------------------------------
+## Arev Fonts Copyright
 
 Copyright (c) 2006 by Tavmjong Bah. All Rights Reserved.
 
