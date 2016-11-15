@@ -2,7 +2,7 @@
 
 #define SFGUI_MAJOR_VERSION 0
 #define SFGUI_MINOR_VERSION 3
-#define SFGUI_REVISION_VERSION 0
+#define SFGUI_REVISION_VERSION 1
 
 #if defined( _WIN32 ) || defined( __WIN32__ )
 	#define SFGUI_SYSTEM_WINDOWS
