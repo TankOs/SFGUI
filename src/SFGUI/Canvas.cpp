@@ -297,7 +297,7 @@ void Canvas::Draw( const sf::Drawable& drawable, const sf::RenderStates& states 
 	m_render_texture->draw( drawable, states );
 }
 
-void Canvas::Draw( const sf::Vertex* vertices, unsigned int vertex_count, sf::PrimitiveType type, const sf::RenderStates& states ) {
+void Canvas::Draw( const sf::Vertex* vertices, std::size_t vertex_count, sf::PrimitiveType type, const sf::RenderStates& states ) {
 	m_render_texture->draw( vertices, vertex_count, type, states );
 }
 
