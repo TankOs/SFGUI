@@ -68,7 +68,7 @@ class SFGUI_API Canvas : public Widget {
 		 * @param type Type of primitives to draw.
 		 * @param states Render states to use for drawing.
 		 */
-		void Draw( const sf::Vertex* vertices, unsigned int vertex_count, sf::PrimitiveType type, const sf::RenderStates& states = sf::RenderStates::Default );
+		void Draw( const sf::Vertex* vertices, std::size_t vertex_count, sf::PrimitiveType type, const sf::RenderStates& states = sf::RenderStates::Default );
 
 		/** Set the sf::View that the canvas should use when performing SFML drawing.
 		 * @param view The sf::View that the canvas should when performing SFML drawing.
