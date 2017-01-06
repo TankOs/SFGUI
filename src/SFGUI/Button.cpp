@@ -9,6 +9,7 @@ namespace sfg {
 Button::Ptr Button::Create( const sf::String& label ) {
 	auto ptr = Ptr( new Button );
 	ptr->SetLabel( label );
+	ptr->SetAlignment( sf::Vector2f(0.5f, 0.5f), Misc::Justify::CENTRE );
 	return ptr;
 }
 

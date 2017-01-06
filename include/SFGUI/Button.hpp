@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFGUI/Bin.hpp>
+#include <SFGUI/Misc.hpp>
 
 #include <SFML/System/String.hpp>
 #include <memory>
@@ -11,7 +12,7 @@ class Image;
 
 /** Pushbutton.
  */
-class SFGUI_API Button : public Bin {
+class SFGUI_API Button : public Bin, public Misc {
 	public:
 		typedef std::shared_ptr<Button> Ptr; //!< Shared pointer.
 		typedef std::shared_ptr<const Button> PtrConst; //!< Shared pointer.

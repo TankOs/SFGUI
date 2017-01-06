@@ -40,7 +40,7 @@ class SFGUI_API Alignment : public Bin, public Misc {
 
 	private:
 		void HandleSizeChange() override;
-		void HandleAlignmentChange( const sf::Vector2f& old_alignment ) override;
+		void HandleAlignmentChange( const Misc::Alignment& old_alignment ) override;
 
 		void UpdateChild();
 

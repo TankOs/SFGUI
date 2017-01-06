@@ -12,7 +12,7 @@ namespace sfg {
 
 Image::Image( const sf::Image& image )
 {
-	SetAlignment( sf::Vector2f( .5f, .5f ) );
+	SetAlignment( sf::Vector2f( .5f, .5f ), Misc::Justify::CENTRE );
 	SetImage( image );
 }
 

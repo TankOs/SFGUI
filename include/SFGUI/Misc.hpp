@@ -15,21 +15,49 @@ class SFGUI_API Misc {
 		 */
 		virtual ~Misc() = default;
 
+		/** Widget Justification
+		*/
+		enum class Justify :char {
+			CENTRE = 0, /*!< No Justification. */
+			LEFT, /*!< Left justificiation. */
+			RIGHT /*!< RIght justification. */
+		};
+
+		/** Alignment Structure
+		* Alignment sf::Vector2f
+		* Justification char
+		*/
+
+		struct Alignment {
+			sf::Vector2f position;
+			Justify justification;
+		};
+
 		/** Set alignment
 		 * @param alignment Alignment (0..1 for x and y).
 		 */
-		void SetAlignment( const sf::Vector2f& alignment );
+		void SetAlignment( const sf::Vector2f position, const Justify justification = Misc::Justify::CENTRE );
 
 		/** Get alignment.
 		 * @return Alignment.
 		 */
-		const sf::Vector2f& GetAlignment() const;
+		const Alignment& GetAlignment() const;
+
+		/** Equal operator
+		*@return bool
+		*/
+		friend bool operator== ( Alignment &a1, Alignment &a2 );
+
+		/** Not equal operator
+		* @return bool
+		*/
+		friend bool operator!= ( Alignment &a1, Alignment &a2 );
 
 	protected:
-		virtual void HandleAlignmentChange( const sf::Vector2f& old_alignment );
+		virtual void HandleAlignmentChange( const Alignment& old_alignment );
 
 	private:
-		sf::Vector2f m_alignment;
+		Alignment m_alignment;
 };
 
 }

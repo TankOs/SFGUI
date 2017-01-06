@@ -14,8 +14,8 @@ std::unique_ptr<RenderQueue> BREW::CreateImageDrawable( std::shared_ptr<const Im
 	queue->Add(
 		Renderer::Get().CreateSprite(
 			sf::FloatRect(
-				( image->GetAllocation().width - image->GetRequisition().x ) * image->GetAlignment().x,
-				( image->GetAllocation().height - image->GetRequisition().y ) * image->GetAlignment().y,
+				( image->GetAllocation().width - image->GetRequisition().x ) * image->GetAlignment().position.x,
+				( image->GetAllocation().height - image->GetRequisition().y ) * image->GetAlignment().position.y,
 				static_cast<float>( image->GetImage().getSize().x ),
 				static_cast<float>( image->GetImage().getSize().y )
 			),
