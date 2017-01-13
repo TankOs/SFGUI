@@ -64,6 +64,11 @@ class SFGUI_API Box : public Container {
 		 */
 		void SetOrientation( Orientation orientation );
 
+		/** Get orientation.
+		 * @return Orientation.
+		 */
+		Orientation GetOrientation() const;
+
 		/** Set spacing.
 		 * @param spacing Spacing.
 		 */

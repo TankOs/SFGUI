@@ -168,6 +168,10 @@ float Box::GetSpacing() const {
 	return m_spacing;
 }
 
+Box::Orientation Box::GetOrientation() const {
+	return m_orientation;
+}
+
 void Box::AllocateChildren() const {
 	unsigned int num_expand( 0 );
 	unsigned int num_visible( 0 );
