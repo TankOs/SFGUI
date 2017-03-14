@@ -158,8 +158,18 @@ void Box::SetSpacing( float spacing ) {
 	Invalidate();
 }
 
+void Box::SetOrientation( Orientation orientation ) {
+	m_orientation = orientation;
+	RequestResize();
+	Invalidate();
+}
+
 float Box::GetSpacing() const {
 	return m_spacing;
+}
+
+Box::Orientation Box::GetOrientation() const {
+	return m_orientation;
 }
 
 void Box::AllocateChildren() const {

@@ -59,6 +59,16 @@ class SFGUI_API Box : public Container {
 		 */
 		void ReorderChild( Widget::Ptr widget, std::size_t position );
 
+		/** Set orientation.
+		 * @param orientation Orientation.
+		 */
+		void SetOrientation( Orientation orientation );
+
+		/** Get orientation.
+		 * @return Orientation.
+		 */
+		Orientation GetOrientation() const;
+
 		/** Set spacing.
 		 * @param spacing Spacing.
 		 */

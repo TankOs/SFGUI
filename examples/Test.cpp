@@ -20,6 +20,7 @@ class SampleApp {
 		void OnAddButtonVClick();
 		void OnToggleTitlebarClick();
 		void OnHideWindowClicked();
+		void OnToggleOrientationClick();
 		void OnToggleSpaceClick();
 		void OnLimitCharsToggle();
 		void OnLoadThemeClick();
@@ -36,6 +37,7 @@ class SampleApp {
 		sfg::Window::Ptr m_wndmain;
 		sfg::Box::Ptr m_boxbuttonsh;
 		sfg::Box::Ptr m_boxbuttonsv;
+		sfg::Box::Ptr m_boxorientation;
 		sfg::Entry::Ptr m_entry;
 		sfg::Table::Ptr m_table;
 		sfg::ScrolledWindow::Ptr m_scrolled_window;
@@ -226,6 +228,7 @@ void SampleApp::Run() {
 		}
 	}
 
+	auto btntoggleori = sfg::Button::Create( L"Box Orientation" );
 	auto btntogglespace = sfg::Button::Create( L"Box Spacing" );
 	auto btnloadstyle = sfg::Button::Create( L"Load theme" );
 
@@ -254,6 +257,7 @@ void SampleApp::Run() {
 
 	auto boxtoolbar2 = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 	boxtoolbar2->SetSpacing( 5.f );
+	boxtoolbar2->Pack( btntoggleori, false );
 	boxtoolbar2->Pack( btntogglespace, false );
 	boxtoolbar2->Pack( btnloadstyle, false );
 
@@ -262,6 +266,11 @@ void SampleApp::Run() {
 
 	m_boxbuttonsv = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
 	m_boxbuttonsv->SetSpacing( 5.f );
+
+	m_boxorientation = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
+	m_boxorientation->SetSpacing( 5.f );
+	m_boxorientation->Pack( sfg::Button::Create( L"Hello" ) );
+	m_boxorientation->Pack( sfg::Button::Create( L"World" ) );
 
 	auto username_entry = sfg::Entry::Create();
 	username_entry->SetMaximumLength( 8 );
@@ -411,6 +420,7 @@ void SampleApp::Run() {
 	boxmain->Pack( box_image, true );
 	boxmain->Pack( separatorh, false );
 	boxmain->Pack( m_table, true );
+	boxmain->Pack( m_boxorientation, true );
 	boxmain->Pack( m_scrolled_window );
 
 	auto notebook1 = sfg::Notebook::Create();
@@ -444,6 +454,7 @@ void SampleApp::Run() {
 	btnaddbuttonv->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnAddButtonVClick, this ) );
 	m_titlebar_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleTitlebarClick, this ) );
 	btnhidewindow->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnHideWindowClicked, this ) );
+	btntoggleori->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleOrientationClick, this ) );
 	btntogglespace->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleSpaceClick, this ) );
 	m_limit_check->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &SampleApp::OnLimitCharsToggle, this ) );
 	btnloadstyle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnLoadThemeClick, this ) );
@@ -626,6 +637,15 @@ void SampleApp::OnHideWindowClicked() {
 	m_wndmain->Show( !m_wndmain->IsLocallyVisible() );
 }
 
+void SampleApp::OnToggleOrientationClick() {
+	if( m_boxorientation->GetOrientation() == sfg::Box::Orientation::HORIZONTAL ) {
+		m_boxorientation->SetOrientation( sfg::Box::Orientation::VERTICAL );
+	}
+	else {
+		m_boxorientation->SetOrientation( sfg::Box::Orientation::HORIZONTAL );
+	}
+}
+
 void SampleApp::OnToggleSpaceClick() {
 	if( m_scrolled_window_box->GetSpacing() > .0f ) {
 		m_scrolled_window_box->SetSpacing( .0f );
@@ -634,6 +654,7 @@ void SampleApp::OnToggleSpaceClick() {
 		m_scrolled_window_box->SetSpacing( 40.f );
 	}
 }
+
 
 void SampleApp::OnLimitCharsToggle() {
 	if( m_limit_check->IsActive() ) {
