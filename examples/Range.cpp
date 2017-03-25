@@ -7,32 +7,12 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>
 
-class RangeExample {
-	public:
-		void AdjustmentChange();
-
-		void Run();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-
-		// Create our label smart pointer.
-		sfg::Label::Ptr m_label;
-
-		// Create our adjustment smart pointer.
-		sfg::Adjustment::Ptr m_adjustment;
-};
-
-void RangeExample::AdjustmentChange() {
-	std::stringstream sstr;
-	sstr << m_adjustment->GetValue();
-	m_label->SetText( sstr.str() );
-}
-
-void RangeExample::Run() {
+int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Range Example", sf::Style::Titlebar | sf::Style::Close );
+
+	// Create an SFGUI. This is required before doing anything with SFGUI.
+	sfg::SFGUI sfgui;
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
@@ -45,8 +25,8 @@ void RangeExample::Run() {
 	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL );
 
 	// Create a label.
-	m_label = sfg::Label::Create();
-	m_label->SetText( "20" );
+	auto label = sfg::Label::Create();
+	label->SetText( "20" );
 
 	// Scale and Scrollbar widgets are subclasses of the Range class.
 	// They have a common data representation object known as an
@@ -66,18 +46,18 @@ void RangeExample::Run() {
 	auto scrollbar = sfg::Scrollbar::Create( sfg::Scrollbar::Orientation::VERTICAL );
 
 	// We can link both widgets together by their adjustments.
-	m_adjustment = scrollbar->GetAdjustment();
-	scale->SetAdjustment( m_adjustment );
+	auto adjustment = scrollbar->GetAdjustment();
+	scale->SetAdjustment( adjustment );
 
 	// Tune the adjustment parameters.
-	m_adjustment->SetLower( 20.f );
-	m_adjustment->SetUpper( 100.f );
+	adjustment->SetLower( 20.f );
+	adjustment->SetUpper( 100.f );
 
 	// How much it should change when clicked on the stepper.
-	m_adjustment->SetMinorStep( 3.f );
+	adjustment->SetMinorStep( 3.f );
 
 	// How much it should change when clicked on the trough.
-	m_adjustment->SetMajorStep( 12.f );
+	adjustment->SetMajorStep( 12.f );
 
 	// CAUTION:
 	// Normally you would only set the page size for scrollbar adjustments.
@@ -86,11 +66,15 @@ void RangeExample::Run() {
 	// maximum value. This is in fact also true for scrollbars, however
 	// because they are used to scroll the page size must be subtracted from
 	// the maximum.
-	m_adjustment->SetPageSize( 20.f );
+	adjustment->SetPageSize( 20.f );
 
 	// Additionally you can connect to the OnChange signal of an adjustment
 	// to get notified when any of it's parameters are changed.
-	m_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &RangeExample::AdjustmentChange, this ) );
+	adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( [&adjustment, &label] {
+		std::stringstream sstr;
+		sstr << adjustment->GetValue();
+		label->SetText( sstr.str() );
+	} );
 
 	// Just as with the entry widget we set custom requisitions for our
 	// range widgets to make sure they don't look strange.
@@ -105,7 +89,7 @@ void RangeExample::Run() {
 	// Pack into box
 	box->Pack( scalebox );
 	box->Pack( scrollbar );
-	box->Pack( m_label );
+	box->Pack( label );
 
 	// Set box spacing
 	box->SetSpacing( 5.f );
@@ -130,7 +114,7 @@ void RangeExample::Run() {
 
 			// Close window : exit
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return EXIT_SUCCESS;
 			}
 		}
 
@@ -146,16 +130,11 @@ void RangeExample::Run() {
 		app_window.clear();
 
 		// Draw the GUI
-		m_sfgui.Display( app_window );
+		sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
 	}
-}
-
-int main() {
-	RangeExample example;
-	example.Run();
 
 	return EXIT_SUCCESS;
 }

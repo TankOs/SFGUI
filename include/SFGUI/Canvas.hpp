@@ -110,7 +110,8 @@ class SFGUI_API Canvas : public Widget {
 		std::shared_ptr<Signal> m_custom_draw_callback;
 		std::shared_ptr<RendererViewport> m_custom_viewport;
 		std::shared_ptr<sf::RenderTexture> m_render_texture;
-		std::unique_ptr<sf::Shader> m_shader;
+		unsigned int m_shader = 0;
+		int m_texture_location = 0;
 		unsigned int m_vertex_location = 0;
 		unsigned int m_texture_coordinate_location = 0;
 

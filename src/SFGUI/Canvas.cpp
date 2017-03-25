@@ -1,9 +1,14 @@
+// Needs to be included before GLLoader for NOMINMAX
+#include <SFGUI/Config.hpp>
+
+// Needs to be included before OpenGL (so anything else)
+#include <SFGUI/GLLoader.hpp>
+
 #include <SFGUI/Canvas.hpp>
 #include <SFGUI/Renderer.hpp>
 #include <SFGUI/Container.hpp>
 #include <SFGUI/RendererViewport.hpp>
 #include <SFGUI/RenderQueue.hpp>
-#include <SFGUI/GLLoader.hpp>
 #include <SFGUI/Renderers/NonLegacyRenderer.hpp>
 #include <SFGUI/GLCheck.hpp>
 
@@ -13,11 +18,10 @@
 #include <SFML/Graphics/Shader.hpp>
 #include <SFML/Window/Context.hpp>
 #include <cmath>
+#include <cstddef>
 #include <cassert>
 
 // ARB_vertex_buffer_object
-#define GLEXT_vertex_buffer_object sfgogl_ext_ARB_vertex_buffer_object
-
 #define GLEXT_GL_ARRAY_BUFFER GL_ARRAY_BUFFER_ARB
 #define GLEXT_GL_STATIC_DRAW GL_STATIC_DRAW_ARB
 
@@ -25,6 +29,11 @@
 #define GLEXT_glDeleteBuffers glDeleteBuffersARB
 #define GLEXT_glGenBuffers glGenBuffersARB
 #define GLEXT_glBufferData glBufferDataARB
+
+// ARB_multitexture
+#define GLEXT_GL_TEXTURE0 GL_TEXTURE0_ARB
+
+#define GLEXT_glActiveTexture glActiveTextureARB
 
 // ARB_vertex_program
 #define GLEXT_vertex_program sfgogl_ext_ARB_vertex_program
@@ -38,7 +47,30 @@
 #define GLEXT_glDisableVertexAttribArray glDisableVertexAttribArrayARB
 
 // ARB_vertex_shader (ensured by sf::Shader::isAvailable())
+#define GLEXT_GL_VERTEX_SHADER GL_VERTEX_SHADER_ARB
+
 #define GLEXT_glGetAttribLocation glGetAttribLocationARB
+
+// ARB_fragment_shader (ensured by sf::Shader::isAvailable())
+#define GLEXT_GL_FRAGMENT_SHADER GL_FRAGMENT_SHADER_ARB
+
+// ARB_shader_objects
+#define GLEXT_GLhandle GLhandleARB
+
+#define GLEXT_GL_OBJECT_COMPILE_STATUS GL_OBJECT_COMPILE_STATUS_ARB
+#define GLEXT_GL_OBJECT_LINK_STATUS GL_OBJECT_LINK_STATUS_ARB
+
+#define GLEXT_glCreateProgramObject glCreateProgramObjectARB
+#define GLEXT_glDeletePrograms glDeleteProgramsARB
+#define GLEXT_glCreateShaderObject glCreateShaderObjectARB
+#define GLEXT_glShaderSource glShaderSourceARB
+#define GLEXT_glCompileShader glCompileShaderARB
+#define GLEXT_glGetObjectParameteriv glGetObjectParameterivARB
+#define GLEXT_glDeleteObject glDeleteObjectARB
+#define GLEXT_glAttachObject glAttachObjectARB
+#define GLEXT_glLinkProgram glLinkProgramARB
+#define GLEXT_glGetUniformLocation glGetUniformLocationARB
+#define GLEXT_glUniform1i glUniform1iARB
 
 // ARB_vertex_array_object
 #define GLEXT_vertex_array_object sfgogl_ext_ARB_vertex_array_object
@@ -48,20 +80,24 @@
 #define GLEXT_glDeleteVertexArrays glDeleteVertexArrays
 #define GLEXT_glGenVertexArrays glGenVertexArrays
 
+#if defined( __APPLE__ )
+
+    #define CastToGlHandle( x ) reinterpret_cast<GLEXT_GLhandle>( static_cast<std::ptrdiff_t>( x ) )
+    #define CastFromGlHandle( x ) static_cast<unsigned int>( reinterpret_cast<std::ptrdiff_t>( x ) )
+
+#else
+
+    #define CastToGlHandle( x ) ( x )
+    #define CastFromGlHandle( x ) ( x )
+
+#endif
+
 namespace {
 
 auto non_legacy_supported = false;
 
-unsigned int GetAttributeLocation( const sf::Shader& shader, std::string name ) {
-	auto previous_program = CheckGLError( GLEXT_glGetHandle( GLEXT_GL_PROGRAM_OBJECT ) );
-
-	sf::Shader::bind( &shader );
-
-	auto program = CheckGLError( GLEXT_glGetHandle( GLEXT_GL_PROGRAM_OBJECT ) );
-
-	auto location = CheckGLError( GLEXT_glGetAttribLocation( program, name.c_str() ) );
-
-	CheckGLError( GLEXT_glUseProgramObject( previous_program ) );
+unsigned int GetAttributeLocation( unsigned int shader, std::string name ) {
+	auto location = CheckGLError( GLEXT_glGetAttribLocation( CastToGlHandle( shader ), name.c_str() ) );
 
 #if defined( SFGUI_DEBUG )
 	if( location < 0 ) {
@@ -72,6 +108,72 @@ unsigned int GetAttributeLocation( const sf::Shader& shader, std::string name ) 
 	assert( location >= 0 );
 
 	return static_cast<unsigned int>( location );
+}
+
+unsigned int CreateShader( const char* vertex_source, const char* fragment_source ) {
+	auto shader = CheckGLError( GLEXT_glCreateProgramObject() );
+
+	auto vertex_shader = CheckGLError( GLEXT_glCreateShaderObject( GLEXT_GL_VERTEX_SHADER ) );
+
+	CheckGLError( GLEXT_glShaderSource(
+		vertex_shader,
+		1,
+		&vertex_source,
+		nullptr
+	) );
+	CheckGLError( GLEXT_glCompileShader( vertex_shader ) );
+
+	GLint success;
+
+	CheckGLError( GLEXT_glGetObjectParameteriv( vertex_shader, GLEXT_GL_OBJECT_COMPILE_STATUS, &success ) );
+
+	if( success == GL_FALSE ) {
+		CheckGLError( GLEXT_glDeleteObject( vertex_shader ) );
+		CheckGLError( GLEXT_glDeleteObject( shader ) );
+
+		non_legacy_supported = false;
+
+		return 0;
+	}
+
+	CheckGLError( GLEXT_glAttachObject( shader, vertex_shader ) );
+	CheckGLError( GLEXT_glDeleteObject( vertex_shader ) );
+
+	auto fragment_shader = CheckGLError( GLEXT_glCreateShaderObject( GLEXT_GL_FRAGMENT_SHADER ) );
+
+	CheckGLError( GLEXT_glShaderSource(
+		fragment_shader,
+		1,
+		&fragment_source,
+		nullptr
+	) );
+	CheckGLError( GLEXT_glCompileShader( fragment_shader ) );
+
+	CheckGLError( GLEXT_glGetObjectParameteriv( fragment_shader, GLEXT_GL_OBJECT_COMPILE_STATUS, &success ) );
+
+	if( success == GL_FALSE ) {
+		CheckGLError( GLEXT_glDeleteObject( fragment_shader ) );
+		CheckGLError( GLEXT_glDeleteObject( shader ) );
+
+		non_legacy_supported = false;
+
+		return 0;
+	}
+
+	CheckGLError( GLEXT_glAttachObject( shader, fragment_shader ) );
+	CheckGLError( GLEXT_glDeleteObject( fragment_shader ) );
+
+	CheckGLError( GLEXT_glLinkProgram( shader ) );
+
+	CheckGLError( GLEXT_glGetObjectParameteriv( shader, GLEXT_GL_OBJECT_LINK_STATUS, &success ) );
+
+	if( success == GL_FALSE ) {
+			CheckGLError( GLEXT_glDeleteObject( shader ) );
+
+			return 0;
+	}
+
+	return CastFromGlHandle( shader );
 }
 
 void WipeStateCache( sf::RenderTarget& target ) {
@@ -126,7 +228,7 @@ Canvas::Canvas( bool depth ) :
 	m_custom_viewport = Renderer::Get().CreateViewport();
 	SetViewport( m_custom_viewport );
 
-	m_custom_draw_callback->Connect( std::bind( &Canvas::DrawRenderTexture, this ) );
+	m_custom_draw_callback->Connect( [this] { DrawRenderTexture(); } );
 
 	static auto checked = false;
 
@@ -138,6 +240,8 @@ Canvas::Canvas( bool depth ) :
 }
 
 Canvas::~Canvas() {
+	sf::Context context;
+
 	if( NonLegacyRenderer::IsAvailable() ) {
 		CheckGLError( GLEXT_glDeleteVertexArrays( 1, &m_vao ) );
 		CheckGLError( GLEXT_glDeleteBuffers( 1, &m_vbo ) );
@@ -145,6 +249,10 @@ Canvas::~Canvas() {
 
 	if( m_display_list ) {
 		CheckGLError( glDeleteLists( m_display_list, 1 ) );
+	}
+
+	if( m_shader ) {
+		CheckGLError( GLEXT_glDeletePrograms( 1, &m_shader ) );
 	}
 }
 
@@ -445,14 +553,24 @@ void Canvas::DrawRenderTexture() {
 			unsigned int unused3;
 			bool unused4;
 			bool unused5;
+			bool unused6;
 			mutable bool pixels_flipped;
-			sf::Uint64 unused6;
+			bool unused7;
+			bool unused8;
+			sf::Uint64 unused9;
 		};
 
 		// Just so that SFML doesn't mess with the texture matrix.
 		const_cast<Texture*>( reinterpret_cast<const Texture*>( &( m_render_texture->getTexture() ) ) )->pixels_flipped = false;
 
-		sf::Shader::bind( m_shader.get() );
+		CheckGLError( GLEXT_glUseProgramObject( CastToGlHandle( m_shader ) ) );
+		CheckGLError( GLEXT_glUniform1i( m_texture_location, 1 ) );
+
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+		auto texture_binding = 0;
+		CheckGLError( glGetIntegerv( GL_TEXTURE_BINDING_2D, &texture_binding) );
+		sf::Texture::bind( &m_render_texture->getTexture() );
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
 
 		CheckGLError( GLEXT_glBindVertexArray( m_vao ) );
 
@@ -460,7 +578,11 @@ void Canvas::DrawRenderTexture() {
 
 		CheckGLError( GLEXT_glBindVertexArray( 0 ) );
 
-		sf::Shader::bind( nullptr );
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+		CheckGLError( glBindTexture( GL_TEXTURE_2D, static_cast<unsigned int>( texture_binding ) ) );
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
+
+		CheckGLError( GLEXT_glUseProgramObject( 0 ) );
 	}
 }
 
@@ -506,9 +628,7 @@ void Canvas::SetupVAO() {
 }
 
 void Canvas::SetupShader() {
-	m_shader = std::unique_ptr<sf::Shader>( new sf::Shader );
-
-	auto load_result = m_shader->loadFromMemory(
+	m_shader = CreateShader(
 		"#version 130\n"
 		"in vec2 vertex;\n"
 		"in vec2 texture_coordinate;\n"
@@ -526,18 +646,15 @@ void Canvas::SetupShader() {
 		"}\n"
 	);
 
-	if( !load_result ) {
+	if( !m_shader ) {
 		non_legacy_supported = false;
-
-		m_shader.reset();
 
 		return;
 	}
 
-	m_vertex_location = GetAttributeLocation( *m_shader, "vertex" );
-	m_texture_coordinate_location = GetAttributeLocation( *m_shader, "texture_coordinate" );
-
-	m_shader->setUniform( "texture0", m_render_texture->getTexture() );
+	CheckGLError( m_texture_location = GLEXT_glGetUniformLocation( CastToGlHandle( m_shader ), "texture0" ) );
+	CheckGLError( m_vertex_location = GetAttributeLocation( m_shader, "vertex" ) );
+	CheckGLError( m_texture_coordinate_location = GetAttributeLocation( m_shader, "texture_coordinate" ) );
 }
 
 }

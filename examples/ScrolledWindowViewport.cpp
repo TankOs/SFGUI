@@ -7,31 +7,15 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 
-class ScrolledWindowViewportExample {
-	public:
-		// Our button click handler.
-		void OnButtonClick();
-
-		void Run();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-
-		// Create the ScrolledWindow box pointer here to reach it from OnButtonClick().
-		sfg::Box::Ptr m_scrolled_window_box;
-};
-
-void ScrolledWindowViewportExample::OnButtonClick() {
-	m_scrolled_window_box->Pack( sfg::Button::Create( "A Button" ) );
-}
-
-void ScrolledWindowViewportExample::Run() {
+int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI ScrolledWindow and Viewport Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
+
+	// Create an SFGUI. This is required before doing anything with SFGUI.
+	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
 	auto window = sfg::Window::Create();
@@ -40,13 +24,13 @@ void ScrolledWindowViewportExample::Run() {
 	// Create a box with 10 pixel spacing.
 	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 10.f );
 
-	// Create a button and connect the click signal.
-	auto button = sfg::Button::Create( "Add a button" );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ScrolledWindowViewportExample::OnButtonClick, this ) );
-
 	// Create a box for our ScrolledWindow. ScrolledWindows are bins
 	// and can only contain 1 child widget.
-	m_scrolled_window_box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
+	auto scrolled_window_box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL );
+
+	// Create a button and connect the click signal.
+	auto button = sfg::Button::Create( "Add a button" );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [&scrolled_window_box] { scrolled_window_box->Pack( sfg::Button::Create( "A Button" ) ); } );
 
 	// Create the ScrolledWindow.
 	auto scrolledwindow = sfg::ScrolledWindow::Create();
@@ -57,7 +41,7 @@ void ScrolledWindowViewportExample::Run() {
 
 	// Add the ScrolledWindow box to the ScrolledWindow
 	// and create a new viewport automatically.
-	scrolledwindow->AddWithViewport( m_scrolled_window_box );
+	scrolledwindow->AddWithViewport( scrolled_window_box );
 
 	// Always remember to set the minimum size of a ScrolledWindow.
 	scrolledwindow->SetRequisition( sf::Vector2f( 500.f, 100.f ) );
@@ -118,7 +102,7 @@ void ScrolledWindowViewportExample::Run() {
 
 			// Close window : exit
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return 0;
 			}
 		}
 
@@ -139,16 +123,11 @@ void ScrolledWindowViewportExample::Run() {
 		app_window.clear();
 
 		// Draw the GUI
-		m_sfgui.Display( app_window );
+		sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
 	}
-}
-
-int main() {
-	ScrolledWindowViewportExample example;
-	example.Run();
 
 	return 0;
 }

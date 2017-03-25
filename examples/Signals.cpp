@@ -7,6 +7,9 @@
 #include <SFML/Graphics.hpp>
 #include <sstream>
 
+namespace
+{
+
 // This is only done here for demonstration purposes.
 // DO NOT DECLARE STATIC OR GLOBAL WIDGETS IN YOUR PROGRAMS.
 // We simply cannot guarantee that it will work in every case.
@@ -18,27 +21,6 @@ sfg::Window::Ptr window;
 // button->OnLeftClick.Connect( &Foo );
 void Foo() {
 	window->SetTitle( "Foo" );
-}
-
-class Application {
-	public:
-		void Run();
-
-		// The second possibility would be defining the function as a class
-		// method in the same class as you call Connect() from, in this case
-		// Application because Connect() is called from Application::Run.
-		// You would pass it the address of the method and the this pointer:
-		// button->OnLeftClick.Connect( &Application::Bar, this );
-		void Bar();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-};
-
-// The definition of the second possibility
-void Application::Bar() {
-	window->SetTitle( "Bar" );
 }
 
 // This is the third possibility. You create instances of a class and
@@ -80,8 +62,13 @@ void BazClass::Baz() {
 	}
 }
 
-void Application::Run() {
+}
+
+int main() {
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
+
+	// Create an SFGUI. This is required before doing anything with SFGUI.
+	sfg::SFGUI sfgui;
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
@@ -98,10 +85,10 @@ void Application::Run() {
 	button1->GetSignal( sfg::Widget::OnLeftClick ).Connect( &Foo );
 	box->Pack( button1, false );
 
-	// Possibility 2, this class
+	// Possibility 2, lambda function
 	auto button2 = sfg::Button::Create();
 	button2->SetLabel( "Clicky 2" );
-	button2->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &Application::Bar, this ) );
+	button2->GetSignal( sfg::Widget::OnLeftClick ).Connect( [] { window->SetTitle( "Bar" ); } );
 	box->Pack( button2, false );
 
 	// Possibility 3, objects
@@ -115,7 +102,7 @@ void Application::Run() {
 		// This is just a more complicated way of passing a pointer to a
 		// BazClass to Connect() when the BazClass object is part of an array.
 		// Passing normal pointers such as &baz1 would also work.
-		button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &BazClass::Baz, &( baz_array[i] ) ) );
+		button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [&baz_array, i] { baz_array[i].Baz(); } );
 		box->Pack( button, false );
 	}
 
@@ -136,7 +123,7 @@ void Application::Run() {
 			window->HandleEvent( event );
 
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return EXIT_SUCCESS;
 			}
 		}
 
@@ -148,7 +135,7 @@ void Application::Run() {
 		app_window.clear();
 
 		// Draw the GUI
-		m_sfgui.Display( app_window );
+		sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
@@ -158,11 +145,6 @@ void Application::Run() {
 	// you need to reset their pointers before your
 	// application exits.
 	window.reset();
-}
-
-int main() {
-	Application app;
-	app.Run();
 
 	return EXIT_SUCCESS;
 }

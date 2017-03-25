@@ -6,34 +6,7 @@
 
 #include <SFML/Graphics.hpp>
 
-class SpinButtonExample {
-	public:
-		// Our value change handler.
-		void OnValueChange();
-
-		void Run();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-
-		// Create the SpinButton pointer here to reach it from OnValueChange().
-		sfg::SpinButton::Ptr m_spinbutton;
-
-		// Create the ProgressBar pointer here to reach it from OnValueChange().
-		sfg::ProgressBar::Ptr m_progress_bar;
-};
-
-void SpinButtonExample::OnValueChange() {
-	const auto& adjustment = m_spinbutton->GetAdjustment();
-
-	auto range = adjustment->GetUpper() - adjustment->GetLower();
-	auto inverse_fraction = 1.f - ( m_spinbutton->GetValue() - adjustment->GetLower() ) / range;
-
-	m_progress_bar->SetFraction( inverse_fraction );
-}
-
-void SpinButtonExample::Run() {
+int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI SpinButton Example", sf::Style::Titlebar | sf::Style::Close );
 
@@ -51,31 +24,38 @@ void SpinButtonExample::Run() {
 	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 10.f );
 
 	// Create the SpinButton itself.
-	m_spinbutton = sfg::SpinButton::Create( -2.f, 18.f, .4f );
+	auto spinbutton = sfg::SpinButton::Create( -2.f, 18.f, .4f );
 
 	// Just like an Entry, you need to specify a minimum width for the SpinButton.
-	m_spinbutton->SetRequisition( sf::Vector2f( 80.f, 0.f ) );
+	spinbutton->SetRequisition( sf::Vector2f( 80.f, 0.f ) );
 
 	// Set the number of digits to display after the decimal point.
-	m_spinbutton->SetDigits( 2 );
-
-	// Connect the OnValueChanged signal so we get notified when the SpinButton's value changes.
-	m_spinbutton->GetSignal( sfg::SpinButton::OnValueChanged ).Connect( std::bind( &SpinButtonExample::OnValueChange, this ) );
+	spinbutton->SetDigits( 2 );
 
 	// Add the SpinButton to the box.
-	box->Pack( m_spinbutton );
+	box->Pack( spinbutton );
 
 	// Create our progress bar and set its size.
-	m_progress_bar = sfg::ProgressBar::Create();
-	m_progress_bar->SetRequisition( sf::Vector2f( 80.f, 20.f ) );
+	auto progress_bar = sfg::ProgressBar::Create();
+	progress_bar->SetRequisition( sf::Vector2f( 80.f, 20.f ) );
+
+	// Connect the OnValueChanged signal so we get notified when the SpinButton's value changes.
+	spinbutton->GetSignal( sfg::SpinButton::OnValueChanged ).Connect( [&spinbutton, &progress_bar] {
+		const auto& adjustment = spinbutton->GetAdjustment();
+
+		auto range = adjustment->GetUpper() - adjustment->GetLower();
+		auto inverse_fraction = 1.f - ( spinbutton->GetValue() - adjustment->GetLower() ) / range;
+
+		progress_bar->SetFraction( inverse_fraction );
+	} );
 
 	// Add the progress bar to the box.
-	box->Pack( m_progress_bar );
+	box->Pack( progress_bar );
 
 	// Set the initial value of the SpinButton.
 	// We can only do this after we create our progress bar because the way we
 	// set it, it will try to update the progress bar when we change its value.
-	m_spinbutton->SetValue( 4.f );
+	spinbutton->SetValue( 4.f );
 
 	// Add the box to the window.
 	window->Add( box );
@@ -98,7 +78,7 @@ void SpinButtonExample::Run() {
 
 			// Close window : exit
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return EXIT_SUCCESS;
 			}
 		}
 
@@ -121,11 +101,6 @@ void SpinButtonExample::Run() {
 		// Update the window
 		app_window.display();
 	}
-}
-
-int main() {
-	SpinButtonExample example;
-	example.Run();
 
 	return EXIT_SUCCESS;
 }

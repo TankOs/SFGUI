@@ -105,6 +105,8 @@ VertexBufferRenderer::VertexBufferRenderer() :
 }
 
 VertexBufferRenderer::~VertexBufferRenderer() {
+	sf::Context context;
+
 	DestroyFBO();
 
 	if( m_vbo_supported ) {

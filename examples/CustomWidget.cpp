@@ -8,9 +8,6 @@
 #include <random>
 #include <string>
 
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-
 class MyCustomWidget : public sfg::Widget {
 	public:
 		// The standard shared_ptr typedefs.
@@ -224,40 +221,24 @@ class MyCustomWidget : public sfg::Widget {
 		mutable std::uniform_int_distribution<> m_color_distribution;
 };
 
-class CustomWidget {
-	public:
-		// Our button click handler.
-		void OnButtonClick();
-
-		void Run();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-
-		// Our custom widget pointer.
-		MyCustomWidget::Ptr m_custom_widget;
-};
-
-void CustomWidget::OnButtonClick() {
-	m_custom_widget->SetLabel( L"You just clicked the other guy!" );
-}
-
-void CustomWidget::Run() {
+int main() {
 	// Create SFML's window.
-	sf::RenderWindow render_window( sf::VideoMode( SCREEN_WIDTH, SCREEN_HEIGHT ), "Custom Widget" );
+	sf::RenderWindow render_window( sf::VideoMode( 800, 600 ), "Custom Widget" );
+
+	// Create an SFGUI. This is required before doing anything with SFGUI.
+	sfg::SFGUI sfgui;
 
 	// Create our custom widget.
-	m_custom_widget = MyCustomWidget::Create( "Custom Text" );
+	auto custom_widget = MyCustomWidget::Create( "Custom Text" );
 
 	// Create a simple button and connect the click signal.
 	auto button = sfg::Button::Create( "Button" );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &CustomWidget::OnButtonClick, this ) );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [&custom_widget] { custom_widget->SetLabel( L"You just clicked the other guy!" ); } );
 
 	// Create a vertical box layouter with 5 pixels spacing and add our custom widget and button
 	// and button to it.
 	auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.0f );
-	box->Pack( m_custom_widget );
+	box->Pack( custom_widget );
 	box->Pack( button, false );
 
 	// Create a window and add the box layouter to it. Also set the window's title.
@@ -284,7 +265,7 @@ void CustomWidget::Run() {
 
 			// If window is about to be closed, leave program.
 			if( event.type == sf::Event::Closed ) {
-				render_window.close();
+				return 0;
 			}
 		}
 
@@ -293,14 +274,9 @@ void CustomWidget::Run() {
 
 		// Rendering.
 		render_window.clear();
-		m_sfgui.Display( render_window );
+		sfgui.Display( render_window );
 		render_window.display();
 	}
-}
-
-int main() {
-	CustomWidget custom_widget;
-	custom_widget.Run();
 
 	return 0;
 }

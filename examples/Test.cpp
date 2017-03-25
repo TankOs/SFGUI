@@ -31,6 +31,8 @@ class SampleApp {
 		void RenderCustomGL();
 		void RenderCustomSFML();
 
+		sf::RenderWindow m_window;
+
 		// Create an SFGUI. This is required before doing anything with SFGUI.
 		sfg::SFGUI m_sfgui;
 
@@ -62,8 +64,6 @@ class SampleApp {
 		sf::Texture m_background_texture;
 		sf::Sprite m_background_sprite;
 		sf::Sprite m_canvas_sprite;
-
-		sf::RenderWindow m_window;
 
 		GLuint m_custom_draw_display_list;
 };
@@ -101,8 +101,8 @@ void Ouchy::DoOuch() {
 }
 
 SampleApp::SampleApp() :
-	m_desktop(),
 	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) ),
+	m_desktop(),
 	m_custom_draw_display_list( 0 )
 {
 	m_background_texture.create( 1024, 768 );
@@ -137,6 +137,10 @@ SampleApp::SampleApp() :
 }
 
 SampleApp::~SampleApp() {
+	if( m_custom_draw_display_list ) {
+		glDeleteLists( m_custom_draw_display_list, 1 );
+	}
+
 	Ouchy::m_ouchies.clear();
 }
 
@@ -145,6 +149,7 @@ void SampleApp::Run() {
 
 	//m_window.SetFramerateLimit( 60 );
 	//m_window.EnableVerticalSync( true );
+	m_window.setActive( true );
 
 	std::string renderer_string;
 
@@ -449,19 +454,19 @@ void SampleApp::Run() {
 	m_wndmain->Add( notebook1 );
 
 	// Signals.
-	m_wndmain->GetSignal( sfg::Window::OnCloseButton ).Connect( std::bind( &SampleApp::OnHideWindowClicked, this ) );
-	btnaddbuttonh->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnAddButtonHClick, this ) );
-	btnaddbuttonv->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnAddButtonVClick, this ) );
-	m_titlebar_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleTitlebarClick, this ) );
-	btnhidewindow->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnHideWindowClicked, this ) );
-	btntoggleori->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleOrientationClick, this ) );
-	btntogglespace->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleSpaceClick, this ) );
-	m_limit_check->GetSignal( sfg::ToggleButton::OnToggle ).Connect( std::bind( &SampleApp::OnLimitCharsToggle, this ) );
-	btnloadstyle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnLoadThemeClick, this ) );
-	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( std::bind( &SampleApp::OnAdjustmentChange, this ) );
-	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnToggleSpinner, this ) );
-	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnMirrorImageClick, this ) );
-	m_switch_renderer->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SampleApp::OnSwitchRendererClick, this ) );
+	m_wndmain->GetSignal( sfg::Window::OnCloseButton ).Connect( [this] { OnHideWindowClicked(); } );
+	btnaddbuttonh->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnAddButtonHClick(); } );
+	btnaddbuttonv->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnAddButtonVClick(); } );
+	m_titlebar_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleTitlebarClick(); } );
+	btnhidewindow->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnHideWindowClicked(); } );
+	btntoggleori->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleOrientationClick(); } );
+	btntogglespace->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleSpaceClick(); } );
+	m_limit_check->GetSignal( sfg::ToggleButton::OnToggle ).Connect( [this] { OnLimitCharsToggle(); } );
+	btnloadstyle->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnLoadThemeClick(); } );
+	m_scale->GetAdjustment()->GetSignal( sfg::Adjustment::OnChange ).Connect( [this] { OnAdjustmentChange(); } );
+	spinner_toggle->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnToggleSpinner(); } );
+	mirror_image->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnMirrorImageClick(); } );
+	m_switch_renderer->GetSignal( sfg::Widget::OnLeftClick ).Connect( [this] { OnSwitchRendererClick(); } );
 
 	spinbutton->SetValue( 20.f );
 	spinbutton->GetAdjustment()->SetMinorStep( .8f );
@@ -540,7 +545,7 @@ void SampleApp::Run() {
 	while( m_window.isOpen() ) {
 		while( m_window.pollEvent( event ) ) {
 			if( event.type == sf::Event::Closed ) {
-				m_window.close();
+				return;
 			}
 
 			m_desktop.HandleEvent( event );
@@ -603,8 +608,6 @@ void SampleApp::Run() {
 
 		++m_fps_counter;
 	}
-
-	glDeleteLists( m_custom_draw_display_list, 1 );
 }
 
 void SampleApp::OnAddButtonHClick() {
@@ -613,7 +616,15 @@ void SampleApp::OnAddButtonHClick() {
 	auto ouchy = std::make_shared<Ouchy>( button );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &Ouchy::DoOuch, ouchy.get() ) );
+	std::weak_ptr<Ouchy> weak_ouchy = ouchy;
+
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [weak_ouchy] {
+		auto strong_ouchy = weak_ouchy.lock();
+
+		if( strong_ouchy ) {
+			strong_ouchy->DoOuch();
+		}
+	} );
 
 	m_boxbuttonsh->Pack( button, true );
 }
@@ -624,7 +635,15 @@ void SampleApp::OnAddButtonVClick() {
 	auto ouchy = std::make_shared<Ouchy>( button );
 	Ouchy::m_ouchies.push_back( ouchy );
 
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &Ouchy::DoOuch, ouchy.get() ) );
+	std::weak_ptr<Ouchy> weak_ouchy = ouchy;
+
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [weak_ouchy] {
+		auto strong_ouchy = weak_ouchy.lock();
+
+		if( strong_ouchy ) {
+			strong_ouchy->DoOuch();
+		}
+	} );
 
 	m_boxbuttonsv->Pack( button, false );
 }

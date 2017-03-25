@@ -20,6 +20,7 @@
 #include <SFML/Window/Context.hpp>
 #include <SFML/System/Vector3.hpp>
 #include <sstream>
+#include <cstddef>
 #include <cassert>
 
 // ARB_vertex_buffer_object
@@ -36,6 +37,11 @@
 #define GLEXT_glBufferData glBufferDataARB
 #define GLEXT_glBufferSubData glBufferSubDataARB
 
+// ARB_multitexture
+#define GLEXT_GL_TEXTURE0 GL_TEXTURE0_ARB
+
+#define GLEXT_glActiveTexture glActiveTextureARB
+
 // ARB_vertex_program
 #define GLEXT_vertex_program sfgogl_ext_ARB_vertex_program
 
@@ -51,7 +57,31 @@
 #define GLEXT_GL_SHADING_LANGUAGE_VERSION GL_SHADING_LANGUAGE_VERSION_ARB
 
 // ARB_vertex_shader (ensured by sf::Shader::isAvailable())
+#define GLEXT_GL_VERTEX_SHADER GL_VERTEX_SHADER_ARB
+
 #define GLEXT_glGetAttribLocation glGetAttribLocationARB
+
+// ARB_fragment_shader (ensured by sf::Shader::isAvailable())
+#define GLEXT_GL_FRAGMENT_SHADER GL_FRAGMENT_SHADER_ARB
+
+// ARB_shader_objects
+#define GLEXT_GLhandle GLhandleARB
+
+#define GLEXT_GL_OBJECT_COMPILE_STATUS GL_OBJECT_COMPILE_STATUS_ARB
+#define GLEXT_GL_OBJECT_LINK_STATUS GL_OBJECT_LINK_STATUS_ARB
+
+#define GLEXT_glCreateProgramObject glCreateProgramObjectARB
+#define GLEXT_glDeletePrograms glDeleteProgramsARB
+#define GLEXT_glCreateShaderObject glCreateShaderObjectARB
+#define GLEXT_glShaderSource glShaderSourceARB
+#define GLEXT_glCompileShader glCompileShaderARB
+#define GLEXT_glGetObjectParameteriv glGetObjectParameterivARB
+#define GLEXT_glDeleteObject glDeleteObjectARB
+#define GLEXT_glAttachObject glAttachObjectARB
+#define GLEXT_glLinkProgram glLinkProgramARB
+#define GLEXT_glGetUniformLocation glGetUniformLocationARB
+#define GLEXT_glUniform1i glUniform1iARB
+#define GLEXT_glUniform2f glUniform2fARB
 
 // ARB_vertex_array_object
 #define GLEXT_vertex_array_object sfgogl_ext_ARB_vertex_array_object
@@ -74,6 +104,18 @@
 #define GLEXT_glFramebufferTexture2D glFramebufferTexture2DEXT
 #define GLEXT_glCheckFramebufferStatus glCheckFramebufferStatusEXT
 
+#if defined( __APPLE__ )
+
+    #define CastToGlHandle( x ) reinterpret_cast<GLEXT_GLhandle>( static_cast<std::ptrdiff_t>( x ) )
+    #define CastFromGlHandle( x ) static_cast<unsigned int>( reinterpret_cast<std::ptrdiff_t>( x ) )
+
+#else
+
+    #define CastToGlHandle( x ) ( x )
+    #define CastFromGlHandle( x ) ( x )
+
+#endif
+
 namespace {
 
 bool gl_initialized = false;
@@ -84,16 +126,8 @@ bool vap_supported = false;
 bool shader_supported = false;
 bool fbo_supported = false;
 
-unsigned int GetAttributeLocation( const sf::Shader& shader, std::string name ) {
-	auto previous_program = CheckGLError( GLEXT_glGetHandle( GLEXT_GL_PROGRAM_OBJECT ) );
-
-	sf::Shader::bind( &shader );
-
-	auto program = CheckGLError( GLEXT_glGetHandle( GLEXT_GL_PROGRAM_OBJECT ) );
-
-	auto location = CheckGLError( GLEXT_glGetAttribLocation( program, name.c_str() ) );
-
-	CheckGLError( GLEXT_glUseProgramObject( previous_program ) );
+unsigned int GetAttributeLocation( unsigned int shader, std::string name ) {
+	auto location = CheckGLError( GLEXT_glGetAttribLocation( CastToGlHandle( shader ), name.c_str() ) );
 
 #if defined( SFGUI_DEBUG )
 	if( location < 0 ) {
@@ -104,6 +138,81 @@ unsigned int GetAttributeLocation( const sf::Shader& shader, std::string name ) 
 	assert( location >= 0 );
 
 	return static_cast<unsigned int>( location );
+}
+
+unsigned int CreateShader( const char* vertex_source, const char* fragment_source ) {
+	auto shader = CheckGLError( GLEXT_glCreateProgramObject() );
+
+	auto vertex_shader = CheckGLError( GLEXT_glCreateShaderObject( GLEXT_GL_VERTEX_SHADER ) );
+
+	CheckGLError( GLEXT_glShaderSource(
+		vertex_shader,
+		1,
+		&vertex_source,
+		nullptr
+	) );
+	CheckGLError( GLEXT_glCompileShader( vertex_shader ) );
+
+	GLint success;
+
+	CheckGLError( GLEXT_glGetObjectParameteriv( vertex_shader, GLEXT_GL_OBJECT_COMPILE_STATUS, &success ) );
+
+	if( success == GL_FALSE ) {
+#if defined( SFGUI_DEBUG )
+		std::cerr << "Failed to compile vertex shader, non-legacy renderer unavailable.\n";
+#endif
+		CheckGLError( GLEXT_glDeleteObject( vertex_shader ) );
+		CheckGLError( GLEXT_glDeleteObject( shader ) );
+
+		shader_supported = false;
+
+		return 0;
+	}
+
+	CheckGLError( GLEXT_glAttachObject( shader, vertex_shader ) );
+	CheckGLError( GLEXT_glDeleteObject( vertex_shader ) );
+
+	auto fragment_shader = CheckGLError( GLEXT_glCreateShaderObject( GLEXT_GL_FRAGMENT_SHADER ) );
+
+	CheckGLError( GLEXT_glShaderSource(
+		fragment_shader,
+		1,
+		&fragment_source,
+		nullptr
+	) );
+	CheckGLError( GLEXT_glCompileShader( fragment_shader ) );
+
+	CheckGLError( GLEXT_glGetObjectParameteriv( fragment_shader, GLEXT_GL_OBJECT_COMPILE_STATUS, &success ) );
+
+	if( success == GL_FALSE ) {
+#if defined( SFGUI_DEBUG )
+		std::cerr << "Failed to compile fragment shader, non-legacy renderer unavailable.\n";
+#endif
+		CheckGLError( GLEXT_glDeleteObject( fragment_shader ) );
+		CheckGLError( GLEXT_glDeleteObject( shader ) );
+
+		shader_supported = false;
+
+		return 0;
+	}
+
+	CheckGLError( GLEXT_glAttachObject( shader, fragment_shader ) );
+	CheckGLError( GLEXT_glDeleteObject( fragment_shader ) );
+
+	CheckGLError( GLEXT_glLinkProgram( shader ) );
+
+	CheckGLError( GLEXT_glGetObjectParameteriv( shader, GLEXT_GL_OBJECT_LINK_STATUS, &success ) );
+
+	if( success == GL_FALSE ) {
+#if defined( SFGUI_DEBUG )
+		std::cerr << "Failed to link shader program, non-legacy renderer unavailable.\n";
+#endif
+			CheckGLError( GLEXT_glDeleteObject( shader ) );
+
+			return 0;
+	}
+
+	return CastFromGlHandle( shader );
 }
 
 }
@@ -119,7 +228,9 @@ NonLegacyRenderer::NonLegacyRenderer() :
 	m_cull( false ),
 	m_use_fbo( false ) {
 	if( IsAvailable() ) {
-		auto load_result = m_shader.loadFromMemory(
+		sf::Context context;
+
+		m_shader = CreateShader(
 			"#version 130\n"
 			"uniform vec2 viewport_parameters;\n"
 			"in vec2 vertex;\n"
@@ -148,19 +259,38 @@ NonLegacyRenderer::NonLegacyRenderer() :
 			"}\n"
 		);
 
-		if( !load_result ) {
-			shader_supported = false;
+		m_fbo_shader = CreateShader(
+			"#version 130\n"
+			"in vec2 vertex;\n"
+			"in vec2 texture_coordinate;\n"
+			"out vec2 vertex_texture_coordinate;\n"
+			"void main() {\n"
+			"\tgl_Position = vec4(vertex.xy, 1.f, 1.f);\n"
+			"\tvertex_texture_coordinate = texture_coordinate;\n"
+			"}\n",
+			"#version 130\n"
+			"uniform sampler2D texture0;\n"
+			"in vec2 vertex_texture_coordinate;\n"
+			"out vec4 fragment_color;\n"
+			"void main() {\n"
+			"\tfragment_color = texture(texture0, vertex_texture_coordinate);\n"
+			"}\n"
+		);
 
-#if defined( SFGUI_DEBUG )
-			std::cerr << "Non-legacy renderer unavailable.\n";
-#endif
-
+		if( !m_shader || !m_fbo_shader )
 			return;
-		}
 
-		m_vertex_location = GetAttributeLocation( m_shader, "vertex" );
-		m_color_location = GetAttributeLocation( m_shader, "color" );
-		m_texture_coordinate_location = GetAttributeLocation( m_shader, "texture_coordinate" );
+		CheckGLError( m_viewport_parameters_location = GLEXT_glGetUniformLocation( CastToGlHandle( m_shader ), "viewport_parameters" ) );
+		CheckGLError( m_texture_location = GLEXT_glGetUniformLocation( CastToGlHandle( m_shader ), "texture0" ) );
+
+		CheckGLError( m_vertex_location = GetAttributeLocation( m_shader, "vertex" ) );
+		CheckGLError( m_color_location = GetAttributeLocation( m_shader, "color" ) );
+		CheckGLError( m_texture_coordinate_location = GetAttributeLocation( m_shader, "texture_coordinate" ) );
+
+		CheckGLError( m_fbo_texture_location = GLEXT_glGetUniformLocation( CastToGlHandle( m_fbo_shader ), "texture0" ) );
+
+		CheckGLError( m_fbo_vertex_location = GetAttributeLocation( m_fbo_shader, "vertex" ) );
+		CheckGLError( m_fbo_texture_coordinate_location = GetAttributeLocation( m_fbo_shader, "texture_coordinate" ) );
 
 		CheckGLError( GLEXT_glGenBuffers( 1, &m_vertex_vbo ) );
 		CheckGLError( GLEXT_glGenBuffers( 1, &m_color_vbo ) );
@@ -175,6 +305,8 @@ NonLegacyRenderer::NonLegacyRenderer() :
 }
 
 NonLegacyRenderer::~NonLegacyRenderer() {
+	sf::Context context;
+
 	DestroyFBO();
 
 	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_index_vbo ) );
@@ -183,6 +315,9 @@ NonLegacyRenderer::~NonLegacyRenderer() {
 	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_vertex_vbo ) );
 
 	CheckGLError( GLEXT_glDeleteVertexArrays( 1, &m_vao ) );
+
+	CheckGLError( GLEXT_glDeletePrograms( 1, &m_fbo_shader ) );
+	CheckGLError( GLEXT_glDeletePrograms( 1, &m_shader ) );
 }
 
 NonLegacyRenderer::Ptr NonLegacyRenderer::Create() {
@@ -307,6 +442,8 @@ void NonLegacyRenderer::DisplayImpl() const {
 		return;
 	}
 
+	auto previous_program = CheckGLError( GLEXT_glGetHandle( GLEXT_GL_PROGRAM_OBJECT ) );
+
 	if( m_last_window_size != m_window_size ) {
 		CheckGLError( glViewport( 0, 0, m_window_size.x, m_window_size.y ) );
 
@@ -315,7 +452,8 @@ void NonLegacyRenderer::DisplayImpl() const {
 		if( m_window_size.x && m_window_size.y ) {
 			const_cast<NonLegacyRenderer*>( this )->Invalidate( INVALIDATE_VERTEX | INVALIDATE_TEXTURE );
 
-			m_shader.setUniform( "viewport_parameters", sf::Glsl::Vec2( 2.f / static_cast<float>( m_window_size.x ), -2.f / static_cast<float>( m_window_size.y ) ) );
+			CheckGLError( GLEXT_glUseProgramObject( CastToGlHandle( m_shader ) ) );
+			CheckGLError( GLEXT_glUniform2f(m_viewport_parameters_location, 2.f / static_cast<float>( m_window_size.x ), -2.f / static_cast<float>( m_window_size.y ) ) );
 
 			const_cast<NonLegacyRenderer*>( this )->SetupFBO( m_window_size.x, m_window_size.y );
 		}
@@ -341,6 +479,11 @@ void NonLegacyRenderer::DisplayImpl() const {
 		const_cast<NonLegacyRenderer*>( this )->SetupVAO();
 	}
 
+	CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+	auto texture_binding = 0;
+	CheckGLError( glGetIntegerv( GL_TEXTURE_BINDING_2D, &texture_binding) );
+	CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
+
 	if( !m_use_fbo || !m_vbo_synced || m_force_redraw ) {
 		// Thanks to color / texture modulation we can draw the entire
 		// frame in a single pass by pseudo-disabling the texturing with
@@ -354,8 +497,12 @@ void NonLegacyRenderer::DisplayImpl() const {
 			CheckGLError( glClear( GL_COLOR_BUFFER_BIT ) );
 		}
 
-		m_shader.setUniform( "texture0", *( m_texture_atlas[0] ) );
-		sf::Shader::bind( &m_shader );
+		CheckGLError( GLEXT_glUseProgramObject( CastToGlHandle( m_shader ) ) );
+		CheckGLError( GLEXT_glUniform1i( m_texture_location, 1 ) );
+
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+		sf::Texture::bind( m_texture_atlas[0].get() );
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
 
 		CheckGLError( GLEXT_glBindVertexArray( m_vao ) );
 
@@ -371,14 +518,26 @@ void NonLegacyRenderer::DisplayImpl() const {
 				auto size = static_cast<sf::Vector2i>( viewport->GetSize() );
 
 				CheckGLError( GLEXT_glBindVertexArray( 0 ) );
-				sf::Shader::bind( nullptr );
+				CheckGLError( GLEXT_glUseProgramObject( 0 ) );
+
+				CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+				auto custom_draw_texture_binding = 0;
+				CheckGLError( glGetIntegerv( GL_TEXTURE_BINDING_2D, &custom_draw_texture_binding) );
+				CheckGLError( glBindTexture( GL_TEXTURE_2D, static_cast<unsigned int>( 0 ) ) );
+				CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
+
 				CheckGLError( glViewport( destination.x, m_window_size.y - destination.y - size.y, size.x, size.y ) );
 
 				// Draw canvas.
 				( *batch.custom_draw_callback )();
 
 				CheckGLError( glViewport( 0, 0, m_window_size.x, m_window_size.y ) );
-				sf::Shader::bind( &m_shader );
+
+				CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+				CheckGLError( glBindTexture( GL_TEXTURE_2D, static_cast<unsigned int>( custom_draw_texture_binding ) ) );
+				CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
+
+				CheckGLError( GLEXT_glUseProgramObject( CastToGlHandle( m_shader ) ) );
 				CheckGLError( GLEXT_glBindVertexArray( m_vao ) );
 			}
 			else {
@@ -401,7 +560,11 @@ void NonLegacyRenderer::DisplayImpl() const {
 					if( batch.atlas_page != current_atlas_page ) {
 						current_atlas_page = batch.atlas_page;
 
-						m_shader.setUniform( "texture0", *( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )] ) );
+						CheckGLError( GLEXT_glUseProgramObject( CastToGlHandle( m_shader ) ) );
+						CheckGLError( GLEXT_glUniform1i( m_texture_location, 1 ) );
+						CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+						sf::Texture::bind( ( m_texture_atlas[static_cast<std::size_t>( current_atlas_page )] ).get() );
+						CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
 					}
 
 					CheckGLError( glDrawRangeElements(
@@ -423,7 +586,11 @@ void NonLegacyRenderer::DisplayImpl() const {
 		if( m_use_fbo ) {
 			CheckGLError( GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, 0 ) );
 
-			sf::Shader::bind( &m_fbo_shader );
+			CheckGLError( GLEXT_glUseProgramObject( CastToGlHandle( m_fbo_shader ) ) );
+			CheckGLError( GLEXT_glUniform1i( m_fbo_texture_location, 1 ) );
+			CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+			CheckGLError( glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture ) );
+			CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
 
 			auto is_vertex_array = CheckGLError( GLEXT_glIsVertexArray( m_fbo_vao ) );
 
@@ -440,7 +607,11 @@ void NonLegacyRenderer::DisplayImpl() const {
 		}
 	}
 	else {
-		sf::Shader::bind( &m_fbo_shader );
+		CheckGLError( GLEXT_glUseProgramObject( CastToGlHandle( m_fbo_shader ) ) );
+		CheckGLError( GLEXT_glUniform1i( m_fbo_texture_location, 1 ) );
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+		CheckGLError( glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture ) );
+		CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
 
 		auto is_vertex_array = CheckGLError( GLEXT_glIsVertexArray( m_fbo_vao ) );
 
@@ -459,7 +630,11 @@ void NonLegacyRenderer::DisplayImpl() const {
 	// Needed otherwise SFML will blow up...
 	CheckGLError( GLEXT_glBindVertexArray( 0 ) );
 
-	sf::Shader::bind( nullptr );
+	CheckGLError( GLEXT_glUseProgramObject( previous_program ) );
+
+	CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 + 1 ) );
+	CheckGLError( glBindTexture( GL_TEXTURE_2D, static_cast<unsigned int>( texture_binding ) ) );
+	CheckGLError( GLEXT_glActiveTexture( GLEXT_GL_TEXTURE0 ) );
 
 	m_vbo_synced = true;
 }
@@ -711,19 +886,24 @@ void NonLegacyRenderer::SetupFBO( int width, int height ) {
 
 	CheckGLError( GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, m_frame_buffer ) );
 
-	m_frame_buffer_texture.create( static_cast<unsigned int>( width ), static_cast<unsigned int>( height ) );
-
 	auto old_texture_id = 0u;
 	CheckGLError( glGetIntegerv( GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>( &old_texture_id ) ) );
 
-	sf::Texture::bind( &m_frame_buffer_texture );
+	// Create FBO attachment
+	if( !m_frame_buffer_texture ) {
+		CheckGLError( glGenTextures( 1, &m_frame_buffer_texture ) );
+	}
 
-	auto texture_id = 0u;
-	CheckGLError( glGetIntegerv( GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>( &texture_id ) ) );
+	CheckGLError( glBindTexture( GL_TEXTURE_2D, m_frame_buffer_texture ) );
+	CheckGLError( glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr ) );
+	CheckGLError( glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ) );
+	CheckGLError( glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE ) );
+	CheckGLError( glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST ) );
+	CheckGLError( glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST ) );
 
 	CheckGLError( glBindTexture( GL_TEXTURE_2D, old_texture_id ) );
 
-	CheckGLError( GLEXT_glFramebufferTexture2D( GLEXT_GL_FRAMEBUFFER, GLEXT_GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0 ) );
+	CheckGLError( GLEXT_glFramebufferTexture2D( GLEXT_GL_FRAMEBUFFER, GLEXT_GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_frame_buffer_texture, 0 ) );
 
 	// Sanity check.
 	auto status = CheckGLError( GLEXT_glCheckFramebufferStatus( GLEXT_GL_FRAMEBUFFER ) );
@@ -742,38 +922,6 @@ void NonLegacyRenderer::SetupFBO( int width, int height ) {
 	CheckGLError( GLEXT_glBindFramebuffer( GLEXT_GL_FRAMEBUFFER, 0 ) );
 
 	if( m_use_fbo && !m_fbo_vbo && !m_fbo_vao ) {
-		auto load_result = m_fbo_shader.loadFromMemory(
-			"#version 130\n"
-			"in vec2 vertex;\n"
-			"in vec2 texture_coordinate;\n"
-			"out vec2 vertex_texture_coordinate;\n"
-			"void main() {\n"
-			"\tgl_Position = vec4(vertex.xy, 1.f, 1.f);\n"
-			"\tvertex_texture_coordinate = texture_coordinate;\n"
-			"}\n",
-			"#version 130\n"
-			"uniform sampler2D texture0;\n"
-			"in vec2 vertex_texture_coordinate;\n"
-			"out vec4 fragment_color;\n"
-			"void main() {\n"
-			"\tfragment_color = texture(texture0, vertex_texture_coordinate);\n"
-			"}\n"
-		);
-
-		if( !load_result ) {
-			fbo_supported = false;
-			m_use_fbo = false;
-
-			DestroyFBO();
-
-			return;
-		}
-
-		m_fbo_vertex_location = GetAttributeLocation( m_fbo_shader, "vertex" );
-		m_fbo_texture_coordinate_location = GetAttributeLocation( m_fbo_shader, "texture_coordinate" );
-
-		m_fbo_shader.setUniform( "texture0", m_frame_buffer_texture );
-
 		CheckGLError( GLEXT_glGenBuffers( 1, &m_fbo_vbo ) );
 		CheckGLError( GLEXT_glBindBuffer( GLEXT_GL_ARRAY_BUFFER, m_fbo_vbo ) );
 
@@ -792,11 +940,20 @@ void NonLegacyRenderer::SetupFBO( int width, int height ) {
 }
 
 void NonLegacyRenderer::DestroyFBO() {
-	CheckGLError( GLEXT_glDeleteBuffers( 1, &m_fbo_vbo ) );
-	m_fbo_vbo = 0;
+	if( m_fbo_vbo ) {
+		CheckGLError( GLEXT_glDeleteBuffers( 1, &m_fbo_vbo ) );
+		m_fbo_vbo = 0;
+	}
 
-	CheckGLError( GLEXT_glDeleteFramebuffers( 1, &m_frame_buffer ) );
-	m_frame_buffer = 0;
+	if( m_frame_buffer ) {
+		CheckGLError( GLEXT_glDeleteFramebuffers( 1, &m_frame_buffer ) );
+		m_frame_buffer = 0;
+	}
+
+	if( m_frame_buffer_texture ) {
+		CheckGLError( glDeleteTextures( 1, &m_frame_buffer_texture ) );
+		m_frame_buffer_texture = 0;
+	}
 }
 
 void NonLegacyRenderer::TuneCull( bool enable ) {

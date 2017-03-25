@@ -6,58 +6,44 @@
 
 #include <SFML/Graphics.hpp>
 
-class SpinnerExample {
-	public:
-		// Our button click handler.
-		void OnButtonClick();
-
-		void Run();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-
-		// Create the spinner pointer here to reach it from OnButtonClick().
-		sfg::Spinner::Ptr m_spinner;
-};
-
-void SpinnerExample::OnButtonClick() {
-	// If the spinner is spinning...
-	if( m_spinner->Started() ) {
-		// ... stop the spinner.
-		m_spinner->Stop();
-
-		return;
-	}
-
-	// ... otherwise start it.
-	m_spinner->Start();
-}
-
-void SpinnerExample::Run() {
+int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Spinner Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
 
+	// Create an SFGUI. This is required before doing anything with SFGUI.
+	sfg::SFGUI sfgui;
+
 	// Create our main SFGUI window
 	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create our spinner
-	m_spinner = sfg::Spinner::Create();
+	auto spinner = sfg::Spinner::Create();
 
 	// Set how big the spinner should be
-	m_spinner->SetRequisition( sf::Vector2f( 40.f, 40.f ) );
+	spinner->SetRequisition( sf::Vector2f( 40.f, 40.f ) );
 
 	// Create a button and connect the click signal.
 	auto button = sfg::Button::Create( "Toggle" );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &SpinnerExample::OnButtonClick, this ) );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [&spinner] {
+		// If the spinner is spinning...
+		if( spinner->Started() ) {
+			// ... stop the spinner.
+			spinner->Stop();
+
+			return;
+		}
+
+		// ... otherwise start it.
+		spinner->Start();
+	} );
 
 	// Create a horizontal box layouter and add widgets to it.
 	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.0f );
-	box->Pack( m_spinner );
+	box->Pack( spinner );
 	box->Pack( button, false );
 
 	// Add the box to the window.
@@ -81,7 +67,7 @@ void SpinnerExample::Run() {
 
 			// Close window : exit
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return 0;
 			}
 		}
 
@@ -97,16 +83,11 @@ void SpinnerExample::Run() {
 		app_window.clear();
 
 		// Draw the GUI
-		m_sfgui.Display( app_window );
+		sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
 	}
-}
-
-int main() {
-	SpinnerExample example;
-	example.Run();
 
 	return 0;
 }

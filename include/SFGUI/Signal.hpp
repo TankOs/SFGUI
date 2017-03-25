@@ -14,11 +14,11 @@ namespace sfg {
  * into a std::function<void()>.
  *
  * For free functions, just pass the function's pointer to Connect(). For
- * member functions (methods) std::bind the object to the method.
+ * member functions (methods) use a lambda function.
  * Examples:\n
  * \code
  * widget->OnLeftClick.Connect( &my_callback ); // Free function binding.
- * widget->OnLeftClick.Connect( std::bind( &MyClass::MyCallback, this ) ); // Method binding.
+ * widget->OnLeftClick.Connect( [object] { object->MyCallback(); } ); // Method binding via lambda function.
  * \endcode
  *
  */

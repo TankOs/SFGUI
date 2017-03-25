@@ -6,31 +6,15 @@
 
 #include <SFML/Graphics.hpp>
 
-class MultiviewExample {
-	public:
-		void ButtonClick();
-
-		void Run();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-
-		// Create our button smart pointer.
-		sfg::Button::Ptr m_button;
-};
-
-void MultiviewExample::ButtonClick() {
-	// When the button is clicked it's label should change.
-	m_button->SetLabel( "Bar" );
-}
-
-void MultiviewExample::Run() {
+int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Multiview Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
+
+	// Create an SFGUI. This is required before doing anything with SFGUI.
+	sfg::SFGUI sfgui;
 
 	// Create our main SFGUI window
 	auto window = sfg::Window::Create();
@@ -38,21 +22,24 @@ void MultiviewExample::Run() {
 	window->SetPosition( sf::Vector2f( 100.f, 100.f ) );
 
 	// Create the button itself.
-	m_button = sfg::Button::Create();
+	auto button = sfg::Button::Create();
 
 	// Set the label of the button.
-	m_button->SetLabel( "Foo" );
+	button->SetLabel( "Foo" );
 
 	// Make the button nice and big
-	m_button->SetRequisition( sf::Vector2f( 200.f, 20.f ) );
+	button->SetRequisition( sf::Vector2f( 200.f, 20.f ) );
 
 	// Add the button to the window
-	window->Add( m_button );
+	window->Add( button );
 
 	// So that our button has a meaningful purpose
 	// (besides just looking awesome :P) we need to tell it to connect
 	// to a callback of our choosing to notify us when it is clicked.
-	m_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &MultiviewExample::ButtonClick, this ) );
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [&button] {
+		// When the button is clicked it's label should change.
+		button->SetLabel( "Bar" );
+	} );
 
 	// If attempting to connect to a class method you need to provide
 	// a pointer to it as the second parameter after the function address.
@@ -106,7 +93,7 @@ void MultiviewExample::Run() {
 
 			// Close window : exit
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return EXIT_SUCCESS;
 			}
 		}
 
@@ -122,7 +109,7 @@ void MultiviewExample::Run() {
 		render_texture.draw( clear_rect );
 
 		// Draw the GUI onto the RenderTexture.
-		m_sfgui.Display( render_texture );
+		sfgui.Display( render_texture );
 
 		// Display the RenderTexture.
 		render_texture.display();
@@ -139,11 +126,6 @@ void MultiviewExample::Run() {
 		// Update the window
 		app_window.display();
 	}
-}
-
-int main() {
-	MultiviewExample example;
-	example.Run();
 
 	return EXIT_SUCCESS;
 }

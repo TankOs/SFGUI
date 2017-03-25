@@ -46,7 +46,7 @@ int main() {
 
 			// Close window : exit
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return EXIT_SUCCESS;
 			}
 		}
 

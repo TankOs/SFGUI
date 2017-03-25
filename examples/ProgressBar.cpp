@@ -6,51 +6,38 @@
 
 #include <SFML/Graphics.hpp>
 
-class ProgressBarExample {
-	public:
-		// Our button click handler.
-		void OnButtonClick();
-
-		void Run();
-
-	private:
-		// Create an SFGUI. This is required before doing anything with SFGUI.
-		sfg::SFGUI m_sfgui;
-
-		// Create the progress bar pointer
-		sfg::ProgressBar::Ptr m_progressbar;
-};
-
-void ProgressBarExample::OnButtonClick() {
-	// Generate random value for progress bar percent done
-	auto random_percentage = static_cast<float>( rand() ) / static_cast<float>( RAND_MAX );
-	m_progressbar->SetFraction(random_percentage);
-}
-
-void ProgressBarExample::Run() {
+int main() {
 	// Create the main SFML window
 	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Progress Bar Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
 
+	// Create an SFGUI. This is required before doing anything with SFGUI.
+	sfg::SFGUI sfgui;
+
 	// Create our main SFGUI window
 	auto window = sfg::Window::Create();
 	window->SetTitle( "Title" );
 
 	// Create our progress bar
-	m_progressbar = sfg::ProgressBar::Create();
+	auto progressbar = sfg::ProgressBar::Create();
 
 	// Set how big the progress bar should be
-	m_progressbar->SetRequisition( sf::Vector2f( 200.f, 40.f ) );
+	progressbar->SetRequisition( sf::Vector2f( 200.f, 40.f ) );
 
 	// Create a button and connect the click signal.
 	auto button = sfg::Button::Create( "Set Random Value" );
-	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( std::bind( &ProgressBarExample::OnButtonClick, this ) );
+
+	button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [&progressbar] {
+		// Generate random value for progress bar percent done
+		auto random_percentage = static_cast<float>( rand() ) / static_cast<float>( RAND_MAX );
+		progressbar->SetFraction(random_percentage);
+	} );
 
 	// Create a horizontal box layouter and add widgets to it.
 	auto box = sfg::Box::Create( sfg::Box::Orientation::HORIZONTAL, 5.0f );
-	box->Pack( m_progressbar );
+	box->Pack( progressbar );
 	box->Pack( button, false );
 
 	// Add the box to the window.
@@ -74,7 +61,7 @@ void ProgressBarExample::Run() {
 
 			// Close window : exit
 			if ( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return 0;
 			}
 		}
 
@@ -90,16 +77,11 @@ void ProgressBarExample::Run() {
 		app_window.clear();
 
 		// Draw the GUI
-		m_sfgui.Display( app_window );
+		sfgui.Display( app_window );
 
 		// Update the window
 		app_window.display();
 	}
-}
-
-int main() {
-	ProgressBarExample example;
-	example.Run();
 
 	return 0;
 }

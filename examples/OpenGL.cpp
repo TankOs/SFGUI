@@ -78,7 +78,7 @@ int main() {
 
 		while( app_window.pollEvent( event ) ) {
 			if( event.type == sf::Event::Closed ) {
-				app_window.close();
+				return 0;
 			}
 			else {
 				desktop.HandleEvent( event );

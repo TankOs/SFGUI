@@ -2,7 +2,6 @@
 
 #include <SFGUI/Renderer.hpp>
 
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Shader.hpp>
 #include <SFML/System/Vector2.hpp>
 
@@ -93,14 +92,15 @@ class SFGUI_API NonLegacyRenderer : public Renderer {
 		std::vector<priv::RendererBatch> m_batches;
 
 		unsigned int m_frame_buffer = 0;
-		sf::Texture m_frame_buffer_texture;
+		unsigned int m_frame_buffer_texture = 0;
 
 		unsigned int m_fbo_vbo = 0;
 		unsigned int m_fbo_vao = 0;
 
-		sf::Shader m_fbo_shader;
-		mutable unsigned int m_fbo_vertex_location = 0;
-		mutable unsigned int m_fbo_texture_coordinate_location = 0;
+		unsigned int m_fbo_shader = 0;
+		int m_fbo_texture_location = 0;
+		unsigned int m_fbo_vertex_location = 0;
+		unsigned int m_fbo_texture_coordinate_location = 0;
 
 		unsigned int m_vertex_vbo = 0;
 		unsigned int m_color_vbo = 0;
@@ -109,12 +109,14 @@ class SFGUI_API NonLegacyRenderer : public Renderer {
 
 		unsigned int m_vao = 0;
 
-		mutable sf::Shader m_shader;
-		mutable unsigned int m_vertex_location = 0;
-		mutable unsigned int m_color_location = 0;
-		mutable unsigned int m_texture_coordinate_location = 0;
+		unsigned int m_shader = 0;
+		int m_viewport_parameters_location = 0;
+		int m_texture_location = 0;
+		unsigned int m_vertex_location = 0;
+		unsigned int m_color_location = 0;
+		unsigned int m_texture_coordinate_location = 0;
 
-		mutable sf::Vector2i m_previous_window_size;
+		sf::Vector2i m_previous_window_size;
 
 		int m_last_vertex_count;
 		int m_last_index_count;

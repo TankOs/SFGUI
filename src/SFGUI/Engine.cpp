@@ -67,12 +67,13 @@ sf::Vector2f Engine::GetFontHeightProperties( const sf::Font& font, unsigned int
 		void* library;
 		void* font_face; // Authentic SFML comment: implementation details
 		void* unused1;
-		int* unused2;
+		void* unused2;
+		int* unused3;
 		std::string family;
 
 		// Since maps allocate everything non-contiguously on the heap we can use void* instead of Page here.
-		mutable std::map<unsigned int, void*> unused3;
-		mutable std::vector<sf::Uint8> unused4;
+		mutable std::map<unsigned int, void*> unused4;
+		mutable std::vector<sf::Uint8> unused5;
 	};
 
 	// All your font face are belong to us too.
