@@ -1,5 +1,16 @@
 # Changelog
 
+## Release 0.3.2
+
+Enhancements:
+
+  * Compatibility to SFML 2.4.2.
+  * Added `sfg::Box::SetOrientation`.
+
+Fixes:
+
+  * Fixed `sfg::Canvas::Draw` `vertex_count` parameter type.
+
 ## Release 0.3.1
 
 Enhancements:

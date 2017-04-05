@@ -20,3 +20,5 @@ If you're missing in this file, please add yourself with contact info.
   * [eXpl0it3r](https://github.com/eXpl0it3r)
   * [Zax37](https://github.com/Zax37)
   * [BurningEnlightment](https://github.com/BurningEnlightenment)
+  * [kiwon0905 ](https://github.com/kiwon0905)
+  * [Belfer](https://github.com/Belfer)
