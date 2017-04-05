@@ -4,19 +4,17 @@
 
   1. Download and install [SFML](http://sfml-dev.org/).
   2. Download SFGUI from the
-     [download page](http://sfgui.sfml-dev.de/download). If available, choose a
-     binary release for your operating system and IDE/toolset.
+     [download page](https://github.com/TankOs/SFGUI/releases). If available,
+     choose a binary release for your operating system and IDE/toolset.
   3. Unpack the archive.
-  4. If source release: Build and install SFGUI (see *Building* for
+  4. If source release: Build and install SFGUI (see [Building](#building) for
      instructions).
   5. To see that everything works, start a new C++ project and compile the
      [Hello World example](https://github.com/TankOs/SFGUI/blob/master/examples/HelloWorld.cpp).
 
 ## Documentation
 
-See SFGUI's [help section](http://sfgui.sfml-dev.de/p/docs) for a user guide,
-style reference, API reference and FAQ. You can also find links to a forum and
-an IRC chat there.
+Visit the [SFGUI wiki](https://github.com/TankOs/SFGUI/wiki) for further help.
 
 ## Building
 
