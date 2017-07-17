@@ -66,7 +66,7 @@ int main() {
 		// Validate number.
 		unsigned int buf_number( 0 );
 
-		std::stringstream sstr( static_cast<std::string>( current_number_entry->GetText() ) );
+		std::stringstream sstr( current_number_entry->GetText().toAnsiString() );
 		sstr >> buf_number;
 
 		if( buf_number < 1 || buf_number > 100 ) {
