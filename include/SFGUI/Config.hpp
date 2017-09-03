@@ -6,7 +6,10 @@
 
 #if defined( _WIN32 ) || defined( __WIN32__ )
 	#define SFGUI_SYSTEM_WINDOWS
-	#define WIN32_LEAN_AND_MEAN
+
+	#if !defined( WIN32_LEAN_AND_MEAN )
+		#define WIN32_LEAN_AND_MEAN
+	#endif
 
 	#if !defined( NOMINMAX )
 		#define NOMINMAX
