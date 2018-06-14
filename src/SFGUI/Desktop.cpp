@@ -114,6 +114,9 @@ void Desktop::Add( std::shared_ptr<Widget> widget ) {
 
 	RecalculateWidgetLevels();
 
+	if( widget->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+		SendFakeMouseMoveEvent( widget, static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) );
+	}
 
 	// Activate context.
 	Context::Activate( m_context );
@@ -136,6 +139,10 @@ void Desktop::Remove( std::shared_ptr<Widget> widget ) {
 	}
 
 	RecalculateWidgetLevels();
+
+	if( !m_children.empty() &&  m_children.front()->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+		SendFakeMouseMoveEvent( m_children.front(), static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) );
+	}
 }
 
 void Desktop::RemoveAll() {
@@ -190,6 +197,10 @@ void Desktop::BringToFront( std::shared_ptr<const Widget> child ) {
 	m_children.push_front( ptr );
 
 	RecalculateWidgetLevels();
+
+	if( child->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+		SendFakeMouseMoveEvent( ptr, static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) );
+	}
 }
 
 void Desktop::SendFakeMouseMoveEvent( std::shared_ptr<Widget> widget, int x, int y ) const {
