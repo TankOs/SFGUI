@@ -53,7 +53,7 @@ class SampleApp {
 		sfg::Spinner::Ptr m_spinner;
 		sfg::Image::Ptr m_image;
 		sfg::Canvas::Ptr m_gl_canvas;
-		sfg::Canvas::Ptr m_sfml_canvas;
+		//sfg::Canvas::Ptr m_sfml_canvas;
 		sfg::Button::Ptr m_switch_renderer;
 
 		sfg::Desktop m_desktop;
@@ -514,17 +514,17 @@ void SampleApp::Run() {
 	texture.loadFromImage( sfgui_logo );
 	m_canvas_sprite.setTexture( texture );
 
-	auto fourth_window = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE );
+	//auto fourth_window = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE );
 
-	m_sfml_canvas = sfg::Canvas::Create();
-	m_sfml_canvas->SetRequisition( sf::Vector2f( static_cast<float>( texture.getSize().x ), static_cast<float>( texture.getSize().y ) ) );
+	//m_sfml_canvas = sfg::Canvas::Create();
+	//m_sfml_canvas->SetRequisition( sf::Vector2f( static_cast<float>( texture.getSize().x ), static_cast<float>( texture.getSize().y ) ) );
 
-	fourth_window->Add( m_sfml_canvas );
+	//fourth_window->Add( m_sfml_canvas );
 
-	fourth_window->SetId( "fourth_window" );
-	fourth_window->SetTitle( "Embedded SFML drawing" );
-	fourth_window->SetPosition( sf::Vector2f( 760.f, 20.f ) );
-	m_desktop.Add( fourth_window );
+	//fourth_window->SetId( "fourth_window" );
+	//fourth_window->SetTitle( "Embedded SFML drawing" );
+	//fourth_window->SetPosition( sf::Vector2f( 760.f, 20.f ) );
+	//m_desktop.Add( fourth_window );
 
 	// Add window to desktop
 	m_desktop.Add( m_wndmain );
@@ -567,11 +567,11 @@ void SampleApp::Run() {
 			m_gl_canvas->Display();
 			m_gl_canvas->Unbind();
 
-			m_sfml_canvas->Bind();
-			m_sfml_canvas->Clear( sf::Color( 0, 0, 0, 0 ) );
-			RenderCustomSFML();
-			m_sfml_canvas->Display();
-			m_sfml_canvas->Unbind();
+			//m_sfml_canvas->Bind();
+			//m_sfml_canvas->Clear( sf::Color( 0, 0, 0, 0 ) );
+			//RenderCustomSFML();
+			//m_sfml_canvas->Display();
+			//m_sfml_canvas->Unbind();
 
 			m_window.setActive( true );
 		}
@@ -723,7 +723,7 @@ void SampleApp::OnSwitchRendererClick() {
 
 		sfg::Renderer::Set( renderer );
 
-		renderer->TuneUseFBO( true );
+		//renderer->TuneUseFBO( true );
 		renderer->TuneAlphaThreshold( .2f );
 		renderer->TuneCull( true );
 
@@ -764,7 +764,7 @@ void SampleApp::OnSwitchRendererClick() {
 
 		sfg::Renderer::Set( renderer );
 
-		renderer->TuneUseFBO( true );
+		//renderer->TuneUseFBO( true );
 		renderer->TuneAlphaThreshold( .2f );
 		renderer->TuneCull( true );
 
@@ -872,7 +872,7 @@ void SampleApp::RenderCustomGL() {
 }
 
 void SampleApp::RenderCustomSFML() {
-	m_sfml_canvas->Draw( m_canvas_sprite );
+	//m_sfml_canvas->Draw( m_canvas_sprite );
 }
 
 int main() {
