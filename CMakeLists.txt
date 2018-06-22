@@ -60,6 +60,7 @@ set(
 	"${INCLUDE_PATH}/SFGUI/Frame.hpp"
 	"${INCLUDE_PATH}/SFGUI/Image.hpp"
 	"${INCLUDE_PATH}/SFGUI/Label.hpp"
+	"${INCLUDE_PATH}/SFGUI/ListBox.hpp"
 	"${INCLUDE_PATH}/SFGUI/Misc.hpp"
 	"${INCLUDE_PATH}/SFGUI/Notebook.hpp"
 	"${INCLUDE_PATH}/SFGUI/Object.hpp"
@@ -119,6 +120,7 @@ set(
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Frame.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Image.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Label.cpp"
+	"${SOURCE_PATH}/SFGUI/Engines/BREW/ListBox.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Notebook.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/ProgressBar.cpp"
 	"${SOURCE_PATH}/SFGUI/Engines/BREW/Scale.cpp"
@@ -139,6 +141,7 @@ set(
 	"${SOURCE_PATH}/SFGUI/GLLoader.hpp"
 	"${SOURCE_PATH}/SFGUI/Image.cpp"
 	"${SOURCE_PATH}/SFGUI/Label.cpp"
+	"${SOURCE_PATH}/SFGUI/ListBox.cpp"
 	"${SOURCE_PATH}/SFGUI/Misc.cpp"
 	"${SOURCE_PATH}/SFGUI/Notebook.cpp"
 	"${SOURCE_PATH}/SFGUI/Object.cpp"
@@ -270,7 +273,7 @@ elseif( APPLE )
 elseif( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
 	target_link_libraries( sfgui sfml-graphics sfml-window sfml-system ${OPENGL_gl_LIBRARY} ${X11_LIBRARIES} )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
-	
+
 	if( LIB_SUFFIX )
 		set( LIB_PATH "lib${LIB_SUFFIX}" )
 	else()
