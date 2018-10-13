@@ -179,10 +179,10 @@ write_basic_package_version_file( ${PROJECT_NAME}ConfigVersion.cmake
 	VERSION ${SFGUI_VERSION}
 	COMPATIBILITY SameMajorVersion )
 
-configure_file(cmake/templates/config.cmake.in ${PROJECT_NAME}Config.cmake @ONLY)
+configure_file(cmake/templates/config.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" @ONLY)
 
 install(
-	FILES ${PROJECT_NAME}Config.cmake ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+	FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
 	DESTINATION "${SHARE_PATH}/cmake/"
 )
 
