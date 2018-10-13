@@ -3,3 +3,4 @@
 *.os
 *.so
 /doc/html/
+*build*/
