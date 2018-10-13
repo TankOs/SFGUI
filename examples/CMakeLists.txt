@@ -6,7 +6,7 @@ function( build_example SAMPLE_NAME SOURCES )
 
 	install(
 		TARGETS ${SAMPLE_NAME}
-		RUNTIME DESTINATION "bin" COMPONENT examples
+		RUNTIME DESTINATION "${SHARE_PATH}/examples" COMPONENT examples
 	)
 
 	install(

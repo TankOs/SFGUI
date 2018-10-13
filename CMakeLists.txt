@@ -14,7 +14,7 @@ set( SFGUI_VERSION ${SFGUI_MAJOR_VERSION}.${SFGUI_MINOR_VERSION}.${SFGUI_REVISIO
 ### USER INPUT ###
 
 option( SFGUI_BUILD_SHARED_LIBS "Build shared library."                         ON )
-set(BUILD_SHARED_LIBS ${SFGUI_BUILD_SHARED_LIBS})
+set( BUILD_SHARED_LIBS ${SFGUI_BUILD_SHARED_LIBS} )
 option( SFGUI_BUILD_EXAMPLES    "Build examples."                               ON)
 option( SFGUI_BUILD_DOC         "Generate API documentation."                   OFF)
 option( SFGUI_INCLUDE_FONT      "Include default font in library (DejaVuSans)." ON)
@@ -44,7 +44,7 @@ target_include_directories( ${TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/lib
 target_include_directories( ${TARGET} PUBLIC $<BUILD_INTERFACE:${INCLUDE_PATH}> $<INSTALL_INTERFACE:include/> )
 
 if( NOT SFGUI_BUILD_SHARED_LIBS )
-	target_compile_definitions( ${TARGET} PRIVATE SFGUI_STATIC )
+	target_compile_definitions( ${TARGET} PUBLIC SFGUI_STATIC )
 	set_target_properties( ${TARGET} PROPERTIES DEBUG_POSTFIX -s-d )
 	set_target_properties( ${TARGET} PROPERTIES RELEASE_POSTFIX -s )
 	set_target_properties( ${TARGET} PROPERTIES MINSIZEREL_POSTFIX -s )
@@ -76,7 +76,7 @@ if( WIN32 )
 		if( SFGUI_BUILD_SHARED_LIBS )
 			message( FATAL_ERROR "\n-> SFGUI_STATIC_STD_LIBS and SFGUI_BUILD_SHARED_LIBS are not compatible.\n-> They lead to multiple runtime environments which results in undefined behavior.\n" )
 		else()
-			target_compile_definitions( ${TARGET} PRIVATE SFML_STATIC )
+			target_compile_definitions( ${TARGET} PUBLIC SFML_STATIC )
 
 			if( MSVC )
 				foreach( flag CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE )
