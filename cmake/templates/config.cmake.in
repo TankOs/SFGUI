@@ -11,4 +11,4 @@ if( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
 	find_dependency( X11 )
 endif()
 
-include( "${CMAKE_CURRENT_LIST_DIR}/MyLibraryTargets.cmake" )
+include( "${CMAKE_CURRENT_LIST_DIR}/@PROJECT_NAME@Targets.cmake" )

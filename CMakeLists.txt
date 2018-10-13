@@ -187,3 +187,4 @@ install(
 )
 
 export(EXPORT ${PROJECT_NAME}Targets NAMESPACE ${PROJECT_NAME}::)
+export(PACKAGE ${PROJECT_NAME})
