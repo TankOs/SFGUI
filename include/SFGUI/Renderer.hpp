@@ -5,10 +5,11 @@
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
-#include <vector>
-#include <map>
 #include <deque>
+#include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 namespace sf {
 class Window;
