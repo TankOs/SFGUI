@@ -2,7 +2,7 @@ cmake_minimum_required( VERSION 2.8 )
 
 function( build_example SAMPLE_NAME SOURCES )
 	add_executable( ${SAMPLE_NAME} ${SOURCES} )
-	target_link_libraries( ${SAMPLE_NAME} sfgui ${SFML_LIBRARIES} ${SFML_DEPENDENCIES} ${OPENGL_gl_LIBRARY} )
+	target_link_libraries( ${SAMPLE_NAME} PRIVATE SFGUI::SFGUI)
 
 	install(
 		TARGETS ${SAMPLE_NAME}

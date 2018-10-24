@@ -3,3 +3,6 @@
 *.os
 *.so
 /doc/html/
+*build*/
+/.vs
+/CMakeSettings.json
