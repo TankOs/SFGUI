@@ -367,14 +367,14 @@ void Canvas::Clear( const sf::Color& color, bool depth ) {
 
 		m_render_texture = std::make_shared<sf::RenderTexture>();
 
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
+		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth ) ) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
 	}
 	else if( m_resize ) {
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
+		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth ) ) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
@@ -443,14 +443,14 @@ void Canvas::Bind() {
 
 		m_render_texture = std::make_shared<sf::RenderTexture>();
 
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
+		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth ) ) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
 	}
 	else if( m_resize ) {
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), m_depth ) ) {
+		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth )) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
