@@ -1,5 +1,22 @@
 # Changelog
 
+## Release 0.4.0
+
+Enhancements:
+
+  * Modernized CMake configuration.
+
+Fixes:
+
+  * `sfg::Desktop` not properly handling mouse focus between windows.
+  * Added missing `<string>` include.
+  * Got rid of `SendFakeMouseMoveEvent` warnings.
+  * Got rid of `sf::RenderWindow::Create()` deprecation warning.
+  * Deactivated Test app features that are broken due to SFML changes.
+  * Renamed OpenGL example to avoid a naming collision.
+  * _FindSFML.cmake_ updated, libjpeg not required anymore.
+  * No `WIN32_LEAN_AND_MEAN` redefinition.
+
 ## Release 0.3.2
 
 Enhancements:

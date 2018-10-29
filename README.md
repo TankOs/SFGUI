@@ -69,5 +69,5 @@ contribution, please add yourself to the list.
 
 ## Contact
 
-  * Website: http://sfgui.sfml-dev.de/
+  * Website: https://github.com/TankOs/SFGUI
   * IRC: [irc.boxbox.org:6697, #sfgui](irc://irc.sfml-dev.org:6697/#sfgui)

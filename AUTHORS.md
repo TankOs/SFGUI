@@ -22,3 +22,7 @@ If you're missing in this file, please add yourself with contact info.
   * [BurningEnlightment](https://github.com/BurningEnlightenment)
   * [kiwon0905 ](https://github.com/kiwon0905)
   * [Belfer](https://github.com/Belfer)
+  * [JonnyPtn](https://github.com/JonnyPtn)
+  * [jraynal](https://github.com/jraynal)
+  * [DrBarbare](https://github.com/DrBarbare)
+  * [BillyONeal](https://github.com/BillyONeal)
