@@ -13,17 +13,24 @@ set( SFGUI_VERSION ${SFGUI_MAJOR_VERSION}.${SFGUI_MINOR_VERSION}.${SFGUI_REVISIO
 
 ### USER INPUT ###
 
+option( SFGUI_BUILD_EXAMPLES    "Build examples."                               ON )
+option( SFGUI_BUILD_DOC         "Generate API documentation."                   OFF )
+option( SFGUI_INCLUDE_FONT      "Include default font in library (DejaVuSans)." ON )
 option( SFGUI_BUILD_SHARED_LIBS "Build shared library."                         ON )
 set( BUILD_SHARED_LIBS ${SFGUI_BUILD_SHARED_LIBS} )
-option( SFGUI_BUILD_EXAMPLES    "Build examples."                               ON)
-option( SFGUI_BUILD_DOC         "Generate API documentation."                   OFF)
-option( SFGUI_INCLUDE_FONT      "Include default font in library (DejaVuSans)." ON)
-option( SFML_STATIC_LIBRARIES   "Do you want to link SFML statically?"          OFF)
 
 
 # Find packages.
 find_package( OpenGL REQUIRED )
-find_package( SFML 2.5 REQUIRED COMPONENTS graphics window system )
+if ( EXISTS ${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake )
+	include( ${CMAKE_SOURCE_DIR}/conanbuildinfo.cmake )
+	conan_basic_setup()
+else ()
+	option( SFML_STATIC_LIBRARIES   "Do you want to link SFML statically?" OFF)
+	find_package( SFML 2.5 REQUIRED COMPONENTS graphics window system )
+	set( SFML_LIBRARIES sfml-graphics )
+endif()
+
 
 set( INCLUDE_PATH "${PROJECT_SOURCE_DIR}/include/" )
 set( SOURCE_PATH "${PROJECT_SOURCE_DIR}/src/" )
@@ -56,7 +63,7 @@ if( SFGUI_INCLUDE_FONT )
 	target_compile_definitions( ${TARGET} PRIVATE SFGUI_INCLUDE_FONT )
 endif()
 
-target_link_libraries( ${TARGET} PUBLIC sfml-graphics sfml-window sfml-system ${OPENGL_gl_LIBRARY} )
+target_link_libraries( ${TARGET} PUBLIC ${CONAN_LIBS} ${SFML_LIBRARIES} ${OPENGL_gl_LIBRARY} )
 
 # Tell the compiler to export when necessary.
 set_target_properties( ${TARGET} PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
@@ -105,17 +112,12 @@ if( WIN32 )
 	set( SHARE_PATH "." )
 	set( LIB_PATH "lib" )
 elseif( APPLE )
+	# Apple Frameworks being nice bundles, CMake directly interpret them as targets!
 	find_library( COREFOUNDATION_LIBRARY CoreFoundation )
 	mark_as_advanced( COREFOUNDATION_LIBRARY )
 
-	add_library( CoreFoundation SHARED IMPORTED )
-	set_target_properties(
-		CoreFoundation PROPERTIES
-			IMPORTED_LOCATION "${COREFOUNDATION_LIBRARY}"
-			INTERFACE_INCLUDE_DIRECTORIES "/System/Library/Frameworks/CoreFoundation.framework/Headers"
-	)
-	
-	target_link_libraries( ${TARGET} PUBLIC CoreFoundation )
+	target_link_libraries( ${TARGET} PUBLIC ${COREFOUNDATION_LIBRARY} )
+
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 	set( LIB_PATH "lib" )
 elseif( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )

@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 3.2 )
 
 function( build_example SAMPLE_NAME SOURCES )
 	add_executable( ${SAMPLE_NAME} ${SOURCES} )

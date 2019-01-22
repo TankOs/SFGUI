@@ -1,8 +1,33 @@
-*.a
-*.o
-*.os
-*.so
+# Documentation artifacts
 /doc/html/
+
+# Build artifacts
 *build*/
-/.vs
-/CMakeSettings.json
+*Build*/
+**.a
+**.o
+**.os
+**.so
+**.lib
+**.dll
+**.dlib
+
+# Conan files
+conan*info.*
+graph_info.json
+
+# Editors cache
+
+## Qt Creator
+CMakeLists.txt.usr
+
+## VSCode
+.vscode
+
+## Visual Studio
+.vs
+
+## Misc
+*~
+*.swp
+CMakeSettings.json
