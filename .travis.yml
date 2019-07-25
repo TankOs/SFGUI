@@ -1,0 +1,32 @@
+linux: &linux
+   os: linux
+   dist: xenial
+   language: minimal
+   sudo: required
+   services:
+     - docker
+osx: &osx
+   os: osx
+   language: generic
+osx: &windows
+   os: windows
+   language: cpp
+matrix:
+   include:
+      - <<: *linux
+        env: DOCKER_IMAGE=lasote/conangcc8
+      - <<: *linux
+        env: DOCKER_IMAGE=lasote/conanclang60
+      - <<: *osx
+        osx_image: xcode10
+      - <<: *windows
+
+install:
+  # Generate a RUNNER name to use in docker images across install and run
+  - export RUNNER="runner-${RANDOM}"
+  - chmod +x .ci/install.sh
+  - ./.ci/install.sh
+
+script:
+  - chmod +x .ci/run.sh
+  - ./.ci/run.sh
