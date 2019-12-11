@@ -10,6 +10,7 @@ namespace sfg {
 
 // Signals.
 Signal::SignalID Entry::OnTextChanged = 0;
+Signal::SignalID Entry::OnEnterKeyPressed = 0;
 
 Entry::Entry() :
 	m_string(),
@@ -179,7 +180,10 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	}
 
 	switch( key ) {
-	case sf::Keyboard::BackSpace: { // backspace
+	case sf::Keyboard::Enter: {
+		GetSignals().Emit( OnEnterKeyPressed );
+	} break;
+	case sf::Keyboard::Backspace: {
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.erase( static_cast<std::size_t>( m_cursor_position - 1 ) );
 
