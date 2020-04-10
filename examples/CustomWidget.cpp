@@ -96,7 +96,7 @@ class MyCustomWidget : public sfg::Widget {
 						5.f,
 						inverted_color,
 						background_color,
-						20.f
+						20
 					)
 				);
 
@@ -120,7 +120,7 @@ class MyCustomWidget : public sfg::Widget {
 							255
 						),
 						inner_border_color,
-						20.f
+						20
 					)
 				);
 

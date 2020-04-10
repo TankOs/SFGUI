@@ -15,10 +15,12 @@
 #include <SFGUI/Desktop.hpp>
 #include <SFGUI/Engine.hpp>
 #include <SFGUI/Entry.hpp>
+#include <SFGUI/FilePickerDialog.hpp>
 #include <SFGUI/Fixed.hpp>
 #include <SFGUI/Frame.hpp>
 #include <SFGUI/Image.hpp>
 #include <SFGUI/Label.hpp>
+#include <SFGUI/ListBox.hpp>
 #include <SFGUI/Notebook.hpp>
 #include <SFGUI/ProgressBar.hpp>
 #include <SFGUI/RadioButton.hpp>
