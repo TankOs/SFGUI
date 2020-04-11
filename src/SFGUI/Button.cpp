@@ -9,6 +9,7 @@ namespace sfg {
 Button::Ptr Button::Create( const sf::String& label ) {
 	auto ptr = Ptr( new Button );
 	ptr->SetLabel( label );
+	ptr->SetAlignment(Alignment::CENTER);
 	return ptr;
 }
 
@@ -104,6 +105,16 @@ const std::string& Button::GetName() const {
 	return name;
 }
 
+void Button::SetAlignment(Button::Alignment alignment)
+{
+	m_alignment = alignment;
+}
+
+const Button::Alignment& Button::GetAlignment() const
+{
+	return m_alignment;
+}
+
 bool Button::HandleAdd( Widget::Ptr child ) {
 	if( child && child->GetName() != "Image" ) {
 #if defined( SFGUI_DEBUG )
@@ -150,4 +161,9 @@ void Button::HandleStateChange( State old_state ) {
 	Bin::HandleStateChange( old_state );
 }
 
+}
+
+sfg::Button::Alignment operator|(sfg::Button::Alignment a, sfg::Button::Alignment b)
+{
+	return (sfg::Button::Alignment)(((int)a) | ((int)b));
 }

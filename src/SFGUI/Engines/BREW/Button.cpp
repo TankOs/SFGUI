@@ -45,22 +45,43 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 		sf::Text text( button->GetLabel(), *font, font_size );
 		auto offset = ( button->GetState() == Button::State::ACTIVE ) ? border_width : 0.f;
 		sfg::Widget::PtrConst child( button->GetChild() );
+		const Button::Alignment& alignment = button->GetAlignment();
+		sf::Vector2f nPosition;
+		nPosition.y = button->GetAllocation().height / 2.f;
+
+		switch (alignment & Button::Alignment::VERTICAL) {
+		case Button::Alignment::TOP:
+			nPosition.y += offset - button->GetAllocation().height / 2.f + spacing;
+			break;
+		case Button::Alignment::BOTTOM:
+			nPosition.y -= metrics.y + offset - button->GetAllocation().height / 2.f + spacing;
+			break;
+		default:
+			nPosition.y -= metrics.y / 2.f - offset;
+			break;
+		}
 
 		if( !child ) {
-			text.setPosition(
-				button->GetAllocation().width / 2.f - metrics.x / 2.f + offset,
-				button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
-			);
+			nPosition.x = button->GetAllocation().width / 2.f;
 		}
 		else {
-			float width( button->GetAllocation().width - spacing - child->GetAllocation().width );
-
-			text.setPosition(
-				child->GetAllocation().width + spacing + (width / 2.f - metrics.x / 2.f) + offset,
-				button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
-			);
+			float width(button->GetAllocation().width - spacing - child->GetAllocation().width);
+			nPosition.x = child->GetAllocation().width + spacing + width / 2.f;
 		}
 
+		switch (alignment & Button::Alignment::HORIZONTAL) {
+		case Button::Alignment::LEFT:
+			nPosition.x += offset - button->GetAllocation().width / 2.f + spacing;
+			break;
+		case Button::Alignment::RIGHT:
+			nPosition.x -= metrics.x + offset - button->GetAllocation().width / 2.f + spacing;
+			break;
+		default:
+			nPosition.x -= metrics.x / 2.f - offset;
+			break;
+		}
+
+		text.setPosition(nPosition.x, nPosition.y);
 		text.setFillColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}

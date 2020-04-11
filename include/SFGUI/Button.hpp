@@ -13,6 +13,16 @@ class Image;
  */
 class SFGUI_API Button : public Bin {
 	public:
+		enum Alignment {
+			CENTER,
+			LEFT		= 0x1,
+			RIGHT		= 0x2,
+			TOP			= 0x4,
+			BOTTOM		= 0x8,
+			HORIZONTAL	= LEFT + RIGHT,
+			VERTICAL	= TOP + BOTTOM,
+		};
+
 		typedef std::shared_ptr<Button> Ptr; //!< Shared pointer.
 		typedef std::shared_ptr<const Button> PtrConst; //!< Shared pointer.
 
@@ -23,6 +33,16 @@ class SFGUI_API Button : public Bin {
 		static Ptr Create( const sf::String& label = L"" );
 
 		const std::string& GetName() const override;
+
+		/** Set alignment.
+		 * @param alignment Alignment.
+		 */
+		void SetAlignment(Alignment alignment);
+
+		/** Get alignment.
+		 * @return Alignment.
+		 */
+		const Alignment& GetAlignment() const;
 
 		/** Set label.
 		 * @param label Label.
@@ -69,6 +89,9 @@ class SFGUI_API Button : public Bin {
 		void AllocateChild();
 
 		sf::String m_label;
+		Alignment m_alignment;
 };
 
 }
+
+sfg::Button::Alignment operator|(sfg::Button::Alignment a, sfg::Button::Alignment b);
