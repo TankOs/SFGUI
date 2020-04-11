@@ -26,6 +26,7 @@
 #include <SFGUI/RadioButton.hpp>
 #include <SFGUI/Range.hpp>
 #include <SFGUI/Renderer.hpp>
+#include <SFGUI/ResizableImage.hpp>
 #include <SFGUI/Scale.hpp>
 #include <SFGUI/Scrollbar.hpp>
 #include <SFGUI/ScrolledWindow.hpp>

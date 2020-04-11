@@ -27,7 +27,7 @@ const sf::String& Button::GetLabel() const {
 	return m_label;
 }
 
-void Button::SetImage( Image::Ptr image ) {
+void Button::SetImage( std::shared_ptr<Image> image ) {
 	ClearImage();
 	Add( image );
 }
@@ -116,7 +116,7 @@ const Button::Alignment& Button::GetAlignment() const
 }
 
 bool Button::HandleAdd( Widget::Ptr child ) {
-	if( child && child->GetName() != "Image" ) {
+	if( child && child->GetName() != "Image" && child->GetName() != "ResizableImage") {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Only an Image can be added to a Button.\n";
 #endif

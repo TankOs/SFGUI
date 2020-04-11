@@ -57,7 +57,7 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 			nPosition.y -= metrics.y + offset - button->GetAllocation().height / 2.f + spacing;
 			break;
 		default:
-			nPosition.y -= metrics.y / 2.f - offset;
+			nPosition.y -= metrics.y / 2.f - offset + 1.f;
 			break;
 		}
 
@@ -72,9 +72,11 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 		switch (alignment & Button::Alignment::HORIZONTAL) {
 		case Button::Alignment::LEFT:
 			nPosition.x += offset - button->GetAllocation().width / 2.f + spacing;
+			if (child) nPosition.x += child->GetAllocation().width / 2.f + spacing;
 			break;
 		case Button::Alignment::RIGHT:
 			nPosition.x -= metrics.x + offset - button->GetAllocation().width / 2.f + spacing;
+			if (child) nPosition.x -= child->GetAllocation().width / 2.f + spacing;
 			break;
 		default:
 			nPosition.x -= metrics.x / 2.f - offset;
