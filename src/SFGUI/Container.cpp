@@ -74,9 +74,25 @@ void Container::HandleEvent( const sf::Event& event ) {
 		local_event.mouseButton.y -= static_cast<int>( GetAllocation().top );
 	}
 
+	bool children_lost_focus = false;
+
 	// Pass event to children.
 	for( const auto& child : m_children ) {
 		child->HandleEvent( local_event );
+		if (event.type == sf::Event::MouseButtonPressed) {
+			if (children_lost_focus) {
+				if (static_cast<const Container*>(&*child)->Widget::IsMouseInWidget()) {
+					children_lost_focus = false;
+				}
+			}
+			else if (child->HasFocus() && !(static_cast<const Container*>(&*child)->Widget::IsMouseInWidget())) {
+				children_lost_focus = true;
+			}
+		}
+	}
+
+	if (children_lost_focus) {
+		GrabFocus();
 	}
 
 	// Process event for own widget.

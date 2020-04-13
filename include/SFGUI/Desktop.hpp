@@ -99,6 +99,11 @@ class SFGUI_API Desktop {
 		 */
 		void BringToFront( std::shared_ptr<const Widget> child );
 
+		/** Is any widget focused.
+		 * @return true if any widget is focused, false otherwise.
+		 */
+		bool IsAnyWidgetFocused();
+
 	private:
 		typedef std::deque<std::shared_ptr<Widget>> WidgetsList;
 

@@ -82,6 +82,9 @@ void BREW::ResetProperties() {
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
 	SetProperty( "Entry", "Color", sf::Color::White );
+	SetProperty( "Entry", "SelectionColor", sf::Color::White );
+	SetProperty( "Entry", "SelectedTextColor", sf::Color::Black );
+	SetProperty( "Entry:PRELIGHT", "BackgroundColor", sf::Color(0x68, 0x68, 0x68));
 
 	// Scale-specific.
 	SetProperty( "Scale", "SliderColor", sf::Color( 0x68, 0x6a, 0x65 ) );
