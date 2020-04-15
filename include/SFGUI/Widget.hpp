@@ -273,6 +273,16 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 */
 		static bool HasModal();
 
+		/** Check if a widget has focus.
+		 * @param widget Checked widget.
+		 * @return true if widget has focus.
+		 */
+		static bool HasFocus(PtrConst widget);
+
+		/** Remove focus from focused widget.
+		 */
+		static void LoseFocus();
+
 		// Signals.
 		static Signal::SignalID OnStateChange; //!< Fired when state changed.
 		static Signal::SignalID OnGainFocus; //!< Fired when focus gained.
@@ -427,12 +437,6 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param widget Focused widget.
 		 */
 		static void GrabFocus( Ptr widget );
-
-		/** Check if a widget has focus.
-		 * @param widget Checked widget.
-		 * @return true if widget has focus.
-		 */
-		static bool HasFocus( PtrConst widget );
 
 		/** Set this widget as the current modal widget.
 		 * Consumes all events.

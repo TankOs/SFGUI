@@ -9,6 +9,7 @@ namespace sfg {
 Button::Ptr Button::Create( const sf::String& label ) {
 	auto ptr = Ptr( new Button );
 	ptr->SetLabel( label );
+	ptr->SetAlignment(Alignment::CENTER);
 	return ptr;
 }
 
@@ -26,7 +27,7 @@ const sf::String& Button::GetLabel() const {
 	return m_label;
 }
 
-void Button::SetImage( Image::Ptr image ) {
+void Button::SetImage( std::shared_ptr<Image> image ) {
 	ClearImage();
 	Add( image );
 }
@@ -104,8 +105,18 @@ const std::string& Button::GetName() const {
 	return name;
 }
 
+void Button::SetAlignment(Button::Alignment alignment)
+{
+	m_alignment = alignment;
+}
+
+const Button::Alignment& Button::GetAlignment() const
+{
+	return m_alignment;
+}
+
 bool Button::HandleAdd( Widget::Ptr child ) {
-	if( child && child->GetName() != "Image" ) {
+	if( child && child->GetName() != "Image" && child->GetName() != "ResizableImage") {
 #if defined( SFGUI_DEBUG )
 		std::cerr << "SFGUI warning: Only an Image can be added to a Button.\n";
 #endif
@@ -150,4 +161,9 @@ void Button::HandleStateChange( State old_state ) {
 	Bin::HandleStateChange( old_state );
 }
 
+}
+
+sfg::Button::Alignment operator|(sfg::Button::Alignment a, sfg::Button::Alignment b)
+{
+	return (sfg::Button::Alignment)(((int)a) | ((int)b));
 }

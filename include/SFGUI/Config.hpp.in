@@ -35,3 +35,5 @@
 	#define SFGUI_DEBUG
 	#include <iostream> // XXX Only for debugging purposes.
 #endif
+
+#cmakedefine SFGUI_BOOST_FILESYSTEM_SUPPORT

@@ -121,6 +121,17 @@ bool Widget::HasFocus( PtrConst widget ) {
 	return false;
 }
 
+void Widget::LoseFocus()
+{
+	// Notify old focused widget.
+	if (focus_widget.lock()) {
+		focus_widget.lock()->GetSignals().Emit(OnLostFocus);
+		focus_widget.lock()->HandleFocusChange(NULL);
+	}
+
+	focus_widget.reset();
+}
+
 void Widget::SetAllocation( const sf::FloatRect& rect ) {
 	sf::FloatRect oldallocation( m_allocation );
 

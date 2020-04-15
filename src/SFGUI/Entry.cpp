@@ -4,12 +4,14 @@
 #include <SFGUI/Engine.hpp>
 
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Window/Clipboard.hpp>
 #include <cmath>
 
 namespace sfg {
 
 // Signals.
 Signal::SignalID Entry::OnTextChanged = 0;
+Signal::SignalID Entry::OnReturnPressed = 0;
 
 Entry::Entry() :
 	m_string(),
@@ -18,6 +20,7 @@ Entry::Entry() :
 	m_text_placeholder( 0 ),
 	m_max_length( 0 ),
 	m_cursor_position( 0 ),
+	m_cursor_selection_start( 0 ),
 	m_elapsed_time( 0.f ),
 	m_text_margin( 0.f ),
 	m_cursor_status( false )
@@ -160,14 +163,25 @@ void Entry::MoveCursor( int delta ) {
 }
 
 void Entry::HandleTextEvent( sf::Uint32 character ) {
-	if( m_max_length > 0 && static_cast<int>( m_string.getSize() ) >= m_max_length ) {
+	int left, right;
+	GetSelectionBounds(left, right);
+
+	if( m_max_length > 0 && left == right && static_cast<int>( m_string.getSize() ) >= m_max_length ) {
 		return;
 	}
 
 	if( character > 0x1f && character != 0x7f ) {
 		// not a control character
+		if (left != right) {
+			m_string.erase(static_cast<std::size_t>(left), static_cast<std::size_t>(right - left));
+			if (m_cursor_position == right) {
+				m_cursor_position -= right - left;
+			}
+		}
+
 		m_string.insert( static_cast<std::size_t>( m_cursor_position ), character );
 		MoveCursor( 1 );
+		m_cursor_selection_start = m_cursor_position;
 
 		GetSignals().Emit( OnTextChanged );
 	}
@@ -179,14 +193,80 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 	}
 
 	switch( key ) {
-	case sf::Keyboard::BackSpace: { // backspace
-		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
-			m_string.erase( static_cast<std::size_t>( m_cursor_position - 1 ) );
+	case sf::Keyboard::A: {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+			m_cursor_selection_start = 0;
+			size_t end = m_string.getSize();
 
+			if (m_cursor_position == end) {
+				m_cursor_position = 0; // make sure that is gets updated
+			}
+			SetCursorPosition(end);
+		}
+	} break;
+	case sf::Keyboard::C: {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+			int left, right;
+			GetSelectionBounds(left, right);
+
+			if (left != right) {
+				sf::Clipboard::setString(GetSelectedText());
+			}
+		}
+	} break;
+	case sf::Keyboard::V: {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+			int left, right;
+			GetSelectionBounds(left, right);
+			const sf::String& str = sf::Clipboard::getString();
+
+			if (!str.isEmpty()) {
+				sf::String left_substr = m_string.substring(0, left);
+				sf::String right_substr = m_string.substring(right, m_string.getSize() - right);
+
+				SetText(left_substr + str + right_substr);
+				SetCursorPosition(left_substr.getSize() + str.getSize());
+				m_cursor_selection_start = m_cursor_position;
+			}
+		}
+	} break;
+	case sf::Keyboard::X: {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) {
+			int left, right;
+			GetSelectionBounds(left, right);
+
+			if (left != right) {
+				sf::String selected = GetSelectedText();
+				sf::Clipboard::setString(selected);
+				sf::String left_substr = m_string.substring(0, left);
+				sf::String right_substr = m_string.substring(right, m_string.getSize() - right);
+
+				SetText(left_substr + right_substr);
+				SetCursorPosition(left_substr.getSize());
+				m_cursor_selection_start = m_cursor_position;
+			}
+		}
+	} break;
+	case sf::Keyboard::BackSpace: { // backspace
+		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 || m_cursor_selection_start > 0 ) ) {
 			// Store old number of visible characters.
 			auto old_num_visible_chars = m_visible_string.getSize();
 
-			MoveCursor( -1 );
+			int left, right;
+			GetSelectionBounds(left, right);
+
+			if (left == right) {
+				m_string.erase(static_cast<std::size_t>(left - 1));
+				MoveCursor(-1);
+			}
+			else {
+				m_string.erase(static_cast<std::size_t>(left), static_cast<std::size_t>(right - left));
+				if (m_cursor_position == right) {
+					MoveCursor(left - right);
+				}
+			}
+			m_cursor_selection_start = m_cursor_position;
+
 			RecalculateVisibleString();
 
 			// If new amount of chars is less and we have some chars in front, go
@@ -203,11 +283,23 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 		}
 	} break;
 	case sf::Keyboard::Delete: {
-		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < static_cast<int>( m_string.getSize() ) ) ) {
-			m_string.erase( static_cast<std::size_t>( m_cursor_position ) );
-
+		if( ( m_string.getSize() > 0 ) && ( std::min(m_cursor_position, m_cursor_selection_start) < static_cast<int>( m_string.getSize() ) ) ) {
 			// Store old number of visible characters.
 			auto old_num_visible_chars = m_visible_string.getSize();
+
+			int left, right;
+			GetSelectionBounds(left, right);
+
+			if (left == right) {
+				m_string.erase(static_cast<std::size_t>(left));
+			}
+			else {
+				m_string.erase(static_cast<std::size_t>(left), static_cast<std::size_t>(right - left));
+				if (m_cursor_position == right) {
+					MoveCursor(left - right);
+				}
+			}
+			m_cursor_selection_start = m_cursor_position;
 
 			RecalculateVisibleString();
 
@@ -229,18 +321,33 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			m_visible_offset = 0;
 			SetCursorPosition( 0 );
 		}
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) {
+			m_cursor_selection_start = m_cursor_position;
+		}
 	} break;
 	case sf::Keyboard::End: {
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
 			SetCursorPosition( static_cast<int>( m_string.getSize() ) );
 		}
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) {
+			m_cursor_selection_start = m_cursor_position;
+		}
 	} break;
 	case sf::Keyboard::Left: {
 		MoveCursor( -1 );
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) {
+			m_cursor_selection_start = m_cursor_position;
+		}
 	} break;
 	case sf::Keyboard::Right: {
 		MoveCursor( 1 );
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift)) {
+			m_cursor_selection_start = m_cursor_position;
+		}
+	} break;
+	case sf::Keyboard::Return: {
+		GetSignals().Emit( OnReturnPressed );
 	} break;
 	default: break;
 	}
@@ -258,8 +365,15 @@ void Entry::HandleMouseLeave( int /*x*/, int /*y*/ ) {
 	}
 }
 
+void Entry::HandleMouseMoveEvent(int x, int y)
+{
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+		SetCursorPosition(GetPositionFromMouseX(x));
+	}
+}
+
 void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int /*y*/ ) {
-	if( !press || !IsMouseInWidget() ) {
+	if( !IsMouseInWidget() ) {
 		return;
 	}
 
@@ -268,8 +382,14 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		return;
 	}
 
-	GrabFocus();
-	SetCursorPosition( GetPositionFromMouseX( x ) );
+	if (press) {
+		GrabFocus();
+		SetCursorPosition(GetPositionFromMouseX(x));
+		m_cursor_selection_start = m_cursor_position;
+	}
+	else {
+		SetCursorPosition(GetPositionFromMouseX(x));
+	}
 }
 
 void Entry::HandleUpdate( float seconds ) {
@@ -291,6 +411,10 @@ void Entry::HandleFocusChange( Widget::Ptr focused_widget ) {
 	if( HasFocus() ) {
 		m_elapsed_time = 0.f;
 		m_cursor_status = true;
+	}
+	else {
+		m_cursor_position = 0;
+		m_cursor_selection_start = 0;
 	}
 
 	Invalidate();
@@ -326,6 +450,11 @@ int Entry::GetVisibleOffset() const {
 	return m_visible_offset;
 }
 
+int Entry::GetVisibleLength() const
+{
+	return m_visible_string.getSize();
+}
+
 int Entry::GetCursorPosition() const {
 	return m_cursor_position;
 }
@@ -354,6 +483,25 @@ void Entry::SetMaximumLength( int max_length ) {
 		RecalculateVisibleString();
 		GetSignals().Emit( OnTextChanged );
 	}
+}
+
+void Entry::GetSelectionBounds(int& left, int& right) const
+{
+	if (m_cursor_position < m_cursor_selection_start) {
+		left = m_cursor_position;
+		right = m_cursor_selection_start;
+	}
+	else {
+		left = m_cursor_selection_start;
+		right = m_cursor_position;
+	}
+}
+
+sf::String Entry::GetSelectedText() const
+{
+	int left, right;
+	GetSelectionBounds(left, right);
+	return m_string.substring(left, right - left);
 }
 
 void Entry::SetTextMargin( float margin ) {

@@ -82,6 +82,9 @@ void BREW::ResetProperties() {
 	// Entry-specific.
 	SetProperty( "Entry", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
 	SetProperty( "Entry", "Color", sf::Color::White );
+	SetProperty( "Entry", "SelectionColor", sf::Color::White );
+	SetProperty( "Entry", "SelectedTextColor", sf::Color::Black );
+	SetProperty( "Entry:PRELIGHT", "BackgroundColor", sf::Color(0x68, 0x68, 0x68));
 
 	// Scale-specific.
 	SetProperty( "Scale", "SliderColor", sf::Color( 0x68, 0x6a, 0x65 ) );
@@ -152,6 +155,12 @@ void BREW::ResetProperties() {
 	SetProperty( "SpinButton", "StepperArrowColor", sf::Color( 0xd9, 0xdc, 0xd5 ) );
 	SetProperty( "SpinButton", "StepperSpeed", 10.f );
 	SetProperty( "SpinButton", "StepperRepeatDelay", 500 );
+
+	// ListBox-specific.
+	SetProperty( "ListBox", "BackgroundColor", sf::Color( 0x5e, 0x5e, 0x5e ) );
+	SetProperty( "ListBox", "Color", sf::Color::White );
+	SetProperty( "ListBox", "HighlightedColor", sf::Color( 0x65, 0x67, 0x62 ) );
+	SetProperty( "ListBox", "SelectedColor", sf::Color( 0x5a, 0x6a, 0x50 ) );
 
 	// (Re)Enable automatic widget refreshing after we are done setting all these properties.
 	SetAutoRefresh( true );

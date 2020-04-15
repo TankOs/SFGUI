@@ -25,6 +25,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 	Context::Activate( m_context );
 
 	sf::Vector2f position;
+	bool any_inside( false );
 	bool check_inside( false );
 	Widget::Ptr last_receiver( m_last_receiver.lock() );
 
@@ -51,6 +52,9 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		}
 
 		bool is_inside( widget->GetAllocation().contains( position ) );
+		if (is_inside) {
+			any_inside = true;
+		}
 
 		// If the event is a mouse button press, check if we need to focus another widget.
 		// If there is a modal widget, skip reordering.
@@ -91,6 +95,10 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 			}
 			break;
 		}
+	}
+
+	if (event.type == sf::Event::MouseButtonPressed && !any_inside) {
+		Widget::LoseFocus();
 	}
 
 	// Restore previous context.
@@ -201,6 +209,11 @@ void Desktop::BringToFront( std::shared_ptr<const Widget> child ) {
 	if( child->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
 		SendFakeMouseMoveEvent( ptr, m_last_mouse_pos.x, m_last_mouse_pos.y );
 	}
+}
+
+bool Desktop::IsAnyWidgetFocused()
+{
+	return !Widget::HasFocus(NULL);
 }
 
 void Desktop::SendFakeMouseMoveEvent( std::shared_ptr<Widget> widget, int x, int y ) const {

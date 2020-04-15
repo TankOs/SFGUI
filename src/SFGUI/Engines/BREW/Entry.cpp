@@ -13,6 +13,8 @@ std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const En
 	auto background_color = GetProperty<sf::Color>( "BackgroundColor", entry );
 	auto text_color = GetProperty<sf::Color>( "Color", entry );
 	auto cursor_color = GetProperty<sf::Color>( "Color", entry );
+	auto selection_color = GetProperty<sf::Color>( "SelectionColor", entry );
+	auto selected_text_color = GetProperty<sf::Color>( "SelectedTextColor", entry );
 	auto text_padding = GetProperty<float>( "Padding", entry );
 	auto cursor_thickness = GetProperty<float>( "Thickness", entry );
 	auto border_width = GetProperty<float>( "BorderWidth", entry );
@@ -42,11 +44,13 @@ std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const En
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );
 
+	int visibleOffset = entry->GetVisibleOffset();
+
 	// Draw cursor if entry is active and cursor is visible.
 	if( entry->HasFocus() && entry->IsCursorVisible() ) {
 		sf::String cursor_string( entry->GetVisibleText() );
-		if( entry->GetCursorPosition() - entry->GetVisibleOffset() < static_cast<int>( cursor_string.getSize() ) ) {
-			cursor_string.erase( static_cast<std::size_t>( entry->GetCursorPosition() - entry->GetVisibleOffset() ), cursor_string.getSize() );
+		if( entry->GetCursorPosition() - visibleOffset < static_cast<int>( cursor_string.getSize() ) ) {
+			cursor_string.erase( static_cast<std::size_t>( entry->GetCursorPosition() - visibleOffset), cursor_string.getSize() );
 		}
 
 		// Get metrics.
@@ -63,6 +67,45 @@ std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const En
 				cursor_color
 			)
 		);
+	}
+
+	// Draw selection if entry is active and any side of selection is visible.
+	if (entry->HasFocus()) {
+		int left, right;
+		entry->GetSelectionBounds(left, right);
+
+		if (left != right) {
+			int visibleLength = entry->GetVisibleLength();
+
+			left = std::max(left, visibleOffset);
+			right = std::min(right, visibleLength);
+
+			if (left != right) {
+				const sf::String& visibleText = entry->GetVisibleText();
+				std::string pre_selection_str(visibleText.begin(), visibleText.begin() + left);
+				std::string selection_str(visibleText.begin() + left, visibleText.begin() + right);
+				sf::Vector2f pre_selection_metrics(GetTextStringMetrics(pre_selection_str, *font, font_size));
+				sf::Vector2f selection_metrics(GetTextStringMetrics(selection_str, *font, font_size));
+
+				queue->Add(
+					Renderer::Get().CreateRect(
+						sf::FloatRect(
+							pre_selection_metrics.x + text_padding,
+							entry->GetAllocation().height / 2.f - line_height / 2.f,
+							selection_metrics.x,
+							line_height
+						),
+						selection_color
+					)
+				);
+
+				sf::Text selection_label(selection_str, *font, font_size);
+				selection_label.setFillColor(selected_text_color);
+				selection_label.setPosition(pre_selection_metrics.x + text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f);
+
+				queue->Add(Renderer::Get().CreateText(selection_label));
+			}
+		}
 	}
 
 	return queue;

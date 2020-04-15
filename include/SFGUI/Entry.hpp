@@ -52,6 +52,11 @@ class SFGUI_API Entry : public Widget {
 		 */
 		int GetVisibleOffset() const;
 
+		/** Get length of the visible text.
+		 * @return Length.
+		 */
+		int GetVisibleLength() const;
+
 		/** Get current cursor position.
 		 * @return Cursor position.
 		 */
@@ -87,8 +92,20 @@ class SFGUI_API Entry : public Widget {
 		 */
 		void SetMaximumLength( int max_length );
 
+		/** Get selection bounds.
+		 * @param left Selection's left side cursor position.
+		 * @param right Selection's right side cursor position.
+		 */
+		void GetSelectionBounds(int& left, int& right) const;
+
+		/** Get selected string.
+		 * @return Selected text.
+		 */
+		sf::String GetSelectedText() const;
+
 		// Signals.
 		static Signal::SignalID OnTextChanged; //!< Fired when the text changes.
+		static Signal::SignalID OnReturnPressed; //!< Fired when enter is pressed.
 
 	protected:
 		/** Ctor.
@@ -103,6 +120,7 @@ class SFGUI_API Entry : public Widget {
 		std::unique_ptr<RenderQueue> InvalidateImpl() const override;
 		sf::Vector2f CalculateRequisition() override;
 
+		void HandleMouseMoveEvent( int x, int y ) override;
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void HandleUpdate( float seconds ) override;
 		void HandleTextEvent( sf::Uint32 character ) override;
@@ -143,6 +161,7 @@ class SFGUI_API Entry : public Widget {
 		int m_max_length;
 
 		int m_cursor_position;
+		int m_cursor_selection_start;
 
 		float m_elapsed_time;
 

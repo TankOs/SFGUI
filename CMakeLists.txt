@@ -20,11 +20,15 @@ option( SFGUI_BUILD_EXAMPLES    "Build examples."                               
 option( SFGUI_BUILD_DOC         "Generate API documentation."                   OFF)
 option( SFGUI_INCLUDE_FONT      "Include default font in library (DejaVuSans)." ON)
 option( SFML_STATIC_LIBRARIES   "Do you want to link SFML statically?"          OFF)
+option( SFGUI_BOOST_FILESYSTEM_SUPPORT "Do you want SFGUI to support Boost.FileSystem? (enable FilePickerDialog widget)" OFF)
 
 
 # Find packages.
 find_package( OpenGL REQUIRED )
 find_package( SFML 2.5 REQUIRED COMPONENTS graphics window system )
+
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/SFGUI/Config.hpp.in ${CMAKE_CURRENT_BINARY_DIR}/include/SFGUI/Config.hpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 set( INCLUDE_PATH "${PROJECT_SOURCE_DIR}/include/" )
 set( SOURCE_PATH "${PROJECT_SOURCE_DIR}/src/" )
@@ -58,6 +62,11 @@ if( SFGUI_INCLUDE_FONT )
 endif()
 
 target_link_libraries( ${TARGET} PUBLIC sfml-graphics sfml-window sfml-system ${OPENGL_gl_LIBRARY} )
+
+# Link to Boost.FileSystem if enabled
+if( SFGUI_BOOST_FILESYSTEM_SUPPORT )
+	target_link_libraries( sfgui ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
+endif()
 
 # Tell the compiler to export when necessary.
 set_target_properties( ${TARGET} PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
@@ -115,7 +124,7 @@ elseif( APPLE )
 			IMPORTED_LOCATION "${COREFOUNDATION_LIBRARY}"
 			INTERFACE_INCLUDE_DIRECTORIES "/System/Library/Frameworks/CoreFoundation.framework/Headers"
 	)
-	
+
 	target_link_libraries( ${TARGET} PUBLIC CoreFoundation )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
 	set( LIB_PATH "lib" )
@@ -163,6 +172,11 @@ install(
 install(
 	DIRECTORY ${INCLUDE_PATH}
 	DESTINATION include
+)
+
+install(
+	DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include
+	DESTINATION .
 )
 
 install(
