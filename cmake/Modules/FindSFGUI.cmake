@@ -119,6 +119,7 @@ find_library(
 	SFGUI_LIBRARY_DYNAMIC_RELEASE
 	NAMES
 		sfgui
+		SFGUI
 	PATH_SUFFIXES
 		lib
 		lib64
@@ -130,6 +131,7 @@ find_library(
 	SFGUI_LIBRARY_DYNAMIC_DEBUG
 	NAMES
 		sfgui-d
+		SFGUI-d
 	PATH_SUFFIXES
 		lib
 		lib64
@@ -141,6 +143,7 @@ find_library(
 	SFGUI_LIBRARY_STATIC_RELEASE
 	NAMES
 		sfgui-s
+		SFGUI-s
 	PATH_SUFFIXES
 		lib
 		lib64
@@ -152,6 +155,7 @@ find_library(
 	SFGUI_LIBRARY_STATIC_DEBUG
 	NAMES
 		sfgui-s-d
+		SFGUI-s-d
 	PATH_SUFFIXES
 		lib
 		lib64
