@@ -89,6 +89,7 @@ class SFGUI_API Entry : public Widget {
 
 		// Signals.
 		static Signal::SignalID OnTextChanged; //!< Fired when the text changes.
+		static Signal::SignalID OnEnterKeyPressed; //!< Fired when the enter key was pressed.
 
 	protected:
 		/** Ctor.
