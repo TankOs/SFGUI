@@ -2,7 +2,7 @@
 
 ## Getting started
 
-  1. Download and install [SFML](http://sfml-dev.org/).
+  1. Download and install [SFML](https://www.sfml-dev.org/).
   2. Download SFGUI from the
      [download page](https://github.com/TankOs/SFGUI/releases). If available,
      choose a binary release for your operating system and IDE/toolset.
@@ -27,8 +27,8 @@ Building SFGUI is only required in the following cases:
 
 At first, download and install the dependencies:
 
-  * [SFML](http://sfml-dev.org/)
-  * [CMake](http://cmake.org/)
+  * [SFML](https://www.sfml-dev.org/)
+  * [CMake](https://cmake.org/)
 
 Make yourself familiar with CMake and how it works.
 
@@ -37,11 +37,10 @@ as your build directory and SFGUI's directory as source code directory.
 
 Hit _Configure_ followed by _Generate_. Close CMake.
 
-Finally either open the project files you have generated with CMake (e.g.
-Visual Studio solution) or instruct the chosen Make tool to build SFGUI, for
-example GNU Make:
+Finally, either open the project files you have generated with CMake (e.g.
+Visual Studio solution) or instruct CMake to run the matching build tool:
 
-  * `make install` (as root)
+  * `cmake --build build/ --config debug --target install` (as root)
 
 On Linux and after installing, you have to update _ld's_ library cache by
 running `ldconfig` as root.
