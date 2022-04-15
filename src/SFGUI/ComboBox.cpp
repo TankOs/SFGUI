@@ -9,6 +9,8 @@
 #include <SFML/System/String.hpp>
 #include <SFML/Window/Event.hpp>
 
+#include <limits>
+
 namespace sfg {
 
 // Signals.
