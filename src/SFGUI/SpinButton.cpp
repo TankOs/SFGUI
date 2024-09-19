@@ -183,14 +183,14 @@ void SpinButton::HandleTextEvent( sf::Uint32 character ) {
 	}
 }
 
-void SpinButton::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
-	Entry::HandleKeyEvent( key, press );
+void SpinButton::HandleKeyEvent( sf::Keyboard::Key key, sf::Keyboard::Scancode scancode, bool press ) {
+	Entry::HandleKeyEvent( key, scancode, press );
 
 	if( !press || !HasFocus() ) {
 		return;
 	}
 
-	if( key == sf::Keyboard::Return ) {
+	if( scancode == sf::Keyboard::Scancode::Enter ) {
 		GrabFocus( Widget::Ptr() );
 	}
 }

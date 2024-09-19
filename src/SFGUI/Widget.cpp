@@ -437,7 +437,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			case sf::Event::KeyPressed:
 				if( HasFocus() ) {
 					// TODO: Delegate event too when widget's not active?
-					HandleKeyEvent( event.key.code, true );
+					HandleKeyEvent( event.key.code, event.key.scancode, true );
 					GetSignals().Emit( OnKeyPress );
 				}
 
@@ -446,7 +446,7 @@ void Widget::HandleEvent( const sf::Event& event ) {
 			case sf::Event::KeyReleased:
 				if( HasFocus() ) {
 					// TODO: Delegate event too when widget's not active?
-					HandleKeyEvent( event.key.code, false );
+					HandleKeyEvent( event.key.code, event.key.scancode, false );
 					GetSignals().Emit( OnKeyRelease );
 				}
 				break;
@@ -751,7 +751,7 @@ void Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
 void Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
 }
 
-void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
+void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, sf::Keyboard::Scancode /*scancode*/, bool /*press*/ ) {
 }
 
 void Widget::HandlePositionChange() {

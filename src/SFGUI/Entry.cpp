@@ -173,13 +173,13 @@ void Entry::HandleTextEvent( sf::Uint32 character ) {
 	}
 }
 
-void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
+void Entry::HandleKeyEvent( sf::Keyboard::Key /*key*/, sf::Keyboard::Scancode scancode, bool press ) {
 	if( !press || !HasFocus() ) {
 		return;
 	}
 
-	switch( key ) {
-	case sf::Keyboard::BackSpace: { // backspace
+	switch( scancode ) {
+	case sf::Keyboard::Scan::Backspace: { // backspace
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.erase( static_cast<std::size_t>( m_cursor_position - 1 ) );
 
@@ -202,7 +202,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			GetSignals().Emit( OnTextChanged );
 		}
 	} break;
-	case sf::Keyboard::Delete: {
+	case sf::Keyboard::Scan::Delete: {
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < static_cast<int>( m_string.getSize() ) ) ) {
 			m_string.erase( static_cast<std::size_t>( m_cursor_position ) );
 
@@ -224,22 +224,22 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			GetSignals().Emit( OnTextChanged );
 		}
 	} break;
-	case sf::Keyboard::Home: {
+	case sf::Keyboard::Scan::Home: {
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
 			SetCursorPosition( 0 );
 		}
 	} break;
-	case sf::Keyboard::End: {
+	case sf::Keyboard::Scan::End: {
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
 			SetCursorPosition( static_cast<int>( m_string.getSize() ) );
 		}
 	} break;
-	case sf::Keyboard::Left: {
+	case sf::Keyboard::Scan::Left: {
 		MoveCursor( -1 );
 	} break;
-	case sf::Keyboard::Right: {
+	case sf::Keyboard::Scan::Right: {
 		MoveCursor( 1 );
 	} break;
 	default: break;

@@ -132,7 +132,7 @@ int main() {
 	while( render_window.isOpen() ) {
 		while( render_window.pollEvent( event ) ) {
 			if(
-				(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) ||
+				(event.type == sf::Event::KeyPressed && event.key.scancode == sf::Keyboard::Scan::Escape) ||
 				event.type == sf::Event::Closed
 			) {
 				return 0;

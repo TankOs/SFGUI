@@ -356,7 +356,7 @@ class SFGUI_API Widget : public Object, public std::enable_shared_from_this<Widg
 		 * @param key Key.
 		 * @param press true if button was pressed, false if released.
 		 */
-		virtual void HandleKeyEvent( sf::Keyboard::Key key, bool press );
+		virtual void HandleKeyEvent( sf::Keyboard::Key key, sf::Keyboard::Scancode scancode, bool press );
 
 		/** Handle widget (relative) position changes.
 		 */
