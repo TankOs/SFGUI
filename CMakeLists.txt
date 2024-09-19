@@ -24,8 +24,8 @@ option( SFML_STATIC_LIBRARIES   "Do you want to link SFML statically?"          
 # Find packages.
 find_package( OpenGL REQUIRED )
 
-if( NOT TARGET sfml-graphics )
-    find_package( SFML 2.6 REQUIRED COMPONENTS graphics window system )
+if( NOT TARGET SFML::Graphics )
+    find_package( SFML 3 REQUIRED COMPONENTS Graphics )
 endif()
 
 set( INCLUDE_PATH "${PROJECT_SOURCE_DIR}/include/" )
@@ -47,7 +47,7 @@ target_include_directories( ${TARGET} SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/extl
 target_include_directories( ${TARGET} PRIVATE "${SOURCE_PATH}" )
 target_include_directories( ${TARGET} PUBLIC $<BUILD_INTERFACE:${INCLUDE_PATH}> $<INSTALL_INTERFACE:include/> )
 
-target_compile_features( ${TARGET} PUBLIC cxx_std_11 )
+target_compile_features( ${TARGET} PUBLIC cxx_std_17 )
 
 if( NOT SFGUI_BUILD_SHARED_LIBS )
 	target_compile_definitions( ${TARGET} PUBLIC SFGUI_STATIC )
@@ -62,7 +62,7 @@ if( SFGUI_INCLUDE_FONT )
 	target_compile_definitions( ${TARGET} PRIVATE SFGUI_INCLUDE_FONT )
 endif()
 
-target_link_libraries( ${TARGET} PUBLIC sfml-graphics sfml-window sfml-system ${OPENGL_gl_LIBRARY} )
+target_link_libraries( ${TARGET} PUBLIC SFML::Graphics ${OPENGL_gl_LIBRARY} )
 
 # Tell the compiler to export when necessary.
 set_target_properties( ${TARGET} PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
