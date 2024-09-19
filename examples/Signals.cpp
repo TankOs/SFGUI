@@ -65,7 +65,7 @@ void BazClass::Baz() {
 }
 
 int main() {
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow app_window( sf::VideoMode( { 800, 600 } ), "SFGUI Button Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
@@ -117,12 +117,10 @@ int main() {
 	// Factory Method Pattern and Abstract Factory Pattern.
 
 	while ( app_window.isOpen() ) {
-		sf::Event event;
+		while ( const std::optional event = app_window.pollEvent() ) {
+			window->HandleEvent( *event );
 
-		while ( app_window.pollEvent( event ) ) {
-			window->HandleEvent( event );
-
-			if ( event.type == sf::Event::Closed ) {
+			if ( event->is<sf::Event::Closed>() ) {
 				return EXIT_SUCCESS;
 			}
 		}

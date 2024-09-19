@@ -2,6 +2,8 @@
 #include <SFGUI/Container.hpp>
 #include <SFGUI/Widget.hpp>
 
+#include <algorithm>
+
 namespace sfg {
 
 Selector::Selector() :
@@ -190,8 +192,8 @@ bool Selector::Matches( Widget::PtrConst widget ) const {
 	// Recursion is your friend ;)
 
 	// Check if current stage is a pass...
-	if( ( !m_widget.compare("*") && m_id.empty() && m_class.empty() && !m_state ) || // Wildcard
-		 ( ( m_widget.empty() || !m_widget.compare("*") || m_widget == widget->GetName() ) && //
+	if( ( !m_widget.compare( "*" ) && m_id.empty() && m_class.empty() && !m_state ) || // Wildcard
+		 ( ( m_widget.empty() || !m_widget.compare( "*" ) || m_widget == widget->GetName() ) && //
 		 ( m_id.empty() || m_id == widget->GetId() ) && // Selector and widget match
 		 ( m_class.empty() || m_class  == widget->GetClass() ) && //
 		 ( !m_state || *m_state == widget->GetState() ) ) ) { //

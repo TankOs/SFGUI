@@ -19,18 +19,16 @@ std::unique_ptr<RenderQueue> BREW::CreateScrolledWindowDrawable( std::shared_ptr
 
 	auto rect = scrolled_window->GetContentAllocation();
 
-	rect.left -= ( border_width + scrolled_window->GetAllocation().left );
-	rect.top -= ( border_width + scrolled_window->GetAllocation().top );
-	rect.width += 2.f * border_width;
-	rect.height += 2.f * border_width;
+	rect.position.x -= ( border_width + scrolled_window->GetAllocation().position.x );
+	rect.position.y -= ( border_width + scrolled_window->GetAllocation().position.y );
+	rect.size.x += 2.f * border_width;
+	rect.size.y += 2.f * border_width;
 
 	queue->Add(
 		CreateBorder(
 			sf::FloatRect(
-				0.f,
-				0.f,
-				rect.width,
-				rect.height
+				{ 0.f, 0.f },
+				rect.size
 			),
 			border_width,
 			border_color_dark,

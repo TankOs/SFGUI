@@ -76,22 +76,21 @@ void SpinButton::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, i
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 	float stepper_aspect_ratio( Context::Get().GetEngine().GetProperty<float>( "StepperAspectRatio", shared_from_this() ) );
 
-	if( button != sf::Mouse::Left ) {
+	if( button != sf::Mouse::Button::Left ) {
 		return;
 	}
 
-	auto stepper_height = ( GetAllocation().height / 2.f ) - border_width;
-	auto stepper_width = ( GetAllocation().height / 2.f ) * stepper_aspect_ratio;
+	auto stepper_height = ( GetAllocation().size.y / 2.f ) - border_width;
+	auto stepper_width = ( GetAllocation().size.y / 2.f ) * stepper_aspect_ratio;
 
 	if( press ) {
 		// Top stepper.
 		sf::FloatRect rect;
-		rect.left = GetAllocation().left + GetAllocation().width - border_width - stepper_width;
-		rect.top = GetAllocation().top + border_width;
-		rect.width = stepper_width;
-		rect.height = stepper_height;
+		rect.position.x = GetAllocation().position.x + GetAllocation().size.x - border_width - stepper_width;
+		rect.position.y = GetAllocation().position.y + border_width;
+		rect.size = {stepper_width, stepper_height};
 
-		if( rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		if( rect.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 			GrabFocus( Widget::Ptr() );
 
 			m_adjustment->Increment();
@@ -105,9 +104,9 @@ void SpinButton::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, i
 		}
 
 		// Bottom stepper.
-		rect.top = GetAllocation().top + border_width + stepper_height;
+		rect.position.y = GetAllocation().position.y + border_width + stepper_height;
 
-		if( rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		if( rect.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 			GrabFocus( Widget::Ptr() );
 
 			m_adjustment->Decrement();
@@ -144,7 +143,7 @@ void SpinButton::HandleUpdate( float seconds ) {
 	}
 
 	if( m_repeat_wait ) {
-		sf::Uint32 stepper_repeat_delay( Context::Get().GetEngine().GetProperty<sf::Uint32>( "StepperRepeatDelay", shared_from_this() ) );
+		std::uint32_t stepper_repeat_delay( Context::Get().GetEngine().GetProperty<std::uint32_t>( "StepperRepeatDelay", shared_from_this() ) );
 
 		if( m_elapsed_time < ( static_cast<float>( stepper_repeat_delay ) / 1000.f ) ) {
 			return;
@@ -166,7 +165,7 @@ void SpinButton::HandleUpdate( float seconds ) {
 	}
 }
 
-void SpinButton::HandleTextEvent( sf::Uint32 character ) {
+void SpinButton::HandleTextEvent( char32_t character ) {
 	if( isdigit( static_cast<int>( character ) ) ) {
 		Entry::HandleTextEvent( character );
 		return;
@@ -183,14 +182,14 @@ void SpinButton::HandleTextEvent( sf::Uint32 character ) {
 	}
 }
 
-void SpinButton::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
-	Entry::HandleKeyEvent( key, press );
+void SpinButton::HandleKeyEvent( sf::Keyboard::Key key, sf::Keyboard::Scancode scancode, bool press ) {
+	Entry::HandleKeyEvent( key, scancode, press );
 
 	if( !press || !HasFocus() ) {
 		return;
 	}
 
-	if( key == sf::Keyboard::Return ) {
+	if( scancode == sf::Keyboard::Scancode::Enter ) {
 		GrabFocus( Widget::Ptr() );
 	}
 }
@@ -198,7 +197,7 @@ void SpinButton::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 void SpinButton::HandleSizeChange() {
 	float stepper_aspect_ratio( Context::Get().GetEngine().GetProperty<float>( "StepperAspectRatio", shared_from_this() ) );
 
-	SetTextMargin( GetAllocation().height / 2.f * stepper_aspect_ratio );
+	SetTextMargin( GetAllocation().size.y / 2.f * stepper_aspect_ratio );
 
 	Entry::HandleSizeChange();
 }

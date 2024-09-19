@@ -3,6 +3,8 @@
 #include <SFGUI/RenderQueue.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <algorithm>
+
 namespace sfg {
 
 // Signals.
@@ -364,7 +366,7 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 		return;
 	}
 
-	sf::Vector2f tab_size( GetNthTabLabel( 0 )->GetAllocation().width, GetNthTabLabel( 0 )->GetAllocation().height );
+	sf::Vector2f tab_size( GetNthTabLabel( 0 )->GetAllocation().size.x, GetNthTabLabel( 0 )->GetAllocation().size.y );
 
 	sf::FloatRect scroll_button_allocation( GetAllocation() );
 
@@ -372,32 +374,32 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 		// Handle backward scrolling button.
 		switch( GetTabPosition() ) {
 			case TabPosition::TOP:
-				scroll_button_allocation.left += 0.f;
-				scroll_button_allocation.top += 0.f;
-				scroll_button_allocation.width = scroll_button_size;
-				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				scroll_button_allocation.position.x += 0.f;
+				scroll_button_allocation.position.y += 0.f;
+				scroll_button_allocation.size.x = scroll_button_size;
+				scroll_button_allocation.size.y = tab_size.y + 2.f * ( padding + border_width );
 				break;
 			case TabPosition::BOTTOM:
-				scroll_button_allocation.left += 0.f;
-				scroll_button_allocation.top += GetAllocation().height - ( scroll_button_size + padding );
-				scroll_button_allocation.width = scroll_button_size;
-				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				scroll_button_allocation.position.x += 0.f;
+				scroll_button_allocation.position.y += GetAllocation().size.y - ( scroll_button_size + padding );
+				scroll_button_allocation.size.x = scroll_button_size;
+				scroll_button_allocation.size.y = tab_size.y + 2.f * ( padding + border_width );
 				break;
 			case TabPosition::LEFT:
-				scroll_button_allocation.left += 0.f;
-				scroll_button_allocation.top += 0.f;
-				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
-				scroll_button_allocation.height = scroll_button_size;
+				scroll_button_allocation.position.x += 0.f;
+				scroll_button_allocation.position.y += 0.f;
+				scroll_button_allocation.size.x = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.size.y = scroll_button_size;
 				break;
 			case TabPosition::RIGHT:
-				scroll_button_allocation.left += ( GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) );
-				scroll_button_allocation.top += 0.f;
-				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
-				scroll_button_allocation.height = scroll_button_size;
+				scroll_button_allocation.position.x += ( GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) );
+				scroll_button_allocation.position.y += 0.f;
+				scroll_button_allocation.size.x = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.size.y = scroll_button_size;
 				break;
 		}
 
-		if( scroll_button_allocation.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		if( scroll_button_allocation.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 			m_backward_scroll_prelight = true;
 		}
 	}
@@ -406,32 +408,32 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 		// Handle forward scrolling button.
 		switch( GetTabPosition() ) {
 			case TabPosition::TOP:
-				scroll_button_allocation.left += ( GetAllocation().width - scroll_button_size );
-				scroll_button_allocation.top += 0.f;
-				scroll_button_allocation.width = scroll_button_size;
-				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				scroll_button_allocation.position.x += ( GetAllocation().size.x - scroll_button_size );
+				scroll_button_allocation.position.y += 0.f;
+				scroll_button_allocation.size.x = scroll_button_size;
+				scroll_button_allocation.size.y = tab_size.y + 2.f * ( padding + border_width );
 				break;
 			case TabPosition::BOTTOM:
-				scroll_button_allocation.left += ( GetAllocation().width - scroll_button_size );
-				scroll_button_allocation.top += GetAllocation().height - ( scroll_button_size + padding );
-				scroll_button_allocation.width = scroll_button_size;
-				scroll_button_allocation.height = tab_size.y + 2.f * ( padding + border_width );
+				scroll_button_allocation.position.x += ( GetAllocation().size.x - scroll_button_size );
+				scroll_button_allocation.position.y += GetAllocation().size.y - ( scroll_button_size + padding );
+				scroll_button_allocation.size.x = scroll_button_size;
+				scroll_button_allocation.size.y = tab_size.y + 2.f * ( padding + border_width );
 				break;
 			case TabPosition::LEFT:
-				scroll_button_allocation.left += 0.f;
-				scroll_button_allocation.top += GetAllocation().height - scroll_button_size;
-				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
-				scroll_button_allocation.height = scroll_button_size;
+				scroll_button_allocation.position.x += 0.f;
+				scroll_button_allocation.position.y += GetAllocation().size.y - scroll_button_size;
+				scroll_button_allocation.size.x = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.size.y = scroll_button_size;
 				break;
 			case TabPosition::RIGHT:
-				scroll_button_allocation.left += ( GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) );
-				scroll_button_allocation.top += GetAllocation().height - scroll_button_size;
-				scroll_button_allocation.width = tab_size.x + 2.f * ( padding + border_width );
-				scroll_button_allocation.height = scroll_button_size;
+				scroll_button_allocation.position.x += ( GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) );
+				scroll_button_allocation.position.y += GetAllocation().size.y - scroll_button_size;
+				scroll_button_allocation.size.x = tab_size.x + 2.f * ( padding + border_width );
+				scroll_button_allocation.size.y = scroll_button_size;
 				break;
 		}
 
-		if( scroll_button_allocation.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		if( scroll_button_allocation.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 			m_forward_scroll_prelight = true;
 		}
 	}
@@ -439,12 +441,12 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 	for( auto index = GetFirstDisplayedTab(); index < GetFirstDisplayedTab() + GetDisplayedTabCount(); ++index ) {
 		auto allocation = m_children[static_cast<std::size_t>( index )].tab_label->GetAllocation();
 
-		allocation.left -= padding;
-		allocation.top -= padding;
-		allocation.width += 2.f * padding;
-		allocation.height += 2.f * padding;
+		allocation.position.x -= padding;
+		allocation.position.y -= padding;
+		allocation.size.x += 2.f * padding;
+		allocation.size.y += 2.f * padding;
 
-		if( allocation.contains( sf::Vector2f( static_cast<float>( x ) - GetAllocation().left, static_cast<float>( y ) - GetAllocation().top ) ) ) {
+		if( allocation.contains( sf::Vector2f( static_cast<float>( x ) - GetAllocation().position.x, static_cast<float>( y ) - GetAllocation().position.y ) ) ) {
 			m_prelight_tab = static_cast<IndexType>( index );
 			break;
 		}
@@ -456,7 +458,7 @@ void Notebook::HandleMouseMoveEvent( int x, int y ) {
 }
 
 void Notebook::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /*x*/, int /*y*/ ) {
-	if( ( button != sf::Mouse::Left ) ) {
+	if( ( button != sf::Mouse::Button::Left ) ) {
 		return;
 	}
 
@@ -581,7 +583,7 @@ void Notebook::RecalculateSize() {
 		auto tab_current_x = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
 		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
+			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().size.x ) {
 				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
@@ -590,19 +592,15 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					m_tab_requisition.y + border_width + padding,
-					GetAllocation().width - 2.f * ( border_width + padding ),
-					GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
+					{ border_width + padding, m_tab_requisition.y + border_width + padding },
+					{ GetAllocation().size.x - 2.f * ( border_width + padding ), GetAllocation().size.y - ( 2.f * ( border_width + padding ) + m_tab_requisition.y ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					tab_current_x + border_width + padding,
-					border_width + padding,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x,
-					m_tab_requisition.y - 2.f * padding - border_width
+					{ tab_current_x + border_width + padding, border_width + padding },
+					{ m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x, m_tab_requisition.y - 2.f * padding - border_width }
 				)
 			);
 
@@ -614,7 +612,7 @@ void Notebook::RecalculateSize() {
 		auto tab_current_x = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
 		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().width ) {
+			if( GetScrollable() && ( tab_current_x + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x + scroll_button_size ) > GetAllocation().size.x ) {
 				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
@@ -623,19 +621,18 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					border_width + padding,
-					GetAllocation().width - 2.f * ( border_width + padding ),
-					GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
+					{ border_width + padding, border_width + padding },
+					{ GetAllocation().size.x - 2.f * ( border_width + padding ),
+					  GetAllocation().size.y - ( 2.f * ( border_width + padding ) + m_tab_requisition.y ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					tab_current_x + border_width + padding,
-					GetAllocation().height - m_tab_requisition.y + padding,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x,
-					m_tab_requisition.y - 2.f * padding - border_width
+					{ tab_current_x + border_width + padding,
+					  GetAllocation().size.y - m_tab_requisition.y + padding },
+					{ m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x,
+					  m_tab_requisition.y - 2.f * padding - border_width }
 				)
 			);
 
@@ -647,7 +644,7 @@ void Notebook::RecalculateSize() {
 		auto tab_current_y = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
 		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
+			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().size.y ) {
 				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
@@ -656,19 +653,19 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					m_tab_requisition.x + border_width + padding,
-					border_width + padding,
-					GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
-					GetAllocation().height - 2.f * ( border_width + padding )
+					{ m_tab_requisition.x + border_width + padding,
+					  border_width + padding },
+					{ GetAllocation().size.x - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
+					  GetAllocation().size.y - 2.f * ( border_width + padding ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					tab_current_y + border_width + padding,
-					m_tab_requisition.x - 2.f * padding - border_width,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y
+					{ border_width + padding,
+					  tab_current_y + border_width + padding },
+					{ m_tab_requisition.x - 2.f * padding - border_width,
+					  m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y }
 				)
 			);
 
@@ -680,7 +677,7 @@ void Notebook::RecalculateSize() {
 		auto tab_current_y = ( GetScrollable() && GetFirstDisplayedTab() != 0 ) ? scroll_button_size : 0.f;
 
 		for( auto index = GetFirstDisplayedTab(); index < children_size; ++index ) {
-			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().height ) {
+			if( GetScrollable() && ( tab_current_y + border_width + 2.f * padding + m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y + scroll_button_size ) > GetAllocation().size.y ) {
 				m_num_displayed_tabs = index - GetFirstDisplayedTab();
 				break;
 			}
@@ -689,19 +686,19 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					border_width + padding,
-					GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
-					GetAllocation().height - 2.f * ( border_width + padding )
+					{ border_width + padding,
+					  border_width + padding },
+					{ GetAllocation().size.x - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
+					  GetAllocation().size.y - 2.f * ( border_width + padding ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					GetAllocation().width - m_tab_requisition.x + padding,
-					tab_current_y + border_width + padding,
-					m_tab_requisition.x - 2.f * padding - border_width,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y
+					{ GetAllocation().size.x - m_tab_requisition.x + padding,
+					  tab_current_y + border_width + padding },
+					{ m_tab_requisition.x - 2.f * padding - border_width,
+					  m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y }
 				)
 			);
 

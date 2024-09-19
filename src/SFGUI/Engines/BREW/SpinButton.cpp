@@ -31,7 +31,7 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 	queue->Add(
 		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
-			sf::Vector2f( spinbutton->GetAllocation().width, spinbutton->GetAllocation().height ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x, spinbutton->GetAllocation().size.y ),
 			border_width,
 			background_color,
 			border_color,
@@ -39,13 +39,13 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 		)
 	);
 
-	auto button_width = ( spinbutton->GetAllocation().height / 2.f ) * stepper_aspect_ratio;
+	auto button_width = ( spinbutton->GetAllocation().size.y / 2.f ) * stepper_aspect_ratio;
 
 	// Up Stepper.
 	queue->Add(
 		Renderer::Get().CreatePane(
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width - border_width, border_width ),
-			sf::Vector2f( button_width, spinbutton->GetAllocation().height / 2.f - border_width ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width - border_width, border_width ),
+			sf::Vector2f( button_width, spinbutton->GetAllocation().size.y / 2.f - border_width ),
 			border_width,
 			stepper_color,
 			stepper_border_color,
@@ -56,9 +56,9 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 	// Up Stepper Triangle.
 	queue->Add(
 		Renderer::Get().CreateTriangle(
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width / 2.f - border_width, ( spinbutton->IsIncreaseStepperPressed() ? 1.f : 0.f ) + border_width + spinbutton->GetAllocation().height / 6.f ),
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width / 4.f * 3.f - border_width, ( spinbutton->IsIncreaseStepperPressed() ? 1.f : 0.f ) + border_width + spinbutton->GetAllocation().height / 3.f ),
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width / 4.f - border_width, ( spinbutton->IsIncreaseStepperPressed() ? 1.f : 0.f ) + border_width + spinbutton->GetAllocation().height / 3.f ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width / 2.f - border_width, ( spinbutton->IsIncreaseStepperPressed() ? 1.f : 0.f ) + border_width + spinbutton->GetAllocation().size.y / 6.f ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width / 4.f * 3.f - border_width, ( spinbutton->IsIncreaseStepperPressed() ? 1.f : 0.f ) + border_width + spinbutton->GetAllocation().size.y / 3.f ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width / 4.f - border_width, ( spinbutton->IsIncreaseStepperPressed() ? 1.f : 0.f ) + border_width + spinbutton->GetAllocation().size.y / 3.f ),
 			stepper_arrow_color
 		)
 	);
@@ -66,8 +66,8 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 	// Down Stepper.
 	queue->Add(
 		Renderer::Get().CreatePane(
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width - border_width, spinbutton->GetAllocation().height / 2.f ),
-			sf::Vector2f( button_width, spinbutton->GetAllocation().height / 2.f - border_width ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width - border_width, spinbutton->GetAllocation().size.y / 2.f ),
+			sf::Vector2f( button_width, spinbutton->GetAllocation().size.y / 2.f - border_width ),
 			border_width,
 			stepper_color,
 			stepper_border_color,
@@ -78,17 +78,17 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 	// Down Stepper Triangle.
 	queue->Add(
 		Renderer::Get().CreateTriangle(
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width / 2.f - border_width, ( spinbutton->IsDecreaseStepperPressed() ? 1.f : 0.f ) + spinbutton->GetAllocation().height - border_width - spinbutton->GetAllocation().height / 6.f ),
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width / 4.f - border_width, ( spinbutton->IsDecreaseStepperPressed() ? 1.f : 0.f ) + spinbutton->GetAllocation().height - border_width - spinbutton->GetAllocation().height / 3.f ),
-			sf::Vector2f( spinbutton->GetAllocation().width - button_width / 4.f * 3.f - border_width, ( spinbutton->IsDecreaseStepperPressed() ? 1.f : 0.f ) + spinbutton->GetAllocation().height - border_width - spinbutton->GetAllocation().height / 3.f ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width / 2.f - border_width, ( spinbutton->IsDecreaseStepperPressed() ? 1.f : 0.f ) + spinbutton->GetAllocation().size.y - border_width - spinbutton->GetAllocation().size.y / 6.f ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width / 4.f - border_width, ( spinbutton->IsDecreaseStepperPressed() ? 1.f : 0.f ) + spinbutton->GetAllocation().size.y - border_width - spinbutton->GetAllocation().size.y / 3.f ),
+			sf::Vector2f( spinbutton->GetAllocation().size.x - button_width / 4.f * 3.f - border_width, ( spinbutton->IsDecreaseStepperPressed() ? 1.f : 0.f ) + spinbutton->GetAllocation().size.y - border_width - spinbutton->GetAllocation().size.y / 3.f ),
 			stepper_arrow_color
 		)
 	);
 
 	auto line_height = GetFontLineHeight( *font, font_size );
-	sf::Text vis_label( spinbutton->GetVisibleText(), *font, font_size );
+	sf::Text vis_label( *font, spinbutton->GetVisibleText(), font_size );
 	vis_label.setFillColor( text_color );
-	vis_label.setPosition( text_padding, spinbutton->GetAllocation().height / 2.f - line_height / 2.f );
+	vis_label.setPosition( { text_padding, spinbutton->GetAllocation().size.y / 2.f - line_height / 2.f } );
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );
 
@@ -105,10 +105,8 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					metrics.x + text_padding,
-					spinbutton->GetAllocation().height / 2.f - line_height / 2.f,
-					cursor_thickness,
-					line_height
+					{ metrics.x + text_padding, spinbutton->GetAllocation().size.y / 2.f - line_height / 2.f },
+					{ cursor_thickness, line_height }
 				),
 				cursor_color
 			)

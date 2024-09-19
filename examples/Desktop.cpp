@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 int main() {
-	sf::RenderWindow render_window( sf::VideoMode( 800, 600 ), "SFGUI Desktop Example" );
+	sf::RenderWindow render_window( sf::VideoMode( { 800, 600 } ), "SFGUI Desktop Example" );
 
 	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
@@ -75,18 +75,16 @@ int main() {
 		front_button->GetSignal( sfg::Widget::OnLeftClick ).Connect( [&desktop, &main_window] { desktop.BringToFront( main_window ); } );
 	} );
 
-	sf::Event event;
-
 	while( render_window.isOpen() ) {
-		while( render_window.pollEvent( event ) ) {
+		while( const std::optional event = render_window.pollEvent() ) {
 			if(
-				(event.type == sf::Event::Closed) ||
-				(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+				(event->is<sf::Event::Closed>()) ||
+				(event->is<sf::Event::KeyPressed>() && event->getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scan::Escape)
 			) {
 				return 0;
 			}
 			else {
-				desktop.HandleEvent( event );
+				desktop.HandleEvent( *event );
 			}
 		}
 

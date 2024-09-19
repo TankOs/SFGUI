@@ -42,8 +42,8 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 	auto pages = std::max( ( adjustment->GetPageSize() > .0f ) ? ( ( adjustment->GetUpper() - adjustment->GetLower() ) / adjustment->GetPageSize() ) : 1.f, 1.f );
 
 	if( GetOrientation() == Orientation::HORIZONTAL ) {
-		auto stepper_length = GetAllocation().height;
-		auto trough_length = GetAllocation().width - 2.f * stepper_length;
+		auto stepper_length = GetAllocation().size.y;
+		auto trough_length = GetAllocation().size.x - 2.f * stepper_length;
 		auto slider_length = std::max( mimimum_slider_length, trough_length / pages );
 
 		auto slider_x = stepper_length;
@@ -53,11 +53,11 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 			slider_x = stepper_length + ( trough_length - slider_length ) * ( adjustment->GetValue() - adjustment->GetLower() ) / value_range;
 		}
 
-		return sf::FloatRect( slider_x, slider_y, slider_length, GetAllocation().height );
+		return sf::FloatRect( { slider_x, slider_y }, { slider_length, GetAllocation().size.y } );
 	}
 
-	auto stepper_length = GetAllocation().width;
-	auto trough_length = GetAllocation().height - 2.f * stepper_length;
+	auto stepper_length = GetAllocation().size.x;
+	auto trough_length = GetAllocation().size.y - 2.f * stepper_length;
 	auto slider_length = std::max( mimimum_slider_length, trough_length / pages );
 
 	auto slider_x = 0.f;
@@ -67,7 +67,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 		slider_y = stepper_length + ( trough_length - slider_length ) * ( adjustment->GetValue() - adjustment->GetLower() ) / value_range;
 	}
 
-	return sf::FloatRect( slider_x, slider_y, GetAllocation().width, slider_length );
+	return sf::FloatRect( { slider_x, slider_y }, { GetAllocation().size.x, slider_length } );
 }
 
 bool Scrollbar::IsDecreaseStepperPressed() const {
@@ -93,37 +93,36 @@ sf::Vector2f Scrollbar::CalculateRequisition() {
 }
 
 void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) {
-	if( button != sf::Mouse::Left ) {
+	if( button != sf::Mouse::Button::Left ) {
 		return;
 	}
 
 	if( press ) {
 		auto slider_rect = GetSliderRect();
-		slider_rect.left += GetAllocation().left;
-		slider_rect.top += GetAllocation().top;
+		slider_rect.position += GetAllocation().position;
 
-		if( slider_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+		if( slider_rect.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 			m_dragging = true;
 
 			if( GetOrientation() == Orientation::HORIZONTAL ) {
-				auto slider_mid = slider_rect.left + slider_rect.width / 2.f;
-				m_slider_click_offset = static_cast<float>( x ) + GetAllocation().left - slider_mid;
+				auto slider_mid = slider_rect.getCenter().x;
+				m_slider_click_offset = static_cast<float>( x ) + GetAllocation().position.x - slider_mid;
 			}
 			else {
-				auto slider_mid = slider_rect.top + slider_rect.height / 2.f;
-				m_slider_click_offset = static_cast<float>( y ) + GetAllocation().top - slider_mid;
+				auto slider_mid = slider_rect.getCenter().y;
+				m_slider_click_offset = static_cast<float>( y ) + GetAllocation().position.y - slider_mid;
 			}
 
 			return;
 		}
 
 		if( GetOrientation() == Orientation::HORIZONTAL ) {
-			auto stepper_length = GetAllocation().height;
+			auto stepper_length = GetAllocation().size.y;
 
-			sf::FloatRect decrease_stepper_rect( GetAllocation().left, GetAllocation().top, stepper_length, GetAllocation().height );
-			sf::FloatRect increase_stepper_rect( GetAllocation().left + GetAllocation().width - stepper_length, GetAllocation().top, stepper_length, GetAllocation().height );
+			sf::FloatRect decrease_stepper_rect( GetAllocation().position, {stepper_length, GetAllocation().size.y} );
+			sf::FloatRect increase_stepper_rect( { GetAllocation().position.x + GetAllocation().size.x - stepper_length, GetAllocation().position.y }, { stepper_length, GetAllocation().size.y } );
 
-			if( decrease_stepper_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( decrease_stepper_rect.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 				m_decrease_pressed = true;
 				GetAdjustment()->Decrement();
 				m_elapsed_time = 0.f;
@@ -132,7 +131,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				return;
 			}
 
-			if( increase_stepper_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( increase_stepper_rect.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 				m_increase_pressed = true;
 				GetAdjustment()->Increment();
 				m_elapsed_time = 0.f;
@@ -142,12 +141,12 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			}
 		}
 		else {
-			auto stepper_length = GetAllocation().width;
+			auto stepper_length = GetAllocation().size.x;
 
-			sf::FloatRect decrease_stepper_rect( GetAllocation().left, GetAllocation().top, GetAllocation().width, stepper_length );
-			sf::FloatRect increase_stepper_rect( GetAllocation().left, GetAllocation().top + GetAllocation().height - stepper_length, GetAllocation().width, stepper_length );
+			sf::FloatRect decrease_stepper_rect( GetAllocation().position, {GetAllocation().size.x, stepper_length} );
+			sf::FloatRect increase_stepper_rect( { GetAllocation().position.x, GetAllocation().position.y + GetAllocation().size.y - stepper_length }, { GetAllocation().size.x, stepper_length } );
 
-			if( decrease_stepper_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( decrease_stepper_rect.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 				m_decrease_pressed = true;
 				GetAdjustment()->Decrement();
 				m_elapsed_time = 0.f;
@@ -156,7 +155,7 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 				return;
 			}
 
-			if( increase_stepper_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( increase_stepper_rect.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 				m_increase_pressed = true;
 				GetAdjustment()->Increment();
 				m_elapsed_time = 0.f;
@@ -166,12 +165,11 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			}
 		}
 
-		auto slider_center_x = slider_rect.left + slider_rect.width / 2.f;
-		auto slider_center_y = slider_rect.top + slider_rect.height / 2.f;
+		auto slider_center = slider_rect.getCenter();
 
 		if( GetOrientation() == Orientation::HORIZONTAL ) {
-			if( GetAllocation().contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-				if( static_cast<float>( x ) < slider_center_x ) {
+			if( GetAllocation().contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
+				if( static_cast<float>( x ) < slider_center.x ) {
 					m_page_decreasing = x;
 					GetAdjustment()->DecrementPage();
 					m_elapsed_time = 0.f;
@@ -190,8 +188,8 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 			}
 		}
 		else {
-			if( GetAllocation().contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
-				if( static_cast<float>( y ) < slider_center_y ) {
+			if( GetAllocation().contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
+				if( static_cast<float>( y ) < slider_center.y ) {
 					m_page_decreasing = y;
 					GetAdjustment()->DecrementPage();
 					m_elapsed_time = 0.f;
@@ -236,10 +234,10 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 	auto steps = value_range / adjustment->GetMinorStep();
 
 	if( GetOrientation() == Orientation::HORIZONTAL ) {
-		auto stepper_length = GetAllocation().height;
+		auto stepper_length = GetAllocation().size.y;
 
-		auto slider_center_x = slider_rect.left + slider_rect.width / 2.0f;
-		auto step_distance = ( GetAllocation().width - 2.f * stepper_length ) / steps;
+		auto slider_center_x = slider_rect.getCenter().x;
+		auto step_distance = ( GetAllocation().size.x - 2.f * stepper_length ) / steps;
 
 		auto delta = (
 			static_cast<float>( x ) - (slider_center_x + m_slider_click_offset)
@@ -256,10 +254,10 @@ void Scrollbar::HandleMouseMoveEvent( int x, int y ) {
 		}
 	}
 	else {
-		auto stepper_length = GetAllocation().width;
+		auto stepper_length = GetAllocation().size.x;
 
-		auto slider_center_y = slider_rect.top + slider_rect.height / 2.0f;
-		auto step_distance = (GetAllocation().height - 2.f * stepper_length) / steps;
+		auto slider_center_y = slider_rect.getCenter().y;
+		auto step_distance = (GetAllocation().size.y - 2.f * stepper_length) / steps;
 
 		auto delta = static_cast<float>( y ) - (slider_center_y + m_slider_click_offset);
 
@@ -285,7 +283,7 @@ void Scrollbar::HandleUpdate( float seconds ) {
 	}
 
 	if( m_repeat_wait ) {
-		auto stepper_repeat_delay = Context::Get().GetEngine().GetProperty<sf::Uint32>( "StepperRepeatDelay", shared_from_this() );
+		auto stepper_repeat_delay = Context::Get().GetEngine().GetProperty<std::uint32_t>( "StepperRepeatDelay", shared_from_this() );
 
 		if( m_elapsed_time < (static_cast<float>( stepper_repeat_delay ) / 1000.f) ) {
 			return;
@@ -309,20 +307,20 @@ void Scrollbar::HandleUpdate( float seconds ) {
 	}
 
 	auto slider_rect = GetSliderRect();
-	slider_rect.left += GetAllocation().left;
-	slider_rect.top += GetAllocation().top;
+	slider_rect.position.x += GetAllocation().position.x;
+	slider_rect.position.y += GetAllocation().position.y;
 
 	// Increment / Decrement page while mouse is pressed on the trough
 	if( m_page_decreasing ) {
 		GetAdjustment()->DecrementPage();
 
 		if( GetOrientation() == Orientation::HORIZONTAL ) {
-			if( slider_rect.left + slider_rect.width < static_cast<float>( m_page_decreasing ) ) {
+			if( slider_rect.position.x + slider_rect.size.x < static_cast<float>( m_page_decreasing ) ) {
 				m_page_decreasing = 0;
 			}
 		}
 		else {
-			if( slider_rect.top + slider_rect.height < static_cast<float>( m_page_decreasing ) ) {
+			if( slider_rect.position.y + slider_rect.size.y < static_cast<float>( m_page_decreasing ) ) {
 				m_page_decreasing = 0;
 			}
 		}
@@ -334,12 +332,12 @@ void Scrollbar::HandleUpdate( float seconds ) {
 		GetAdjustment()->IncrementPage();
 
 		if( GetOrientation() == Orientation::HORIZONTAL ) {
-			if( slider_rect.left + slider_rect.width > static_cast<float>( m_page_increasing ) ) {
+			if( slider_rect.position.x + slider_rect.size.x > static_cast<float>( m_page_increasing ) ) {
 				m_page_increasing = 0;
 			}
 		}
 		else {
-			if( slider_rect.top + slider_rect.height > static_cast<float>( m_page_increasing ) ) {
+			if( slider_rect.position.y + slider_rect.size.y > static_cast<float>( m_page_increasing ) ) {
 				m_page_increasing = 0;
 			}
 		}

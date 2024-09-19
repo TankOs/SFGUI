@@ -393,7 +393,7 @@ bool NonLegacyRenderer::IsAvailable() {
 void NonLegacyRenderer::Display( sf::Window& target ) const {
 	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
 
-	target.setActive( true );
+	(void)target.setActive( true );
 
 	auto blend_enabled = CheckGLError( glIsEnabled( GL_BLEND ) );
 
@@ -424,7 +424,7 @@ void NonLegacyRenderer::Display( sf::Window& target ) const {
 void NonLegacyRenderer::Display( sf::RenderWindow& target ) const {
 	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
 
-	target.setActive( true );
+	(void)target.setActive( true );
 
 	DisplayImpl();
 }
@@ -432,7 +432,7 @@ void NonLegacyRenderer::Display( sf::RenderWindow& target ) const {
 void NonLegacyRenderer::Display( sf::RenderTexture& target ) const {
 	m_window_size = static_cast<sf::Vector2i>( target.getSize() );
 
-	target.setActive( true );
+	(void)target.setActive( true );
 
 	DisplayImpl();
 }
@@ -667,7 +667,7 @@ void NonLegacyRenderer::RefreshVBO() {
 	current_batch.max_index = m_vertex_count - 1;
 	current_batch.custom_draw = false;
 
-	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
+	sf::FloatRect window_viewport( { 0.f, 0.f }, sf::Vector2f( m_window_size ) );
 
 	const auto max_texture_size = GetMaxTextureSize();
 	const auto default_texture_size = m_texture_atlas[0]->getSize();
@@ -695,10 +695,7 @@ void NonLegacyRenderer::RefreshVBO() {
 			position_transform += ( destination_origin - viewport->GetSourceOrigin() );
 
 			if( m_cull ) {
-				viewport_rect.left = destination_origin.x;
-				viewport_rect.top = destination_origin.y;
-				viewport_rect.width = size.x;
-				viewport_rect.height = size.y;
+				viewport_rect = { destination_origin, size };
 			}
 		}
 
@@ -735,7 +732,7 @@ void NonLegacyRenderer::RefreshVBO() {
 
 			sf::Vector2f position( 0.f, 0.f );
 
-			sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
+			sf::FloatRect bounding_rect( { 0.f, 0.f }, { 0.f, 0.f } );
 
 			auto atlas_page = 0;
 
@@ -765,25 +762,25 @@ void NonLegacyRenderer::RefreshVBO() {
 
 				// Update the bounding rect.
 				if( m_cull ) {
-					if( position.x < bounding_rect.left ) {
-						bounding_rect.width += bounding_rect.left - position.x;
-						bounding_rect.left = position.x;
+					if( position.x < bounding_rect.position.x ) {
+						bounding_rect.size.x += bounding_rect.position.x - position.x;
+						bounding_rect.position.x = position.x;
 					}
-					else if( position.x > bounding_rect.left + bounding_rect.width ) {
-						bounding_rect.width = position.x - bounding_rect.left;
+					else if( position.x > bounding_rect.position.x + bounding_rect.size.x ) {
+						bounding_rect.size.x = position.x - bounding_rect.position.x;
 					}
 
-					if( position.y < bounding_rect.top ) {
-						bounding_rect.height += bounding_rect.top - position.y;
-						bounding_rect.top = position.y;
+					if( position.y < bounding_rect.position.y ) {
+						bounding_rect.size.y += bounding_rect.position.y - position.y;
+						bounding_rect.position.y = position.y;
 					}
-					else if( position.y > bounding_rect.top + bounding_rect.height ) {
-						bounding_rect.height = position.y - bounding_rect.top;
+					else if( position.y > bounding_rect.position.y + bounding_rect.size.y ) {
+						bounding_rect.size.y = position.y - bounding_rect.position.y;
 					}
 				}
 			}
 
-			if( m_cull && !viewport_rect.intersects( bounding_rect ) ) {
+			if( m_cull && !viewport_rect.findIntersection( bounding_rect ) ) {
 				m_vertex_data.resize( static_cast<std::size_t>( m_last_vertex_count ) );
 				m_color_data.resize( static_cast<std::size_t>( m_last_vertex_count ) );
 				m_texture_data.resize( static_cast<std::size_t>( m_last_vertex_count ) );

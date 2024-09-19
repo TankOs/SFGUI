@@ -55,7 +55,7 @@ bool ToggleButton::IsActive() const {
 }
 
 void ToggleButton::HandleMouseClick( sf::Mouse::Button button, int x, int y ) {
-	if( button == sf::Mouse::Left ) {
+	if( button == sf::Mouse::Button::Left ) {
 		SetActive( !IsActive() );
 	}
 

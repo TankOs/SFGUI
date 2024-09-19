@@ -5,9 +5,13 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/OpenGL.hpp>
-#include <sstream>
-#include <cmath>
+
+#include <algorithm>
 #include <memory>
+#include <sstream>
+
+#include <cmath>
+#include <cstdint>
 
 class SampleApp {
 	public:
@@ -62,8 +66,8 @@ class SampleApp {
 		sf::Clock m_fps_clock;
 
 		sf::Texture m_background_texture;
-		sf::Sprite m_background_sprite;
-		sf::Sprite m_canvas_sprite;
+		std::optional<sf::Sprite> m_background_sprite;
+		std::optional<sf::Sprite> m_canvas_sprite;
 
 		GLuint m_custom_draw_display_list;
 };
@@ -101,39 +105,38 @@ void Ouchy::DoOuch() {
 }
 
 SampleApp::SampleApp() :
-	m_window( sf::VideoMode( 1024, 768, 32 ), "SFGUI test", sf::Style::Default, sf::ContextSettings( 16, 0, 0, 2, 1 ) ),
+	m_window( sf::VideoMode( { 1024, 768 }, 32 ), "SFGUI test", sf::Style::Default, sf::State::Windowed, sf::ContextSettings{ 16, 0, 0, 2, 1 } ),
 	m_desktop(),
-	m_custom_draw_display_list( 0 )
+	m_custom_draw_display_list( 0 ),
+	m_background_texture( sf::Vector2u( 1024, 768 ) )
 {
-	m_background_texture.create( 1024, 768 );
+	std::vector<std::uint8_t> pixels( 1024 * 768 * 4 );
 
-	std::vector<sf::Uint8> pixels( 1024 * 768 * 4 );
-
-	sf::Uint8 pixel_value = 139;
+	std::uint8_t pixel_value = 139;
 
 	for( std::size_t index = 0; index < 1024 * 768; ++index ) {
-		pixel_value = static_cast<sf::Uint8>( pixel_value ^ ( index + 809 ) );
-		pixel_value = static_cast<sf::Uint8>( pixel_value << ( index % 11 ) );
-		pixel_value = static_cast<sf::Uint8>( pixel_value * 233 );
+		pixel_value = static_cast<std::uint8_t>( pixel_value ^ ( index + 809 ) );
+		pixel_value = static_cast<std::uint8_t>( pixel_value << ( index % 11 ) );
+		pixel_value = static_cast<std::uint8_t>( pixel_value * 233 );
 
-		pixels[ index * 4 + 0 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // R
+		pixels[ index * 4 + 0 ] = static_cast<std::uint8_t>( pixel_value % 16 + 72 ); // R
 
-		pixel_value ^= static_cast<sf::Uint8>( index );
-		pixel_value = static_cast<sf::Uint8>( pixel_value * 23 );
+		pixel_value ^= static_cast<std::uint8_t>( index );
+		pixel_value = static_cast<std::uint8_t>( pixel_value * 23 );
 
-		pixels[ index * 4 + 1 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // G
+		pixels[ index * 4 + 1 ] = static_cast<std::uint8_t>( pixel_value % 16 + 72 ); // G
 
-		pixel_value ^= static_cast<sf::Uint8>( index );
-		pixel_value = static_cast<sf::Uint8>( pixel_value * 193 );
+		pixel_value ^= static_cast<std::uint8_t>( index );
+		pixel_value = static_cast<std::uint8_t>( pixel_value * 193 );
 
-		pixels[ index * 4 + 2 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // B
+		pixels[ index * 4 + 2 ] = static_cast<std::uint8_t>( pixel_value % 16 + 72 ); // B
 
 		pixels[ index * 4 + 3 ] = 255; // A
 	}
 
 	m_background_texture.update( pixels.data() );
 
-	m_background_sprite.setTexture( m_background_texture );
+	m_background_sprite.emplace( m_background_texture );
 }
 
 SampleApp::~SampleApp() {
@@ -145,11 +148,9 @@ SampleApp::~SampleApp() {
 }
 
 void SampleApp::Run() {
-	sf::Event event;
-
 	//m_window.SetFramerateLimit( 60 );
 	//m_window.EnableVerticalSync( true );
-	m_window.setActive( true );
+	(void)m_window.setActive( true );
 
 	std::string renderer_string;
 
@@ -175,8 +176,7 @@ void SampleApp::Run() {
 	}
 
 	// Play around with resource manager.
-	std::shared_ptr<sf::Font> my_font = std::make_shared<sf::Font>();
-	my_font->loadFromFile( "data/linden_hill.otf" );
+	std::shared_ptr<sf::Font> my_font = std::make_shared<sf::Font>( "data/linden_hill.otf" );
 	m_desktop.GetEngine().GetResourceManager().AddFont( "custom_font", my_font );
 
 	// Set properties.
@@ -289,14 +289,14 @@ void SampleApp::Run() {
 	auto separatorv = sfg::Separator::Create( sfg::Separator::Orientation::VERTICAL );
 
 	m_table = sfg::Table::Create();
-	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<sf::Uint32>( 0, 0, 2, 1 ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
-	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( username_entry, sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( password, sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 2, 1, 1, 2 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( separatorv, sf::Rect<sf::Uint32>( 3, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( m_progress_vert, sf::Rect<sf::Uint32>( 4, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<std::uint32_t>( { 0, 0 }, { 2, 1 } ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
+	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<std::uint32_t>( { 0, 1 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( username_entry, sf::Rect<std::uint32_t>( { 1, 1 }, { 1, 1 } ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<std::uint32_t>( { 0, 2 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( password, sf::Rect<std::uint32_t>( { 1, 2 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<std::uint32_t>( { 2, 1 }, { 1, 2 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( separatorv, sf::Rect<std::uint32_t>( { 3, 0 }, { 1, 3 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( m_progress_vert, sf::Rect<std::uint32_t>( { 4, 0 }, { 1, 3 } ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
 
@@ -510,9 +510,8 @@ void SampleApp::Run() {
 	third_window->SetPosition( sf::Vector2f( 480.f, 20.f ) );
 	m_desktop.Add( third_window );
 
-	sf::Texture texture;
-	texture.loadFromImage( sfgui_logo );
-	m_canvas_sprite.setTexture( texture );
+	const sf::Texture texture( sfgui_logo );
+	m_canvas_sprite.emplace( texture );
 
 	//auto fourth_window = sfg::Window::Create( sfg::Window::TITLEBAR | sfg::Window::BACKGROUND | sfg::Window::RESIZE );
 
@@ -535,7 +534,7 @@ void SampleApp::Run() {
 	sf::Clock clock;
 	sf::Clock frame_time_clock;
 
-	sf::Int64 frame_times[5000];
+	std::int64_t frame_times[5000];
 	std::size_t frame_times_index = 0;
 
 	std::fill( std::begin( frame_times ), std::end( frame_times ), 0 );
@@ -543,15 +542,15 @@ void SampleApp::Run() {
 	m_desktop.Update( 0.f );
 
 	while( m_window.isOpen() ) {
-		while( m_window.pollEvent( event ) ) {
-			if( event.type == sf::Event::Closed ) {
+		while( const std::optional event = m_window.pollEvent() ) {
+			if( event->is<sf::Event::Closed>() ) {
 				return;
 			}
 
-			m_desktop.HandleEvent( event );
+			m_desktop.HandleEvent( *event );
 		}
 
-		m_window.draw( m_background_sprite );
+		m_window.draw( *m_background_sprite );
 
 		auto microseconds = clock.getElapsedTime().asMicroseconds();
 
@@ -573,7 +572,7 @@ void SampleApp::Run() {
 			//m_sfml_canvas->Display();
 			//m_sfml_canvas->Unbind();
 
-			m_window.setActive( true );
+			(void)m_window.setActive( true );
 		}
 
 		m_sfgui.Display( m_window );
@@ -589,7 +588,7 @@ void SampleApp::Run() {
 		if( m_fps_clock.getElapsedTime().asMicroseconds() >= 1000000 ) {
 			m_fps_clock.restart();
 
-			sf::Int64 total_time = 0;
+			std::int64_t total_time = 0;
 
 			for( std::size_t index = 0; index < 5000; ++index ) {
 				total_time += frame_times[index];
@@ -707,10 +706,10 @@ void SampleApp::OnMirrorImageClick() {
 
 	for( unsigned int height_index = 0; height_index < image.getSize().y; ++height_index ) {
 		for( unsigned int width_index = 0; width_index < image.getSize().x / 2; ++width_index ) {
-			auto color0 = image.getPixel( width_index, height_index );
-			auto color1 = image.getPixel( image.getSize().x - width_index - 1, height_index );
-			image.setPixel( width_index, height_index, color1 );
-			image.setPixel( image.getSize().x - width_index - 1, height_index, color0 );
+			auto color0 = image.getPixel( { width_index, height_index } );
+			auto color1 = image.getPixel( { image.getSize().x - width_index - 1, height_index } );
+			image.setPixel( { width_index, height_index }, color1 );
+			image.setPixel( { image.getSize().x - width_index - 1, height_index }, color0 );
 		}
 	}
 
@@ -787,7 +786,7 @@ void SampleApp::RenderCustomGL() {
 	glRotatef( clock.getElapsedTime().asSeconds() * 30.f, 0.f, 1.f, 0.f );
 	glRotatef( clock.getElapsedTime().asSeconds() * 90.f, 0.f, 0.f, 1.f );
 
-	glViewport( 0, 0, static_cast<int>( std::floor( m_gl_canvas->GetAllocation().width + .5f ) ), static_cast<int>( std::floor( m_gl_canvas->GetAllocation().height + .5f ) ) );
+	glViewport( 0, 0, static_cast<int>( std::floor( m_gl_canvas->GetAllocation().size.x + .5f ) ), static_cast<int>( std::floor( m_gl_canvas->GetAllocation().size.y + .5f ) ) );
 
 	if( !m_custom_draw_display_list ) {
 		m_custom_draw_display_list = glGenLists( 1 );
@@ -809,7 +808,7 @@ void SampleApp::RenderCustomGL() {
 		static const auto far_distance = 20.f;
 
 		// We set the proper aspect ratio using the dimensions of our Canvas.
-		auto aspect = m_gl_canvas->GetAllocation().width / m_gl_canvas->GetAllocation().height;
+		auto aspect = m_gl_canvas->GetAllocation().size.x / m_gl_canvas->GetAllocation().size.y;
 		auto frustum_height = std::tan( fov / 360 * pi ) * near_distance;
 		auto frustum_width = frustum_height * aspect;
 

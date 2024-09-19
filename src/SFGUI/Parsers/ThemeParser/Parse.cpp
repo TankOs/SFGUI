@@ -15,7 +15,7 @@ std::string GetLine( std::string str, std::size_t line ) {
 	for( std::size_t current_line = 1; current_line < line; ++current_line ) {
 		auto position = str.find( '\n' );
 		if( ( position == std::string::npos ) || ( position == ( str.size() - 1 ) ) ) {
-			return std::string("");
+			return std::string( "" );
 		}
 
 		str.erase( 0, position + 1 );

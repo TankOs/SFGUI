@@ -4,10 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <sstream>
+#include <cstdint>
 #include <cstdlib>
 
 int main() {
-	sf::RenderWindow render_window( sf::VideoMode( 1024, 768, 32 ), "Guess My Number (SFGUI)", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow render_window( sf::VideoMode( { 1024, 768 }, 32 ), "Guess My Number (SFGUI)", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	render_window.resetGLStates();
@@ -94,12 +95,12 @@ int main() {
 
 	// Layout.
 	auto table = sfg::Table::Create();
-	table->Attach( sfg::Label::Create( "Your guess:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( current_number_entry, sf::Rect<sf::Uint32>( 1, 0, 1, 1 ) );
-	table->Attach( sfg::Label::Create( "Tries:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( tries_label, sf::Rect<sf::Uint32>( 1, 1, 1, 1 ) );
-	table->Attach( sfg::Label::Create( "Hint:" ), sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( hint_label, sf::Rect<sf::Uint32>( 1, 2, 1, 1 ) );
+	table->Attach( sfg::Label::Create( "Your guess:" ), sf::Rect<std::uint32_t>( { 0, 0 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( current_number_entry, sf::Rect<std::uint32_t>( { 1, 0 }, { 1, 1 } ) );
+	table->Attach( sfg::Label::Create( "Tries:" ), sf::Rect<std::uint32_t>( { 0, 1 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( tries_label, sf::Rect<std::uint32_t>( { 1, 1 }, { 1, 1 } ) );
+	table->Attach( sfg::Label::Create( "Hint:" ), sf::Rect<std::uint32_t>( { 0, 2 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( hint_label, sf::Rect<std::uint32_t>( { 1, 2 }, { 1, 1 } ) );
 
 	table->SetColumnSpacings( 5.f );
 	table->SetRowSpacings( 5.f );
@@ -119,26 +120,24 @@ int main() {
 
 	window->SetPosition(
 		sf::Vector2f(
-			static_cast<float>( render_window.getSize().x / 2 ) - window->GetAllocation().width / 2.f,
-			static_cast<float>( render_window.getSize().y / 2 ) - window->GetAllocation().height / 2.f
+			static_cast<float>( render_window.getSize().x / 2 ) - window->GetAllocation().size.x / 2.f,
+			static_cast<float>( render_window.getSize().y / 2 ) - window->GetAllocation().size.y / 2.f
 		)
 	);
 
 	// Make sure all properties are applied.
 	window->Refresh();
 
-	sf::Event event;
-
 	while( render_window.isOpen() ) {
-		while( render_window.pollEvent( event ) ) {
+		while( const std::optional event = render_window.pollEvent() ) {
 			if(
-				(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) ||
-				event.type == sf::Event::Closed
+				(event->is<sf::Event::KeyPressed>() && event->getIf<sf::Event::KeyPressed>()->scancode == sf::Keyboard::Scan::Escape) ||
+				event->is<sf::Event::Closed>()
 			) {
 				return 0;
 			}
 
-			window->HandleEvent( event );
+			window->HandleEvent( *event );
 		}
 
 		window->Update( 0.f );

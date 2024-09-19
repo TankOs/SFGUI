@@ -8,10 +8,11 @@
 #include <SFML/OpenGL.hpp>
 
 #include <cmath>
+#include <cstdint>
 
 int main() {
 	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Canvas Example", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow app_window( sf::VideoMode( { 800, 600 } ), "SFGUI Canvas Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
@@ -49,9 +50,9 @@ int main() {
 
 	// Create a table to put the scrollbars and scrollable canvas in.
 	auto table = sfg::Table::Create();
-	table->Attach( sfml_scrollable_canvas, sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
-	table->Attach( vertical_scrollbar, sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), 0, sfg::Table::FILL );
-	table->Attach( horizontal_scrollbar, sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, 0 );
+	table->Attach( sfml_scrollable_canvas, sf::Rect<std::uint32_t>( { 0, 0 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
+	table->Attach( vertical_scrollbar, sf::Rect<std::uint32_t>( { 1, 0 }, { 1, 1 } ), 0, sfg::Table::FILL );
+	table->Attach( horizontal_scrollbar, sf::Rect<std::uint32_t>( { 0, 1 }, { 1, 1 } ), sfg::Table::FILL, 0 );
 
 	// Add the Canvases to the windows.
 	opengl_window->Add( opengl_canvas );
@@ -59,10 +60,8 @@ int main() {
 	sfml_scrollable_window->Add( table );
 
 	// Create an sf::Sprite for demonstration purposes.
-	sf::Texture texture;
-	texture.loadFromFile( "data/sfgui.png" );
-	sf::Sprite sprite;
-	sprite.setTexture( texture );
+	const sf::Texture texture( "data/sfgui.png" );
+	const sf::Sprite sprite( texture );
 
 	// Create an sf::RectangleShape for demonstration purposes.
 	sf::RectangleShape rectangle_shape( sf::Vector2f( 218.f * 20, 84.f * 20 ) );
@@ -88,11 +87,11 @@ int main() {
 	vertical_adjustment->SetPageSize( scrollable_canvas_size );
 
 	horizontal_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( [&view, &horizontal_adjustment]() {
-		view.setCenter( horizontal_adjustment->GetValue(), view.getCenter().y );
+		view.setCenter( { horizontal_adjustment->GetValue(), view.getCenter().y } );
 	} );
 
 	vertical_adjustment->GetSignal( sfg::Adjustment::OnChange ).Connect( [&view, &vertical_adjustment]() {
-		view.setCenter( view.getCenter().x, vertical_adjustment->GetValue() );
+		view.setCenter( { view.getCenter().x, vertical_adjustment->GetValue() } );
 	} );
 
 	// Because Canvases provide a virtual surface to draw
@@ -118,14 +117,12 @@ int main() {
 	// Start the game loop
 	while ( app_window.isOpen() ) {
 		// Process events
-		sf::Event event;
-
-		while ( app_window.pollEvent( event ) ) {
+		while ( const std::optional event = app_window.pollEvent() ) {
 			// Handle events
-			desktop.HandleEvent( event );
+			desktop.HandleEvent( *event );
 
 			// Close window : exit
-			if ( event.type == sf::Event::Closed ) {
+			if ( event->is<sf::Event::Closed>() ) {
 				return EXIT_SUCCESS;
 			}
 		}
@@ -173,14 +170,14 @@ int main() {
 		glPushMatrix();
 		glLoadIdentity();
 
-		glViewport( 0, 0, static_cast<int>( opengl_canvas->GetAllocation().width ), static_cast<int>( opengl_canvas->GetAllocation().height ) );
+		glViewport( 0, 0, static_cast<int>( opengl_canvas->GetAllocation().size.x ), static_cast<int>( opengl_canvas->GetAllocation().size.y ) );
 
 		static const auto pi = 3.1415926535897932384626433832795f;
 		static const auto fov = 90.f;
 		static const auto near_distance = 1.f;
 		static const auto far_distance = 20.f;
 
-		auto aspect = opengl_canvas->GetAllocation().width / opengl_canvas->GetAllocation().height;
+		auto aspect = opengl_canvas->GetAllocation().size.x / opengl_canvas->GetAllocation().size.y;
 		auto frustum_height = std::tan( fov / 360 * pi ) * near_distance;
 		auto frustum_width = frustum_height * aspect;
 
@@ -227,7 +224,7 @@ int main() {
 		sfml_scrollable_canvas->Unbind();
 
 		// This is important.
-		app_window.setActive( true );
+		(void)app_window.setActive( true );
 
 		// Draw the GUI
 		sfgui.Display( app_window );

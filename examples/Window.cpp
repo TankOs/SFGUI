@@ -8,7 +8,7 @@
 
 int main() {
 	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Window Example", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow app_window( sf::VideoMode( { 800, 600 } ), "SFGUI Window Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
@@ -35,16 +35,14 @@ int main() {
 	// Start the game loop
 	while ( app_window.isOpen() ) {
 		// Process events
-		sf::Event event;
-
-		while ( app_window.pollEvent( event ) ) {
+		while ( const std::optional event = app_window.pollEvent() ) {
 			// Every frame we have to send SFML events to the window
 			// to enable user interactivity. Without doing this your
 			// GUI is nothing but a big colorful picture ;)
-			window->HandleEvent( event );
+			window->HandleEvent( *event );
 
 			// Close window : exit
-			if ( event.type == sf::Event::Closed ) {
+			if ( event->is<sf::Event::Closed>() ) {
 				return EXIT_SUCCESS;
 			}
 		}

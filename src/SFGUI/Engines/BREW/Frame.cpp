@@ -24,8 +24,8 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 	// Right
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, line_height / 2.f + border_width / 2.f ),
-			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, frame->GetAllocation().height - border_width ),
+			sf::Vector2f( frame->GetAllocation().size.x - border_width / 2.f, line_height / 2.f + border_width / 2.f ),
+			sf::Vector2f( frame->GetAllocation().size.x - border_width / 2.f, frame->GetAllocation().size.y - border_width ),
 			border_color,
 			border_width
 		)
@@ -34,8 +34,8 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 	// Bottom
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, frame->GetAllocation().height - border_width ),
-			sf::Vector2f( border_width / 2.f, frame->GetAllocation().height - border_width ),
+			sf::Vector2f( frame->GetAllocation().size.x - border_width / 2.f, frame->GetAllocation().size.y - border_width ),
+			sf::Vector2f( border_width / 2.f, frame->GetAllocation().size.y - border_width ),
 			border_color,
 			border_width
 		)
@@ -44,7 +44,7 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 	// Left
 	queue->Add(
 		Renderer::Get().CreateLine(
-			sf::Vector2f( border_width / 2.f, frame->GetAllocation().height - border_width ),
+			sf::Vector2f( border_width / 2.f, frame->GetAllocation().size.y - border_width ),
 			sf::Vector2f( border_width / 2.f, line_height / 2.f + border_width / 2.f ),
 			border_color,
 			border_width
@@ -60,11 +60,11 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 		auto metrics = GetTextStringMetrics( frame->GetLabel(), *font, font_size );
 		metrics.x += 2.f * label_padding;
 
-		label_start_x = padding + ( alignment * ( frame->GetAllocation().width - 2.f * padding - metrics.x ) );
+		label_start_x = padding + ( alignment * ( frame->GetAllocation().size.x - 2.f * padding - metrics.x ) );
 		label_end_x = label_start_x + metrics.x;
 
-		sf::Text text( frame->GetLabel(), *font, font_size );
-		text.setPosition( label_start_x + label_padding, border_width / 2.f );
+		sf::Text text( *font, frame->GetLabel(), font_size );
+		text.setPosition( { label_start_x + label_padding, border_width / 2.f } );
 		text.setFillColor( color );
 		queue->Add( Renderer::Get().CreateText( text ) );
 	}
@@ -83,7 +83,7 @@ std::unique_ptr<RenderQueue> BREW::CreateFrameDrawable( std::shared_ptr<const Fr
 	queue->Add(
 		Renderer::Get().CreateLine(
 			sf::Vector2f( label_end_x + .5f * border_width, line_height / 2.f + border_width / 2.f ),
-			sf::Vector2f( frame->GetAllocation().width - border_width / 2.f, line_height / 2.f + border_width / 2.f ),
+			sf::Vector2f( frame->GetAllocation().size.x - border_width / 2.f, line_height / 2.f + border_width / 2.f ),
 			border_color,
 			border_width
 		)

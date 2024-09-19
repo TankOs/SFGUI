@@ -7,6 +7,7 @@
 #include <SFGUI/Primitive.hpp>
 
 #include <SFML/Window/Event.hpp>
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
@@ -125,27 +126,27 @@ void Widget::SetAllocation( const sf::FloatRect& rect ) {
 	sf::FloatRect oldallocation( m_allocation );
 
 	// Make sure allocation is pixel-aligned.
-	m_allocation.left = std::floor( rect.left + .5f );
-	m_allocation.top = std::floor( rect.top + .5f );
-	m_allocation.width = std::floor( rect.width + .5f );
-	m_allocation.height = std::floor( rect.height + .5f );
+	m_allocation.position.x = std::floor( rect.position.x + .5f );
+	m_allocation.position.y = std::floor( rect.position.y + .5f );
+	m_allocation.size.x = std::floor( rect.size.x + .5f );
+	m_allocation.size.y = std::floor( rect.size.y + .5f );
 
 	if(
-		oldallocation.top == m_allocation.top &&
-		oldallocation.left == m_allocation.left &&
-		oldallocation.width == m_allocation.width &&
-		oldallocation.height == m_allocation.height
+		oldallocation.position.y == m_allocation.position.y &&
+		oldallocation.position.x == m_allocation.position.x &&
+		oldallocation.size.x == m_allocation.size.x &&
+		oldallocation.size.y == m_allocation.size.y
 	) {
 		// Nothing even changed. Save the hierarchy the trouble.
 		return;
 	}
 
-	if( ( oldallocation.top != m_allocation.top ) || ( oldallocation.left != m_allocation.left ) ) {
+	if( ( oldallocation.position.y != m_allocation.position.y ) || ( oldallocation.position.x != m_allocation.position.x ) ) {
 	  HandlePositionChange();
 	  HandleAbsolutePositionChange();
 	}
 
-	if( ( oldallocation.width != m_allocation.width ) || ( oldallocation.height != m_allocation.height ) ) {
+	if( ( oldallocation.size.x != m_allocation.size.x ) || ( oldallocation.size.y != m_allocation.size.y ) ) {
 	  HandleSizeChange();
 
 	  Invalidate();
@@ -179,10 +180,8 @@ void Widget::RequestResize() {
 	}
 	else {
 		sf::FloatRect allocation(
-			GetAllocation().left,
-			GetAllocation().top,
-			std::max( GetAllocation().width, m_requisition.x ),
-			std::max( GetAllocation().height, m_requisition.y )
+			GetAllocation().position,
+			{ std::max( GetAllocation().size.x, m_requisition.x ), std::max( GetAllocation().size.y, m_requisition.y ) }
 		);
 
 		SetAllocation( allocation );
@@ -278,10 +277,10 @@ void Widget::SetPosition( const sf::Vector2f& position ) {
 	sf::FloatRect allocation( GetAllocation() );
 
 	// Make sure allocation is pixel-aligned.
-	m_allocation.left = std::floor( position.x + .5f );
-	m_allocation.top = std::floor( position.y + .5f );
+	m_allocation.position.x = std::floor( position.x + .5f );
+	m_allocation.position.y = std::floor( position.y + .5f );
 
-	if( ( allocation.top != m_allocation.top ) || ( allocation.left != m_allocation.left ) ) {
+	if( ( allocation.position.y != m_allocation.position.y ) || ( allocation.position.x != m_allocation.position.x ) ) {
 	  HandlePositionChange();
 	  HandleAbsolutePositionChange();
 	}
@@ -319,148 +318,132 @@ void Widget::HandleEvent( const sf::Event& event ) {
 	auto emit_right_click = false;
 
 	try {
-		switch( event.type ) {
-			case sf::Event::MouseLeft:
-				if( IsMouseInWidget() ) {
-					SetMouseInWidget( false );
+		if( event.is<sf::Event::MouseLeft>() ) {
+			if( IsMouseInWidget() ) {
+				SetMouseInWidget( false );
 
-					HandleMouseLeave( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+				HandleMouseLeave( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
 
-					emit_leave = true;
+				emit_leave = true;
+			}
+
+			HandleMouseMoveEvent( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+
+			SetMouseButtonDown();
+			HandleMouseButtonEvent( sf::Mouse::Button::Left, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+			HandleMouseButtonEvent( sf::Mouse::Button::Right, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+
+			if( emit_leave ) {
+				GetSignals().Emit( OnMouseLeave );
+			}
+		}
+		else if( const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>() ) {
+			// Check if pointer inside of widget's allocation.
+			if( GetAllocation().contains( sf::Vector2f( mouseMoved->position ) ) ) {
+				// Check for enter event.
+				if( !IsMouseInWidget() ) {
+					SetMouseInWidget( true );
+
+					emit_enter = true;
+
+					HandleMouseEnter( mouseMoved->position.x, mouseMoved->position.y );
 				}
 
-				HandleMouseMoveEvent( std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
+				emit_move = true;
+			}
+			else if( IsMouseInWidget() ) { // Check for leave event.
+				SetMouseInWidget( false );
 
+				emit_leave = true;
+
+				HandleMouseLeave( mouseMoved->position.x, mouseMoved->position.y );
+			}
+
+			HandleMouseMoveEvent( mouseMoved->position.x, mouseMoved->position.y );
+
+			if( emit_move ) {
+				if( emit_enter ) {
+					GetSignals().Emit( OnMouseEnter );
+				}
+
+				GetSignals().Emit( OnMouseMove );
+			}
+			else if( emit_leave ) {
+				GetSignals().Emit( OnMouseLeave );
+			}
+		}
+		else if( const auto* mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>() ) {
+			if( !IsMouseButtonDown() && IsMouseInWidget() ) {
+				SetMouseButtonDown( mouseButtonPressed->button );
+			}
+
+			HandleMouseButtonEvent( mouseButtonPressed->button, true, mouseButtonPressed->position.x, mouseButtonPressed->position.y );
+
+			if( IsMouseInWidget() ) {
+				if( mouseButtonPressed->button == sf::Mouse::Button::Left ) {
+					GetSignals().Emit( OnMouseLeftPress );
+				}
+				else if( mouseButtonPressed->button == sf::Mouse::Button::Right ) {
+					GetSignals().Emit( OnMouseRightPress );
+				}
+			}
+		}
+		else if( const auto* mouseButtonReleased = event.getIf<sf::Event::MouseButtonReleased>() ) {
+			// Only process as a click when mouse button has been pressed inside the widget before.
+			if( IsMouseButtonDown( mouseButtonReleased->button ) ) {
 				SetMouseButtonDown();
-				HandleMouseButtonEvent( sf::Mouse::Left, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
-				HandleMouseButtonEvent( sf::Mouse::Right, false, std::numeric_limits<int>::min(), std::numeric_limits<int>::min() );
 
-				if( emit_leave ) {
-					GetSignals().Emit( OnMouseLeave );
-				}
-
-				break;
-
-			case sf::Event::MouseMoved:
-				// Check if pointer inside of widget's allocation.
-				if( GetAllocation().contains( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) ) ) {
-					// Check for enter event.
-					if( !IsMouseInWidget() ) {
-						SetMouseInWidget( true );
-
-						emit_enter = true;
-
-						HandleMouseEnter( event.mouseMove.x, event.mouseMove.y );
-					}
-
-					emit_move = true;
-				}
-				else if( IsMouseInWidget() ) { // Check for leave event.
-					SetMouseInWidget( false );
-
-					emit_leave = true;
-
-					HandleMouseLeave( event.mouseMove.x, event.mouseMove.y );
-				}
-
-				HandleMouseMoveEvent( event.mouseMove.x, event.mouseMove.y );
-
-				if( emit_move ) {
-					if( emit_enter ) {
-						GetSignals().Emit( OnMouseEnter );
-					}
-
-					GetSignals().Emit( OnMouseMove );
-				}
-				else if( emit_leave ) {
-					GetSignals().Emit( OnMouseLeave );
-				}
-
-				break;
-
-			case sf::Event::MouseButtonPressed:
-				if( !IsMouseButtonDown() && IsMouseInWidget() ) {
-					SetMouseButtonDown( event.mouseButton.button );
-				}
-
-				HandleMouseButtonEvent( event.mouseButton.button, true, event.mouseButton.x, event.mouseButton.y );
-
+				// When released inside the widget, the event can be considered a click.
 				if( IsMouseInWidget() ) {
-					if( event.mouseButton.button == sf::Mouse::Left ) {
-						GetSignals().Emit( OnMouseLeftPress );
+					HandleMouseClick( mouseButtonReleased->button, mouseButtonReleased->position.x, mouseButtonReleased->position.y );
+
+					if( mouseButtonReleased->button == sf::Mouse::Button::Left ) {
+						emit_left_click = true;
 					}
-					else if( event.mouseButton.button == sf::Mouse::Right ) {
-						GetSignals().Emit( OnMouseRightPress );
-					}
-				}
-
-				break;
-
-			case sf::Event::MouseButtonReleased:
-				// Only process as a click when mouse button has been pressed inside the widget before.
-				if( IsMouseButtonDown( event.mouseButton.button ) ) {
-					SetMouseButtonDown();
-
-					// When released inside the widget, the event can be considered a click.
-					if( IsMouseInWidget() ) {
-						HandleMouseClick( event.mouseButton.button, event.mouseButton.x, event.mouseButton.y );
-
-						if( event.mouseButton.button == sf::Mouse::Left ) {
-							emit_left_click = true;
-						}
-						else if( event.mouseButton.button == sf::Mouse::Right ) {
-							emit_right_click = true;
-						}
+					else if( mouseButtonReleased->button == sf::Mouse::Button::Right ) {
+						emit_right_click = true;
 					}
 				}
+			}
 
-				HandleMouseButtonEvent( event.mouseButton.button, false, event.mouseButton.x, event.mouseButton.y );
+			HandleMouseButtonEvent( mouseButtonReleased->button, false, mouseButtonReleased->position.x, mouseButtonReleased->position.y );
 
-				if( emit_left_click ) {
-					GetSignals().Emit( OnLeftClick );
+			if( emit_left_click ) {
+				GetSignals().Emit( OnLeftClick );
+			}
+			else if( emit_right_click ) {
+				GetSignals().Emit( OnRightClick );
+			}
+
+			if( IsMouseInWidget() ) {
+				if( mouseButtonReleased->button == sf::Mouse::Button::Left ) {
+					GetSignals().Emit( OnMouseLeftRelease );
 				}
-				else if( emit_right_click ) {
-					GetSignals().Emit( OnRightClick );
+				else if( mouseButtonReleased->button == sf::Mouse::Button::Right ) {
+					GetSignals().Emit( OnMouseRightRelease );
 				}
-
-				if( IsMouseInWidget() ) {
-					if( event.mouseButton.button == sf::Mouse::Left ) {
-						GetSignals().Emit( OnMouseLeftRelease );
-					}
-					else if( event.mouseButton.button == sf::Mouse::Right ) {
-						GetSignals().Emit( OnMouseRightRelease );
-					}
-				}
-
-				break;
-
-			case sf::Event::KeyPressed:
-				if( HasFocus() ) {
-					// TODO: Delegate event too when widget's not active?
-					HandleKeyEvent( event.key.code, true );
-					GetSignals().Emit( OnKeyPress );
-				}
-
-				break;
-
-			case sf::Event::KeyReleased:
-				if( HasFocus() ) {
-					// TODO: Delegate event too when widget's not active?
-					HandleKeyEvent( event.key.code, false );
-					GetSignals().Emit( OnKeyRelease );
-				}
-				break;
-
-			case sf::Event::TextEntered:
-				if( HasFocus() ) {
-					// TODO: Delegate event too when widget's not active?
-					HandleTextEvent( event.text.unicode );
-					GetSignals().Emit( OnText );
-				}
-				break;
-
-			default:
-				break;
+			}
+		}
+		else if( const auto* keyPressed = event.getIf<sf::Event::KeyPressed>() ) {
+			if( HasFocus() ) {
+				// TODO: Delegate event too when widget's not active?
+				HandleKeyEvent( keyPressed->code, keyPressed->scancode, true );
+				GetSignals().Emit( OnKeyPress );
+			}
+		}
+		else if( const auto* keyReleased = event.getIf<sf::Event::KeyReleased>() ) {
+			if( HasFocus() ) {
+				// TODO: Delegate event too when widget's not active?
+				HandleKeyEvent( keyReleased->code, keyReleased->scancode, false );
+				GetSignals().Emit( OnKeyRelease );
+			}
+		}
+		else if( const auto* textEntered = event.getIf<sf::Event::TextEntered>() ) {
+			if( HasFocus() ) {
+				// TODO: Delegate event too when widget's not active?
+				HandleTextEvent( textEntered->unicode );
+				GetSignals().Emit( OnText );
+			}
 		}
 	}
 	catch( ... ) {
@@ -530,18 +513,23 @@ void Widget::SetMouseInWidget( bool in_widget ) {
 	m_mouse_in = in_widget;
 }
 
-bool Widget::IsMouseButtonDown( sf::Mouse::Button button ) const {
+bool Widget::IsMouseButtonDown( std::optional<sf::Mouse::Button> button ) const {
 	// Check if any button is down if requested.
-	if( button == sf::Mouse::ButtonCount ) {
+	if( !button.has_value() ) {
 		return m_mouse_button_down != sf::Mouse::ButtonCount;
 	}
 
 	// Check if requested button is down.
-	return m_mouse_button_down == button;
+	return static_cast<sf::Mouse::Button>(m_mouse_button_down) == button;
 }
 
-void Widget::SetMouseButtonDown( sf::Mouse::Button button ) {
-	m_mouse_button_down = static_cast<unsigned char>( button & 0x3f ); // 6 bits
+void Widget::SetMouseButtonDown( std::optional<sf::Mouse::Button> button ) {
+	if( button.has_value() ) {
+		m_mouse_button_down = static_cast<unsigned char>( static_cast<unsigned int>(*button) & 0x3f ); // 6 bits
+	}
+	else {
+		m_mouse_button_down = sf::Mouse::ButtonCount;
+	}
 }
 
 void Widget::Show( bool show ) {
@@ -583,15 +571,15 @@ sf::Vector2f Widget::GetAbsolutePosition() const {
 	PtrConst parent( m_parent.lock() );
 
 	if( !parent ) {
-		return sf::Vector2f( GetAllocation().left, GetAllocation().top );
+		return sf::Vector2f( GetAllocation().position.x, GetAllocation().position.y );
 	}
 
 	// Get parent's absolute position and add own rel. position to it.
 	sf::Vector2f parent_position( parent->GetAbsolutePosition() );
 
 	return sf::Vector2f(
-		parent_position.x + GetAllocation().left,
-		parent_position.y + GetAllocation().top
+		parent_position.x + GetAllocation().position.x,
+		parent_position.y + GetAllocation().position.y
 	);
 }
 
@@ -751,7 +739,7 @@ void Widget::HandleMouseMoveEvent( int /*x*/, int /*y*/ ) {
 void Widget::HandleMouseButtonEvent( sf::Mouse::Button /*button*/, bool /*press*/, int /*x*/, int /*y*/ ) {
 }
 
-void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, bool /*press*/ ) {
+void Widget::HandleKeyEvent( sf::Keyboard::Key /*key*/, sf::Keyboard::Scancode /*scancode*/, bool /*press*/ ) {
 }
 
 void Widget::HandlePositionChange() {
@@ -764,7 +752,7 @@ void Widget::HandleStateChange( State /*old_state*/ ) {
 	Invalidate();
 }
 
-void Widget::HandleTextEvent( sf::Uint32 /*character*/ ) {
+void Widget::HandleTextEvent( char32_t /*character*/ ) {
 }
 
 void Widget::HandleMouseEnter( int /*x*/, int /*y*/ ) {

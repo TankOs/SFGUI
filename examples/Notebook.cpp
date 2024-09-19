@@ -8,7 +8,7 @@
 
 int main() {
 	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Notebook Example", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow app_window( sf::VideoMode( { 800, 600 } ), "SFGUI Notebook Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
@@ -24,8 +24,8 @@ int main() {
 	auto notebook = sfg::Notebook::Create();
 
 	// Create a couple of buttons to populate the notebook.
-	auto button1 = sfg::Button::Create("Hello");
-	auto button2 = sfg::Button::Create("World");
+	auto button1 = sfg::Button::Create( "Hello" );
+	auto button2 = sfg::Button::Create( "World" );
 
 	// Add new pages to the notebook with respective tab labels
 	// containing solely the buttons as their children.
@@ -53,14 +53,12 @@ int main() {
 	// Start the game loop
 	while ( app_window.isOpen() ) {
 		// Process events
-		sf::Event event;
-
-		while ( app_window.pollEvent( event ) ) {
+		while ( const std::optional event = app_window.pollEvent() ) {
 			// Handle events
-			window->HandleEvent( event );
+			window->HandleEvent( *event );
 
 			// Close window : exit
-			if ( event.type == sf::Event::Closed ) {
+			if ( event->is<sf::Event::Closed>() ) {
 				return EXIT_SUCCESS;
 			}
 		}

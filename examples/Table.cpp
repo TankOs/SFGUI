@@ -6,9 +6,11 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <cstdint>
+
 int main() {
 	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Table Example", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow app_window( sf::VideoMode( { 800, 600 } ), "SFGUI Table Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
@@ -43,13 +45,13 @@ int main() {
 	// packing options and the second the vertical packing options.
 	//
 	// The last option is the padding you want to apply to the cell.
-	table->Attach( foo, sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
+	table->Attach( foo, sf::Rect<std::uint32_t>( { 0, 0 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
 
 	// Do the same for the other 4 widgets.
-	table->Attach( bar, sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
-	table->Attach( baz, sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
-	table->Attach( column_span, sf::Rect<sf::Uint32>( 0, 3, 2, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
-	table->Attach( row_span, sf::Rect<sf::Uint32>( 1, 0, 1, 3 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
+	table->Attach( bar, sf::Rect<std::uint32_t>( { 0, 1 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
+	table->Attach( baz, sf::Rect<std::uint32_t>( { 0, 2 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
+	table->Attach( column_span, sf::Rect<std::uint32_t>( { 0, 3 }, { 2, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
+	table->Attach( row_span, sf::Rect<std::uint32_t>( { 1, 0 }, { 1, 3 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL, sf::Vector2f( 10.f, 10.f ) );
 
 	// Because we told our cells to only expand horizontally,
 	// they will only resize if the size of the window changes horizontally.
@@ -60,14 +62,12 @@ int main() {
 	// Start the game loop
 	while ( app_window.isOpen() ) {
 		// Process events
-		sf::Event event;
-
-		while ( app_window.pollEvent( event ) ) {
+		while ( const std::optional event = app_window.pollEvent() ) {
 			// Handle events
-			window->HandleEvent( event );
+			window->HandleEvent( *event );
 
 			// Close window : exit
-			if ( event.type == sf::Event::Closed ) {
+			if ( event->is<sf::Event::Closed>() ) {
 				return EXIT_SUCCESS;
 			}
 		}

@@ -8,7 +8,7 @@
 
 int main() {
 	// Create the main SFML window
-	sf::RenderWindow app_window( sf::VideoMode( 800, 600 ), "SFGUI Multiview Example", sf::Style::Titlebar | sf::Style::Close );
+	sf::RenderWindow app_window( sf::VideoMode( { 800, 600 } ), "SFGUI Multiview Example", sf::Style::Titlebar | sf::Style::Close );
 
 	// We have to do this because we don't use SFML to draw.
 	app_window.resetGLStates();
@@ -45,25 +45,19 @@ int main() {
 	// a pointer to it as the second parameter after the function address.
 
 	// Our sf::RenderTexture to draw the GUI on.
-	sf::RenderTexture render_texture;
-	render_texture.create( 800, 600 );
+	sf::RenderTexture render_texture( sf::Vector2u( 800, 600 ) );
 	render_texture.resetGLStates();
 
 	// Our 4 viewport Sprites.
-	sf::Sprite sprite0;
-	sf::Sprite sprite1;
-	sf::Sprite sprite2;
-	sf::Sprite sprite3;
+	sf::Sprite sprite0( render_texture.getTexture() );
+	sf::Sprite sprite1( render_texture.getTexture() );
+	sf::Sprite sprite2( render_texture.getTexture() );
+	sf::Sprite sprite3( render_texture.getTexture() );
 
-	sprite0.setPosition( 0.f, 0.f );
-	sprite1.setPosition( 400.f, 0.f );
-	sprite2.setPosition( 0.f, 300.f );
-	sprite3.setPosition( 400.f, 300.f );
-
-	sprite0.setTexture( render_texture.getTexture() );
-	sprite1.setTexture( render_texture.getTexture() );
-	sprite2.setTexture( render_texture.getTexture() );
-	sprite3.setTexture( render_texture.getTexture() );
+	sprite0.setPosition( { 0.f, 0.f } );
+	sprite1.setPosition( { 400.f, 0.f } );
+	sprite2.setPosition( { 0.f, 300.f } );
+	sprite3.setPosition( { 400.f, 300.f } );
 
 	// Rectangle to clear the RenderTexture.
 	sf::RectangleShape clear_rect( sf::Vector2f( 400.f, 300.f ) );
@@ -72,27 +66,35 @@ int main() {
 	// Start the game loop
 	while ( app_window.isOpen() ) {
 		// Process events
-		sf::Event event;
-
-		while ( app_window.pollEvent( event ) ) {
+		while ( std::optional event = app_window.pollEvent() ) {
 			// Handle events
 			// Because we are doing fancy stuff with multiple
 			// viewports, we need to take care of translating
 			// the SFML window coordinates into our local
 			// viewport coordinates.
-			if( event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased ) {
-				event.mouseButton.x %= 400;
-				event.mouseButton.y %= 300;
+			if( const auto* mouseButtonPressed = event->getIf<sf::Event::MouseButtonPressed>() ) {
+				auto altered_event = *mouseButtonPressed;
+				altered_event.position.x %= 400;
+				altered_event.position.y %= 300;
+				event = altered_event;
 			}
-			else if( event.type == sf::Event::MouseMoved ) {
-				event.mouseMove.x %= 400;
-				event.mouseMove.y %= 300;
+			else if( const auto* mouseButtonReleased = event->getIf<sf::Event::MouseButtonReleased>() ) {
+				auto altered_event = *mouseButtonReleased;
+				altered_event.position.x %= 400;
+				altered_event.position.y %= 300;
+				event = altered_event;
+			}
+			else if( const auto* mouseMoved = event->getIf<sf::Event::MouseMoved>() ) {
+				auto altered_event = *mouseMoved;
+				altered_event.position.x %= 400;
+				altered_event.position.y %= 300;
+				event = altered_event;
 			}
 
-			window->HandleEvent( event );
+			window->HandleEvent( *event );
 
 			// Close window : exit
-			if ( event.type == sf::Event::Closed ) {
+			if ( event->is<sf::Event::Closed>() ) {
 				return EXIT_SUCCESS;
 			}
 		}

@@ -9,7 +9,7 @@ namespace sfg {
 std::shared_ptr<const sf::Font> FileResourceLoader::LoadFont( const std::string& path ) const {
 	auto font = std::make_shared<sf::Font>();
 
-	if( !font->loadFromFile( path ) ) {
+	if( !font->openFromFile( path ) ) {
 		return std::shared_ptr<const sf::Font>();
 	}
 

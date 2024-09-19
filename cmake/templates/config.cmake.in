@@ -4,7 +4,7 @@
 # Define Alias library @PROJECT_NAME@::@TARGET@
 
 include( CMakeFindDependencyMacro )
-find_dependency( SFML 2.6 COMPONENTS graphics window system)
+find_dependency( SFML 3.0 COMPONENTS Graphics)
 find_dependency( OpenGL )
 
 if( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )

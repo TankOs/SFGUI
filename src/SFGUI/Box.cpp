@@ -2,6 +2,7 @@
 #include <SFGUI/Context.hpp>
 #include <SFGUI/Engine.hpp>
 
+#include <algorithm>
 #include <iterator>
 
 namespace sfg {
@@ -194,10 +195,10 @@ void Box::AllocateChildren() const {
 
 	if( num_expand > 0 ) {
 		if( m_orientation == Orientation::HORIZONTAL ) {
-			extra = std::max( 0.f, GetAllocation().width - GetRequisition().x ) / static_cast<float>( num_expand );
+			extra = std::max( 0.f, GetAllocation().size.x - GetRequisition().x ) / static_cast<float>( num_expand );
 		}
 		else {
-			extra = std::max( 0.f, GetAllocation().height - GetRequisition().y ) / static_cast<float>( num_expand );
+			extra = std::max( 0.f, GetAllocation().size.y - GetRequisition().y ) / static_cast<float>( num_expand );
 		}
 	}
 
@@ -213,16 +214,16 @@ void Box::AllocateChildren() const {
 
 		if( m_orientation == Orientation::HORIZONTAL ) {
 			allocation.x = child.widget->GetRequisition().x + ( child.expand ? extra : 0.f );
-			allocation.y = GetAllocation().height - 2 * gap;
+			allocation.y = GetAllocation().size.y - 2 * gap;
 
-			child.widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - ( child.expand && !child.fill ? extra : 0.f ), allocation.y ) );
+			child.widget->SetAllocation( sf::FloatRect( position, { allocation.x - ( child.expand && !child.fill ? extra : 0.f ), allocation.y }) );
 			position.x += allocation.x + GetSpacing();
 		}
 		else {
-			allocation.x = GetAllocation().width - 2 * gap;
+			allocation.x = GetAllocation().size.x - 2 * gap;
 			allocation.y = child.widget->GetRequisition().y + ( child.expand ? extra : 0.f );
 
-			child.widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - ( child.expand && !child.fill ? extra : 0.f ) ) );
+			child.widget->SetAllocation( sf::FloatRect( position, { allocation.x, allocation.y - ( child.expand && !child.fill ? extra : 0.f ) }) );
 			position.y += allocation.y + GetSpacing();
 		}
 
@@ -233,8 +234,8 @@ void Box::AllocateChildren() const {
 bool Box::IsChildInteresting( Widget* child ) const {
 	return
 		child->IsLocallyVisible() &&
-		(child->GetRequisition().x > 0.f || child->GetAllocation().width > 0.0f) &&
-		(child->GetRequisition().y > 0.f || child->GetAllocation().height > 0.0f)
+		(child->GetRequisition().x > 0.f || child->GetAllocation().size.x > 0.0f) &&
+		(child->GetRequisition().y > 0.f || child->GetAllocation().size.y > 0.0f)
 	;
 }
 

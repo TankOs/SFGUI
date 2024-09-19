@@ -2,8 +2,9 @@
 #include <SFGUI/Widget.hpp>
 
 #include <SFML/Window/Event.hpp>
-#include <limits>
+#include <algorithm>
 #include <iterator>
+#include <limits>
 
 namespace sfg {
 
@@ -29,17 +30,21 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 	Widget::Ptr last_receiver( m_last_receiver.lock() );
 
 	// If we've got a mouse event, get local mouse position and mark event for being checked against widget's allocation.
-	if( event.type == sf::Event::MouseMoved ) {
-		m_last_mouse_pos.x = event.mouseMove.x;
-		m_last_mouse_pos.y = event.mouseMove.y;
-		position = sf::Vector2f( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) );
+	const auto onMouseButtonPressedOrRelease = [&]( auto& mouseButtonEvent ) {
+		m_last_mouse_pos = mouseButtonEvent.position;
+		position = sf::Vector2f( mouseButtonEvent.position );
+		check_inside = true;
+	};
+	if( const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>() ) {
+		m_last_mouse_pos = mouseMoved->position;
+		position = sf::Vector2f( mouseMoved->position );
 		check_inside = true;
 	}
-	else if( event.type == sf::Event::MouseButtonPressed || event.type == sf::Event::MouseButtonReleased ) {
-		m_last_mouse_pos.x = event.mouseButton.x;
-		m_last_mouse_pos.y = event.mouseButton.y;
-		position = sf::Vector2f( static_cast<float>( event.mouseButton.x ), static_cast<float>( event.mouseButton.y ) );
-		check_inside = true;
+	else if( auto* mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>() ) {
+		onMouseButtonPressedOrRelease( *mouseButtonPressed );
+	}
+	else if( auto* mouseButtonRelease = event.getIf<sf::Event::MouseButtonReleased>() ) {
+		onMouseButtonPressedOrRelease( *mouseButtonRelease );
 	}
 
 	for( int index = 0; index < static_cast<int>( m_children.size() ); ++index ) {
@@ -56,7 +61,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		// If there is a modal widget, skip reordering.
 		if(
 			index > 0 &&
-			event.type == sf::Event::MouseButtonPressed &&
+			event.is<sf::Event::MouseButtonPressed>() &&
 			is_inside &&
 			!Widget::HasModal()
 		) {
@@ -77,7 +82,7 @@ void Desktop::HandleEvent( const sf::Event& event ) {
 		// that states are reset correctly. Warning, this is a hack, but it works™.
 		// The fake event is also sent when the last mouse move event receiver
 		// isn't the current and top one.
-		if( event.type == sf::Event::MouseMoved && last_receiver && last_receiver != widget && last_receiver != m_children.front() ) {
+		if( event.is<sf::Event::MouseMoved>() && last_receiver && last_receiver != widget && last_receiver != m_children.front() ) {
 			SendFakeMouseMoveEvent( last_receiver );
 			m_last_receiver = widget;
 			last_receiver = widget;
@@ -105,7 +110,7 @@ void Desktop::Add( std::shared_ptr<Widget> widget ) {
 	// Get old focused widget out of State::PRELIGHT state if mouse is inside the new
 	// widget.
 	if( m_children.size() ) {
-		if( widget->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+		if( widget->GetAllocation().contains( sf::Vector2f( m_last_mouse_pos ) ) ) {
 			SendFakeMouseMoveEvent( m_children.front() );
 		}
 	}
@@ -114,7 +119,7 @@ void Desktop::Add( std::shared_ptr<Widget> widget ) {
 
 	RecalculateWidgetLevels();
 
-	if( widget->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+	if( widget->GetAllocation().contains( sf::Vector2f (m_last_mouse_pos ) ) ) {
 		SendFakeMouseMoveEvent( widget, m_last_mouse_pos.x, m_last_mouse_pos.y );
 	}
 
@@ -140,7 +145,7 @@ void Desktop::Remove( std::shared_ptr<Widget> widget ) {
 
 	RecalculateWidgetLevels();
 
-	if( !m_children.empty() &&  m_children.front()->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+	if( !m_children.empty() &&  m_children.front()->GetAllocation().contains( sf::Vector2f( m_last_mouse_pos ) ) ) {
 		SendFakeMouseMoveEvent( m_children.front(), m_last_mouse_pos.x, m_last_mouse_pos.y );
 	}
 }
@@ -188,7 +193,7 @@ void Desktop::BringToFront( std::shared_ptr<const Widget> child ) {
 		return;
 	}
 
-	if( child->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+	if( child->GetAllocation().contains( sf::Vector2f( m_last_mouse_pos ) ) ) {
 		SendFakeMouseMoveEvent( m_children.front() );
 	}
 
@@ -198,17 +203,13 @@ void Desktop::BringToFront( std::shared_ptr<const Widget> child ) {
 
 	RecalculateWidgetLevels();
 
-	if( child->GetAllocation().contains( static_cast<float>( m_last_mouse_pos.x ), static_cast<float>( m_last_mouse_pos.y ) ) ) {
+	if( child->GetAllocation().contains( sf::Vector2f( m_last_mouse_pos ) ) ) {
 		SendFakeMouseMoveEvent( ptr, m_last_mouse_pos.x, m_last_mouse_pos.y );
 	}
 }
 
 void Desktop::SendFakeMouseMoveEvent( std::shared_ptr<Widget> widget, int x, int y ) const {
-	sf::Event fake_event;
-	fake_event.type = sf::Event::MouseMoved;
-	fake_event.mouseMove.x = x;
-	fake_event.mouseMove.y = y;
-	widget->HandleEvent( fake_event );
+	widget->HandleEvent( sf::Event::MouseMoved{ { x, y } } );
 }
 
 void Desktop::RecalculateWidgetLevels() {
