@@ -24,7 +24,7 @@ std::unique_ptr<RenderQueue> BREW::CreateProgressBarDrawable( std::shared_ptr<co
 	queue->Add(
 		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
-			sf::Vector2f( progress_bar->GetAllocation().width, progress_bar->GetAllocation().height ),
+			sf::Vector2f( progress_bar->GetAllocation().size.x, progress_bar->GetAllocation().size.y ),
 			border_width,
 			background_color,
 			border_color,
@@ -36,31 +36,27 @@ std::unique_ptr<RenderQueue> BREW::CreateProgressBarDrawable( std::shared_ptr<co
 		sf::FloatRect bar_rect;
 
 		if( progress_bar->GetOrientation() == ProgressBar::Orientation::HORIZONTAL ) {
-			float frac_width( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().width * progress_bar->GetFraction() ) );
+			float frac_width( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().size.x * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				border_width,
-				border_width,
-				std::max( 0.f, frac_width - 2.f * border_width ),
-				std::max( 0.f, progress_bar->GetAllocation().height - 2.f * border_width )
+				{ border_width, border_width },
+				{ std::max( 0.f, frac_width - 2.f * border_width ), std::max( 0.f, progress_bar->GetAllocation().size.y - 2.f * border_width ) }
 			);
 		}
 		else {
-			float frac_height( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().height * progress_bar->GetFraction() ) );
+			float frac_height( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().size.y * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				border_width,
-				std::max( 0.f, progress_bar->GetAllocation().height - frac_height + border_width ),
-				std::max( 0.f, progress_bar->GetAllocation().width - 2.f * border_width ),
-				std::max( 0.f, frac_height - 2.f * border_width )
+				{ border_width, std::max( 0.f, progress_bar->GetAllocation().size.y - frac_height + border_width ) },
+				{ std::max( 0.f, progress_bar->GetAllocation().size.x - 2.f * border_width ), std::max( 0.f, frac_height - 2.f * border_width ) }
 			);
 		}
 
 		// Bar Pane.
 		queue->Add(
 			Renderer::Get().CreatePane(
-				sf::Vector2f( bar_rect.left, bar_rect.top ),
-				sf::Vector2f( bar_rect.width, bar_rect.height ),
+				sf::Vector2f( bar_rect.position.x, bar_rect.position.y ),
+				sf::Vector2f( bar_rect.size.x, bar_rect.size.y ),
 				bar_border_width,
 				progress_color,
 				bar_border_color,

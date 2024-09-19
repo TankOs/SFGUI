@@ -22,8 +22,8 @@ void ThemeGrammar::GrammarSelector() {
 		)
 	)[ &ThemeGrammar::PushSimpleSelector ];
 
-	selector_combinator_rule = ( ( ch('>') )[ &ThemeGrammar::PushCombinatorChild ] |
-	 ( ch(',') )[ &ThemeGrammar::PushCombinatorGroup ] |
+	selector_combinator_rule = ( ( ch( '>' ) )[ &ThemeGrammar::PushCombinatorChild ] |
+	 ( ch( ',' ) )[ &ThemeGrammar::PushCombinatorGroup ] |
 	 ( eps )[ &ThemeGrammar::PushCombinatorDescendant ] );
 
 	selector_rule = ( simple_selector_rule % selector_combinator_rule )[ &ThemeGrammar::PushSelector ];

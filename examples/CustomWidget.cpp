@@ -92,7 +92,7 @@ class MyCustomWidget : public sfg::Widget {
 				queue->Add(
 					sfg::Renderer::Get().CreatePane(
 						sf::Vector2f( 0.f, 0.f ),
-						sf::Vector2f( GetAllocation().width, GetAllocation().height ),
+						GetAllocation().size,
 						5.f,
 						inverted_color,
 						background_color,
@@ -110,13 +110,13 @@ class MyCustomWidget : public sfg::Widget {
 				// Inner pane.
 				queue->Add(
 					sfg::Renderer::Get().CreatePane(
-						sf::Vector2f( GetAllocation().width / 4.f, GetAllocation().height / 4.f ),
-						sf::Vector2f( GetAllocation().width / 2.f, GetAllocation().height / 2.f ),
+						GetAllocation().size / 4.f,
+						GetAllocation().size / 2.f,
 						5.f,
 						sf::Color(
-							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
-							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
-							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
+							static_cast<std::uint8_t>( m_color_distribution( m_generator ) ),
+							static_cast<std::uint8_t>( m_color_distribution( m_generator ) ),
+							static_cast<std::uint8_t>( m_color_distribution( m_generator ) ),
 							255
 						),
 						inner_border_color,
@@ -124,7 +124,7 @@ class MyCustomWidget : public sfg::Widget {
 					)
 				);
 
-				sf::Text text( GetLabel(), *font, font_size );
+				sf::Text text( *font, GetLabel(), font_size );
 
 				// Set the text color to white.
 				text.setFillColor( sf::Color::White );
@@ -134,8 +134,8 @@ class MyCustomWidget : public sfg::Widget {
 				auto y_offset = ( GetState() == State::ACTIVE ) ? static_cast<float>( m_distribution( m_generator ) ) : 0.f;
 
 				text.setPosition(
-					GetAllocation().width / 2.f - metrics.x / 2.f + x_offset,
-					GetAllocation().height / 2.f - metrics.y / 2.f + y_offset
+					{ GetAllocation().size.x / 2.f - metrics.x / 2.f + x_offset,
+					  GetAllocation().size.y / 2.f - metrics.y / 2.f + y_offset }
 				);
 
 				// Text.
@@ -202,7 +202,7 @@ class MyCustomWidget : public sfg::Widget {
 				return;
 			}
 
-			if( button == sf::Mouse::Left ) {
+			if( button == sf::Mouse::Button::Left ) {
 				if( press ) {
 					SetLabel( sf::String( "Mouse Left Press: " + std::to_string( x ) + "," + std::to_string( y ) ) );
 					SetState( State::ACTIVE );
@@ -223,7 +223,7 @@ class MyCustomWidget : public sfg::Widget {
 
 int main() {
 	// Create SFML's window.
-	sf::RenderWindow render_window( sf::VideoMode( 800, 600 ), "Custom Widget" );
+	sf::RenderWindow render_window( sf::VideoMode( { 800, 600 } ), "Custom Widget" );
 
 	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
@@ -255,16 +255,15 @@ int main() {
 	render_window.resetGLStates();
 
 	// Main loop!
-	sf::Event event;
 	sf::Clock clock;
 
 	while( render_window.isOpen() ) {
 		// Event processing.
-		while( render_window.pollEvent( event ) ) {
-			desktop.HandleEvent( event );
+		while( const std::optional event = render_window.pollEvent() ) {
+			desktop.HandleEvent( *event );
 
 			// If window is about to be closed, leave program.
-			if( event.type == sf::Event::Closed ) {
+			if( event->is<sf::Event::Closed>() ) {
 				return 0;
 			}
 		}

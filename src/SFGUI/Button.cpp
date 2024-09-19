@@ -64,7 +64,7 @@ void Button::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int /
 		return;
 	}
 
-	if( button == sf::Mouse::Left ) {
+	if( button == sf::Mouse::Button::Left ) {
 		if( press ) {
 			SetState( State::ACTIVE );
 		}
@@ -132,14 +132,14 @@ void Button::AllocateChild() {
 
 	sf::FloatRect allocation( GetAllocation() );
 
-	allocation.left = padding + border_width;
-	allocation.top = padding + border_width;
-	allocation.width = child->GetRequisition().x;
-	allocation.height -= border_width * 2.f + padding * 2.f;
+	allocation.position.x = padding + border_width;
+	allocation.position.y = padding + border_width;
+	allocation.size.x = child->GetRequisition().x;
+	allocation.size.y -= border_width * 2.f + padding * 2.f;
 
 	if( GetState() == State::ACTIVE ) {
-		allocation.left += border_width;
-		allocation.top += border_width;
+		allocation.position.x += border_width;
+		allocation.position.y += border_width;
 	}
 
 	child->SetAllocation( allocation );

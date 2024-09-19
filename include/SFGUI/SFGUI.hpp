@@ -3,6 +3,7 @@
 #include <SFGUI/Config.hpp>
 
 #include <SFML/Config.hpp>
+#include <cstdint>
 
 namespace sf {
 class Window;
@@ -62,7 +63,7 @@ class SFGUI_API SFGUI {
 		 * @param low_bound Lower boundary of the character set, i.e. the glyph with the smallest codepoint.
 		 * @param high_bound Higher boundary of the character set, i.e. the glyph with the largest codepoint.
 		 */
-		void AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound );
+		void AddCharacterSet( std::uint32_t low_bound, std::uint32_t high_bound );
 };
 
 }

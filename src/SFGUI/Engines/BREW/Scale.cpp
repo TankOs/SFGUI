@@ -25,10 +25,8 @@ std::unique_ptr<RenderQueue> BREW::CreateScaleDrawable( std::shared_ptr<const Sc
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					slider_rect.width / 2.f,
-					( scale->GetAllocation().height - trough_thickness ) / 2.f,
-					scale->GetAllocation().width - slider_rect.width,
-					trough_thickness
+					{ slider_rect.size.x / 2.f, ( scale->GetAllocation().size.y - trough_thickness ) / 2.f },
+					{ scale->GetAllocation().size.x - slider_rect.size.x, trough_thickness }
 				),
 				trough_color
 			)
@@ -39,10 +37,8 @@ std::unique_ptr<RenderQueue> BREW::CreateScaleDrawable( std::shared_ptr<const Sc
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					( scale->GetAllocation().width - trough_thickness ) / 2.f,
-					slider_rect.height / 2.f,
-					trough_thickness,
-					scale->GetAllocation().height - slider_rect.height
+					{ ( scale->GetAllocation().size.x - trough_thickness ) / 2.f, slider_rect.size.y / 2.f },
+					{ trough_thickness, scale->GetAllocation().size.y - slider_rect.size.y }
 				),
 				trough_color
 			)

@@ -3,6 +3,7 @@
 #include <SFGUI/Window.hpp>
 #include <SFGUI/RenderQueue.hpp>
 
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 
 #include <cmath>
@@ -20,7 +21,7 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 	auto title_padding = GetProperty<float>( "TitlePadding", window );
 	auto shadow_distance = GetProperty<float>( "ShadowDistance", window );
 	auto handle_size = GetProperty<float>( "HandleSize", window );
-	auto shadow_alpha = GetProperty<sf::Uint8>( "ShadowAlpha", window );
+	auto shadow_alpha = GetProperty<std::uint8_t>( "ShadowAlpha", window );
 	auto title_font_size = GetProperty<unsigned int>( "FontSize", window );
 	auto close_height = GetProperty<float>( "CloseHeight", window );
 	auto close_thickness = GetProperty<float>( "CloseThickness", window );
@@ -36,10 +37,8 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 		sf::Color shadow_color( 0, 0, 0, shadow_alpha );
 
 		sf::FloatRect shadow_rect(
-			shadow_distance,
-			shadow_distance,
-			window->GetAllocation().width,
-			window->GetAllocation().height
+			{ shadow_distance, shadow_distance },
+			window->GetAllocation().size
 		);
 
 		queue->Add(
@@ -55,7 +54,7 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 		queue->Add(
 			Renderer::Get().CreatePane(
 				sf::Vector2f( 0.f, 0.f ),
-				sf::Vector2f( window->GetAllocation().width, window->GetAllocation().height ),
+				sf::Vector2f( window->GetAllocation().size.x, window->GetAllocation().size.y ),
 				border_width,
 				background_color,
 				border_color,
@@ -67,9 +66,9 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 	if( window->HasStyle( Window::RESIZE ) ) {
 		queue->Add(
 			Renderer::Get().CreateTriangle(
-				sf::Vector2f( window->GetAllocation().width, window->GetAllocation().height - handle_size ),
-				sf::Vector2f( window->GetAllocation().width - handle_size, window->GetAllocation().height ),
-				sf::Vector2f( window->GetAllocation().width, window->GetAllocation().height ),
+				sf::Vector2f( window->GetAllocation().size.x, window->GetAllocation().size.y - handle_size ),
+				sf::Vector2f( window->GetAllocation().size.x - handle_size, window->GetAllocation().size.y ),
+				sf::Vector2f( window->GetAllocation().size.x, window->GetAllocation().size.y ),
 				title_background_color
 			)
 		);
@@ -84,10 +83,8 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					border_width + .1f,
-					border_width + .1f,
-					window->GetAllocation().width - 2 * border_width,
-					title_size
+					{ border_width + .1f, border_width + .1f },
+					{ window->GetAllocation().size.x - 2 * border_width, title_size }
 				),
 				title_background_color
 			)
@@ -100,11 +97,11 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 			queue->Add(
 				Renderer::Get().CreateLine(
 					sf::Vector2f(
-						std::floor( window->GetAllocation().width - border_width - button_margin - close_height + corner_extent + .5f ),
+						std::floor( window->GetAllocation().size.x - border_width - button_margin - close_height + corner_extent + .5f ),
 						std::floor( border_width + button_margin + corner_extent + .5f )
 					),
 					sf::Vector2f(
-						std::floor( window->GetAllocation().width - border_width - button_margin - corner_extent + .5f ),
+						std::floor( window->GetAllocation().size.x - border_width - button_margin - corner_extent + .5f ),
 						std::floor( border_width + title_size - button_margin - corner_extent + .5f )
 					),
 					title_text_color,
@@ -115,11 +112,11 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 			queue->Add(
 				Renderer::Get().CreateLine(
 					sf::Vector2f(
-						std::floor( window->GetAllocation().width - border_width - button_margin - close_height + corner_extent + .5f ),
+						std::floor( window->GetAllocation().size.x - border_width - button_margin - close_height + corner_extent + .5f ),
 						std::floor( border_width + title_size - button_margin - corner_extent + .5f )
 					),
 					sf::Vector2f(
-						std::floor( window->GetAllocation().width - border_width - button_margin - corner_extent + .5f ),
+						std::floor( window->GetAllocation().size.x - border_width - button_margin - corner_extent + .5f ),
 						std::floor( border_width + button_margin + corner_extent + .5f )
 					),
 					title_text_color,
@@ -129,16 +126,16 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 		}
 
 		// Find out visible text, count in "...".
-		float avail_width( window->GetAllocation().width - 2.f * border_width - 2.f * title_padding - ( window->HasStyle( Window::CLOSE ) ? title_size : 0 ) );
+		float avail_width( window->GetAllocation().size.x - 2.f * border_width - 2.f * title_padding - ( window->HasStyle( Window::CLOSE ) ? title_size : 0 ) );
 
-		sf::Text title_text( window->GetTitle(), *title_font, title_font_size );
+		sf::Text title_text( *title_font, window->GetTitle(), title_font_size );
 
-		if( title_text.getLocalBounds().width > avail_width ) {
-			sf::Text dots( "...", *title_font, title_font_size );
+		if( title_text.getLocalBounds().size.x > avail_width ) {
+			sf::Text dots( *title_font, "...", title_font_size );
 			const sf::String& title_string( window->GetTitle() );
 			sf::String visible_title;
 
-			avail_width = window->GetAllocation().width - 2.f * border_width - 2.f * title_padding - dots.getLocalBounds().width;
+			avail_width = window->GetAllocation().size.x - 2.f * border_width - 2.f * title_padding - dots.getLocalBounds().size.x;
 
 			for( const auto& character : title_string ) {
 				avail_width -= static_cast<float>( title_font->getGlyph( character, title_font_size, false ).advance );

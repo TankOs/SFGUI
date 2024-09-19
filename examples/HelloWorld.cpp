@@ -5,7 +5,7 @@
 
 int main() {
 	// Create SFML's window.
-	sf::RenderWindow render_window( sf::VideoMode( 800, 600 ), "Hello world!" );
+	sf::RenderWindow render_window( sf::VideoMode( { 800, 600 } ), "Hello world!" );
 
 	// Create an SFGUI. This is required before doing anything with SFGUI.
 	sfg::SFGUI sfgui;
@@ -37,16 +37,15 @@ int main() {
 	render_window.resetGLStates();
 
 	// Main loop!
-	sf::Event event;
 	sf::Clock clock;
 
 	while( render_window.isOpen() ) {
 		// Event processing.
-		while( render_window.pollEvent( event ) ) {
-			desktop.HandleEvent( event );
+		while( const std::optional event = render_window.pollEvent() ) {
+			desktop.HandleEvent( *event );
 
 			// If window is about to be closed, leave program.
-			if( event.type == sf::Event::Closed ) {
+			if( event->is<sf::Event::Closed>() ) {
 				return 0;
 			}
 		}

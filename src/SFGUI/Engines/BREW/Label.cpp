@@ -16,15 +16,15 @@ std::unique_ptr<RenderQueue> BREW::CreateLabelDrawable( std::shared_ptr<const La
 
 	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
-	sf::Text vis_label( label->GetWrappedText(), *font, font_size );
+	sf::Text vis_label( *font, label->GetWrappedText(), font_size );
 	vis_label.setFillColor( font_color );
 
 	if( !label->GetLineWrap() ) {
 		// Calculate alignment when word wrap is disabled.
-		sf::Vector2f avail_space( label->GetAllocation().width - label->GetRequisition().x, label->GetAllocation().height - label->GetRequisition().y );
+		sf::Vector2f avail_space( label->GetAllocation().size.x - label->GetRequisition().x, label->GetAllocation().size.y - label->GetRequisition().y );
 		sf::Vector2f position( avail_space.x * label->GetAlignment().x, avail_space.y * label->GetAlignment().y );
 
-		vis_label.setPosition( position.x, position.y );
+		vis_label.setPosition( position );
 	}
 
 	queue->Add( Renderer::Get().CreateText( vis_label ) );

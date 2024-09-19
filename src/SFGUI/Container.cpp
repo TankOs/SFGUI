@@ -2,6 +2,8 @@
 
 #include <SFML/Window/Event.hpp>
 
+#include <algorithm>
+
 namespace sfg {
 
 void Container::Add( Widget::Ptr widget ) {
@@ -61,17 +63,15 @@ void Container::HandleEvent( const sf::Event& event ) {
 	// coordinates if event is a mouse event.
 	sf::Event local_event( event );
 
-	if( local_event.type == sf::Event::MouseMoved ) {
-		local_event.mouseMove.x -= static_cast<int>( GetAllocation().left );
-		local_event.mouseMove.y -= static_cast<int>( GetAllocation().top );
+	if( const auto* mouseMoved = local_event.getIf<sf::Event::MouseMoved>() ) {
+		local_event = sf::Event::MouseMoved{ mouseMoved->position - sf::Vector2i( GetAllocation().position ) };
 	}
 
-	if(
-		local_event.type == sf::Event::MouseButtonPressed ||
-		local_event.type == sf::Event::MouseButtonReleased
-	) {
-		local_event.mouseButton.x -= static_cast<int>( GetAllocation().left );
-		local_event.mouseButton.y -= static_cast<int>( GetAllocation().top );
+	if( const auto* mouseButtonPressed = local_event.getIf<sf::Event::MouseButtonPressed>()) {
+		local_event = sf::Event::MouseButtonPressed{ mouseButtonPressed->button, mouseButtonPressed->position - sf::Vector2i( GetAllocation().position ) };
+	}
+	if( const auto* mouseButtonReleased = local_event.getIf<sf::Event::MouseButtonReleased>()) {
+		local_event = sf::Event::MouseButtonReleased{ mouseButtonReleased->button, mouseButtonReleased->position - sf::Vector2i( GetAllocation().position ) };
 	}
 
 	// Pass event to children.

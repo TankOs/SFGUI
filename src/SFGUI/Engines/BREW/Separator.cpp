@@ -14,8 +14,8 @@ std::unique_ptr<RenderQueue> BREW::CreateSeparatorDrawable( std::shared_ptr<cons
 	if( separator->GetOrientation() == Separator::Orientation::HORIZONTAL ) {
 		queue->Add(
 			Renderer::Get().CreateLine(
-				sf::Vector2f( 0.f, separator->GetAllocation().height / 2.f ),
-				sf::Vector2f( separator->GetAllocation().width, separator->GetAllocation().height / 2.f ),
+				sf::Vector2f( 0.f, separator->GetAllocation().size.y / 2.f ),
+				sf::Vector2f( separator->GetAllocation().size.x, separator->GetAllocation().size.y / 2.f ),
 				color,
 				1.f
 			)
@@ -24,8 +24,8 @@ std::unique_ptr<RenderQueue> BREW::CreateSeparatorDrawable( std::shared_ptr<cons
 	else {
 		queue->Add(
 			Renderer::Get().CreateLine(
-				sf::Vector2f( separator->GetAllocation().width / 2.f, 0.f ),
-				sf::Vector2f( separator->GetAllocation().width / 2.f, separator->GetAllocation().height ),
+				sf::Vector2f( separator->GetAllocation().size.x / 2.f, 0.f ),
+				sf::Vector2f( separator->GetAllocation().size.x / 2.f, separator->GetAllocation().size.y ),
 				color,
 				1.f
 			)

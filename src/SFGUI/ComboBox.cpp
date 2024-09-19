@@ -218,11 +218,10 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 
 	if( GetState() == State::ACTIVE ) {
 		if( m_scrollbar ) {
-			sf::Event event;
+			sf::Event::MouseMoved event;
 
-			event.type = sf::Event::MouseMoved;
-			event.mouseMove.x = x - static_cast<int>( GetAllocation().left );
-			event.mouseMove.y = y - static_cast<int>( GetAllocation().top );
+			event.position.x = x - static_cast<int>( GetAllocation().position.x );
+			event.position.y = y - static_cast<int>( GetAllocation().position.y );
 
 			ReleaseModal();
 			m_scrollbar->SetActiveWidget();
@@ -231,10 +230,9 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 			GrabModal();
 
 			auto scrollbar_allocation = m_scrollbar->GetAllocation();
-			scrollbar_allocation.left += GetAllocation().left;
-			scrollbar_allocation.top += GetAllocation().top;
+			scrollbar_allocation.position += GetAllocation().position;
 
-			if( scrollbar_allocation.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( scrollbar_allocation.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 				m_highlighted_item = NONE;
 				Invalidate();
 
@@ -242,14 +240,14 @@ void ComboBox::HandleMouseMoveEvent( int x, int y ) {
 			}
 		}
 
-		if( ( x > GetAllocation().left ) && ( x < GetAllocation().left + GetAllocation().width ) ) {
+		if( ( x > GetAllocation().position.x ) && ( x < GetAllocation().position.x + GetAllocation().size.x ) ) {
 			float padding( Context::Get().GetEngine().GetProperty<float>( "ItemPadding", shared_from_this() ) );
 			const std::string& font_name( Context::Get().GetEngine().GetProperty<std::string>( "FontName", shared_from_this() ) );
 			unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 			const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
 			auto line_y = y;
-			line_y -= static_cast<int>( GetAllocation().top + GetAllocation().height + padding );
+			line_y -= static_cast<int>( GetAllocation().position.y + GetAllocation().size.y + padding );
 			line_y /= static_cast<int>( Context::Get().GetEngine().GetFontLineHeight( font, font_size ) + 2 * padding );
 
 			if( ( line_y < static_cast<int>( GetItemCount() ) ) && ( line_y >= 0 ) ) {
@@ -281,29 +279,36 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 
 	if( GetState() == State::ACTIVE ) {
 		if( m_scrollbar ) {
-			sf::Event event;
-
-			event.type = press ? sf::Event::MouseButtonPressed : sf::Event::MouseButtonReleased;
-			event.mouseButton.button = button;
-			event.mouseButton.x = x - static_cast<int>( GetAllocation().left );
-			event.mouseButton.y = y - static_cast<int>( GetAllocation().top );
-
 			ReleaseModal();
 			m_scrollbar->SetActiveWidget();
-			m_scrollbar->HandleEvent( event );
+
+			if ( press ) {
+				sf::Event::MouseButtonPressed event;
+				event.button = button;
+				event.position.x = x - static_cast<int>( GetAllocation().position.x );
+				event.position.y = y - static_cast<int>( GetAllocation().position.y );
+				m_scrollbar->HandleEvent( event );
+			}
+			else {
+				sf::Event::MouseButtonReleased event;
+				event.button = button;
+				event.position.x = x - static_cast<int>( GetAllocation().position.x );
+				event.position.y = y - static_cast<int>( GetAllocation().position.y );
+				m_scrollbar->HandleEvent( event );
+			}
+
 			SetActiveWidget();
 			GrabModal();
 
 			auto scrollbar_allocation = m_scrollbar->GetAllocation();
-			scrollbar_allocation.left += GetAllocation().left;
-			scrollbar_allocation.top += GetAllocation().top;
+			scrollbar_allocation.position += GetAllocation().position;
 
-			if( scrollbar_allocation.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
+			if( scrollbar_allocation.contains( sf::Vector2f( sf::Vector2( x, y ) ) ) ) {
 				return;
 			}
 		}
 
-		if( !press || ( button != sf::Mouse::Left ) ) {
+		if( !press || ( button != sf::Mouse::Button::Left ) ) {
 			return;
 		}
 
@@ -332,7 +337,7 @@ void ComboBox::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int
 		return;
 	}
 
-	if( press && ( button == sf::Mouse::Left ) && IsMouseInWidget() ) {
+	if( press && ( button == sf::Mouse::Button::Left ) && IsMouseInWidget() ) {
 		m_highlighted_item = NONE;
 
 		SetState( State::ACTIVE );
@@ -393,16 +398,16 @@ void ComboBox::HandleStateChange( State old_state ) {
 
 
 			const sf::Vector2f item_size(
-				GetAllocation().width - 2 * border_width,
+				GetAllocation().size.x - 2 * border_width,
 				line_height + 2 * padding
 			);
 
 			m_scrollbar = Scrollbar::Create( Scrollbar::Orientation::VERTICAL );
 
-			auto offset = ( GetState() == State::ACTIVE ? border_width : 0.f ) + GetAllocation().width - padding - line_height;
+			auto offset = ( GetState() == State::ACTIVE ? border_width : 0.f ) + GetAllocation().size.x - padding - line_height;
 
-			m_scrollbar->SetPosition( sf::Vector2f( offset, GetAllocation().height + border_width ) );
-			m_scrollbar->SetRequisition( sf::Vector2f( GetAllocation().width - offset, static_cast<float>( GetDisplayedItemCount() ) * item_size.y - 2.f * border_width ) );
+			m_scrollbar->SetPosition( sf::Vector2f( offset, GetAllocation().size.y + border_width ) );
+			m_scrollbar->SetRequisition( sf::Vector2f( GetAllocation().size.x - offset, static_cast<float>( GetDisplayedItemCount() ) * item_size.y - 2.f * border_width ) );
 
 			m_scrollbar->GetAdjustment()->SetPageSize( static_cast<float>( GetDisplayedItemCount() ) );
 			m_scrollbar->GetAdjustment()->SetLower( 0.f );
@@ -455,7 +460,7 @@ ComboBox::IndexType ComboBox::GetDisplayedItemCount() const {
 	const float line_height( Context::Get().GetEngine().GetFontLineHeight( font, font_size ) );
 
 	const sf::Vector2f item_size(
-		GetAllocation().width - 2 * border_width,
+		GetAllocation().size.x - 2 * border_width,
 		line_height + 2 * padding
 	);
 

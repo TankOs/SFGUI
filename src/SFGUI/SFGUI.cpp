@@ -44,7 +44,7 @@ bool SFGUI::IsAlive() {
 	return alive;
 }
 
-void SFGUI::AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound ) {
+void SFGUI::AddCharacterSet( std::uint32_t low_bound, std::uint32_t high_bound ) {
 	Renderer::Get().AddCharacterSet( low_bound, high_bound );
 	Context::Get().GetEngine().AddCharacterSet( low_bound, high_bound );
 }

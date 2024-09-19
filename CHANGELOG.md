@@ -4,7 +4,7 @@
 
 Enhancements:
 
-  * Update SFML version to 2.6.
+  * Update SFML version to 3.0.
   * Update CMake version to match SFML's version.
 
 ## Release 0.4.0

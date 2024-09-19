@@ -17,7 +17,7 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinnerDrawable( std::shared_ptr<const 
 	auto inner_radius = GetProperty<float>( "InnerRadius", spinner );
 	auto rod_thickness = GetProperty<float>( "RodThickness", spinner );
 	auto stopped_alpha = GetProperty<unsigned int>( "StoppedAlpha", spinner );
-	auto radius = std::min( spinner->GetAllocation().width, spinner->GetAllocation().height ) / 2.f;
+	auto radius = std::min( spinner->GetAllocation().size.x, spinner->GetAllocation().size.y ) / 2.f;
 
 	std::unique_ptr<RenderQueue> queue( new RenderQueue );
 
@@ -27,16 +27,16 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinnerDrawable( std::shared_ptr<const 
 	// SFML does this too, for compatibility reasons, so lay off the flame :P
 	static const auto two_pi = 3.141592654f * 2.f;
 
-	sf::Vector2f center_offset( spinner->GetAllocation().width / 2.f, spinner->GetAllocation().height / 2.f );
+	sf::Vector2f center_offset( spinner->GetAllocation().size.x / 2.f, spinner->GetAllocation().size.y / 2.f );
 
 	// We just have to produce the spinner in stopped state.
 	// The class itself will take care of the started state.
 	auto blend = ( 255.f - static_cast<float>( stopped_alpha ) ) / 255.f;
 
 	sf::Color stop_color(
-		static_cast<sf::Uint8>( static_cast<float>( color.r ) * ( 1.f - blend ) + static_cast<float>( background_color.r ) * blend ),
-		static_cast<sf::Uint8>( static_cast<float>( color.g ) * ( 1.f - blend ) + static_cast<float>( background_color.g ) * blend ),
-		static_cast<sf::Uint8>( static_cast<float>( color.b ) * ( 1.f - blend ) + static_cast<float>( background_color.b ) * blend )
+		static_cast<std::uint8_t>( static_cast<float>( color.r ) * ( 1.f - blend ) + static_cast<float>( background_color.r ) * blend ),
+		static_cast<std::uint8_t>( static_cast<float>( color.g ) * ( 1.f - blend ) + static_cast<float>( background_color.g ) * blend ),
+		static_cast<std::uint8_t>( static_cast<float>( color.b ) * ( 1.f - blend ) + static_cast<float>( background_color.b ) * blend )
 	);
 
 	auto started = spinner->Started();
@@ -59,9 +59,9 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinnerDrawable( std::shared_ptr<const 
 		auto rod_alpha = static_cast<float>( rod_stage ) / ( static_cast<float>( steps ) - 1.f );
 
 		sf::Color rod_color(
-			static_cast<sf::Uint8>( static_cast<float>( color.r ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.r ) * rod_alpha ),
-			static_cast<sf::Uint8>( static_cast<float>( color.g ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.g ) * rod_alpha ),
-			static_cast<sf::Uint8>( static_cast<float>( color.b ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.b ) * rod_alpha )
+			static_cast<std::uint8_t>( static_cast<float>( color.r ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.r ) * rod_alpha ),
+			static_cast<std::uint8_t>( static_cast<float>( color.g ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.g ) * rod_alpha ),
+			static_cast<std::uint8_t>( static_cast<float>( color.b ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.b ) * rod_alpha )
 		);
 
 		queue->Add(

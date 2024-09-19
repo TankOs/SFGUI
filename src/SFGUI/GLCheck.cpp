@@ -33,7 +33,7 @@ void DoCheckGLError( const char* file, unsigned int line, const char* call ) {
 			std::cerr << "GL_OUT_OF_MEMORY";
 			break;
 		default:
-			std::cerr << "0x" << std::setw(4) << std::setfill('0') << std::hex << error;
+			std::cerr << "0x" << std::setw( 4 ) << std::setfill( '0' ) << std::hex << error;
 			break;
 		}
 

@@ -63,7 +63,7 @@ void Entry::SetCursorPosition( int new_position ) {
 	MoveCursor( delta );
 }
 
-void Entry::HideText( sf::Uint32 c ) {
+void Entry::HideText( std::uint32_t c ) {
 	if( c == 0x00 || ( c > 0x1f && c != 0x7f ) ) {
 		// not a control character
 		m_text_placeholder = c;
@@ -71,7 +71,7 @@ void Entry::HideText( sf::Uint32 c ) {
 	}
 }
 
-sf::Uint32 Entry::GetHideCharacter() const {
+std::uint32_t Entry::GetHideCharacter() const {
 	return m_text_placeholder;
 }
 
@@ -81,9 +81,9 @@ int Entry::GetPositionFromMouseX( int mouse_pos_x ) {
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 	float text_padding( Context::Get().GetEngine().GetProperty<float>( "Padding", shared_from_this() ) );
 
-	std::basic_string<sf::Uint32> string( m_visible_string.begin(), m_visible_string.end() );
+	std::u32string string( m_visible_string.begin(), m_visible_string.end() );
 
-	auto text_start = GetAllocation().left + text_padding;
+	auto text_start = GetAllocation().position.x + text_padding;
 	auto last_delta = std::fabs( text_start - static_cast<float>( mouse_pos_x ) );
 	int cursor_position = 0;
 	auto length = static_cast<int>( string.size() );
@@ -115,7 +115,7 @@ void Entry::RecalculateVisibleString() const {
 		return;
 	}
 
-	std::basic_string<sf::Uint32> string( m_string.begin(), m_string.end() );
+	std::u32string string( m_string.begin(), m_string.end() );
 	string.erase( 0, static_cast<std::size_t>( m_visible_offset ) );
 
 	if( m_text_placeholder != 0 ) {
@@ -127,7 +127,7 @@ void Entry::RecalculateVisibleString() const {
 	// While the string is too long for the given space keep chopping off characters
 	// on the right end of the string until the cursor is reached, then start
 	// chopping off characters on the left side of the string.
-	while( !string.empty() && (GetAllocation().width - m_text_margin > 0) && (length > GetAllocation().width - m_text_margin - (2.f * text_padding)) ) {
+	while( !string.empty() && (GetAllocation().size.x - m_text_margin > 0) && (length > GetAllocation().size.x - m_text_margin - (2.f * text_padding)) ) {
 		if( ( m_cursor_position - m_visible_offset ) < static_cast<int>( string.size() ) ) {
 			string.erase( string.size() - 1, 1 );
 		}
@@ -159,7 +159,7 @@ void Entry::MoveCursor( int delta ) {
 	}
 }
 
-void Entry::HandleTextEvent( sf::Uint32 character ) {
+void Entry::HandleTextEvent( char32_t character ) {
 	if( m_max_length > 0 && static_cast<int>( m_string.getSize() ) >= m_max_length ) {
 		return;
 	}
@@ -173,13 +173,13 @@ void Entry::HandleTextEvent( sf::Uint32 character ) {
 	}
 }
 
-void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
+void Entry::HandleKeyEvent( sf::Keyboard::Key /*key*/, sf::Keyboard::Scancode scancode, bool press ) {
 	if( !press || !HasFocus() ) {
 		return;
 	}
 
-	switch( key ) {
-	case sf::Keyboard::BackSpace: { // backspace
+	switch( scancode ) {
+	case sf::Keyboard::Scan::Backspace: { // backspace
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position > 0 ) ) {
 			m_string.erase( static_cast<std::size_t>( m_cursor_position - 1 ) );
 
@@ -202,7 +202,7 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			GetSignals().Emit( OnTextChanged );
 		}
 	} break;
-	case sf::Keyboard::Delete: {
+	case sf::Keyboard::Scan::Delete: {
 		if( ( m_string.getSize() > 0 ) && ( m_cursor_position < static_cast<int>( m_string.getSize() ) ) ) {
 			m_string.erase( static_cast<std::size_t>( m_cursor_position ) );
 
@@ -224,22 +224,22 @@ void Entry::HandleKeyEvent( sf::Keyboard::Key key, bool press ) {
 			GetSignals().Emit( OnTextChanged );
 		}
 	} break;
-	case sf::Keyboard::Home: {
+	case sf::Keyboard::Scan::Home: {
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
 			SetCursorPosition( 0 );
 		}
 	} break;
-	case sf::Keyboard::End: {
+	case sf::Keyboard::Scan::End: {
 		if( m_string.getSize() > 0 ) {
 			m_visible_offset = 0;
 			SetCursorPosition( static_cast<int>( m_string.getSize() ) );
 		}
 	} break;
-	case sf::Keyboard::Left: {
+	case sf::Keyboard::Scan::Left: {
 		MoveCursor( -1 );
 	} break;
-	case sf::Keyboard::Right: {
+	case sf::Keyboard::Scan::Right: {
 		MoveCursor( 1 );
 	} break;
 	default: break;
@@ -263,7 +263,7 @@ void Entry::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x,
 		return;
 	}
 
-	if( button != sf::Mouse::Left ) {
+	if( button != sf::Mouse::Button::Left ) {
 		// TODO: Maybe some more support for right clicking in the future.
 		return;
 	}

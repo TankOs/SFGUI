@@ -199,7 +199,7 @@ void WipeStateCache( sf::RenderTarget& target ) {
 		bool glStatesSet;
 		bool ViewChanged;
 		sf::BlendMode LastBlendMode;
-		sf::Uint64 LastTextureId;
+		std::uint64_t LastTextureId;
 		bool UseVertexCache;
 		sf::Vertex VertexCache[4];
 	};
@@ -285,8 +285,8 @@ void Canvas::HandleSizeChange() {
 
 	m_custom_viewport->SetSize(
 		sf::Vector2f(
-			std::floor( allocation.width + .5f ),
-			std::floor( allocation.height + .5f )
+			std::floor( allocation.size.x + .5f ),
+			std::floor( allocation.size.y + .5f )
 		)
 	);
 
@@ -311,7 +311,7 @@ void Canvas::HandleAbsolutePositionChange() {
 			Container::PtrConst viewport_parent = parent->GetParent();
 
 			while( viewport_parent && viewport_parent->GetName() == "Viewport" ) {
-				parent_position += sf::Vector2f( viewport_parent->GetAllocation().left, viewport_parent->GetAllocation().top );
+				parent_position += viewport_parent->GetAllocation().position;
 
 				viewport_parent = viewport_parent->GetParent();
 			}
@@ -322,7 +322,7 @@ void Canvas::HandleAbsolutePositionChange() {
 			}
 
 			parent_position += viewport_parent->GetAbsolutePosition();
-			parent_position += sf::Vector2f( parent->GetAllocation().left, parent->GetAllocation().top );
+			parent_position += parent->GetAllocation().position;
 
 			break;
 		}
@@ -367,14 +367,14 @@ void Canvas::Clear( const sf::Color& color, bool depth ) {
 
 		m_render_texture = std::make_shared<sf::RenderTexture>();
 
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth ) ) ) {
+		if( !m_render_texture->resize( { static_cast<unsigned int>( std::floor( allocation.size.x + .5f ) ), static_cast<unsigned int>( std::floor( allocation.size.y + .5f ) ) }, sf::ContextSettings{ m_depth } ) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
 	}
 	else if( m_resize ) {
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth ) ) ) {
+		if( !m_render_texture->resize( { static_cast<unsigned int>( std::floor( allocation.size.x + .5f ) ), static_cast<unsigned int>( std::floor( allocation.size.y + .5f ) ) }, sf::ContextSettings{ m_depth } ) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
@@ -383,7 +383,7 @@ void Canvas::Clear( const sf::Color& color, bool depth ) {
 
 	m_resize = false;
 
-	m_render_texture->setActive( true );
+	(void)m_render_texture->setActive( true );
 
 	WipeStateCache( *m_render_texture );
 
@@ -443,14 +443,14 @@ void Canvas::Bind() {
 
 		m_render_texture = std::make_shared<sf::RenderTexture>();
 
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth ) ) ) {
+		if( !m_render_texture->resize( { static_cast<unsigned int>( std::floor( allocation.size.x + .5f ) ), static_cast<unsigned int>( std::floor( allocation.size.y + .5f ) ) }, sf::ContextSettings{ m_depth } ) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
 		}
 	}
 	else if( m_resize ) {
-		if( !m_render_texture->create( static_cast<unsigned int>( std::floor( allocation.width + .5f ) ), static_cast<unsigned int>( std::floor( allocation.height + .5f ) ), sf::ContextSettings( m_depth )) ) {
+		if( !m_render_texture->resize( { static_cast<unsigned int>( std::floor( allocation.size.x + .5f ) ), static_cast<unsigned int>( std::floor( allocation.size.y + .5f ) ) }, sf::ContextSettings{ m_depth } ) ) {
 #if defined( SFGUI_DEBUG )
 			std::cerr << "SFGUI warning: Canvas failed to create internal SFML RenderTexture.\n";
 #endif
@@ -459,7 +459,7 @@ void Canvas::Bind() {
 
 	m_resize = false;
 
-	m_render_texture->setActive( true );
+	(void)m_render_texture->setActive( true );
 }
 
 void Canvas::Unbind() {
@@ -467,7 +467,7 @@ void Canvas::Unbind() {
 		return;
 	}
 
-	m_render_texture->setActive( false );
+	(void)m_render_texture->setActive( false );
 }
 
 void Canvas::DrawRenderTexture() {
@@ -557,7 +557,7 @@ void Canvas::DrawRenderTexture() {
 			mutable bool pixels_flipped;
 			bool unused7;
 			bool unused8;
-			sf::Uint64 unused9;
+			std::uint64_t unused9;
 		};
 
 		// Just so that SFML doesn't mess with the texture matrix.

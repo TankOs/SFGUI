@@ -49,8 +49,8 @@ void Viewport::HandleSizeChange() {
 
 	m_children_viewport->SetSize(
 		sf::Vector2f(
-			std::floor( allocation.width + .5f ),
-			std::floor( allocation.height + .5f )
+			std::floor( allocation.size.x + .5f ),
+			std::floor( allocation.size.y + .5f )
 		)
 	);
 }
@@ -78,58 +78,57 @@ void Viewport::HandleEvent( const sf::Event& event ) {
 
 	// Pass event to child
 	if( GetChild() ) {
-		auto offset_x = ( -GetAllocation().left + m_horizontal_adjustment->GetValue() );
-		auto offset_y = ( -GetAllocation().top + m_vertical_adjustment->GetValue() );
+		auto offset_x = ( -GetAllocation().position.x + m_horizontal_adjustment->GetValue() );
+		auto offset_y = ( -GetAllocation().position.y + m_vertical_adjustment->GetValue() );
 
-		switch( event.type ) {
-		case sf::Event::MouseButtonPressed:
-		case sf::Event::MouseButtonReleased: { // All MouseButton events
-			if( !GetAllocation().contains( static_cast<float>( event.mouseButton.x ), static_cast<float>( event.mouseButton.y ) ) ) {
-				break;
+		const auto onMouseButtonPressedOrRelease = [&]( const auto& mouseBottonEvent ) {
+			if( !GetAllocation().contains( sf::Vector2f( mouseBottonEvent.position ) ) ) {
+				return;
 			}
 
-			sf::Event altered_event( event );
-			altered_event.mouseButton.x += static_cast<int>( offset_x );
-			altered_event.mouseButton.y += static_cast<int>( offset_y );
+			auto altered_event = mouseBottonEvent;
+			altered_event.position.x += static_cast<int>( offset_x );
+			altered_event.position.y += static_cast<int>( offset_y );
 
 			GetChild()->HandleEvent( altered_event );
-		} break;
-		case sf::Event::MouseLeft: {
-			// Nice hack to cause scrolledwindow children to get out of
-			// prelight state when the mouse leaves the child allocation.
-			sf::Event altered_event( event );
-			altered_event.mouseMove.x = -1;
-			altered_event.mouseMove.y = -1;
-			GetChild()->HandleEvent( altered_event );
-		} break;
-		case sf::Event::MouseMoved: { // All MouseMove events
-			sf::Event altered_event( event );
-			if( !GetAllocation().contains( static_cast<float>( event.mouseMove.x ), static_cast<float>( event.mouseMove.y ) ) ) {
+		};
+
+		if( const auto* mouseButtonPressed = event.getIf<sf::Event::MouseButtonPressed>() ) {
+			onMouseButtonPressedOrRelease( *mouseButtonPressed );
+		}
+		else if( const auto* mouseButtonReleased = event.getIf<sf::Event::MouseButtonReleased>() ) {
+			onMouseButtonPressedOrRelease( *mouseButtonReleased );
+		}
+		else if( const auto* mouseLeft = event.getIf<sf::Event::MouseLeft>() ) {
+			GetChild()->HandleEvent( *mouseLeft );
+		}
+		else if( const auto* mouseMoved = event.getIf<sf::Event::MouseMoved>() ) { // All MouseMove events
+			auto altered_event = *mouseMoved;
+			if( !GetAllocation().contains( sf::Vector2f( mouseMoved->position ) ) ) {
 				// Nice hack to cause scrolledwindow children to get out of
 				// prelight state when the mouse leaves the child allocation.
-				altered_event.mouseMove.x = -1;
-				altered_event.mouseMove.y = -1;
+				altered_event.position.x = -1;
+				altered_event.position.y = -1;
 			}
 			else {
-				altered_event.mouseMove.x += static_cast<int>( offset_x );
-				altered_event.mouseMove.y += static_cast<int>( offset_y );
+				altered_event.position.x += static_cast<int>( offset_x );
+				altered_event.position.y += static_cast<int>( offset_y );
 			}
 			GetChild()->HandleEvent( altered_event );
-		} break;
-		case sf::Event::MouseWheelMoved: { // All MouseWheel events
-			if( !GetAllocation().contains( static_cast<float>( event.mouseWheel.x ), static_cast<float>( event.mouseWheel.y ) ) ) {
-				break;
+		}
+		else if( const auto* mouseWheelScrolled = event.getIf<sf::Event::MouseWheelScrolled>() ) { // All MouseWheel events
+			if( !GetAllocation().contains( sf::Vector2f( mouseWheelScrolled->position ) ) ) {
+				return;
 			}
 
-			sf::Event altered_event( event );
-			altered_event.mouseWheel.x += static_cast<int>( offset_x );
-			altered_event.mouseWheel.y += static_cast<int>( offset_y );
+			auto altered_event = *mouseWheelScrolled;
+			altered_event.position.x += static_cast<int>( offset_x );
+			altered_event.position.y += static_cast<int>( offset_y );
 
 			GetChild()->HandleEvent( altered_event );
-		} break;
-		default: { // Pass event unaltered if it is a non-mouse event
+		}
+		else { // Pass event unaltered if it is a non-mouse event
 			GetChild()->HandleEvent( event );
-		} break;
 		}
 	}
 }
@@ -203,8 +202,8 @@ void Viewport::HandleRequisitionChange() {
 	// and have a virtual screen we give it everything it wants.
 	if( GetChild() ) {
 		auto new_allocation = GetChild()->GetAllocation();
-		new_allocation.width = GetChild()->GetRequisition().x;
-		new_allocation.height = GetChild()->GetRequisition().y;
+		new_allocation.size.x = GetChild()->GetRequisition().x;
+		new_allocation.size.y = GetChild()->GetRequisition().y;
 		GetChild()->SetAllocation( new_allocation );
 	}
 }

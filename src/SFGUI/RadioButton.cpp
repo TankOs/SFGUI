@@ -54,7 +54,7 @@ void RadioButton::SetActive( bool active ) {
 }
 
 void RadioButton::HandleMouseClick( sf::Mouse::Button button, int x, int y ) {
-	if( !IsActive() && ( button == sf::Mouse::Left ) ) {
+	if( !IsActive() && ( button == sf::Mouse::Button::Left ) ) {
 		SetActive( true );
 	}
 

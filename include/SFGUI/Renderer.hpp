@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace sf {
 class Window;
@@ -149,7 +150,7 @@ class SFGUI_API Renderer {
 		 * @param rotation_turns Turns to rotate the texture by in COUNTERCLOCKWISE direction. 1 turn is 90 degrees, -1 turn is -90 degrees etc. 0 to not rotate.
 		 * @return New sprite primitive.
 		 */
-		std::shared_ptr<Primitive> CreateSprite( const sf::FloatRect& rect, std::shared_ptr<PrimitiveTexture> texture, const sf::FloatRect& subrect = sf::FloatRect( 0.f, 0.f, 0.f, 0.f ), int rotation_turns = 0 );
+		std::shared_ptr<Primitive> CreateSprite( const sf::FloatRect& rect, std::shared_ptr<PrimitiveTexture> texture, const sf::FloatRect& subrect = sf::FloatRect( { 0.f, 0.f }, { 0.f, 0.f } ), int rotation_turns = 0 );
 
 		/** Create and register a new line primitive with the renderer.
 		 * @param begin Starting point of the line.
@@ -249,7 +250,7 @@ class SFGUI_API Renderer {
 		 * @param low_bound Lower boundary of the character set, i.e. the glyph with the smallest codepoint.
 		 * @param high_bound Higher boundary of the character set, i.e. the glyph with the largest codepoint.
 		 */
-		void AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound );
+		void AddCharacterSet( std::uint32_t low_bound, std::uint32_t high_bound );
 
 		/** Get name of the Renderer.
 		 * The name of a Renderer is a descriptive name of the Renderer itself. E.g.
@@ -290,7 +291,7 @@ class SFGUI_API Renderer {
 
 		std::deque<priv::RendererTextureNode> m_textures;
 		std::map<FontID, std::shared_ptr<PrimitiveTexture>> m_fonts;
-		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
+		std::vector<std::pair<std::uint32_t, std::uint32_t>> m_character_sets;
 
 		std::shared_ptr<PrimitiveTexture> m_pseudo_texture;
 

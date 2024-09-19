@@ -29,7 +29,7 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 	queue->Add(
 		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
-			sf::Vector2f( button->GetAllocation().width, button->GetAllocation().height ),
+			sf::Vector2f( button->GetAllocation().size.x, button->GetAllocation().size.y ),
 			border_width,
 			background_color,
 			border_color,
@@ -42,22 +42,22 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 		auto metrics = GetTextStringMetrics( button->GetLabel(), *font, font_size );
 		metrics.y = GetFontLineHeight( *font, font_size );
 
-		sf::Text text( button->GetLabel(), *font, font_size );
+		sf::Text text( *font, button->GetLabel(), font_size );
 		auto offset = ( button->GetState() == Button::State::ACTIVE ) ? border_width : 0.f;
 		sfg::Widget::PtrConst child( button->GetChild() );
 
 		if( !child ) {
 			text.setPosition(
-				button->GetAllocation().width / 2.f - metrics.x / 2.f + offset,
-				button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
+				{ button->GetAllocation().size.x / 2.f - metrics.x / 2.f + offset,
+				  button->GetAllocation().size.y / 2.f - metrics.y / 2.f + offset }
 			);
 		}
 		else {
-			float width( button->GetAllocation().width - spacing - child->GetAllocation().width );
+			float width( button->GetAllocation().size.x - spacing - child->GetAllocation().size.x );
 
 			text.setPosition(
-				child->GetAllocation().width + spacing + (width / 2.f - metrics.x / 2.f) + offset,
-				button->GetAllocation().height / 2.f - metrics.y / 2.f + offset
+				{ child->GetAllocation().size.x + spacing + (width / 2.f - metrics.x / 2.f) + offset,
+				  button->GetAllocation().size.y / 2.f - metrics.y / 2.f + offset }
 			);
 		}
 

@@ -34,10 +34,10 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 	auto prelight_tab = notebook->GetPrelightTab();
 
 	// Get size in the dimension all tabs have uniform size.
-	sf::Vector2f tab_size( notebook->GetNthTabLabel( 0 )->GetAllocation().width, notebook->GetNthTabLabel( 0 )->GetAllocation().height );
+	sf::Vector2f tab_size( notebook->GetNthTabLabel( 0 )->GetAllocation().size.x, notebook->GetNthTabLabel( 0 )->GetAllocation().size.y );
 
 	// Get size in the dimension all children have uniform size.
-	sf::Vector2f child_size( notebook->GetNthPage( 0 )->GetAllocation().width, notebook->GetNthPage( 0 )->GetAllocation().height );
+	sf::Vector2f child_size( notebook->GetNthPage( 0 )->GetAllocation().size.x, notebook->GetNthPage( 0 )->GetAllocation().size.y );
 
 	if( notebook->GetTabPosition() == Notebook::TabPosition::TOP ) {
 		// Tabs are positioned at top.
@@ -72,8 +72,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Top border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top - border_width - padding ),
-					sf::Vector2f( label_allocation.left + label_allocation.width + padding - border_width, label_allocation.top - border_width - padding ),
+					sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y - border_width - padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x + padding - border_width, label_allocation.position.y - border_width - padding ),
 					border_color_light,
 					border_width
 				)
@@ -82,8 +82,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Right border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left + label_allocation.width - border_width + padding, label_allocation.top - border_width - padding ),
-					sf::Vector2f( label_allocation.left + label_allocation.width - border_width + padding, label_allocation.top + label_allocation.height + padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x - border_width + padding, label_allocation.position.y - border_width - padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x - border_width + padding, label_allocation.position.y + label_allocation.size.y + padding ),
 					border_color_dark,
 					border_width
 				)
@@ -93,8 +93,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				// Active left border
 				queue->Add(
 					Renderer::Get().CreateLine(
-						sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top - border_width - padding ),
-						sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top + label_allocation.height + border_width + padding ),
+						sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y - border_width - padding ),
+						sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y + label_allocation.size.y + border_width + padding ),
 						border_color_light,
 						border_width
 					)
@@ -104,10 +104,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * ( border_width + padding )
+							{ label_allocation.position.x - padding, label_allocation.position.y - padding },
+							{ label_allocation.size.x + 2.f * padding - border_width, label_allocation.size.y + 2.f * ( border_width + padding ) }
 						),
 						background_color
 					)
@@ -118,10 +116,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * padding
+							{ label_allocation.position.x - padding, label_allocation.position.y - padding },
+							{ label_allocation.size.x + 2.f * padding - border_width, label_allocation.size.y + 2.f * padding }
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -134,7 +130,7 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			if( ( notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount() ) < notebook->GetPageCount() ) {
 				queue->Add(
 					Renderer::Get().CreatePane(
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size, 0.f ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size, 0.f ),
 						sf::Vector2f( scroll_button_size, tab_size.y + 2.f * ( padding + border_width ) ),
 						border_width,
 						notebook->IsForwardScrollPrelight() ? scroll_button_prelight : background_color,
@@ -145,9 +141,9 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 
 				queue->Add(
 					Renderer::Get().CreateTriangle(
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size * .66f, .33f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size * .66f, .66f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size * .33f, .5f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size * .66f, .33f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size * .66f, .66f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size * .33f, .5f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
 						arrow_color
 					)
 				);
@@ -210,8 +206,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Bottom border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left - padding, label_allocation.top + label_allocation.height + border_width + padding ),
-					sf::Vector2f( label_allocation.left + label_allocation.width - border_width + padding, label_allocation.top + label_allocation.height + border_width + padding ),
+					sf::Vector2f( label_allocation.position.x - padding, label_allocation.position.y + label_allocation.size.y + border_width + padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x - border_width + padding, label_allocation.position.y + label_allocation.size.y + border_width + padding ),
 					border_color_dark,
 					border_width
 				)
@@ -220,8 +216,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Right border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left + label_allocation.width + padding - border_width, label_allocation.top - padding ),
-					sf::Vector2f( label_allocation.left + label_allocation.width + padding - border_width, label_allocation.top + label_allocation.height + border_width + padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x + padding - border_width, label_allocation.position.y - padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x + padding - border_width, label_allocation.position.y + label_allocation.size.y + border_width + padding ),
 					border_color_dark,
 					border_width
 				)
@@ -231,8 +227,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				// Active left border
 				queue->Add(
 					Renderer::Get().CreateLine(
-						sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top - padding ),
-						sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top + label_allocation.height + border_width + padding ),
+						sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y - padding ),
+						sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y + label_allocation.size.y + border_width + padding ),
 						border_color_light,
 						border_width
 					)
@@ -242,10 +238,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding - border_width,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * padding + 2.f * border_width
+							{ label_allocation.position.x - padding, label_allocation.position.y - padding - border_width },
+							{ label_allocation.size.x + 2.f * padding - border_width, label_allocation.size.y + 2.f * padding + 2.f * border_width }
 						),
 						background_color
 					)
@@ -256,10 +250,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * padding + border_width
+							{ label_allocation.position.x - padding, label_allocation.position.y - padding },
+							{ label_allocation.size.x + 2.f * padding - border_width, label_allocation.size.y + 2.f * padding + border_width }
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -272,7 +264,7 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			if( ( notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount() ) < notebook->GetPageCount() ) {
 				queue->Add(
 					Renderer::Get().CreatePane(
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size, notebook->GetAllocation().height - ( scroll_button_size + padding ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) ),
 						sf::Vector2f( scroll_button_size, tab_size.y + 2.f * ( padding + border_width ) ),
 						border_width,
 						notebook->IsForwardScrollPrelight() ? scroll_button_prelight : background_color,
@@ -283,9 +275,9 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 
 				queue->Add(
 					Renderer::Get().CreateTriangle(
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size * .66f, notebook->GetAllocation().height - ( scroll_button_size + padding ) + .33f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size * .66f, notebook->GetAllocation().height - ( scroll_button_size + padding ) + .66f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
-						sf::Vector2f( notebook->GetAllocation().width - scroll_button_size * .33f, notebook->GetAllocation().height - ( scroll_button_size + padding ) + .5f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size * .66f, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) + .33f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size * .66f, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) + .66f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - scroll_button_size * .33f, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) + .5f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
 						arrow_color
 					)
 				);
@@ -295,7 +287,7 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			if( notebook->GetFirstDisplayedTab() != 0 ) {
 				queue->Add(
 					Renderer::Get().CreatePane(
-						sf::Vector2f( 0.f, notebook->GetAllocation().height - ( scroll_button_size + padding ) ),
+						sf::Vector2f( 0.f, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) ),
 						sf::Vector2f( scroll_button_size, tab_size.y + 2.f * ( padding + border_width ) ),
 						border_width,
 						notebook->IsBackwardScrollPrelight() ? scroll_button_prelight : background_color,
@@ -306,9 +298,9 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 
 				queue->Add(
 					Renderer::Get().CreateTriangle(
-						sf::Vector2f( scroll_button_size * .66f, notebook->GetAllocation().height - ( scroll_button_size + padding ) + .66f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
-						sf::Vector2f( scroll_button_size * .66f, notebook->GetAllocation().height - ( scroll_button_size + padding ) + .33f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
-						sf::Vector2f( scroll_button_size * .33f, notebook->GetAllocation().height - ( scroll_button_size + padding ) + .5f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( scroll_button_size * .66f, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) + .66f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( scroll_button_size * .66f, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) + .33f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
+						sf::Vector2f( scroll_button_size * .33f, notebook->GetAllocation().size.y - ( scroll_button_size + padding ) + .5f * ( tab_size.y + 2.f * ( padding + border_width ) ) ),
 						arrow_color
 					)
 				);
@@ -348,8 +340,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Left border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top - border_width - padding ),
-					sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top + label_allocation.height + padding ),
+					sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y - border_width - padding ),
+					sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y + label_allocation.size.y + padding ),
 					border_color_light,
 					border_width
 				)
@@ -358,8 +350,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Bottom border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top + label_allocation.height + padding ),
-					sf::Vector2f( label_allocation.left + label_allocation.width + ( index == current_page ? border_width : 0.f ) + padding, label_allocation.top + label_allocation.height + padding ),
+					sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y + label_allocation.size.y + padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x + ( index == current_page ? border_width : 0.f ) + padding, label_allocation.position.y + label_allocation.size.y + padding ),
 					border_color_dark,
 					border_width
 				)
@@ -369,8 +361,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				// Active top border
 				queue->Add(
 					Renderer::Get().CreateLine(
-						sf::Vector2f( label_allocation.left - border_width - padding, label_allocation.top - border_width - padding ),
-						sf::Vector2f( label_allocation.left + label_allocation.width + border_width + padding, label_allocation.top - border_width - padding ),
+						sf::Vector2f( label_allocation.position.x - border_width - padding, label_allocation.position.y - border_width - padding ),
+						sf::Vector2f( label_allocation.position.x + label_allocation.size.x + border_width + padding, label_allocation.position.y - border_width - padding ),
 						border_color_light,
 						border_width
 					)
@@ -380,10 +372,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * ( border_width + padding ),
-							label_allocation.height + 2.f * padding
+							{ label_allocation.position.x - padding, label_allocation.position.y - padding },
+							{ label_allocation.size.x + 2.f * ( border_width + padding ), label_allocation.size.y + 2.f * padding }
 						),
 						background_color
 					)
@@ -394,10 +384,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding,
-							label_allocation.height + 2.f * padding - border_width
+							{ label_allocation.position.x - padding, label_allocation.position.y - padding },
+							{ label_allocation.size.x + 2.f * padding, label_allocation.size.y + 2.f * padding - border_width }
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -410,7 +398,7 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			if( ( notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount() ) < notebook->GetPageCount() ) {
 				queue->Add(
 					Renderer::Get().CreatePane(
-						sf::Vector2f( 0.f, notebook->GetAllocation().height - ( scroll_button_size ) ),
+						sf::Vector2f( 0.f, notebook->GetAllocation().size.y - ( scroll_button_size ) ),
 						sf::Vector2f( tab_size.x + 2.f * ( padding + border_width ), scroll_button_size ),
 						border_width,
 						notebook->IsForwardScrollPrelight() ? scroll_button_prelight : background_color,
@@ -421,9 +409,9 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 
 				queue->Add(
 					Renderer::Get().CreateTriangle(
-						sf::Vector2f( ( tab_size.x + 2.f * ( padding + border_width ) ) * .6f, .33f * scroll_button_size + notebook->GetAllocation().height - scroll_button_size ),
-						sf::Vector2f( ( tab_size.x + 2.f * ( padding + border_width ) ) * .4f, .33f * scroll_button_size + notebook->GetAllocation().height - scroll_button_size ),
-						sf::Vector2f( ( tab_size.x + 2.f * ( padding + border_width ) ) * .5f, .66f * scroll_button_size + notebook->GetAllocation().height - scroll_button_size ),
+						sf::Vector2f( ( tab_size.x + 2.f * ( padding + border_width ) ) * .6f, .33f * scroll_button_size + notebook->GetAllocation().size.y - scroll_button_size ),
+						sf::Vector2f( ( tab_size.x + 2.f * ( padding + border_width ) ) * .4f, .33f * scroll_button_size + notebook->GetAllocation().size.y - scroll_button_size ),
+						sf::Vector2f( ( tab_size.x + 2.f * ( padding + border_width ) ) * .5f, .66f * scroll_button_size + notebook->GetAllocation().size.y - scroll_button_size ),
 						arrow_color
 					)
 				);
@@ -486,8 +474,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Right border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left + label_allocation.width + border_width + padding, label_allocation.top - border_width - padding ),
-					sf::Vector2f( label_allocation.left + label_allocation.width + border_width + padding, label_allocation.top + label_allocation.height + padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x + border_width + padding, label_allocation.position.y - border_width - padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x + border_width + padding, label_allocation.position.y + label_allocation.size.y + padding ),
 					border_color_dark,
 					border_width
 				)
@@ -496,8 +484,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			// Bottom border
 			queue->Add(
 				Renderer::Get().CreateLine(
-					sf::Vector2f( label_allocation.left - padding, label_allocation.top + label_allocation.height + padding ),
-					sf::Vector2f( label_allocation.left + label_allocation.width + border_width + padding, label_allocation.top + label_allocation.height + padding ),
+					sf::Vector2f( label_allocation.position.x - padding, label_allocation.position.y + label_allocation.size.y + padding ),
+					sf::Vector2f( label_allocation.position.x + label_allocation.size.x + border_width + padding, label_allocation.position.y + label_allocation.size.y + padding ),
 					border_color_dark,
 					border_width
 				)
@@ -507,8 +495,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				// Active top border
 				queue->Add(
 					Renderer::Get().CreateLine(
-						sf::Vector2f( label_allocation.left - padding - border_width, label_allocation.top - border_width - padding ),
-						sf::Vector2f( label_allocation.left + label_allocation.width + padding, label_allocation.top - border_width - padding ),
+						sf::Vector2f( label_allocation.position.x - padding - border_width, label_allocation.position.y - border_width - padding ),
+						sf::Vector2f( label_allocation.position.x + label_allocation.size.x + padding, label_allocation.position.y - border_width - padding ),
 						border_color_light,
 						border_width
 					)
@@ -518,10 +506,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding - border_width,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding + 2.f * border_width,
-							label_allocation.height + 2.f * padding
+							{ label_allocation.position.x - padding - border_width, label_allocation.position.y - padding },
+							{ label_allocation.size.x + 2.f * padding + 2.f * border_width, label_allocation.size.y + 2.f * padding }
 						),
 						background_color
 					)
@@ -532,10 +518,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding + border_width,
-							label_allocation.height + 2.f * padding
+							{ label_allocation.position.x - padding, label_allocation.position.y - padding },
+							{ label_allocation.size.x + 2.f * padding + border_width, label_allocation.size.y + 2.f * padding }
 						),
 						(index == prelight_tab) ? background_color_prelight : background_color_dark
 					)
@@ -548,7 +532,7 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			if( ( notebook->GetFirstDisplayedTab() + notebook->GetDisplayedTabCount() ) < notebook->GetPageCount() ) {
 				queue->Add(
 					Renderer::Get().CreatePane(
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * padding + border_width ), notebook->GetAllocation().height - ( scroll_button_size ) ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * padding + border_width ), notebook->GetAllocation().size.y - ( scroll_button_size ) ),
 						sf::Vector2f( tab_size.x + 2.f * ( padding + border_width ), scroll_button_size ),
 						border_width,
 						notebook->IsForwardScrollPrelight() ? scroll_button_prelight : background_color,
@@ -559,9 +543,9 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 
 				queue->Add(
 					Renderer::Get().CreateTriangle(
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) * .4f, .33f * scroll_button_size + notebook->GetAllocation().height - scroll_button_size ),
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) * .6f, .33f * scroll_button_size + notebook->GetAllocation().height - scroll_button_size ),
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) * .5f, .66f * scroll_button_size + notebook->GetAllocation().height - scroll_button_size ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) * .4f, .33f * scroll_button_size + notebook->GetAllocation().size.y - scroll_button_size ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) * .6f, .33f * scroll_button_size + notebook->GetAllocation().size.y - scroll_button_size ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) * .5f, .66f * scroll_button_size + notebook->GetAllocation().size.y - scroll_button_size ),
 						arrow_color
 					)
 				);
@@ -571,7 +555,7 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 			if( notebook->GetFirstDisplayedTab() != 0 ) {
 				queue->Add(
 					Renderer::Get().CreatePane(
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * padding + border_width ), 0.f ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * padding + border_width ), 0.f ),
 						sf::Vector2f( tab_size.x + 2.f * ( padding + border_width ), scroll_button_size ),
 						border_width,
 						notebook->IsBackwardScrollPrelight() ? scroll_button_prelight : background_color,
@@ -582,9 +566,9 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 
 				queue->Add(
 					Renderer::Get().CreateTriangle(
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) * .6f, .66f * scroll_button_size ),
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) * .4f, .66f * scroll_button_size ),
-						sf::Vector2f( notebook->GetAllocation().width - ( tab_size.x + 2.f * ( padding + border_width ) ) * .5f, .33f * scroll_button_size ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) * .6f, .66f * scroll_button_size ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) * .4f, .66f * scroll_button_size ),
+						sf::Vector2f( notebook->GetAllocation().size.x - ( tab_size.x + 2.f * ( padding + border_width ) ) * .5f, .33f * scroll_button_size ),
 						arrow_color
 					)
 				);

@@ -48,10 +48,8 @@ void CheckButton::HandleSizeChange() {
 	if( GetChild() ) {
 		GetChild()->SetAllocation(
 			sf::FloatRect(
-				box_size + spacing,
-				GetAllocation().height / 2.f - GetChild()->GetAllocation().height / 2.f,
-				GetChild()->GetRequisition().x,
-				GetChild()->GetRequisition().y
+				{ box_size + spacing, GetAllocation().size.y / 2.f - GetChild()->GetAllocation().size.y / 2.f },
+				GetChild()->GetRequisition()
 			)
 		);
 	}
