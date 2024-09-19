@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+Enhancements:
+
+  * Update SFML version to 2.6.
+  * Update CMake version to match SFML's version.
+
 ## Release 0.4.0
 
 Enhancements:

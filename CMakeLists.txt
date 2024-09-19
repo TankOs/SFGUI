@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.2 )
+cmake_minimum_required( VERSION 3.7.2 )
 
 set( SFGUI_MAJOR_VERSION 0 )
 set( SFGUI_MINOR_VERSION 4 )
@@ -8,7 +8,6 @@ set( SFGUI_VERSION ${SFGUI_MAJOR_VERSION}.${SFGUI_MINOR_VERSION}.${SFGUI_REVISIO
 project( SFGUI LANGUAGES CXX VERSION ${SFGUI_VERSION} )
 set(TARGET SFGUI)
 
-set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
@@ -16,17 +15,17 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 
 option( SFGUI_BUILD_SHARED_LIBS "Build shared library."                         ON )
 set( BUILD_SHARED_LIBS ${SFGUI_BUILD_SHARED_LIBS} )
-option( SFGUI_BUILD_EXAMPLES    "Build examples."                               ON)
-option( SFGUI_BUILD_DOC         "Generate API documentation."                   OFF)
-option( SFGUI_INCLUDE_FONT      "Include default font in library (DejaVuSans)." ON)
-option( SFML_STATIC_LIBRARIES   "Do you want to link SFML statically?"          OFF)
+option( SFGUI_BUILD_EXAMPLES    "Build examples."                               ON )
+option( SFGUI_BUILD_DOC         "Generate API documentation."                   OFF )
+option( SFGUI_INCLUDE_FONT      "Include default font in library (DejaVuSans)." ON )
+option( SFML_STATIC_LIBRARIES   "Do you want to link SFML statically?"          OFF )
 
 
 # Find packages.
 find_package( OpenGL REQUIRED )
 
 if( NOT TARGET sfml-graphics )
-    find_package( SFML 2.5 REQUIRED COMPONENTS graphics window system )
+    find_package( SFML 2.6 REQUIRED COMPONENTS graphics window system )
 endif()
 
 set( INCLUDE_PATH "${PROJECT_SOURCE_DIR}/include/" )
@@ -44,8 +43,11 @@ endif()
 set( LIBRARY_OUTPUT_PATH "${PROJECT_BINARY_DIR}/lib" )
 
 add_library( ${TARGET} ${CPPS} ${INLS} ${HPPS} )
-target_include_directories( ${TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" "${SOURCE_PATH}" )
+target_include_directories( ${TARGET} SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/libELL/include" )
+target_include_directories( ${TARGET} PRIVATE "${SOURCE_PATH}" )
 target_include_directories( ${TARGET} PUBLIC $<BUILD_INTERFACE:${INCLUDE_PATH}> $<INSTALL_INTERFACE:include/> )
+
+target_compile_features( ${TARGET} PUBLIC cxx_std_11 )
 
 if( NOT SFGUI_BUILD_SHARED_LIBS )
 	target_compile_definitions( ${TARGET} PUBLIC SFGUI_STATIC )
