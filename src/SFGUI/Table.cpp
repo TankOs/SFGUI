@@ -200,10 +200,8 @@ void Table::AllocateChildren() {
 
 	for( const auto& cell : m_cells ) {
 		sf::FloatRect allocation(
-			m_columns[cell.rect.left].position,
-			m_rows[cell.rect.top].position,
-			0,
-			0
+			{ m_columns[cell.rect.left].position, m_rows[cell.rect.top].position },
+			{ 0, 0 }
 		);
 
 		bound = cell.rect.left + cell.rect.width;

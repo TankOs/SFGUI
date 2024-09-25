@@ -85,11 +85,10 @@ void SpinButton::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, i
 
 	if( press ) {
 		// Top stepper.
-		sf::FloatRect rect;
-		rect.left = GetAllocation().left + GetAllocation().width - border_width - stepper_width;
-		rect.top = GetAllocation().top + border_width;
-		rect.width = stepper_width;
-		rect.height = stepper_height;
+		sf::FloatRect rect(
+			{ GetAllocation().left + GetAllocation().width - border_width - stepper_width, GetAllocation().top + border_width },
+			{ stepper_width, stepper_height }
+		);
 
 		if( rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 			GrabFocus( Widget::Ptr() );

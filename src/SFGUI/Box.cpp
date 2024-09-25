@@ -215,14 +215,14 @@ void Box::AllocateChildren() const {
 			allocation.x = child.widget->GetRequisition().x + ( child.expand ? extra : 0.f );
 			allocation.y = GetAllocation().height - 2 * gap;
 
-			child.widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x - ( child.expand && !child.fill ? extra : 0.f ), allocation.y ) );
+			child.widget->SetAllocation( sf::FloatRect( { position.x, position.y }, { allocation.x - ( child.expand && !child.fill ? extra : 0.f ), allocation.y } ) );
 			position.x += allocation.x + GetSpacing();
 		}
 		else {
 			allocation.x = GetAllocation().width - 2 * gap;
 			allocation.y = child.widget->GetRequisition().y + ( child.expand ? extra : 0.f );
 
-			child.widget->SetAllocation( sf::FloatRect( position.x, position.y, allocation.x, allocation.y - ( child.expand && !child.fill ? extra : 0.f ) ) );
+			child.widget->SetAllocation( sf::FloatRect( { position.x, position.y }, { allocation.x, allocation.y - ( child.expand && !child.fill ? extra : 0.f ) } ) );
 			position.y += allocation.y + GetSpacing();
 		}
 

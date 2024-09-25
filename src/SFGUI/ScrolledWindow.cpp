@@ -226,20 +226,16 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	if( ( m_placement == Placement::TOP_LEFT ) || ( m_placement == Placement::TOP_RIGHT ) ) { // Content placed at Top
 		m_horizontal_scrollbar->SetAllocation(
 			sf::FloatRect(
-				m_content_allocation.left - border_width,
-				m_content_allocation.height + 2.f * border_width + scrollbar_spacing,
-				m_content_allocation.width + 2.f * border_width,
-				m_horizontal_scrollbar->GetRequisition().y
+				{ m_content_allocation.left - border_width, m_content_allocation.height + 2.f * border_width + scrollbar_spacing },
+				{ m_content_allocation.width + 2.f * border_width, m_horizontal_scrollbar->GetRequisition().y }
 			)
 		);
 	}
 	else { // Content placed at Bottom
 		m_horizontal_scrollbar->SetAllocation(
 			sf::FloatRect(
-				m_content_allocation.left - border_width,
-				0.f,
-				m_content_allocation.width + 2.f * border_width,
-				m_horizontal_scrollbar->GetRequisition().y
+				{ m_content_allocation.left - border_width, 0.f },
+				{ m_content_allocation.width + 2.f * border_width, m_horizontal_scrollbar->GetRequisition().y }
 			)
 		);
 	}
@@ -247,20 +243,16 @@ void ScrolledWindow::RecalculateContentAllocation() const {
 	if( ( m_placement == Placement::TOP_LEFT ) || ( m_placement == Placement::BOTTOM_LEFT ) ) { // Content placed at Left
 		m_vertical_scrollbar->SetAllocation(
 			sf::FloatRect(
-				m_content_allocation.width + 2.f * border_width + scrollbar_spacing,
-				m_content_allocation.top - border_width,
-				m_vertical_scrollbar->GetRequisition().x,
-				m_content_allocation.height + 2.f * border_width
+				{ m_content_allocation.width + 2.f * border_width + scrollbar_spacing, m_content_allocation.top - border_width },
+				{ m_vertical_scrollbar->GetRequisition().x, m_content_allocation.height + 2.f * border_width }
 			)
 		);
 	}
 	else { // Content placed at Right
 		m_vertical_scrollbar->SetAllocation(
 			sf::FloatRect(
-				0.f,
-				m_content_allocation.top - border_width,
-				m_vertical_scrollbar->GetRequisition().x,
-				m_content_allocation.height + 2.f * border_width
+				{ 0.f, m_content_allocation.top - border_width },
+				{ m_vertical_scrollbar->GetRequisition().x, m_content_allocation.height + 2.f * border_width }
 			)
 		);
 	}

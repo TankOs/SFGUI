@@ -27,10 +27,8 @@ std::unique_ptr<RenderQueue> BREW::CreateScrolledWindowDrawable( std::shared_ptr
 	queue->Add(
 		CreateBorder(
 			sf::FloatRect(
-				0.f,
-				0.f,
-				rect.width,
-				rect.height
+				{ 0.f, 0.f },
+				{ rect.width, rect.height }
 			),
 			border_width,
 			border_color_dark,

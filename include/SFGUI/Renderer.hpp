@@ -150,7 +150,7 @@ class SFGUI_API Renderer {
 		 * @param rotation_turns Turns to rotate the texture by in COUNTERCLOCKWISE direction. 1 turn is 90 degrees, -1 turn is -90 degrees etc. 0 to not rotate.
 		 * @return New sprite primitive.
 		 */
-		std::shared_ptr<Primitive> CreateSprite( const sf::FloatRect& rect, std::shared_ptr<PrimitiveTexture> texture, const sf::FloatRect& subrect = sf::FloatRect( 0.f, 0.f, 0.f, 0.f ), int rotation_turns = 0 );
+		std::shared_ptr<Primitive> CreateSprite( const sf::FloatRect& rect, std::shared_ptr<PrimitiveTexture> texture, const sf::FloatRect& subrect = sf::FloatRect( { 0.f, 0.f }, { 0.f, 0.f } ), int rotation_turns = 0 );
 
 		/** Create and register a new line primitive with the renderer.
 		 * @param begin Starting point of the line.

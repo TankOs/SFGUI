@@ -104,10 +104,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * ( border_width + padding )
+							{ label_allocation.left - padding, label_allocation.top - padding },
+							{ label_allocation.width + 2.f * padding - border_width, label_allocation.height + 2.f * ( border_width + padding ) }
 						),
 						background_color
 					)
@@ -118,10 +116,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * padding
+							{ label_allocation.left - padding, label_allocation.top - padding },
+							{ label_allocation.width + 2.f * padding - border_width, label_allocation.height + 2.f * padding }
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -242,10 +238,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding - border_width,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * padding + 2.f * border_width
+							{ label_allocation.left - padding, label_allocation.top - padding - border_width },
+							{ label_allocation.width + 2.f * padding - border_width, label_allocation.height + 2.f * padding + 2.f * border_width }
 						),
 						background_color
 					)
@@ -256,10 +250,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding - border_width,
-							label_allocation.height + 2.f * padding + border_width
+							{ label_allocation.left - padding, label_allocation.top - padding },
+							{ label_allocation.width + 2.f * padding - border_width, label_allocation.height + 2.f * padding + border_width }
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -380,10 +372,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * ( border_width + padding ),
-							label_allocation.height + 2.f * padding
+							{ label_allocation.left - padding, label_allocation.top - padding },
+							{ label_allocation.width + 2.f * ( border_width + padding ), label_allocation.height + 2.f * padding }
 						),
 						background_color
 					)
@@ -394,10 +384,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding,
-							label_allocation.height + 2.f * padding - border_width
+							{ label_allocation.left - padding, label_allocation.top - padding },
+							{ label_allocation.width + 2.f * padding, label_allocation.height + 2.f * padding - border_width }
 						),
 						( index == prelight_tab ) ? background_color_prelight : background_color_dark
 					)
@@ -518,10 +506,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding - border_width,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding + 2.f * border_width,
-							label_allocation.height + 2.f * padding
+							{ label_allocation.left - padding - border_width, label_allocation.top - padding },
+							{ label_allocation.width + 2.f * padding + 2.f * border_width, label_allocation.height + 2.f * padding }
 						),
 						background_color
 					)
@@ -532,10 +518,8 @@ std::unique_ptr<RenderQueue> BREW::CreateNotebookDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							label_allocation.left - padding,
-							label_allocation.top - padding,
-							label_allocation.width + 2.f * padding + border_width,
-							label_allocation.height + 2.f * padding
+							{ label_allocation.left - padding, label_allocation.top - padding },
+							{ label_allocation.width + 2.f * padding + border_width, label_allocation.height + 2.f * padding }
 						),
 						(index == prelight_tab) ? background_color_prelight : background_color_dark
 					)

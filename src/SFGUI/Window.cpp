@@ -43,7 +43,7 @@ const sf::String& Window::GetTitle() const {
 }
 
 sf::FloatRect Window::GetClientRect() const {
-	sf::FloatRect clientrect( 0, 0, GetAllocation().width, GetAllocation().height );
+	sf::FloatRect clientrect( { 0, 0 }, { GetAllocation().width, GetAllocation().height } );
 	float border_width( Context::Get().GetEngine().GetProperty<float>( "BorderWidth", shared_from_this() ) );
 	float gap( Context::Get().GetEngine().GetProperty<float>( "Gap", shared_from_this() ) );
 
@@ -150,10 +150,8 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 
 	// Check for mouse being inside the title area.
 	sf::FloatRect area(
-		GetAllocation().left,
-		GetAllocation().top,
-		GetAllocation().width,
-		title_height
+		{ GetAllocation().left, GetAllocation().top },
+		{ GetAllocation().width, title_height }
 	);
 
 	if( area.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
@@ -164,10 +162,8 @@ void Window::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x
 				auto button_margin = ( title_height - close_height ) / 2.f;
 
 				auto close_rect = sf::FloatRect(
-					GetAllocation().left + GetAllocation().width - button_margin - close_height,
-					GetAllocation().top + button_margin,
-					close_height,
-					close_height
+					{ GetAllocation().left + GetAllocation().width - button_margin - close_height, GetAllocation().top + button_margin },
+					{ close_height, close_height }
 				);
 
 				if( close_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
@@ -222,10 +218,8 @@ void Window::HandleMouseMoveEvent( int x, int y ) {
 	else if( m_resizing && (GetStyle() & RESIZE) == RESIZE ) {
 		SetAllocation(
 			sf::FloatRect(
-				GetAllocation().left,
-				GetAllocation().top,
-				std::max( GetRequisition().x, static_cast<float>( x ) + m_drag_offset.x - GetAllocation().left ),
-				std::max( GetRequisition().y, static_cast<float>( y ) + m_drag_offset.y - GetAllocation().top )
+				{ GetAllocation().left, GetAllocation().top },
+				{ std::max( GetRequisition().x, static_cast<float>( x ) + m_drag_offset.x - GetAllocation().left ), std::max( GetRequisition().y, static_cast<float>( y ) + m_drag_offset.y - GetAllocation().top ) }
 			)
 		);
 	}
@@ -237,7 +231,7 @@ bool Window::HandleAdd( Widget::Ptr child ) {
 	}
 
 	// Reset allocation so the window will be as large as required.
-	SetAllocation( sf::FloatRect( GetAllocation().left, GetAllocation().top, 1.f, 1.f ) );
+	SetAllocation( sf::FloatRect( { GetAllocation().left, GetAllocation().top }, { 1.f, 1.f } ) );
 	RequestResize();
 
 	return true;

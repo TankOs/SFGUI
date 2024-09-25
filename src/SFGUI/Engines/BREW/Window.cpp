@@ -36,10 +36,8 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 		sf::Color shadow_color( 0, 0, 0, shadow_alpha );
 
 		sf::FloatRect shadow_rect(
-			shadow_distance,
-			shadow_distance,
-			window->GetAllocation().width,
-			window->GetAllocation().height
+			{ shadow_distance, shadow_distance },
+			{ window->GetAllocation().width, window->GetAllocation().height }
 		);
 
 		queue->Add(
@@ -84,10 +82,8 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					border_width + .1f,
-					border_width + .1f,
-					window->GetAllocation().width - 2 * border_width,
-					title_size
+					{ border_width + .1f, border_width + .1f },
+					{ window->GetAllocation().width - 2 * border_width, title_size }
 				),
 				title_background_color
 			)

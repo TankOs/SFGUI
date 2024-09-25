@@ -39,20 +39,16 @@ std::unique_ptr<RenderQueue> BREW::CreateProgressBarDrawable( std::shared_ptr<co
 			float frac_width( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().width * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				border_width,
-				border_width,
-				std::max( 0.f, frac_width - 2.f * border_width ),
-				std::max( 0.f, progress_bar->GetAllocation().height - 2.f * border_width )
+				{ border_width, border_width },
+				{ std::max( 0.f, frac_width - 2.f * border_width ), std::max( 0.f, progress_bar->GetAllocation().height - 2.f * border_width ) }
 			);
 		}
 		else {
 			float frac_height( std::max( 2.f * bar_border_width, progress_bar->GetAllocation().height * progress_bar->GetFraction() ) );
 
 			bar_rect = sf::FloatRect(
-				border_width,
-				std::max( 0.f, progress_bar->GetAllocation().height - frac_height + border_width ),
-				std::max( 0.f, progress_bar->GetAllocation().width - 2.f * border_width ),
-				std::max( 0.f, frac_height - 2.f * border_width )
+				{ border_width, std::max( 0.f, progress_bar->GetAllocation().height - frac_height + border_width ) },
+				{ std::max( 0.f, progress_bar->GetAllocation().width - 2.f * border_width ), std::max( 0.f, frac_height - 2.f * border_width ) }
 			);
 		}
 

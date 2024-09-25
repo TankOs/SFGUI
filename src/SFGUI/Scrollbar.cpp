@@ -53,7 +53,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 			slider_x = stepper_length + ( trough_length - slider_length ) * ( adjustment->GetValue() - adjustment->GetLower() ) / value_range;
 		}
 
-		return sf::FloatRect( slider_x, slider_y, slider_length, GetAllocation().height );
+		return sf::FloatRect( { slider_x, slider_y }, { slider_length, GetAllocation().height } );
 	}
 
 	auto stepper_length = GetAllocation().width;
@@ -67,7 +67,7 @@ const sf::FloatRect Scrollbar::GetSliderRect() const {
 		slider_y = stepper_length + ( trough_length - slider_length ) * ( adjustment->GetValue() - adjustment->GetLower() ) / value_range;
 	}
 
-	return sf::FloatRect( slider_x, slider_y, GetAllocation().width, slider_length );
+	return sf::FloatRect( { slider_x, slider_y }, { GetAllocation().width, slider_length } );
 }
 
 bool Scrollbar::IsDecreaseStepperPressed() const {
@@ -120,8 +120,8 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 		if( GetOrientation() == Orientation::HORIZONTAL ) {
 			auto stepper_length = GetAllocation().height;
 
-			sf::FloatRect decrease_stepper_rect( GetAllocation().left, GetAllocation().top, stepper_length, GetAllocation().height );
-			sf::FloatRect increase_stepper_rect( GetAllocation().left + GetAllocation().width - stepper_length, GetAllocation().top, stepper_length, GetAllocation().height );
+			sf::FloatRect decrease_stepper_rect( { GetAllocation().left, GetAllocation().top }, { stepper_length, GetAllocation().height } );
+			sf::FloatRect increase_stepper_rect( { GetAllocation().left + GetAllocation().width - stepper_length }, { GetAllocation().top, stepper_length, GetAllocation().height } );
 
 			if( decrease_stepper_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				m_decrease_pressed = true;
@@ -144,8 +144,8 @@ void Scrollbar::HandleMouseButtonEvent( sf::Mouse::Button button, bool press, in
 		else {
 			auto stepper_length = GetAllocation().width;
 
-			sf::FloatRect decrease_stepper_rect( GetAllocation().left, GetAllocation().top, GetAllocation().width, stepper_length );
-			sf::FloatRect increase_stepper_rect( GetAllocation().left, GetAllocation().top + GetAllocation().height - stepper_length, GetAllocation().width, stepper_length );
+			sf::FloatRect decrease_stepper_rect( { GetAllocation().left, GetAllocation().top }, { GetAllocation().width, stepper_length } );
+			sf::FloatRect increase_stepper_rect( { GetAllocation().left, GetAllocation().top + GetAllocation().height - stepper_length } , { GetAllocation().width, stepper_length } );
 
 			if( decrease_stepper_rect.contains( static_cast<float>( x ), static_cast<float>( y ) ) ) {
 				m_decrease_pressed = true;

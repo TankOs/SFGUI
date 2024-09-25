@@ -42,10 +42,8 @@ std::unique_ptr<RenderQueue> BREW::CreateCheckButtonDrawable( std::shared_ptr<co
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					box_size / 2 - check_size / 2,
-					check->GetAllocation().height / 2.f - box_size / 2.f + diff / 2.f,
-					check_size - 1.f,
-					check_size - 1.f
+					{ box_size / 2 - check_size / 2, check->GetAllocation().height / 2.f - box_size / 2.f + diff / 2.f },
+					{ check_size - 1.f, check_size - 1.f }
 				),
 				check_color
 			)

@@ -179,10 +179,8 @@ void Widget::RequestResize() {
 	}
 	else {
 		sf::FloatRect allocation(
-			GetAllocation().left,
-			GetAllocation().top,
-			std::max( GetAllocation().width, m_requisition.x ),
-			std::max( GetAllocation().height, m_requisition.y )
+			{ GetAllocation().left,	GetAllocation().top },
+			{ std::max( GetAllocation().width, m_requisition.x ), std::max( GetAllocation().height, m_requisition.y ) }
 		);
 
 		SetAllocation( allocation );

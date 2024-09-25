@@ -29,7 +29,7 @@ std::unique_ptr<RenderQueue> BREW::CreateButtonDrawable( std::shared_ptr<const B
 	queue->Add(
 		Renderer::Get().CreatePane(
 			sf::Vector2f( 0.f, 0.f ),
-			sf::Vector2f( button->GetAllocation().width, button->GetAllocation().height ),
+			button->GetAllocation().size,
 			border_width,
 			background_color,
 			border_color,

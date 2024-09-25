@@ -292,14 +292,14 @@ void SampleApp::Run() {
 	auto separatorv = sfg::Separator::Create( sfg::Separator::Orientation::VERTICAL );
 
 	m_table = sfg::Table::Create();
-	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<std::uint32_t>( 0, 0, 2, 1 ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
-	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<std::uint32_t>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( username_entry, sf::Rect<std::uint32_t>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<std::uint32_t>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( password, sf::Rect<std::uint32_t>( 1, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<std::uint32_t>( 2, 1, 1, 2 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( separatorv, sf::Rect<std::uint32_t>( 3, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( m_progress_vert, sf::Rect<std::uint32_t>( 4, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<std::uint32_t>( { 0, 0 }, { 2, 1 } ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
+	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<std::uint32_t>( { 0, 1 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( username_entry, sf::Rect<std::uint32_t>( { 1, 1 }, { 1, 1 } ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<std::uint32_t>( { 0, 2 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( password, sf::Rect<std::uint32_t>( { 1, 2 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<std::uint32_t>( { 2, 1 }, { 1, 2 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( separatorv, sf::Rect<std::uint32_t>( { 3, 0 }, { 1, 3 } ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( m_progress_vert, sf::Rect<std::uint32_t>( { 4, 0 }, { 1, 3 } ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
 

@@ -105,10 +105,8 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinButtonDrawable( std::shared_ptr<con
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					metrics.x + text_padding,
-					spinbutton->GetAllocation().height / 2.f - line_height / 2.f,
-					cursor_thickness,
-					line_height
+					{ metrics.x + text_padding, spinbutton->GetAllocation().height / 2.f - line_height / 2.f },
+					{ cursor_thickness, line_height }
 				),
 				cursor_color
 			)

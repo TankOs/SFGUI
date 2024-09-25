@@ -590,19 +590,15 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					m_tab_requisition.y + border_width + padding,
-					GetAllocation().width - 2.f * ( border_width + padding ),
-					GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
+					{ border_width + padding, m_tab_requisition.y + border_width + padding },
+					{ GetAllocation().width - 2.f * ( border_width + padding ), GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					tab_current_x + border_width + padding,
-					border_width + padding,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x,
-					m_tab_requisition.y - 2.f * padding - border_width
+					{ tab_current_x + border_width + padding, border_width + padding },
+					{ m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x, m_tab_requisition.y - 2.f * padding - border_width }
 				)
 			);
 
@@ -623,19 +619,15 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					border_width + padding,
-					GetAllocation().width - 2.f * ( border_width + padding ),
-					GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y )
+					{ border_width + padding, border_width + padding },
+					{ GetAllocation().width - 2.f * ( border_width + padding ), GetAllocation().height - ( 2.f * ( border_width + padding ) + m_tab_requisition.y ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					tab_current_x + border_width + padding,
-					GetAllocation().height - m_tab_requisition.y + padding,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x,
-					m_tab_requisition.y - 2.f * padding - border_width
+					{ tab_current_x + border_width + padding, GetAllocation().height - m_tab_requisition.y + padding },
+					{ m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().x, m_tab_requisition.y - 2.f * padding - border_width }
 				)
 			);
 
@@ -656,19 +648,15 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					m_tab_requisition.x + border_width + padding,
-					border_width + padding,
-					GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
-					GetAllocation().height - 2.f * ( border_width + padding )
+					{ m_tab_requisition.x + border_width + padding, border_width + padding },
+					{ GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ), GetAllocation().height - 2.f * ( border_width + padding ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					tab_current_y + border_width + padding,
-					m_tab_requisition.x - 2.f * padding - border_width,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y
+					{ border_width + padding, tab_current_y + border_width + padding },
+					{ m_tab_requisition.x - 2.f * padding - border_width, m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y }
 				)
 			);
 
@@ -689,19 +677,15 @@ void Notebook::RecalculateSize() {
 
 			m_children[static_cast<std::size_t>( index )].child->SetAllocation(
 				sf::FloatRect(
-					border_width + padding,
-					border_width + padding,
-					GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ),
-					GetAllocation().height - 2.f * ( border_width + padding )
+					{ border_width + padding, border_width + padding },
+					{ GetAllocation().width - ( 2.f * ( border_width + padding ) + m_tab_requisition.x ), GetAllocation().height - 2.f * ( border_width + padding ) }
 				)
 			);
 
 			m_children[static_cast<std::size_t>( index )].tab_label->SetAllocation(
 				sf::FloatRect(
-					GetAllocation().width - m_tab_requisition.x + padding,
-					tab_current_y + border_width + padding,
-					m_tab_requisition.x - 2.f * padding - border_width,
-					m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y
+					{ GetAllocation().width - m_tab_requisition.x + padding, tab_current_y + border_width + padding },
+					{ m_tab_requisition.x - 2.f * padding - border_width, m_children[static_cast<std::size_t>( index )].tab_label->GetRequisition().y }
 				)
 			);
 

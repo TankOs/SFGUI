@@ -75,10 +75,8 @@ std::unique_ptr<RenderQueue> BREW::CreateComboBoxDrawable( std::shared_ptr<const
 				queue->Add(
 					Renderer::Get().CreateRect(
 						sf::FloatRect(
-							item_position.x + border_width,
-							item_position.y + border_width,
-							item_size.x,
-							item_size.y - 2.f * border_width
+							{ item_position.x + border_width, item_position.y + border_width },
+							{ item_size.x, item_size.y - 2.f * border_width }
 						),
 						highlighted_color
 					)

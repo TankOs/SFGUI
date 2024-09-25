@@ -31,16 +31,16 @@ int main() {
 	table->SetRowSpacings( 5.f );
 	table->SetColumnSpacings( 5.f );
 
-	table->Attach( sfg::Label::Create( "Change the color of the rect using the scales below." ), sf::Rect<std::uint32_t>( 0, 0, 3, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( sfg::Label::Create( "Red:" ), sf::Rect<std::uint32_t>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( red_scale, sf::Rect<std::uint32_t>( 1, 1, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
-	table->Attach( sfg::Label::Create( "Green:" ), sf::Rect<std::uint32_t>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( green_scale, sf::Rect<std::uint32_t>( 1, 2, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
-	table->Attach( sfg::Label::Create( "Blue:" ), sf::Rect<std::uint32_t>( 0, 3, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( blue_scale, sf::Rect<std::uint32_t>( 1, 3, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
-	table->Attach( sfg::Label::Create( "Angle:" ), sf::Rect<std::uint32_t>( 0, 4, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( angle_scale, sf::Rect<std::uint32_t>( 1, 4, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
-	table->Attach( auto_check, sf::Rect<std::uint32_t>( 2, 4, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( sfg::Label::Create( "Change the color of the rect using the scales below." ), sf::Rect<std::uint32_t>( { 0, 0 }, { 3, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( sfg::Label::Create( "Red:" ), sf::Rect<std::uint32_t>( { 0, 1 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( red_scale, sf::Rect<std::uint32_t>( { 1, 1 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
+	table->Attach( sfg::Label::Create( "Green:" ), sf::Rect<std::uint32_t>( { 0, 2 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( green_scale, sf::Rect<std::uint32_t>( { 1, 2 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
+	table->Attach( sfg::Label::Create( "Blue:" ), sf::Rect<std::uint32_t>( { 0, 3 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( blue_scale, sf::Rect<std::uint32_t>( { 1, 3 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
+	table->Attach( sfg::Label::Create( "Angle:" ), sf::Rect<std::uint32_t>( { 0, 4 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( angle_scale, sf::Rect<std::uint32_t>( { 1, 4 }, { 1, 1 } ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
+	table->Attach( auto_check, sf::Rect<std::uint32_t>( { 2, 4 }, { 1, 1 } ), sfg::Table::FILL, sfg::Table::FILL );
 
 	auto window = sfg::Window::Create();
 	window->SetTitle( "SFGUI with OpenGL" );

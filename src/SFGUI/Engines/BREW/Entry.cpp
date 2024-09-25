@@ -55,10 +55,8 @@ std::unique_ptr<RenderQueue> BREW::CreateEntryDrawable( std::shared_ptr<const En
 		queue->Add(
 			Renderer::Get().CreateRect(
 				sf::FloatRect(
-					metrics.x + text_padding,
-					entry->GetAllocation().height / 2.f - line_height / 2.f,
-					cursor_thickness,
-					line_height
+					{ metrics.x + text_padding, entry->GetAllocation().height / 2.f - line_height / 2.f },
+					{ cursor_thickness, line_height }
 				),
 				cursor_color
 			)

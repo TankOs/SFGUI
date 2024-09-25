@@ -667,7 +667,7 @@ void NonLegacyRenderer::RefreshVBO() {
 	current_batch.max_index = m_vertex_count - 1;
 	current_batch.custom_draw = false;
 
-	sf::FloatRect window_viewport( 0.f, 0.f, static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) );
+	sf::FloatRect window_viewport( { 0.f, 0.f }, { static_cast<float>( m_window_size.x ), static_cast<float>( m_window_size.y ) } );
 
 	const auto max_texture_size = GetMaxTextureSize();
 	const auto default_texture_size = m_texture_atlas[0]->getSize();
@@ -735,7 +735,7 @@ void NonLegacyRenderer::RefreshVBO() {
 
 			sf::Vector2f position( 0.f, 0.f );
 
-			sf::FloatRect bounding_rect( 0.f, 0.f, 0.f, 0.f );
+			sf::FloatRect bounding_rect( { 0.f, 0.f }, { 0.f, 0.f } );
 
 			auto atlas_page = 0;
 
