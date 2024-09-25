@@ -3,6 +3,7 @@
 #include <SFGUI/Entry.hpp>
 
 #include <memory>
+#include <cstdint>
 
 namespace sfg {
 
@@ -112,7 +113,7 @@ class SFGUI_API SpinButton : public Entry {
 
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void HandleUpdate( float seconds ) override;
-		void HandleTextEvent( sf::Uint32 character ) override;
+		void HandleTextEvent( std::uint32_t character ) override;
 		void HandleKeyEvent( sf::Keyboard::Key key, sf::Keyboard::Scancode scancode, bool press ) override;
 		void HandleSizeChange() override;
 		void HandleFocusChange( Widget::Ptr focused_widget ) override;

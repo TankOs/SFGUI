@@ -30,7 +30,7 @@ sf::Vector2f Table::CalculateRequisition() {
 	return size;
 }
 
-void Table::Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
+void Table::Attach( Widget::Ptr widget, const sf::Rect<std::uint32_t>& rect, int x_options, int y_options, const sf::Vector2f& padding ) {
 	assert( rect.width > 0 );
 	assert( rect.height > 0 );
 
@@ -90,7 +90,7 @@ void Table::UpdateRequisitions() {
 		auto col_requisition = cell.child->GetRequisition().x / static_cast<float>( cell.rect.width ) + 2 * cell.padding.x;
 		auto col_bound = cell.rect.left + cell.rect.width;
 
-		for( sf::Uint32 col_idx = cell.rect.left; col_idx < col_bound; ++col_idx ) {
+		for( std::uint32_t col_idx = cell.rect.left; col_idx < col_bound; ++col_idx ) {
 			m_columns[col_idx].requisition = std::max(
 				m_columns[col_idx].requisition,
 				col_requisition + (col_idx + 1 < m_columns.size() ? m_columns[col_idx].spacing : 0) // Add spacing if not last column.
@@ -105,7 +105,7 @@ void Table::UpdateRequisitions() {
 		auto row_requisition = cell.child->GetRequisition().y / static_cast<float>( cell.rect.height ) + 2 * cell.padding.y;
 		auto row_bound = cell.rect.top + cell.rect.height;
 
-		for( sf::Uint32 row_idx = cell.rect.top; row_idx < row_bound; ++row_idx ) {
+		for( std::uint32_t row_idx = cell.rect.top; row_idx < row_bound; ++row_idx ) {
 			m_rows[row_idx].requisition = std::max(
 				m_rows[row_idx].requisition,
 				row_requisition + (row_idx + 1 < m_rows.size() ? m_rows[row_idx].spacing : 0) // Add spacing if not last row.

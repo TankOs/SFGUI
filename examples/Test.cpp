@@ -5,9 +5,12 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/OpenGL.hpp>
-#include <sstream>
-#include <cmath>
+
 #include <memory>
+#include <sstream>
+
+#include <cmath>
+#include <cstdint>
 
 class SampleApp {
 	public:
@@ -107,26 +110,26 @@ SampleApp::SampleApp() :
 {
 	m_background_texture.create( 1024, 768 );
 
-	std::vector<sf::Uint8> pixels( 1024 * 768 * 4 );
+	std::vector<std::uint8_t> pixels( 1024 * 768 * 4 );
 
-	sf::Uint8 pixel_value = 139;
+	std::uint8_t pixel_value = 139;
 
 	for( std::size_t index = 0; index < 1024 * 768; ++index ) {
-		pixel_value = static_cast<sf::Uint8>( pixel_value ^ ( index + 809 ) );
-		pixel_value = static_cast<sf::Uint8>( pixel_value << ( index % 11 ) );
-		pixel_value = static_cast<sf::Uint8>( pixel_value * 233 );
+		pixel_value = static_cast<std::uint8_t>( pixel_value ^ ( index + 809 ) );
+		pixel_value = static_cast<std::uint8_t>( pixel_value << ( index % 11 ) );
+		pixel_value = static_cast<std::uint8_t>( pixel_value * 233 );
 
-		pixels[ index * 4 + 0 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // R
+		pixels[ index * 4 + 0 ] = static_cast<std::uint8_t>( pixel_value % 16 + 72 ); // R
 
-		pixel_value ^= static_cast<sf::Uint8>( index );
-		pixel_value = static_cast<sf::Uint8>( pixel_value * 23 );
+		pixel_value ^= static_cast<std::uint8_t>( index );
+		pixel_value = static_cast<std::uint8_t>( pixel_value * 23 );
 
-		pixels[ index * 4 + 1 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // G
+		pixels[ index * 4 + 1 ] = static_cast<std::uint8_t>( pixel_value % 16 + 72 ); // G
 
-		pixel_value ^= static_cast<sf::Uint8>( index );
-		pixel_value = static_cast<sf::Uint8>( pixel_value * 193 );
+		pixel_value ^= static_cast<std::uint8_t>( index );
+		pixel_value = static_cast<std::uint8_t>( pixel_value * 193 );
 
-		pixels[ index * 4 + 2 ] = static_cast<sf::Uint8>( pixel_value % 16 + 72 ); // B
+		pixels[ index * 4 + 2 ] = static_cast<std::uint8_t>( pixel_value % 16 + 72 ); // B
 
 		pixels[ index * 4 + 3 ] = 255; // A
 	}
@@ -289,14 +292,14 @@ void SampleApp::Run() {
 	auto separatorv = sfg::Separator::Create( sfg::Separator::Orientation::VERTICAL );
 
 	m_table = sfg::Table::Create();
-	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<sf::Uint32>( 0, 0, 2, 1 ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
-	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( username_entry, sf::Rect<sf::Uint32>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( password, sf::Rect<sf::Uint32>( 1, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<sf::Uint32>( 2, 1, 1, 2 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( separatorv, sf::Rect<sf::Uint32>( 3, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
-	m_table->Attach( m_progress_vert, sf::Rect<sf::Uint32>( 4, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Please login using your username and password (span example)." ), sf::Rect<std::uint32_t>( 0, 0, 2, 1 ), sfg::Table::FILL, sfg::Table::FILL | sfg::Table::EXPAND );
+	m_table->Attach( sfg::Label::Create( L"Username:" ), sf::Rect<std::uint32_t>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( username_entry, sf::Rect<std::uint32_t>( 1, 1, 1, 1 ), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Label::Create( L"Password:" ), sf::Rect<std::uint32_t>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( password, sf::Rect<std::uint32_t>( 1, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( sfg::Button::Create( L"Login" ), sf::Rect<std::uint32_t>( 2, 1, 1, 2 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( separatorv, sf::Rect<std::uint32_t>( 3, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
+	m_table->Attach( m_progress_vert, sf::Rect<std::uint32_t>( 4, 0, 1, 3 ), sfg::Table::FILL, sfg::Table::FILL );
 	m_table->SetRowSpacings( 5.f );
 	m_table->SetColumnSpacings( 5.f );
 
@@ -535,7 +538,7 @@ void SampleApp::Run() {
 	sf::Clock clock;
 	sf::Clock frame_time_clock;
 
-	sf::Int64 frame_times[5000];
+	std::int64_t frame_times[5000];
 	std::size_t frame_times_index = 0;
 
 	std::fill( std::begin( frame_times ), std::end( frame_times ), 0 );
@@ -589,7 +592,7 @@ void SampleApp::Run() {
 		if( m_fps_clock.getElapsedTime().asMicroseconds() >= 1000000 ) {
 			m_fps_clock.restart();
 
-			sf::Int64 total_time = 0;
+			std::int64_t total_time = 0;
 
 			for( std::size_t index = 0; index < 5000; ++index ) {
 				total_time += frame_times[index];

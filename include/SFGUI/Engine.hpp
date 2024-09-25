@@ -10,6 +10,7 @@
 #include <vector>
 #include <stdexcept>
 #include <memory>
+#include <cstdint>
 
 namespace sf {
 class String;
@@ -192,7 +193,7 @@ class SFGUI_API Engine {
 		 * @param font_size Font size.
 		 * @return Metrics.
 		 */
-		sf::Vector2f GetTextStringMetrics( const std::basic_string<sf::Uint32>& string, const sf::Font& font, unsigned int font_size ) const;
+		sf::Vector2f GetTextStringMetrics( const std::basic_string<std::uint32_t>& string, const sf::Font& font, unsigned int font_size ) const;
 
 		/** Get metrics of a text string.
 		 * @param string String.
@@ -279,7 +280,7 @@ class SFGUI_API Engine {
 		 * @param low_bound Lower boundary of the character set, i.e. the glyph with the smallest codepoint.
 		 * @param high_bound Higher boundary of the character set, i.e. the glyph with the largest codepoint.
 		 */
-		void AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound );
+		void AddCharacterSet( std::uint32_t low_bound, std::uint32_t high_bound );
 
 	protected:
 		/** Ctor.
@@ -312,7 +313,7 @@ class SFGUI_API Engine {
 
 		mutable ResourceManager m_resource_manager;
 
-		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
+		std::vector<std::pair<std::uint32_t, std::uint32_t>> m_character_sets;
 
 		bool m_auto_refresh;
 };

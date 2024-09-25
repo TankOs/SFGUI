@@ -285,7 +285,7 @@ void Scrollbar::HandleUpdate( float seconds ) {
 	}
 
 	if( m_repeat_wait ) {
-		auto stepper_repeat_delay = Context::Get().GetEngine().GetProperty<sf::Uint32>( "StepperRepeatDelay", shared_from_this() );
+		auto stepper_repeat_delay = Context::Get().GetEngine().GetProperty<std::uint32_t>( "StepperRepeatDelay", shared_from_this() );
 
 		if( m_elapsed_time < (static_cast<float>( stepper_repeat_delay ) / 1000.f) ) {
 			return;

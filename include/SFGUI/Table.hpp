@@ -41,7 +41,7 @@ class SFGUI_API Table : public Container {
 		 * @param y_options Pack options for y axis.
 		 * @param padding Padding.
 		 */
-		void Attach( Widget::Ptr widget, const sf::Rect<sf::Uint32>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
+		void Attach( Widget::Ptr widget, const sf::Rect<std::uint32_t>& rect, int x_options = EXPAND | FILL, int y_options = EXPAND | FILL, const sf::Vector2f& padding = sf::Vector2f( 0.f, 0.f ) );
 
 		/** Set column spacing.
 		 * @param index Column index.

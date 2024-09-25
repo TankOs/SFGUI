@@ -8,6 +8,7 @@
 #include <SFML/OpenGL.hpp>
 
 #include <cmath>
+#include <cstdint>
 
 int main() {
 	// Create the main SFML window
@@ -49,9 +50,9 @@ int main() {
 
 	// Create a table to put the scrollbars and scrollable canvas in.
 	auto table = sfg::Table::Create();
-	table->Attach( sfml_scrollable_canvas, sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
-	table->Attach( vertical_scrollbar, sf::Rect<sf::Uint32>( 1, 0, 1, 1 ), 0, sfg::Table::FILL );
-	table->Attach( horizontal_scrollbar, sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, 0 );
+	table->Attach( sfml_scrollable_canvas, sf::Rect<std::uint32_t>( 0, 0, 1, 1 ), sfg::Table::FILL | sfg::Table::EXPAND, sfg::Table::FILL | sfg::Table::EXPAND );
+	table->Attach( vertical_scrollbar, sf::Rect<std::uint32_t>( 1, 0, 1, 1 ), 0, sfg::Table::FILL );
+	table->Attach( horizontal_scrollbar, sf::Rect<std::uint32_t>( 0, 1, 1, 1 ), sfg::Table::FILL, 0 );
 
 	// Add the Canvases to the windows.
 	opengl_window->Add( opengl_canvas );

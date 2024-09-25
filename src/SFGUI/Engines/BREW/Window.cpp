@@ -20,7 +20,7 @@ std::unique_ptr<RenderQueue> BREW::CreateWindowDrawable( std::shared_ptr<const W
 	auto title_padding = GetProperty<float>( "TitlePadding", window );
 	auto shadow_distance = GetProperty<float>( "ShadowDistance", window );
 	auto handle_size = GetProperty<float>( "HandleSize", window );
-	auto shadow_alpha = GetProperty<sf::Uint8>( "ShadowAlpha", window );
+	auto shadow_alpha = GetProperty<std::uint8_t>( "ShadowAlpha", window );
 	auto title_font_size = GetProperty<unsigned int>( "FontSize", window );
 	auto close_height = GetProperty<float>( "CloseHeight", window );
 	auto close_thickness = GetProperty<float>( "CloseThickness", window );

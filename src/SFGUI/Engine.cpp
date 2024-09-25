@@ -40,10 +40,10 @@ std::istream& operator>>( std::istream& stream, Color& color ) {
 	auto b_val = std::strtol( buffer.substr( 5, 2 ).c_str(), nullptr, 16 );
 	auto a_val = std::strtol( buffer.substr( 7, 2 ).c_str(), nullptr, 16 );
 
-	color.r = static_cast<sf::Uint8>( r_val );
-	color.g = static_cast<sf::Uint8>( g_val );
-	color.b = static_cast<sf::Uint8>( b_val );
-	color.a = static_cast<sf::Uint8>( a_val );
+	color.r = static_cast<std::uint8_t>( r_val );
+	color.g = static_cast<std::uint8_t>( g_val );
+	color.b = static_cast<std::uint8_t>( b_val );
+	color.a = static_cast<std::uint8_t>( a_val );
 
 	return stream;
 }
@@ -73,7 +73,7 @@ sf::Vector2f Engine::GetFontHeightProperties( const sf::Font& font, unsigned int
 
 		// Since maps allocate everything non-contiguously on the heap we can use void* instead of Page here.
 		mutable std::map<unsigned int, void*> unused4;
-		mutable std::vector<sf::Uint8> unused5;
+		mutable std::vector<std::uint8_t> unused5;
 	};
 
 	// All your font face are belong to us too.
@@ -90,7 +90,7 @@ sf::Vector2f Engine::GetFontHeightProperties( const sf::Font& font, unsigned int
 	sf::Vector2f properties( 0.f, 0.f );
 
 	if( m_character_sets.empty() ) {
-		for( sf::Uint32 current_character = 0; current_character < 0x0370; ++current_character ) {
+		for( std::uint32_t current_character = 0; current_character < 0x0370; ++current_character ) {
 			const auto& glyph = font.getGlyph( current_character, font_size, false );
 			properties.x = std::max( properties.x, static_cast<float>( glyph.bounds.height ) );
 			properties.y = std::max( properties.y, static_cast<float>( -glyph.bounds.top ) );
@@ -98,7 +98,7 @@ sf::Vector2f Engine::GetFontHeightProperties( const sf::Font& font, unsigned int
 	}
 
 	for( const auto character_set : m_character_sets ) {
-		for( sf::Uint32 current_character = character_set.first; current_character < character_set.second; ++current_character ) {
+		for( std::uint32_t current_character = character_set.first; current_character < character_set.second; ++current_character ) {
 			const auto& glyph = font.getGlyph( current_character, font_size, false );
 			properties.x = std::max( properties.x, static_cast<float>( glyph.bounds.height ) );
 			properties.y = std::max( properties.y, static_cast<float>( -glyph.bounds.top ) );
@@ -122,7 +122,7 @@ float Engine::GetFontLineSpacing( const sf::Font& font, unsigned int font_size )
 	return static_cast<float>( font.getLineSpacing( font_size ) );
 }
 
-sf::Vector2f Engine::GetTextStringMetrics( const std::basic_string<sf::Uint32>& string, const sf::Font& font, unsigned int font_size ) const {
+sf::Vector2f Engine::GetTextStringMetrics( const std::basic_string<std::uint32_t>& string, const sf::Font& font, unsigned int font_size ) const {
 	// SFML is incapable of giving us the metrics we need so we have to do it ourselves.
 	auto horizontal_spacing = static_cast<float>( font.getGlyph( L' ', font_size, false ).advance );
 	auto vertical_spacing = static_cast<float>( font.getLineSpacing( font_size ) );
@@ -131,7 +131,7 @@ sf::Vector2f Engine::GetTextStringMetrics( const std::basic_string<sf::Uint32>& 
 
 	const static auto tab_spaces = 2.f;
 
-	sf::Uint32 previous_character = 0;
+	std::uint32_t previous_character = 0;
 
 	auto longest_line = 0.f;
 
@@ -177,7 +177,7 @@ sf::Vector2f Engine::GetTextStringMetrics( const sf::String& string, const sf::F
 
 	const static auto tab_spaces = 2.f;
 
-	sf::Uint32 previous_character = 0;
+	std::uint32_t previous_character = 0;
 
 	auto longest_line = 0.f;
 
@@ -243,13 +243,13 @@ bool Engine::LoadThemeFromFile( const std::string& filename ) {
 
 void Engine::ShiftBorderColors( sf::Color& light_color, sf::Color& dark_color, int offset ) const {
 	// TODO: Replace by += and -=. Currently not possible with SFML (see SFML issue #114).
-	light_color.r = static_cast<sf::Uint8>( std::max( 0, std::min( 255, static_cast<int>( light_color.r ) + offset ) ) );
-	light_color.g = static_cast<sf::Uint8>( std::max( 0, std::min( 255, static_cast<int>( light_color.g ) + offset ) ) );
-	light_color.b = static_cast<sf::Uint8>( std::max( 0, std::min( 255, static_cast<int>( light_color.b ) + offset ) ) );
+	light_color.r = static_cast<std::uint8_t>( std::max( 0, std::min( 255, static_cast<int>( light_color.r ) + offset ) ) );
+	light_color.g = static_cast<std::uint8_t>( std::max( 0, std::min( 255, static_cast<int>( light_color.g ) + offset ) ) );
+	light_color.b = static_cast<std::uint8_t>( std::max( 0, std::min( 255, static_cast<int>( light_color.b ) + offset ) ) );
 
-	dark_color.r = static_cast<sf::Uint8>( std::min( 255, std::max( 0, static_cast<int>( dark_color.r ) - offset ) ) );
-	dark_color.g = static_cast<sf::Uint8>( std::min( 255, std::max( 0, static_cast<int>( dark_color.g ) - offset ) ) );
-	dark_color.b = static_cast<sf::Uint8>( std::min( 255, std::max( 0, static_cast<int>( dark_color.b ) - offset ) ) );
+	dark_color.r = static_cast<std::uint8_t>( std::min( 255, std::max( 0, static_cast<int>( dark_color.r ) - offset ) ) );
+	dark_color.g = static_cast<std::uint8_t>( std::min( 255, std::max( 0, static_cast<int>( dark_color.g ) - offset ) ) );
+	dark_color.b = static_cast<std::uint8_t>( std::min( 255, std::max( 0, static_cast<int>( dark_color.b ) - offset ) ) );
 }
 
 const std::string* Engine::GetValue( const std::string& property, Widget::PtrConst widget ) const {
@@ -307,7 +307,7 @@ ResourceManager& Engine::GetResourceManager() const {
 	return m_resource_manager;
 }
 
-void Engine::AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound ) {
+void Engine::AddCharacterSet( std::uint32_t low_bound, std::uint32_t high_bound ) {
 	if( high_bound <= low_bound ) {
 		return;
 	}

@@ -4,6 +4,7 @@
 
 #include <SFML/System/String.hpp>
 #include <memory>
+#include <cstdint>
 
 namespace sfg {
 
@@ -70,12 +71,12 @@ class SFGUI_API Entry : public Widget {
 		/** Hide all characters of the string with the given character.
 		 * @param c UTF-32 Character (0 to not hide text).
 		 */
-		void HideText( sf::Uint32 c );
+		void HideText( std::uint32_t c );
 
 		/** Get the character that hides all characters of the string.
 		 * @return UTF-32 Character.
 		 */
-		sf::Uint32 GetHideCharacter() const;
+		std::uint32_t GetHideCharacter() const;
 
 		/** Get maximum length.
 		 * @return Maximum length (0 if disabled).
@@ -105,7 +106,7 @@ class SFGUI_API Entry : public Widget {
 
 		void HandleMouseButtonEvent( sf::Mouse::Button button, bool press, int x, int y ) override;
 		void HandleUpdate( float seconds ) override;
-		void HandleTextEvent( sf::Uint32 character ) override;
+		void HandleTextEvent( std::uint32_t character ) override;
 		void HandleKeyEvent( sf::Keyboard::Key key, sf::Keyboard::Scancode scancode, bool press ) override;
 		void HandleSizeChange() override;
 		void HandleFocusChange( Widget::Ptr focused_widget ) override;
@@ -137,7 +138,7 @@ class SFGUI_API Entry : public Widget {
 		mutable int m_visible_offset;
 
 		// The UTF-32 character which hides each character of the string
-		sf::Uint32 m_text_placeholder;
+		std::uint32_t m_text_placeholder;
 
 		// The maximum text length. If it equals to 0, it disables this limit
 		int m_max_length;

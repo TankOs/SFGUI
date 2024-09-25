@@ -34,9 +34,9 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinnerDrawable( std::shared_ptr<const 
 	auto blend = ( 255.f - static_cast<float>( stopped_alpha ) ) / 255.f;
 
 	sf::Color stop_color(
-		static_cast<sf::Uint8>( static_cast<float>( color.r ) * ( 1.f - blend ) + static_cast<float>( background_color.r ) * blend ),
-		static_cast<sf::Uint8>( static_cast<float>( color.g ) * ( 1.f - blend ) + static_cast<float>( background_color.g ) * blend ),
-		static_cast<sf::Uint8>( static_cast<float>( color.b ) * ( 1.f - blend ) + static_cast<float>( background_color.b ) * blend )
+		static_cast<std::uint8_t>( static_cast<float>( color.r ) * ( 1.f - blend ) + static_cast<float>( background_color.r ) * blend ),
+		static_cast<std::uint8_t>( static_cast<float>( color.g ) * ( 1.f - blend ) + static_cast<float>( background_color.g ) * blend ),
+		static_cast<std::uint8_t>( static_cast<float>( color.b ) * ( 1.f - blend ) + static_cast<float>( background_color.b ) * blend )
 	);
 
 	auto started = spinner->Started();
@@ -59,9 +59,9 @@ std::unique_ptr<RenderQueue> BREW::CreateSpinnerDrawable( std::shared_ptr<const 
 		auto rod_alpha = static_cast<float>( rod_stage ) / ( static_cast<float>( steps ) - 1.f );
 
 		sf::Color rod_color(
-			static_cast<sf::Uint8>( static_cast<float>( color.r ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.r ) * rod_alpha ),
-			static_cast<sf::Uint8>( static_cast<float>( color.g ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.g ) * rod_alpha ),
-			static_cast<sf::Uint8>( static_cast<float>( color.b ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.b ) * rod_alpha )
+			static_cast<std::uint8_t>( static_cast<float>( color.r ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.r ) * rod_alpha ),
+			static_cast<std::uint8_t>( static_cast<float>( color.g ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.g ) * rod_alpha ),
+			static_cast<std::uint8_t>( static_cast<float>( color.b ) * ( 1.f - rod_alpha ) + static_cast<float>( background_color.b ) * rod_alpha )
 		);
 
 		queue->Add(

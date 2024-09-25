@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace sf {
 class Window;
@@ -249,7 +250,7 @@ class SFGUI_API Renderer {
 		 * @param low_bound Lower boundary of the character set, i.e. the glyph with the smallest codepoint.
 		 * @param high_bound Higher boundary of the character set, i.e. the glyph with the largest codepoint.
 		 */
-		void AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound );
+		void AddCharacterSet( std::uint32_t low_bound, std::uint32_t high_bound );
 
 		/** Get name of the Renderer.
 		 * The name of a Renderer is a descriptive name of the Renderer itself. E.g.
@@ -290,7 +291,7 @@ class SFGUI_API Renderer {
 
 		std::deque<priv::RendererTextureNode> m_textures;
 		std::map<FontID, std::shared_ptr<PrimitiveTexture>> m_fonts;
-		std::vector<std::pair<sf::Uint32, sf::Uint32>> m_character_sets;
+		std::vector<std::pair<std::uint32_t, std::uint32_t>> m_character_sets;
 
 		std::shared_ptr<PrimitiveTexture> m_pseudo_texture;
 

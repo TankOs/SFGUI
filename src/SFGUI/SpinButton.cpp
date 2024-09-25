@@ -144,7 +144,7 @@ void SpinButton::HandleUpdate( float seconds ) {
 	}
 
 	if( m_repeat_wait ) {
-		sf::Uint32 stepper_repeat_delay( Context::Get().GetEngine().GetProperty<sf::Uint32>( "StepperRepeatDelay", shared_from_this() ) );
+		std::uint32_t stepper_repeat_delay( Context::Get().GetEngine().GetProperty<std::uint32_t>( "StepperRepeatDelay", shared_from_this() ) );
 
 		if( m_elapsed_time < ( static_cast<float>( stepper_repeat_delay ) / 1000.f ) ) {
 			return;
@@ -166,7 +166,7 @@ void SpinButton::HandleUpdate( float seconds ) {
 	}
 }
 
-void SpinButton::HandleTextEvent( sf::Uint32 character ) {
+void SpinButton::HandleTextEvent( std::uint32_t character ) {
 	if( isdigit( static_cast<int>( character ) ) ) {
 		Entry::HandleTextEvent( character );
 		return;

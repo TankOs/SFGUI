@@ -114,9 +114,9 @@ class MyCustomWidget : public sfg::Widget {
 						sf::Vector2f( GetAllocation().width / 2.f, GetAllocation().height / 2.f ),
 						5.f,
 						sf::Color(
-							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
-							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
-							static_cast<sf::Uint8>( m_color_distribution( m_generator ) ),
+							static_cast<std::uint8_t>( m_color_distribution( m_generator ) ),
+							static_cast<std::uint8_t>( m_color_distribution( m_generator ) ),
+							static_cast<std::uint8_t>( m_color_distribution( m_generator ) ),
 							255
 						),
 						inner_border_color,

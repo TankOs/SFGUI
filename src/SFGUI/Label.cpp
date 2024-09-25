@@ -72,17 +72,17 @@ void Label::WrapText() {
 	unsigned int font_size( Context::Get().GetEngine().GetProperty<unsigned int>( "FontSize", shared_from_this() ) );
 	const sf::Font& font( *Context::Get().GetEngine().GetResourceManager().GetFont( font_name ) );
 
-	std::basic_string<sf::Uint32> wrapped_text;
-	std::basic_string<sf::Uint32> text( m_text.begin(), m_text.end() );
+	std::basic_string<std::uint32_t> wrapped_text;
+	std::basic_string<std::uint32_t> text( m_text.begin(), m_text.end() );
 
-	std::basic_string<sf::Uint32> line;
+	std::basic_string<std::uint32_t> line;
 
 	while( !text.empty() ) {
 		auto next_newline = text.find( L'\n' );
 
 		line = text.substr( 0, next_newline );
 
-		if( next_newline != std::basic_string<sf::Uint32>::npos ) {
+		if( next_newline != std::basic_string<std::uint32_t>::npos ) {
 			text.erase( 0, next_newline + 1 );
 		}
 		else {
@@ -105,14 +105,14 @@ void Label::WrapText() {
 				while( Context::Get().GetEngine().GetTextStringMetrics( line.substr( 0, last_space ), font, font_size ).x > GetAllocation().width ) {
 					last_space = line.find_last_of( L' ', last_space - 1 );
 
-					if( last_space == std::basic_string<sf::Uint32>::npos ) {
+					if( last_space == std::basic_string<std::uint32_t>::npos ) {
 						wrapped_text += line;
 						line.clear();
 						break;
 					}
 				}
 
-				if( last_space != std::basic_string<sf::Uint32>::npos ) {
+				if( last_space != std::basic_string<std::uint32_t>::npos ) {
 					wrapped_text += line.substr( 0, last_space );
 					line.erase( 0, last_space );
 				}
@@ -179,14 +179,14 @@ sf::Vector2f Label::CalculateRequisition() {
 	metrics.y = Context::Get().GetEngine().GetFontLineHeight( font, font_size );
 
 	sf::String wrapped_text( GetWrappedText() );
-	std::basic_string<sf::Uint32> text( wrapped_text.begin(), wrapped_text.end() );
+	std::basic_string<std::uint32_t> text( wrapped_text.begin(), wrapped_text.end() );
 
 	std::size_t lines = 1;
 
 	do {
 		auto next_newline = text.find( L'\n' );
 
-		if( next_newline != std::basic_string<sf::Uint32>::npos ) {
+		if( next_newline != std::basic_string<std::uint32_t>::npos ) {
 			text.erase( 0, next_newline + 1 );
 		}
 		else {

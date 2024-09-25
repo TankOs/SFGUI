@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <sstream>
+#include <cstdint>
 #include <cstdlib>
 
 int main() {
@@ -94,12 +95,12 @@ int main() {
 
 	// Layout.
 	auto table = sfg::Table::Create();
-	table->Attach( sfg::Label::Create( "Your guess:" ), sf::Rect<sf::Uint32>( 0, 0, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( current_number_entry, sf::Rect<sf::Uint32>( 1, 0, 1, 1 ) );
-	table->Attach( sfg::Label::Create( "Tries:" ), sf::Rect<sf::Uint32>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( tries_label, sf::Rect<sf::Uint32>( 1, 1, 1, 1 ) );
-	table->Attach( sfg::Label::Create( "Hint:" ), sf::Rect<sf::Uint32>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
-	table->Attach( hint_label, sf::Rect<sf::Uint32>( 1, 2, 1, 1 ) );
+	table->Attach( sfg::Label::Create( "Your guess:" ), sf::Rect<std::uint32_t>( 0, 0, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( current_number_entry, sf::Rect<std::uint32_t>( 1, 0, 1, 1 ) );
+	table->Attach( sfg::Label::Create( "Tries:" ), sf::Rect<std::uint32_t>( 0, 1, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( tries_label, sf::Rect<std::uint32_t>( 1, 1, 1, 1 ) );
+	table->Attach( sfg::Label::Create( "Hint:" ), sf::Rect<std::uint32_t>( 0, 2, 1, 1 ), sfg::Table::FILL, sfg::Table::FILL );
+	table->Attach( hint_label, sf::Rect<std::uint32_t>( 1, 2, 1, 1 ) );
 
 	table->SetColumnSpacings( 5.f );
 	table->SetRowSpacings( 5.f );

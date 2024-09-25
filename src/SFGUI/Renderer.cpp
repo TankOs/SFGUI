@@ -119,7 +119,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 
 	const static auto tab_spaces = 2.f;
 
-	sf::Uint32 previous_character = 0;
+	std::uint32_t previous_character = 0;
 
 	auto primitive = std::make_shared<Primitive>( str.getSize() * 4 );
 
@@ -505,7 +505,7 @@ void Renderer::WipeStateCache( sf::RenderTarget& target ) const {
 		bool glStatesSet;
 		bool ViewChanged;
 		sf::BlendMode LastBlendMode;
-		sf::Uint64 LastTextureId;
+		std::uint64_t LastTextureId;
 		bool UseVertexCache;
 		sf::Vertex VertexCache[4];
 	};
@@ -536,7 +536,7 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 
 		// Since maps allocate everything non-contiguously on the heap we can use void* instead of Page here.
 		mutable std::map<unsigned int, void*> unused4;
-		mutable std::vector<sf::Uint8> unused5;
+		mutable std::vector<std::uint8_t> unused5;
 	};
 
 	// All your font face are belong to us too.
@@ -552,7 +552,7 @@ sf::Vector2f Renderer::LoadFont( const sf::Font& font, unsigned int size ) {
 
 	// If the user does not specify their own character sets, make sure all the glyphs we need are loaded.
 	if( m_character_sets.empty() ) {
-		for( sf::Uint32 codepoint = 0; codepoint < 0x0370; ++codepoint ) {
+		for( std::uint32_t codepoint = 0; codepoint < 0x0370; ++codepoint ) {
 			font.getGlyph( codepoint, size, false );
 		}
 	}
@@ -809,7 +809,7 @@ const sf::Vector2i& Renderer::GetWindowSize() const {
 	return m_last_window_size;
 }
 
-void Renderer::AddCharacterSet( sf::Uint32 low_bound, sf::Uint32 high_bound ) {
+void Renderer::AddCharacterSet( std::uint32_t low_bound, std::uint32_t high_bound ) {
 	if( high_bound <= low_bound ) {
 		return;
 	}

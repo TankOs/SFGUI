@@ -764,7 +764,7 @@ void Widget::HandleStateChange( State /*old_state*/ ) {
 	Invalidate();
 }
 
-void Widget::HandleTextEvent( sf::Uint32 /*character*/ ) {
+void Widget::HandleTextEvent( std::uint32_t /*character*/ ) {
 }
 
 void Widget::HandleMouseEnter( int /*x*/, int /*y*/ ) {

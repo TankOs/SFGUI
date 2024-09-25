@@ -199,7 +199,7 @@ void WipeStateCache( sf::RenderTarget& target ) {
 		bool glStatesSet;
 		bool ViewChanged;
 		sf::BlendMode LastBlendMode;
-		sf::Uint64 LastTextureId;
+		std::uint64_t LastTextureId;
 		bool UseVertexCache;
 		sf::Vertex VertexCache[4];
 	};
@@ -557,7 +557,7 @@ void Canvas::DrawRenderTexture() {
 			mutable bool pixels_flipped;
 			bool unused7;
 			bool unused8;
-			sf::Uint64 unused9;
+			std::uint64_t unused9;
 		};
 
 		// Just so that SFML doesn't mess with the texture matrix.

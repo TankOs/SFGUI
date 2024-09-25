@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Rect.hpp>
 
 #include <memory>
+#include <cstdint>
 
 namespace sfg {
 
@@ -23,10 +24,10 @@ class TableCell {
 		 * @param y_options_ Y options.
 		 * @param padding_ Padding.
 		 */
-		TableCell( std::shared_ptr<Widget> child_, const sf::Rect<sf::Uint32>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ );
+		TableCell( std::shared_ptr<Widget> child_, const sf::Rect<std::uint32_t>& rect_, int x_options_, int y_options_, const sf::Vector2f& padding_ );
 
 		std::shared_ptr<Widget> child;
-		sf::Rect<sf::Uint32> rect;
+		sf::Rect<std::uint32_t> rect;
 		int x_options;
 		int y_options;
 		sf::Vector2f padding;
