@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7.2 )
+cmake_minimum_required( VERSION 3.22 )
 
 function( build_example SAMPLE_NAME SOURCES )
 	add_executable( ${SAMPLE_NAME} ${SOURCES} )
@@ -45,19 +45,19 @@ build_example( "SFGUI-Test" "Test.cpp" )
 # Don't try to copy if the directories are the same.
 if( NOT ( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" ) )
 	add_custom_command(
-		TARGET "SFGUI-Test"
+		TARGET "SFGUI-Test" POST_BUILD
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)
 	
 	add_custom_command(
-		TARGET "Image"
+		TARGET "Image" POST_BUILD
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)
 	
 	add_custom_command(
-		TARGET "Canvas"
+		TARGET "Canvas" POST_BUILD
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)

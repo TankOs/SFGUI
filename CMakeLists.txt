@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.7.2 )
+cmake_minimum_required( VERSION 3.22 )
 
 set( SFGUI_MAJOR_VERSION 0 )
 set( SFGUI_MINOR_VERSION 4 )
@@ -110,7 +110,7 @@ if( WIN32 )
 		set_target_properties( ${TARGET} PROPERTIES IMPORT_SUFFIX ".a" )
 	endif()
 
-	set( SHARE_PATH "." )
+	set( SHARE_PATH ${CMAKE_CURRENT_SOURCE_DIR} )
 	set( LIB_PATH "lib" )
 elseif( APPLE )
 	find_library( COREFOUNDATION_LIBRARY CoreFoundation )
