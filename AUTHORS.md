@@ -26,3 +26,9 @@ If you're missing in this file, please add yourself with contact info.
   * [jraynal](https://github.com/jraynal)
   * [DrBarbare](https://github.com/DrBarbare)
   * [BillyONeal](https://github.com/BillyONeal)
+  * [strga-nil](https://github.com/strega-nil)
+  * Greg Lindsey
+  * [Chuvi](https://github.com/Chuvi-w)
+  * [lapinozz](https://github.com/lapinozz)
+  * [al-mission-2016](https://github.com/al-mission-2016)
+  * [Chris Trasher](https://github.com/ChrisThrasher)
