@@ -15,7 +15,7 @@ int main() {
     widget.loadFromFile("data/window.xml");
     desktop.Add(std::dynamic_pointer_cast<sfg::Window>(static_cast<sfg::Widget::Ptr>(widget)));
 
-    desktop.LoadThemeFromFile("data/theme.css");
+    desktop.LoadThemeFromFile("data/xmltheme.theme");
 
     while (appWindow.isOpen()) {
         while (auto event = appWindow.pollEvent()) {
