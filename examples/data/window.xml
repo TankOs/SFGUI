@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Window title="Loaded from XML" style="SHADOW,CLOSE,BACKGROUND,TITLEBAR" pos="10 10" size="640 560">
+    <Notebook>
+        <Box orientation="VERTICAL" label="Views">
+            <Label>This is an label!</Label>
+            <ProgressBar value="0.3" orientation="HORIZONTAL"/>
+            <Scrollbar orientation="HORIZONTAL"/>
+            <Separator orientation="HORIZONTAL"/>
+            <Spinner size="40 40" pos="0 0"/>
+            <ScrolledWindow size="400 200">
+                <Image src="data/maid.png"/>
+            </ScrolledWindow>
+        </Box>
+        <Box orientation="VERTICAL" label="Events">
+            <Button class="success">Success</Button>
+            <Button class="warning">Warning</Button>
+            <Button class="danger">Danger</Button>
+            <Button class="">Normal</Button>
+
+            <ToggleButton>ToggleButton</ToggleButton>
+        </Box>
+        <Box orientation="VERTICAL" label="Inputs">
+            <Box orientation="" label="Inputs">
+                <Frame label="CheckButton" size="200 120">
+                    <Box orientation="VERTICAL">
+                        <CheckButton label="CheckButton 1"/>
+                        <CheckButton label="CheckButton 2"/>
+                        <CheckButton label="CheckButton 3"/>
+                    </Box>
+                </Frame>
+                <Frame label="RadioButton">
+                    <Box orientation="VERTICAL">
+                        <Frame label="Group 1">
+                            <Box orientation="VERTICAL">
+                                <RadioButton group="test" label="RadioButton 1"/>
+                                <RadioButton group="test" label="RadioButton 2"/>
+                                <RadioButton group="test" label="RadioButton 3"/>
+                            </Box>
+                        </Frame>
+                        <Frame label="Group 2">
+                            <Box orientation="VERTICAL">
+                                <RadioButton group="next" label="RadioButton 4"/>
+                                <RadioButton group="next" label="RadioButton 5"/>
+                                <RadioButton group="next" label="RadioButton 6"/>
+                            </Box>
+                        </Frame>
+                    </Box>
+                </Frame>
+            </Box>
+            <Entry id="entry_id" value="Value"/>
+            <Scale min="0" max="10" step="1" value="3"/>
+            <ComboBox selected="2">
+                <Item>Item 1</Item>
+                <Item>Item 2</Item>
+                <Item>Item 3</Item>
+                <Item>Item 4</Item>
+                <Item>Item 5</Item>
+            </ComboBox>
+            <SpinButton min="0" max="10" step="2" value="4"/>
+        </Box>
+        <Fixed label="Fixed Layout">
+            <Button pos="30 50">Fixed Button</Button>
+            <Label pos="100 10">Fixed Label</Label>
+        </Fixed>
+        <Table label="Table">
+            <Row>
+                <Col>
+                    <Button>{0, 0} - {1, 1}</Button>
+                </Col>
+                <Col>
+                    <Button rows="2">{1, 0} - {1, 2}</Button>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Button>{0, 1} - {1, 1}</Button>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <Button cols="2">{0, 2} - {2, 1}</Button>
+                </Col>
+            </Row>
+        </Table>
+    </Notebook>
+</Window>

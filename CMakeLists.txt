@@ -62,7 +62,7 @@ if( SFGUI_INCLUDE_FONT )
 	target_compile_definitions( ${TARGET} PRIVATE SFGUI_INCLUDE_FONT )
 endif()
 
-target_link_libraries( ${TARGET} PUBLIC SFML::Graphics OpenGL::GL )
+target_link_libraries( ${TARGET} PUBLIC SFML::Graphics OpenGL::GL tinyxml2 unistring )
 
 # Tell the compiler to export when necessary.
 set_target_properties( ${TARGET} PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )
@@ -122,7 +122,7 @@ elseif( "${CMAKE_SYSTEM_NAME}" MATCHES "Linux" )
 	find_package( X11 REQUIRED )
 	target_link_libraries( ${TARGET} PUBLIC X11::X11 )
 	set( SHARE_PATH "${CMAKE_INSTALL_PREFIX}/share/SFGUI" )
-	
+
 	if( LIB_SUFFIX )
 		set( LIB_PATH "lib${LIB_SUFFIX}" )
 	else()

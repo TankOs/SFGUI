@@ -38,6 +38,7 @@ build_example( "ProgressBar" "ProgressBar.cpp" )
 build_example( "SpinButton" "SpinButton.cpp" )
 build_example( "Canvas" "Canvas.cpp" )
 build_example( "CustomWidget" "CustomWidget.cpp" )
+build_example( "XMLLoader" "XMLLoader.cpp" )
 build_example( "SFGUI-Test" "Test.cpp" )
 
 # Copy data directory to build cache directory to be able to run examples from
@@ -49,13 +50,13 @@ if( NOT ( "${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}" ) )
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)
-	
+
 	add_custom_command(
 		TARGET "Image" POST_BUILD
 		COMMAND "${CMAKE_COMMAND}"
 		ARGS -E copy_directory "${PROJECT_SOURCE_DIR}/examples/data" "${PROJECT_BINARY_DIR}/examples/data"
 	)
-	
+
 	add_custom_command(
 		TARGET "Canvas" POST_BUILD
 		COMMAND "${CMAKE_COMMAND}"
