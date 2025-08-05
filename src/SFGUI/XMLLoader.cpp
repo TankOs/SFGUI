@@ -29,17 +29,21 @@ static std::map<std::string, std::shared_ptr<sfg::RadioButtonGroup>> RadioGroupM
 
 // Recursive function to each XMLElements and generate widgets
 sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr widget){
-    std::string elementName(element->Name());
+    std::string elementName(toLowercase(element->Name()));
     std::map<std::string, std::string> elementAttributes;
 
     // collect attributes in xml tag and save in elementAttributes with string
     for(auto attr = element->FirstAttribute(); attr != nullptr; attr = attr->Next()){
-        elementAttributes[toLowercase(attr->Name())] = toLowercase(std::string(attr->Value()));
+        if(!std::string(toLowercase(attr->Name())).compare("label") || !std::string(toLowercase(attr->Name())).compare("value")){
+            elementAttributes[toLowercase(attr->Name())] = std::string(attr->Value());
+        }else{
+            elementAttributes[toLowercase(attr->Name())] = toLowercase(std::string(attr->Value()));
+        }
     }
 
     sfg::Widget::Ptr newWidget = nullptr;
 
-    if(!elementName.compare("Box")){ // create Box widget
+    if(!elementName.compare("box")){ // create Box widget
         newWidget = sfg::Box::Create();
 
         // set orientation to Box widget
@@ -60,14 +64,14 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
             generateWidget(child, newWidget);
         }
-    }else if(!elementName.compare("Button")){ // create Button widget
+    }else if(!elementName.compare("button")){ // create Button widget
         newWidget = sfg::Button::Create();
         if(element->GetText()){
             sfg_cast(Button, newWidget)->SetLabel(str_to_utf32(std::string(element->GetText())));
         }
-    }else if(!elementName.compare("Canvas")){ // create Canvas widget
+    }else if(!elementName.compare("canvas")){ // create Canvas widget
         newWidget = sfg::Canvas::Create();
-    }else if(!elementName.compare("CheckButton")){ // create CheckButton
+    }else if(!elementName.compare("checkbutton")){ // create CheckButton
         newWidget = sfg::CheckButton::Create(L"");
 
         // add a label to CheckButton
@@ -81,7 +85,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
                 sfg_cast(CheckButton, newWidget)->SetActive(true);
             }
         }
-    }else if(!elementName.compare("ComboBox")){ // create ComboBox
+    }else if(!elementName.compare("combobox")){ // create ComboBox
         newWidget = sfg::ComboBox::Create();
 
         // this iteraction is find chils with Item tag name to add items to ComboBox
@@ -97,21 +101,21 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
             sscanf(elementAttributes["selected"].c_str(), "%d", &selected);
             sfg_cast(ComboBox, newWidget)->SelectItem(selected);
         }
-    }else if(!elementName.compare("Entry")){ // create Entry widget
+    }else if(!elementName.compare("entry")){ // create Entry widget
         newWidget = sfg::Entry::Create();
 
         // add text in entry with value attribute in Entry tag
         if(elementAttributes.find("value") != elementAttributes.end()){
             sfg_cast(Entry, newWidget)->SetText(str_to_utf32(elementAttributes["value"]));
         }
-    }else if(!elementName.compare("Fixed")){ // create Fixed widget
+    }else if(!elementName.compare("fixed")){ // create Fixed widget
         newWidget = sfg::Fixed::Create();
 
         // add childs in Fixed
         for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
             generateWidget(child, newWidget);
         }
-    }else if(!elementName.compare("Frame")){ // create Frame widget
+    }else if(!elementName.compare("frame")){ // create Frame widget
         newWidget = sfg::Frame::Create();
 
         if(elementAttributes.find("label") != elementAttributes.end()){
@@ -123,7 +127,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         if(child){
             generateWidget(child, newWidget);
         }
-    }else if(!elementName.compare("Image")){ // create Image widget
+    }else if(!elementName.compare("image")){ // create Image widget
         newWidget = sfg::Image::Create();
 
         // load image from path in src attribute
@@ -133,12 +137,12 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
                 sfg_cast(Image, newWidget)->SetImage(img);
             }
         }
-    }else if(!elementName.compare("Label")){ // create Label widget
+    }else if(!elementName.compare("label")){ // create Label widget
         newWidget = sfg::Label::Create();
         if(element->GetText()){
             sfg_cast(Label, newWidget)->SetText(str_to_utf32(std::string(element->GetText())));
         }
-    }else if(!elementName.compare("Notebook")){ // create Notebook widget
+    }else if(!elementName.compare("notebook")){ // create Notebook widget
         newWidget = sfg::Notebook::Create();
 
         // iterate childs
@@ -148,7 +152,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
             std::map<std::string, std::string> childAttributes;
             // read child attributes to add page label
             for(auto attr = child->FirstAttribute(); attr != nullptr; attr = attr->Next()){
-                childAttributes[toLowercase(attr->Name())] = toLowercase(std::string(attr->Value()));
+                childAttributes[toLowercase(attr->Name())] = std::string(attr->Value());
             }
 
             if(childAttributes.find("label") != childAttributes.end()){
@@ -165,7 +169,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
             sscanf(elementAttributes["selected"].c_str(), "%d", &selected);
             sfg_cast(Notebook, newWidget)->SetCurrentPage(selected);
         }
-    }else if(!elementName.compare("ProgressBar")){ // create ProgressBar widget
+    }else if(!elementName.compare("progressbar")){ // create ProgressBar widget
         newWidget = sfg::ProgressBar::Create();
 
         // set vertical orientation to ProgressBar
@@ -180,7 +184,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
             sscanf(elementAttributes["value"].c_str(), "%f", &value);
         }
         sfg_cast(ProgressBar, newWidget)->SetFraction(value);
-    }else if(!elementName.compare("RadioButton")){ // create RadioButton widget
+    }else if(!elementName.compare("radiobutton")){ // create RadioButton widget
         newWidget = sfg::RadioButton::Create(L"");
 
         if(elementAttributes.find("label") != elementAttributes.end()){
@@ -195,7 +199,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
                 RadioGroupMap[elementAttributes["group"]] = sfg_cast(RadioButton, newWidget)->GetGroup();
             }
         }
-    }else if(!elementName.compare("Scale")){ // create Scale widget
+    }else if(!elementName.compare("scale")){ // create Scale widget
         sfg::Scale::Orientation orientation = sfg::Scale::Orientation::HORIZONTAL;
 
         if(elementAttributes.find("orientation") != elementAttributes.end()){
@@ -227,7 +231,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         sfg_cast(Scale, newWidget)->SetRange(min, max);
         sfg_cast(Scale, newWidget)->SetIncrements(step, step);
         sfg_cast(Scale, newWidget)->SetValue(value);
-    }else if(!elementName.compare("Scrollbar")){ // create Scrollbar widget
+    }else if(!elementName.compare("scrollbar")){ // create Scrollbar widget
         sfg::Scrollbar::Orientation orientation = sfg::Scrollbar::Orientation::HORIZONTAL;
 
         if(elementAttributes.find("orientation") != elementAttributes.end()){
@@ -237,7 +241,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         }
 
         newWidget = sfg::Scrollbar::Create(orientation);
-    }else if(!elementName.compare("ScrolledWindow")){ // create ScrolledWindow
+    }else if(!elementName.compare("scrolledwindow")){ // create ScrolledWindow
         newWidget = sfg::ScrolledWindow::Create();
 
         sfg_cast(ScrolledWindow, newWidget)->SetScrollbarPolicy(sfg::ScrolledWindow::HORIZONTAL_ALWAYS | sfg::ScrolledWindow::VERTICAL_AUTOMATIC);
@@ -246,7 +250,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         if(child){
             generateWidget(child, newWidget);
         }
-    }else if(!elementName.compare("Separator")){ // create Separator widget
+    }else if(!elementName.compare("separator")){ // create Separator widget
         sfg::Separator::Orientation orientation = sfg::Separator::Orientation::HORIZONTAL;
 
         if(elementAttributes.find("orientation") != elementAttributes.end()){
@@ -256,9 +260,9 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         }
 
         newWidget = sfg::Separator::Create(orientation);
-    }else if(!elementName.compare("Spinner")){ // create Spinner widget
+    }else if(!elementName.compare("spinner")){ // create Spinner widget
         newWidget = sfg::Spinner::Create();
-    }else if(!elementName.compare("SpinButton")){ // create SpinButton widget
+    }else if(!elementName.compare("spinbutton")){ // create SpinButton widget
         newWidget = sfg::SpinButton::Create(0.0, 10.0, 1);
 
         float min = 0.0,
@@ -283,17 +287,17 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         sfg_cast(SpinButton, newWidget)->SetRange(min, max);
         sfg_cast(SpinButton, newWidget)->SetStep(step);
         sfg_cast(SpinButton, newWidget)->SetValue(value);
-    }else if(!elementName.compare("Table")){ // create Table
+    }else if(!elementName.compare("table")){ // create Table
         newWidget = sfg::Table::Create();
 
         unsigned int col=0, row=0;
 
         // Iteract rows and cols to define widget position in table
         for(auto rowElement = element->FirstChildElement(); rowElement != nullptr; rowElement = rowElement->NextSiblingElement()){
-            if(!std::string(rowElement->Name()).compare("Row")){
+            if(!std::string(toLowercase(rowElement->Name())).compare("row")){
                 col = 0;
                 for(auto colElement = rowElement->FirstChildElement(); colElement != nullptr; colElement = colElement->NextSiblingElement()){
-                    if(!std::string(colElement->Name()).compare("Col")){
+                    if(!std::string(toLowercase(colElement->Name())).compare("col")){
 
                         // get child in element in Col tag
                         auto child = colElement->FirstChildElement();
@@ -325,13 +329,13 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
                 row++;
             }
         }
-    }else if(!elementName.compare("ToggleButton")){ // create ToggleButton widget
+    }else if(!elementName.compare("togglebutton")){ // create ToggleButton widget
         newWidget = sfg::ToggleButton::Create();
 
         if(element->GetText()){
             sfg_cast(Button, newWidget)->SetLabel(str_to_utf32(std::string(element->GetText())));
         }
-    }else if(!elementName.compare("Window")){ // create Window widget
+    }else if(!elementName.compare("window")){ // create Window widget
         newWidget = sfg::Window::Create();
         char style = sfg::Window::Style::TOPLEVEL;
 
