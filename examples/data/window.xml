@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window title="Loaded from XML" style="SHADOW,CLOSE,BACKGROUND,TITLEBAR" pos="10 10" size="640 560">
+<Window title="Loaded from XML" style="SHADOW,CLOSE,BACKGROUND,TITLEBAR" pos="10 10" size="640 680">
     <Notebook>
         <Box orientation="VERTICAL" label="Views">
             <Label>This is an label!</Label>
@@ -11,7 +11,7 @@
                 <Image src="data/maid.png"/>
             </ScrolledWindow>
         </Box>
-        <Box orientation="VERTICAL" label="Events">
+        <Box orientation="VERTICAL" label="Events" spacing="2">
             <Button class="success">Success</Button>
             <Button class="warning">Warning</Button>
             <Button class="danger">Danger</Button>
@@ -62,7 +62,7 @@
             <Button pos="30 50">Fixed Button</Button>
             <Label pos="100 10">Fixed Label</Label>
         </Fixed>
-        <Table label="Table">
+        <Table label="Table" spacing="10">
             <Row>
                 <Col>
                     <Button>{0, 0} - {1, 1}</Button>

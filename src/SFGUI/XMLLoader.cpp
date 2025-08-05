@@ -292,6 +292,13 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
         unsigned int col=0, row=0;
 
+        if(elementAttributes.find("spacing") != elementAttributes.end()){
+            float spacing = 0;
+            sscanf(elementAttributes["spacing"].c_str(), "%f", &spacing);
+            sfg_cast(Table, newWidget)->SetRowSpacings(spacing);
+            sfg_cast(Table, newWidget)->SetColumnSpacings(spacing);
+        }
+
         // Iteract rows and cols to define widget position in table
         for(auto rowElement = element->FirstChildElement(); rowElement != nullptr; rowElement = rowElement->NextSiblingElement()){
             if(!std::string(toLowercase(rowElement->Name())).compare("row")){
