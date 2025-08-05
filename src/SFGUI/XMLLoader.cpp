@@ -189,7 +189,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
         // generate and set groups to RadioButtons
         if(elementAttributes.find("group") != elementAttributes.end()){
-            if(RadioGroupMap.find("group") != RadioGroupMap.end()){
+            if(RadioGroupMap.find(elementAttributes["group"]) != RadioGroupMap.end()){
                 sfg_cast(RadioButton, newWidget)->SetGroup(RadioGroupMap[elementAttributes["group"]]);
             }else{
                 RadioGroupMap[elementAttributes["group"]] = sfg_cast(RadioButton, newWidget)->GetGroup();
