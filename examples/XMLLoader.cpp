@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFGUI/SFGUI.hpp>
 #include <SFGUI/Widgets.hpp>
-#include <SFGUI/XMLLoader.hpp>
+#include <SFGUI/UI/XMLLoader.hpp>
 
 int main() {
     sf::RenderWindow appWindow(sf::VideoMode({800, 600}), "Loading GUI from XML");
@@ -11,9 +11,9 @@ int main() {
     sfg::SFGUI sfgui;
     sfg::Desktop desktop;
 
-    sfg::XMLWidget widget;
-    widget.loadFromFile("data/window.xml");
-    desktop.Add(std::dynamic_pointer_cast<sfg::Window>(static_cast<sfg::Widget::Ptr>(widget)));
+    sfg::ui::XMLLoader::Ptr loader = sfg::ui::XMLLoader::Create();
+    loader->loadFromFile("data/window.xml");
+    desktop.Add(std::dynamic_pointer_cast<sfg::Window>(loader->getWidget()));
 
     desktop.LoadThemeFromFile("data/xmltheme.theme");
 
