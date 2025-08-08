@@ -183,31 +183,38 @@ sf::Vector2f Engine::GetTextStringMetrics( const sf::String& string, const sf::F
 	auto longest_line = 0.f;
 
 	for( const auto& current_character : string ) {
-		metrics.x += static_cast<float>( font.getKerning( previous_character, current_character, font_size ) );
-
 		switch( current_character ) {
 			case L' ':
 				metrics.x += horizontal_spacing;
-				continue;
+				break;
+
 			case L'\t':
 				metrics.x += horizontal_spacing * tab_spaces;
-				continue;
+				break;
+
 			case L'\n':
 				metrics.y += vertical_spacing;
 				longest_line = std::max( metrics.x, longest_line );
 				metrics.x = 0.f;
-				continue;
+				break;
+
 			case L'\v':
 				metrics.y += vertical_spacing * tab_spaces;
-				continue;
+				break;
+
 			default:
+				if( previous_character != 0 ) {
+					metrics.x += static_cast<float>( font.getKerning( previous_character, current_character, font_size ) );
+				}
+
+				previous_character = current_character;
+
+				const auto& glyph = font.getGlyph( current_character, font_size, false );
+				metrics.x += static_cast<float>( glyph.advance );
+				metrics.y = std::max( metrics.y, static_cast<float>( glyph.bounds.size.y ) );
+
 				break;
 		}
-
-		const auto& glyph = font.getGlyph( current_character, font_size, false );
-
-		metrics.x += static_cast<float>( glyph.advance );
-		metrics.y = std::max( metrics.y, static_cast<float>( glyph.bounds.size.y ) );
 	}
 
 	metrics.x = std::max( longest_line, metrics.x );
