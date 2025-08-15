@@ -20,6 +20,8 @@ namespace sfg {
                 PEDANTIC_WHITESPACE
             };
 
+            static std::map<std::string, sfg::Signal::SignalID*> SIGNAL;
+
     		static Ptr Create(bool processEntities = true, Whitespace whitespaceMode = Whitespace::PRESERVE_WHITESPACE);
 
             bool loadFromFile(std::string fileName);

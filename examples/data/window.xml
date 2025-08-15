@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window title="Loaded from XML" style="SHADOW,CLOSE,BACKGROUND,TITLEBAR" pos="10 10" size="640 680">
-    <Notebook>
+<Window title="Loaded from éXML" style="SHADOW,CLOSE,BACKGROUND,TITLEBAR" pos="10 10" size="640 680">
+    <Notebook on-tab-change="on_tab_change_event">
         <Box orientation="VERTICAL" label="Views">
             <Label>This is an label!</Label>
             <ProgressBar value="0.3" orientation="HORIZONTAL"/>
@@ -15,7 +15,7 @@
             <Button class="success">Success</Button>
             <Button class="warning">Warning</Button>
             <Button class="danger">Danger</Button>
-            <Button class="">Normal</Button>
+            <Button class="" on-left-click="button_click_event">Normal</Button>
 
             <ToggleButton>ToggleButton</ToggleButton>
         </Box>

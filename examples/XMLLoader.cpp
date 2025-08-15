@@ -3,6 +3,17 @@
 #include <SFGUI/Widgets.hpp>
 #include <SFGUI/UI/XMLLoader.hpp>
 
+// to compile this examples need pass -rdynamic flag in compilation
+// -rdynamic grant the access to extern function in executable file
+
+extern "C" void button_click_event(sfg::Widget::Ptr widget){
+    puts("Clicked");
+}
+
+extern "C" void on_tab_change_event(sfg::Notebook::Ptr notebook){
+    puts("Tab changed!");
+}
+
 int main() {
     sf::RenderWindow appWindow(sf::VideoMode({800, 600}), "Loading GUI from XML");
     appWindow.setFramerateLimit(60);

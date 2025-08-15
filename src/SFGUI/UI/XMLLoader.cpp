@@ -25,6 +25,10 @@ static std::u32string utf8_to_utf32(std::string utf8_str) {
     return result;
 }
 
+void test(sfg::Widget::Ptr widget){
+    puts("OK");
+}
+
 // Register the RadioButton groups to perform the grouping.
 static std::map<std::string, std::shared_ptr<sfg::RadioButtonGroup>> RadioGroupMap;
 
@@ -35,7 +39,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
     // collect attributes in xml tag and save in elementAttributes with string
     for(auto attr = element->FirstAttribute(); attr != nullptr; attr = attr->Next()){
-        if(!std::string(toLowercase(attr->Name())).compare("label") || !std::string(toLowercase(attr->Name())).compare("value") || !std::string(toLowercase(attr->Name())).compare("title")){
+        if(!std::string(toLowercase(attr->Name())).compare("label") || !std::string(toLowercase(attr->Name())).compare("value") || !std::string(toLowercase(attr->Name())).compare("title") || !std::string(toLowercase(attr->Name())).compare(0, 2, "on-")){
             elementAttributes[toLowercase(attr->Name())] = std::string(attr->Value());
         }else{
             elementAttributes[toLowercase(attr->Name())] = toLowercase(std::string(attr->Value()));
@@ -70,6 +74,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         if(element->GetText()){
             sfg_cast(Button, newWidget)->SetLabel(utf8_to_utf32(std::string(element->GetText())));
         }
+
     }else if(!elementName.compare("canvas")){ // create Canvas widget
         newWidget = sfg::Canvas::Create();
     }else if(!elementName.compare("checkbutton")){ // create CheckButton
@@ -378,6 +383,28 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         return nullptr;
     }
 
+    for(auto attr: elementAttributes){
+        if(attr.first.compare(0, 2, "on-")){
+            if(sfg::ui::XMLLoader::SIGNAL.find(attr.first) != sfg::ui::XMLLoader::SIGNAL.end()){
+                const tinyxml2::XMLAttribute* buffAttr = nullptr;
+                for(buffAttr = element->FirstAttribute(); buffAttr != nullptr; buffAttr = buffAttr->Next()){
+                    if(!attr.first.compare(buffAttr->Name())) break;
+                }
+                if(buffAttr){
+                    newWidget->GetSignal(*sfg::ui::XMLLoader::SIGNAL[attr.first]).Connect([newWidget, buffAttr]{
+                        void *handle = dlopen(NULL, RTLD_LAZY);
+                        if(handle){
+                            void (*callback)(sfg::Widget::Ptr);
+                            callback = (void (*)(sfg::Widget::Ptr)) dlsym(handle, buffAttr->Value());
+                            if(callback) callback(newWidget);
+                            dlclose(handle);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
     if(!widget){
         widget = newWidget; // pass newWidget to widget as root widget if widget is null
     }else{
@@ -413,6 +440,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         sscanf(elementAttributes["size"].c_str(), "%f %f", &size.x, &size.y);
         newWidget->SetRequisition(size);
     }
+
 
     return widget;
 };
@@ -457,5 +485,33 @@ namespace sfg{
             this->m_reload = false;
             return true;
         }
+
+        std::map<std::string, sfg::Signal::SignalID*> XMLLoader::SIGNAL = {
+                {"on-state-change"          , &sfg::Widget::OnStateChange},
+                {"on-gain-focus"            , &sfg::Widget::OnGainFocus},
+                {"on-lost-focus"            , &sfg::Widget::OnLostFocus},
+                {"on-expose"                , &sfg::Widget::OnExpose},
+                {"on-size-allocate"         , &sfg::Widget::OnSizeAllocate},
+                {"on-size-request"          , &sfg::Widget::OnSizeRequest},
+                {"on-mouse-enter"           , &sfg::Widget::OnMouseEnter},
+                {"on-mouse-leave"           , &sfg::Widget::OnMouseLeave},
+                {"on-mouse-move"            , &sfg::Widget::OnMouseMove},
+                {"on-mouse-left-press"      , &sfg::Widget::OnMouseLeftPress},
+                {"on-mouse-right-press"     , &sfg::Widget::OnMouseRightPress},
+                {"on-mouse-left-release"    , &sfg::Widget::OnMouseLeftRelease},
+                {"on-mouse-right-release"   , &sfg::Widget::OnMouseRightRelease},
+                {"on-left-click"            , &sfg::Widget::OnLeftClick},
+                {"on-right-click"           , &sfg::Widget::OnRightClick},
+                {"on-key-press"             , &sfg::Widget::OnKeyPress},
+                {"on-key-release"           , &sfg::Widget::OnKeyRelease},
+                {"on-text"                  , &sfg::Widget::OnText},
+                {"on-select"                , &sfg::ComboBox::OnSelect},
+                {"on-open"                  , &sfg::ComboBox::OnOpen},
+                {"on-text-changed"          , &sfg::Entry::OnTextChanged},
+                {"on-tab-change"            , &sfg::Notebook::OnTabChange},
+                {"on-value-changed"         , &sfg::SpinButton::OnValueChanged},
+                {"on-toggle"                , &sfg::ToggleButton::OnToggle},
+                {"on-close-button"          , &sfg::Window::OnCloseButton},
+        };
     }
 }

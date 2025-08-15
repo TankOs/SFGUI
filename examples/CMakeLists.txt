@@ -1,5 +1,8 @@
 cmake_minimum_required( VERSION 3.22 )
 
+# the flag -rdynamic are required to XMLLoader parser string callback in xml
+set(CMAKE_CXX_FLAGS "-O2 -rdynamic")
+
 function( build_example SAMPLE_NAME SOURCES )
 	add_executable( ${SAMPLE_NAME} ${SOURCES} )
 	target_link_libraries( ${SAMPLE_NAME} PRIVATE SFGUI::SFGUI)
