@@ -15,12 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2019, os: windows-2019 }
         - { name: Windows VS2022, os: windows-2022 }
         - { name: Linux GCC,      os: ubuntu-24.04 }
         - { name: Linux Clang,    os: ubuntu-24.04, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
         - { name: macOS x64,      os: macos-13 }
-        - { name: macOS arm64,    os: macos-14 }
+        - { name: macOS arm64,    os: macos-15 }
         config:
         - { name: Shared, flags: -DBUILD_SHARED_LIBS=ON -DSFGUI_BUILD_SHARED_LIBS=ON -DSFML_STATIC_LIBRARIES=OFF }
         - { name: Static, flags: -DBUILD_SHARED_LIBS=OFF -DSFGUI_BUILD_SHARED_LIBS=OFF -DSFML_STATIC_LIBRARIES=ON }
@@ -38,7 +37,7 @@ jobs:
       with:
         fetch-depth: 0
         repository: SFML/SFML
-        ref: 3.0.0
+        ref: 3.0.1
         path: SFML
 
     - name: SFML - Configure CMake
