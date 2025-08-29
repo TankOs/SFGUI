@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Window title="Loaded from éXML" style="SHADOW,CLOSE,BACKGROUND,TITLEBAR" pos="10 10" size="640 680">
+<Window title="Loaded from éXML" style="SHADOW,CLOSE,BACKGROUND,TITLEBAR" pos="10 10" size="640 680" on-create="config_windo_load_event_for_widget">
     <Notebook on-tab-change="on_tab_change_event">
         <Box orientation="VERTICAL" label="Views">
             <Label>This is an label!</Label>

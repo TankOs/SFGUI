@@ -3,7 +3,22 @@
 #include <string>
 #include <unistr.h>
 #include <uniconv.h>
+#include <tinyxml2.h>
+
+#ifdef __WIN32
+#include <windows.h>
+#define OpenSelf() LoadLibrary(NULL)
+#define GetFunction(library, function_name) (void (*)(sfg::Widget::Ptr, sf::RenderWindow*)) GetProcAddress(library, function_name)
+#define CloseSelf(library) FreeLibrary(library)
+#else
 #include <dlfcn.h>
+#define OpenSelf() dlopen(NULL, RTLD_LAZY)
+#define GetFunction(library, function_name) (void (*)(sfg::Widget::Ptr, sf::RenderWindow*)) dlsym(library, function_name)
+#define CloseSelf(library) dlclose(library)
+typedef void* HMODULE;
+#endif
+
+#define sfg_cast(className, ptr) std::dynamic_pointer_cast<sfg::className>(ptr)
 
 // pass string to lowercase
 static std::string toLowercase(std::string str) {
@@ -12,34 +27,17 @@ static std::string toLowercase(std::string str) {
     return str;
 }
 
-// this function is used because sf::String can't be parse special characters from string to string32
-static std::u32string utf8_to_utf32(std::string utf8_str) {
-    std::u32string result;
-
-    size_t size;
-    uint32_t* utf32 = u8_to_u32(reinterpret_cast<const uint8_t*>(utf8_str.data()), utf8_str.size(), nullptr, &size);
-    if(!utf32) return U"";
-
-    result.assign(utf32, utf32 + size);
-    free(utf32);
-    return result;
-}
-
-void test(sfg::Widget::Ptr widget){
-    puts("OK");
-}
-
 // Register the RadioButton groups to perform the grouping.
 static std::map<std::string, std::shared_ptr<sfg::RadioButtonGroup>> RadioGroupMap;
 
 // Recursive function to each XMLElements and generate widgets
-sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr widget){
+sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr widget, sf::RenderWindow* render){
     std::string elementName(toLowercase(element->Name()));
     std::map<std::string, std::string> elementAttributes;
 
     // collect attributes in xml tag and save in elementAttributes with string
     for(auto attr = element->FirstAttribute(); attr != nullptr; attr = attr->Next()){
-        if(!std::string(toLowercase(attr->Name())).compare("label") || !std::string(toLowercase(attr->Name())).compare("value") || !std::string(toLowercase(attr->Name())).compare("title") || !std::string(toLowercase(attr->Name())).compare(0, 2, "on-")){
+        if(!std::string(toLowercase(attr->Name())).compare("label") || !std::string(toLowercase(attr->Name())).compare("value") || !std::string(toLowercase(attr->Name())).compare("title") || !std::string(toLowercase(attr->Name())).compare(0, 3, "on-")){
             elementAttributes[toLowercase(attr->Name())] = std::string(attr->Value());
         }else{
             elementAttributes[toLowercase(attr->Name())] = toLowercase(std::string(attr->Value()));
@@ -67,12 +65,16 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
         // Iterate XMLElements to create and add childs to Box
         for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
-            generateWidget(child, newWidget);
+            generateWidget(child, newWidget, render);
         }
     }else if(!elementName.compare("button")){ // create Button widget
         newWidget = sfg::Button::Create();
         if(element->GetText()){
-            sfg_cast(Button, newWidget)->SetLabel(utf8_to_utf32(std::string(element->GetText())));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(std::string(element->GetText()).begin(), std::string(element->GetText()).end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Button, newWidget)->SetLabel(str32.data());
         }
 
     }else if(!elementName.compare("canvas")){ // create Canvas widget
@@ -82,7 +84,11 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
         // add a label to CheckButton
         if(elementAttributes.find("label") != elementAttributes.end()){
-            sfg_cast(CheckButton, newWidget)->SetLabel(utf8_to_utf32(std::string(elementAttributes["label"])));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["label"].begin(), elementAttributes["label"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(CheckButton, newWidget)->SetLabel(str32.data());
         }
 
         // Mark CheckButton as checked
@@ -97,7 +103,11 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         // this iteraction is find chils with Item tag name to add items to ComboBox
         for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
             if(!std::string(child->Name()).compare("Item")){
-                sfg_cast(ComboBox, newWidget)->AppendItem(utf8_to_utf32(std::string(child->GetText())));
+                std::vector<char32_t> str32;
+                sf::Utf8::toUtf32(std::string(child->GetText()).begin(), std::string(child->GetText()).end(), std::back_inserter(str32));
+                str32.push_back(0); // needed to add end of string to str32
+
+                sfg_cast(ComboBox, newWidget)->AppendItem(str32.data());
             }
         }
 
@@ -112,26 +122,34 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
         // add text in entry with value attribute in Entry tag
         if(elementAttributes.find("value") != elementAttributes.end()){
-            sfg_cast(Entry, newWidget)->SetText(utf8_to_utf32(elementAttributes["value"]));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["value"].begin(), elementAttributes["value"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Entry, newWidget)->SetText(str32.data());
         }
     }else if(!elementName.compare("fixed")){ // create Fixed widget
         newWidget = sfg::Fixed::Create();
 
         // add childs in Fixed
         for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
-            generateWidget(child, newWidget);
+            generateWidget(child, newWidget, render);
         }
     }else if(!elementName.compare("frame")){ // create Frame widget
         newWidget = sfg::Frame::Create();
 
         if(elementAttributes.find("label") != elementAttributes.end()){
-            sfg_cast(Frame, newWidget)->SetLabel(utf8_to_utf32(elementAttributes["label"]));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["label"].begin(), elementAttributes["label"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Frame, newWidget)->SetLabel(str32.data());
         }
 
         // add child element to Frame
         auto child = element->FirstChildElement();
         if(child){
-            generateWidget(child, newWidget);
+            generateWidget(child, newWidget, render);
         }
     }else if(!elementName.compare("image")){ // create Image widget
         newWidget = sfg::Image::Create();
@@ -146,7 +164,11 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
     }else if(!elementName.compare("label")){ // create Label widget
         newWidget = sfg::Label::Create();
         if(element->GetText()){
-            sfg_cast(Label, newWidget)->SetText(utf8_to_utf32(std::string(element->GetText())));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(std::string(element->GetText()).begin(), std::string(element->GetText()).end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Label, newWidget)->SetText(str32.data());
         }
     }else if(!elementName.compare("notebook")){ // create Notebook widget
         newWidget = sfg::Notebook::Create();
@@ -162,10 +184,14 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
             }
 
             if(childAttributes.find("label") != childAttributes.end()){
-                pageLabel->SetText(utf8_to_utf32(std::string(childAttributes["label"])));
+                std::vector<char32_t> str32;
+                sf::Utf8::toUtf32(childAttributes["label"].begin(), childAttributes["label"].end(), std::back_inserter(str32));
+                str32.push_back(0); // needed to add end of string to str32
+
+                pageLabel->SetText(str32.data());
             }
 
-            sfg::Widget::Ptr page = generateWidget(child, nullptr);
+            sfg::Widget::Ptr page = generateWidget(child, nullptr, render);
             if(page) sfg_cast(Notebook, newWidget)->AppendPage(page, pageLabel);
         }
 
@@ -194,7 +220,11 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         newWidget = sfg::RadioButton::Create(L"");
 
         if(elementAttributes.find("label") != elementAttributes.end()){
-            sfg_cast(RadioButton, newWidget)->SetLabel(utf8_to_utf32(elementAttributes["label"]));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["label"].begin(), elementAttributes["label"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(RadioButton, newWidget)->SetLabel(str32.data());
         }
 
         // generate and set groups to RadioButtons
@@ -214,10 +244,10 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
             }
         }
 
-        float min = 0.0,
-              max = 0.0,
-              step = 2.0,
-              value = 0.0;
+        float min = 0.0;
+        float max = 0.0;
+        float step = 2.0;
+        float value = 0.0;
 
         // get attributes min, max, step and value to set to Scale
         if(elementAttributes.find("min") != elementAttributes.end()){
@@ -254,7 +284,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
         auto child = element->FirstChildElement();
         if(child){
-            generateWidget(child, newWidget);
+            generateWidget(child, newWidget, render);
         }
     }else if(!elementName.compare("separator")){ // create Separator widget
         sfg::Separator::Orientation orientation = sfg::Separator::Orientation::HORIZONTAL;
@@ -271,10 +301,10 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
     }else if(!elementName.compare("spinbutton")){ // create SpinButton widget
         newWidget = sfg::SpinButton::Create(0.0, 10.0, 1);
 
-        float min = 0.0,
-              max = 0.0,
-              step = 2.0,
-              value = 0.0;
+        float min = 0.0;
+        float max = 0.0;
+        float step = 2.0;
+        float value = 0.0;
 
         // get attributes min, max, step and value to set to SpinButton
         if(elementAttributes.find("min") != elementAttributes.end()){
@@ -331,7 +361,7 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
                                 sscanf(childAttributes["rows"].c_str(), "%u", &crSpan.y);
                             }
 
-                            auto childWidget = generateWidget(child, nullptr);
+                            auto childWidget = generateWidget(child, nullptr, render);
                             if(childWidget){
                                 sfg_cast(Table, newWidget)->Attach(childWidget, sf::Rect<std::uint32_t>( { col, row }, {crSpan.x, crSpan.y}));
                             }
@@ -346,7 +376,11 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         newWidget = sfg::ToggleButton::Create();
 
         if(element->GetText()){
-            sfg_cast(Button, newWidget)->SetLabel(utf8_to_utf32(std::string(element->GetText())));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(std::string(element->GetText()).begin(), std::string(element->GetText()).end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Button, newWidget)->SetLabel(str32.data());
         }
     }else if(!elementName.compare("window")){ // create Window widget
         newWidget = sfg::Window::Create();
@@ -370,13 +404,17 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         }
 
         if(elementAttributes.find("title") != elementAttributes.end()){
-            sfg_cast(Window, newWidget)->SetTitle(utf8_to_utf32(elementAttributes["title"]));
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["title"].begin(), elementAttributes["title"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Window, newWidget)->SetTitle(str32.data());
 
         }
 
         auto child = element->FirstChildElement();
         if(child){
-            generateWidget(child, newWidget);
+            generateWidget(child, newWidget, render);
         }
     }else{
         std::cerr << "Error to render \"" << element->Name() << "\"" << " component not exists!" << std::endl;
@@ -391,13 +429,13 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
                     if(!attr.first.compare(buffAttr->Name())) break;
                 }
                 if(buffAttr){
-                    newWidget->GetSignal(*sfg::ui::XMLLoader::SIGNAL[attr.first]).Connect([newWidget, buffAttr]{
-                        void *handle = dlopen(NULL, RTLD_LAZY);
+                    newWidget->GetSignal(*sfg::ui::XMLLoader::SIGNAL[attr.first]).Connect([newWidget, buffAttr, render]{
+                        HMODULE handle = OpenSelf();
                         if(handle){
-                            void (*callback)(sfg::Widget::Ptr);
-                            callback = (void (*)(sfg::Widget::Ptr)) dlsym(handle, buffAttr->Value());
-                            if(callback) callback(newWidget);
-                            dlclose(handle);
+                            void (*callback)(sfg::Widget::Ptr, sf::RenderWindow*);
+                            callback = GetFunction(handle, buffAttr->Value());
+                            if(callback) callback(newWidget, render);
+                            CloseSelf(handle);
                         }
                     });
                 }
@@ -440,6 +478,15 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
         sscanf(elementAttributes["size"].c_str(), "%f %f", &size.x, &size.y);
         newWidget->SetRequisition(size);
     }
+    if(elementAttributes.find("on-create") != elementAttributes.end()){
+        HMODULE handle = OpenSelf();
+        if(handle){
+            void (*callback)(sfg::Widget::Ptr, sf::RenderWindow*);
+            callback = GetFunction(handle, elementAttributes["on-create"].c_str());
+            if(callback) callback(newWidget, render);
+            CloseSelf(handle);
+        }
+    }
 
 
     return widget;
@@ -447,18 +494,19 @@ sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr 
 
 namespace sfg{
     namespace ui{
-        XMLLoader::XMLLoader(bool processEntities, Whitespace whitespaceMode) : tinyxml2::XMLDocument(processEntities, static_cast<tinyxml2::Whitespace>(whitespaceMode)){
+        XMLLoader::XMLLoader() : tinyxml2::XMLDocument(true, tinyxml2::PRESERVE_WHITESPACE){
             this->m_widget = nullptr;
             this->m_reload = false;
         }
 
-        std::shared_ptr<XMLLoader> XMLLoader::Create(bool processEntities, Whitespace whitespaceMode){
-            XMLLoader::Ptr xmlLoader(new XMLLoader(processEntities, whitespaceMode));
+        std::shared_ptr<XMLLoader> XMLLoader::Create(){
+            XMLLoader::Ptr xmlLoader(new XMLLoader());
             return xmlLoader;
         }
 
-        bool XMLLoader::loadFromFile(std::string fileName){ // load xmlfile using tinyxml2
+        bool XMLLoader::loadFromFile(std::string fileName, sf::RenderWindow* render){ // load xmlfile using tinyxml2
             tinyxml2::XMLError result = LoadFile(fileName.c_str());
+            this->m_render = render;
             if (result != tinyxml2::XML_SUCCESS) {
                 std::cerr << "Failed to load XML file: " << fileName << " (Error: " << result << ")" << std::endl;
                 return false;
@@ -473,19 +521,16 @@ namespace sfg{
             return this->m_widget;
         }
 
-        XMLLoader::operator sfg::Widget::Ptr(){
-            return this->getWidget();
-        }
-
         bool XMLLoader::parser(){ // make parse from xml to widget
             tinyxml2::XMLElement* element = this->RootElement();
 
-            this->m_widget = generateWidget(element, nullptr);
+            this->m_widget = generateWidget(element, nullptr, this->m_render);
 
             this->m_reload = false;
             return true;
         }
 
+        // register events pointers to sync callbacks
         std::map<std::string, sfg::Signal::SignalID*> XMLLoader::SIGNAL = {
                 {"on-state-change"          , &sfg::Widget::OnStateChange},
                 {"on-gain-focus"            , &sfg::Widget::OnGainFocus},

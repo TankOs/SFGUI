@@ -62,7 +62,7 @@ if( SFGUI_INCLUDE_FONT )
 	target_compile_definitions( ${TARGET} PRIVATE SFGUI_INCLUDE_FONT )
 endif()
 
-target_link_libraries( ${TARGET} PUBLIC SFML::Graphics OpenGL::GL tinyxml2 unistring )
+target_link_libraries( ${TARGET} PUBLIC SFML::Graphics OpenGL::GL tinyxml2 )
 
 # Tell the compiler to export when necessary.
 set_target_properties( ${TARGET} PROPERTIES DEFINE_SYMBOL SFGUI_EXPORTS )

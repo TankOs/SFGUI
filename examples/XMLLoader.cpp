@@ -3,28 +3,29 @@
 #include <SFGUI/Widgets.hpp>
 #include <SFGUI/UI/XMLLoader.hpp>
 
-// to compile this examples need pass -rdynamic flag in compilation
-// -rdynamic grant the access to extern function in executable file
-
-extern "C" void button_click_event(sfg::Widget::Ptr widget){
+extern "C" void button_click_event(sfg::Widget::Ptr widget, sf::RenderWindow* render){
     puts("Clicked");
 }
 
-extern "C" void on_tab_change_event(sfg::Notebook::Ptr notebook){
+extern "C" void on_tab_change_event(sfg::Notebook::Ptr notebook, sf::RenderWindow* render){
     puts("Tab changed!");
 }
 
+extern "C" void config_windo_load_event_for_widget(sfg::Notebook::Ptr notebook, sf::RenderWindow* render){
+    puts("Window as created!");
+}
+
 int main() {
-    sf::RenderWindow appWindow(sf::VideoMode({800, 600}), "Loading GUI from XML");
+    sf::RenderWindow appWindow(sf::VideoMode({800, 600}), "Exemplo SFGUI");
     appWindow.setFramerateLimit(60);
     appWindow.resetGLStates();
 
     sfg::SFGUI sfgui;
     sfg::Desktop desktop;
 
-    sfg::ui::XMLLoader::Ptr loader = sfg::ui::XMLLoader::Create();
-    loader->loadFromFile("data/window.xml");
-    desktop.Add(std::dynamic_pointer_cast<sfg::Window>(loader->getWidget()));
+    sfg::ui::XMLLoader::Ptr widget = sfg::ui::XMLLoader::Create();
+    widget->loadFromFile("data/window.xml");
+    desktop.Add(std::dynamic_pointer_cast<sfg::Window>(widget->getWidget()));
 
     desktop.LoadThemeFromFile("data/xmltheme.theme");
 
