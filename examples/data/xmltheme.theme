@@ -1,0 +1,53 @@
+*{
+    FontName: data/Courier Prime Bold.ttf;
+}
+
+Window{
+    BackgroundColor: #22262aff;
+    BorderColor: #00000000;
+}
+
+Button {
+    BackgroundColor: #6497e4ff;
+    BorderColor: #1e56abff;
+    Color: #FFFFFFFF;
+}
+
+Button:prelight {
+    BorderColor: #1e56abff;
+    BackgroundColor: #256ddaff;
+}
+
+Button:active {
+    BorderColor: #6497e4ff;
+    BackgroundColor: #1e56abff;
+}
+
+Button.danger {
+    BackgroundColor: #d45e5eFF;
+    BorderColor: #8d2626ff;
+}
+
+Button.danger:active {
+    BorderColor: #d45e5eFF;
+    BackgroundColor: #8d2626ff;
+}
+
+Button.warning {
+    BackgroundColor: #e6ba6aff;
+    BorderColor: #b37e1eff;
+}
+
+Button.success {
+    BackgroundColor: #44af7fff;
+    BorderColor: #20533cff;
+}
+
+Entry {
+    BackgroundColor: #C8C8C8FF;
+    Color: #000000FF;
+}
+
+Entry#my_entry {
+    FontSize: 14;
+}

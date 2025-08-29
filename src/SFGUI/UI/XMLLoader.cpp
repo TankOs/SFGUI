@@ -1,0 +1,562 @@
+#include <SFGUI/UI/XMLLoader.hpp>
+#include <algorithm>
+#include <string>
+#include <unistr.h>
+#include <uniconv.h>
+#include <tinyxml2.h>
+
+#ifdef __WIN32
+#include <windows.h>
+#define OpenSelf() LoadLibrary(NULL)
+#define GetFunction(library, function_name) (void (*)(sfg::Widget::Ptr, sf::RenderWindow*)) GetProcAddress(library, function_name)
+#define CloseSelf(library) FreeLibrary(library)
+#else
+#include <dlfcn.h>
+#define OpenSelf() dlopen(NULL, RTLD_LAZY)
+#define GetFunction(library, function_name) (void (*)(sfg::Widget::Ptr, sf::RenderWindow*)) dlsym(library, function_name)
+#define CloseSelf(library) dlclose(library)
+typedef void* HMODULE;
+#endif
+
+#define sfg_cast(className, ptr) std::dynamic_pointer_cast<sfg::className>(ptr)
+
+// pass string to lowercase
+static std::string toLowercase(std::string str) {
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+    return str;
+}
+
+// Register the RadioButton groups to perform the grouping.
+static std::map<std::string, std::shared_ptr<sfg::RadioButtonGroup>> RadioGroupMap;
+
+// Recursive function to each XMLElements and generate widgets
+sfg::Widget::Ptr generateWidget(tinyxml2::XMLElement* element, sfg::Widget::Ptr widget, sf::RenderWindow* render){
+    std::string elementName(toLowercase(element->Name()));
+    std::map<std::string, std::string> elementAttributes;
+
+    // collect attributes in xml tag and save in elementAttributes with string
+    for(auto attr = element->FirstAttribute(); attr != nullptr; attr = attr->Next()){
+        if(!std::string(toLowercase(attr->Name())).compare("label") || !std::string(toLowercase(attr->Name())).compare("value") || !std::string(toLowercase(attr->Name())).compare("title") || !std::string(toLowercase(attr->Name())).compare(0, 3, "on-")){
+            elementAttributes[toLowercase(attr->Name())] = std::string(attr->Value());
+        }else{
+            elementAttributes[toLowercase(attr->Name())] = toLowercase(std::string(attr->Value()));
+        }
+    }
+
+    sfg::Widget::Ptr newWidget = nullptr;
+
+    if(!elementName.compare("box")){ // create Box widget
+        newWidget = sfg::Box::Create();
+
+        // set orientation to Box widget
+        if(elementAttributes.find("orientation") != elementAttributes.end()){
+            if(!elementAttributes["orientation"].compare("vertical")){
+                sfg_cast(Box,newWidget)->SetOrientation(sfg::Box::Orientation::VERTICAL);
+            }
+        }
+
+        // set spacing to Box widget
+        if(elementAttributes.find("spacing") != elementAttributes.end()){
+            float spacing = 0;
+            sscanf(elementAttributes["spacing"].c_str(), "%f", &spacing);
+            sfg_cast(Box,newWidget)->SetSpacing(spacing);
+        }
+
+        // Iterate XMLElements to create and add childs to Box
+        for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
+            generateWidget(child, newWidget, render);
+        }
+    }else if(!elementName.compare("button")){ // create Button widget
+        newWidget = sfg::Button::Create();
+        if(element->GetText()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(std::string(element->GetText()).begin(), std::string(element->GetText()).end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Button, newWidget)->SetLabel(str32.data());
+        }
+
+    }else if(!elementName.compare("canvas")){ // create Canvas widget
+        newWidget = sfg::Canvas::Create();
+    }else if(!elementName.compare("checkbutton")){ // create CheckButton
+        newWidget = sfg::CheckButton::Create(L"");
+
+        // add a label to CheckButton
+        if(elementAttributes.find("label") != elementAttributes.end()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["label"].begin(), elementAttributes["label"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(CheckButton, newWidget)->SetLabel(str32.data());
+        }
+
+        // Mark CheckButton as checked
+        if(elementAttributes.find("checked") != elementAttributes.end()){
+            if(!elementAttributes["checked"].compare("1") || !elementAttributes["checked"].compare("true")){
+                sfg_cast(CheckButton, newWidget)->SetActive(true);
+            }
+        }
+    }else if(!elementName.compare("combobox")){ // create ComboBox
+        newWidget = sfg::ComboBox::Create();
+
+        // this iteraction is find chils with Item tag name to add items to ComboBox
+        for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
+            if(!std::string(child->Name()).compare("Item")){
+                std::vector<char32_t> str32;
+                sf::Utf8::toUtf32(std::string(child->GetText()).begin(), std::string(child->GetText()).end(), std::back_inserter(str32));
+                str32.push_back(0); // needed to add end of string to str32
+
+                sfg_cast(ComboBox, newWidget)->AppendItem(str32.data());
+            }
+        }
+
+        // select item in ComboBox
+        if(elementAttributes.find("selected") != elementAttributes.end()){
+            int selected = 0;
+            sscanf(elementAttributes["selected"].c_str(), "%d", &selected);
+            sfg_cast(ComboBox, newWidget)->SelectItem(selected);
+        }
+    }else if(!elementName.compare("entry")){ // create Entry widget
+        newWidget = sfg::Entry::Create();
+
+        // add text in entry with value attribute in Entry tag
+        if(elementAttributes.find("value") != elementAttributes.end()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["value"].begin(), elementAttributes["value"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Entry, newWidget)->SetText(str32.data());
+        }
+    }else if(!elementName.compare("fixed")){ // create Fixed widget
+        newWidget = sfg::Fixed::Create();
+
+        // add childs in Fixed
+        for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
+            generateWidget(child, newWidget, render);
+        }
+    }else if(!elementName.compare("frame")){ // create Frame widget
+        newWidget = sfg::Frame::Create();
+
+        if(elementAttributes.find("label") != elementAttributes.end()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["label"].begin(), elementAttributes["label"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Frame, newWidget)->SetLabel(str32.data());
+        }
+
+        // add child element to Frame
+        auto child = element->FirstChildElement();
+        if(child){
+            generateWidget(child, newWidget, render);
+        }
+    }else if(!elementName.compare("image")){ // create Image widget
+        newWidget = sfg::Image::Create();
+
+        // load image from path in src attribute
+        if(elementAttributes.find("src") != elementAttributes.end()){
+            sf::Image img;
+            if(img.loadFromFile(elementAttributes["src"])){
+                sfg_cast(Image, newWidget)->SetImage(img);
+            }
+        }
+    }else if(!elementName.compare("label")){ // create Label widget
+        newWidget = sfg::Label::Create();
+        if(element->GetText()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(std::string(element->GetText()).begin(), std::string(element->GetText()).end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Label, newWidget)->SetText(str32.data());
+        }
+    }else if(!elementName.compare("notebook")){ // create Notebook widget
+        newWidget = sfg::Notebook::Create();
+
+        // iterate childs
+        for(auto child = element->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()){
+            sfg::Label::Ptr pageLabel = sfg::Label::Create(); // label used in Notebook page
+
+            std::map<std::string, std::string> childAttributes;
+            // read child attributes to add page label
+            for(auto attr = child->FirstAttribute(); attr != nullptr; attr = attr->Next()){
+                childAttributes[toLowercase(attr->Name())] = std::string(attr->Value());
+            }
+
+            if(childAttributes.find("label") != childAttributes.end()){
+                std::vector<char32_t> str32;
+                sf::Utf8::toUtf32(childAttributes["label"].begin(), childAttributes["label"].end(), std::back_inserter(str32));
+                str32.push_back(0); // needed to add end of string to str32
+
+                pageLabel->SetText(str32.data());
+            }
+
+            sfg::Widget::Ptr page = generateWidget(child, nullptr, render);
+            if(page) sfg_cast(Notebook, newWidget)->AppendPage(page, pageLabel);
+        }
+
+        // set one page as selected
+        if(elementAttributes.find("selected") != elementAttributes.end()){
+            int selected = 0;
+            sscanf(elementAttributes["selected"].c_str(), "%d", &selected);
+            sfg_cast(Notebook, newWidget)->SetCurrentPage(selected);
+        }
+    }else if(!elementName.compare("progressbar")){ // create ProgressBar widget
+        newWidget = sfg::ProgressBar::Create();
+
+        // set vertical orientation to ProgressBar
+        if(elementAttributes.find("orientation") != elementAttributes.end()){
+            if(!elementAttributes["orientation"].compare("vertical")){
+                sfg_cast(ProgressBar, newWidget)->SetOrientation(sfg::ProgressBar::Orientation::VERTICAL);
+            }
+        }
+
+        float value = 0.0;
+        if(elementAttributes.find("value") != elementAttributes.end()){
+            sscanf(elementAttributes["value"].c_str(), "%f", &value);
+        }
+        sfg_cast(ProgressBar, newWidget)->SetFraction(value);
+    }else if(!elementName.compare("radiobutton")){ // create RadioButton widget
+        newWidget = sfg::RadioButton::Create(L"");
+
+        if(elementAttributes.find("label") != elementAttributes.end()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["label"].begin(), elementAttributes["label"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(RadioButton, newWidget)->SetLabel(str32.data());
+        }
+
+        // generate and set groups to RadioButtons
+        if(elementAttributes.find("group") != elementAttributes.end()){
+            if(RadioGroupMap.find(elementAttributes["group"]) != RadioGroupMap.end()){
+                sfg_cast(RadioButton, newWidget)->SetGroup(RadioGroupMap[elementAttributes["group"]]);
+            }else{
+                RadioGroupMap[elementAttributes["group"]] = sfg_cast(RadioButton, newWidget)->GetGroup();
+            }
+        }
+    }else if(!elementName.compare("scale")){ // create Scale widget
+        sfg::Scale::Orientation orientation = sfg::Scale::Orientation::HORIZONTAL;
+
+        if(elementAttributes.find("orientation") != elementAttributes.end()){
+            if(!elementAttributes["orientation"].compare("vertical")){
+                orientation = sfg::Scale::Orientation::VERTICAL;
+            }
+        }
+
+        float min = 0.0;
+        float max = 0.0;
+        float step = 2.0;
+        float value = 0.0;
+
+        // get attributes min, max, step and value to set to Scale
+        if(elementAttributes.find("min") != elementAttributes.end()){
+            sscanf(elementAttributes["min"].c_str(), "%f", &min);
+        }
+        if(elementAttributes.find("max") != elementAttributes.end()){
+            sscanf(elementAttributes["max"].c_str(), "%f", &max);
+        }
+        if(elementAttributes.find("step") != elementAttributes.end()){
+            sscanf(elementAttributes["step"].c_str(), "%f", &step);
+        }
+        if(elementAttributes.find("value") != elementAttributes.end()){
+            sscanf(elementAttributes["value"].c_str(), "%f", &value);
+        }
+
+        newWidget = sfg::Scale::Create(orientation);
+        sfg_cast(Scale, newWidget)->SetRange(min, max);
+        sfg_cast(Scale, newWidget)->SetIncrements(step, step);
+        sfg_cast(Scale, newWidget)->SetValue(value);
+    }else if(!elementName.compare("scrollbar")){ // create Scrollbar widget
+        sfg::Scrollbar::Orientation orientation = sfg::Scrollbar::Orientation::HORIZONTAL;
+
+        if(elementAttributes.find("orientation") != elementAttributes.end()){
+            if(!elementAttributes["orientation"].compare("vertical")){
+                orientation = sfg::Scrollbar::Orientation::VERTICAL;
+            }
+        }
+
+        newWidget = sfg::Scrollbar::Create(orientation);
+    }else if(!elementName.compare("scrolledwindow")){ // create ScrolledWindow
+        newWidget = sfg::ScrolledWindow::Create();
+
+        sfg_cast(ScrolledWindow, newWidget)->SetScrollbarPolicy(sfg::ScrolledWindow::HORIZONTAL_ALWAYS | sfg::ScrolledWindow::VERTICAL_AUTOMATIC);
+
+        auto child = element->FirstChildElement();
+        if(child){
+            generateWidget(child, newWidget, render);
+        }
+    }else if(!elementName.compare("separator")){ // create Separator widget
+        sfg::Separator::Orientation orientation = sfg::Separator::Orientation::HORIZONTAL;
+
+        if(elementAttributes.find("orientation") != elementAttributes.end()){
+            if(!elementAttributes["orientation"].compare("vertical")){
+                orientation = sfg::Separator::Orientation::VERTICAL;
+            }
+        }
+
+        newWidget = sfg::Separator::Create(orientation);
+    }else if(!elementName.compare("spinner")){ // create Spinner widget
+        newWidget = sfg::Spinner::Create();
+    }else if(!elementName.compare("spinbutton")){ // create SpinButton widget
+        newWidget = sfg::SpinButton::Create(0.0, 10.0, 1);
+
+        float min = 0.0;
+        float max = 0.0;
+        float step = 2.0;
+        float value = 0.0;
+
+        // get attributes min, max, step and value to set to SpinButton
+        if(elementAttributes.find("min") != elementAttributes.end()){
+            sscanf(elementAttributes["min"].c_str(), "%f", &min);
+        }
+        if(elementAttributes.find("max") != elementAttributes.end()){
+            sscanf(elementAttributes["max"].c_str(), "%f", &max);
+        }
+        if(elementAttributes.find("step") != elementAttributes.end()){
+            sscanf(elementAttributes["step"].c_str(), "%f", &step);
+        }
+        if(elementAttributes.find("value") != elementAttributes.end()){
+            sscanf(elementAttributes["value"].c_str(), "%f", &value);
+        }
+
+        sfg_cast(SpinButton, newWidget)->SetRange(min, max);
+        sfg_cast(SpinButton, newWidget)->SetStep(step);
+        sfg_cast(SpinButton, newWidget)->SetValue(value);
+    }else if(!elementName.compare("table")){ // create Table
+        newWidget = sfg::Table::Create();
+
+        unsigned int col=0, row=0;
+
+        if(elementAttributes.find("spacing") != elementAttributes.end()){
+            float spacing = 0;
+            sscanf(elementAttributes["spacing"].c_str(), "%f", &spacing);
+            sfg_cast(Table, newWidget)->SetRowSpacings(spacing);
+            sfg_cast(Table, newWidget)->SetColumnSpacings(spacing);
+        }
+
+        // Iteract rows and cols to define widget position in table
+        for(auto rowElement = element->FirstChildElement(); rowElement != nullptr; rowElement = rowElement->NextSiblingElement()){
+            if(!std::string(toLowercase(rowElement->Name())).compare("row")){
+                col = 0;
+                for(auto colElement = rowElement->FirstChildElement(); colElement != nullptr; colElement = colElement->NextSiblingElement()){
+                    if(!std::string(toLowercase(colElement->Name())).compare("col")){
+
+                        // get child in element in Col tag
+                        auto child = colElement->FirstChildElement();
+                        if(child){
+                            sf::Vector2u crSpan(1, 1);
+                            std::map<std::string, std::string> childAttributes;
+
+                            // read and save child attributes
+                            for(auto attr = child->FirstAttribute(); attr != nullptr; attr = attr->Next()){
+                                childAttributes[toLowercase(attr->Name())] = toLowercase(std::string(attr->Value()));
+                            }
+
+                            // set colspan and rowspan to widget
+                            if(childAttributes.find("cols") != childAttributes.end()){
+                                sscanf(childAttributes["cols"].c_str(), "%u", &crSpan.x);
+                            }
+                            if(childAttributes.find("rows") != childAttributes.end()){
+                                sscanf(childAttributes["rows"].c_str(), "%u", &crSpan.y);
+                            }
+
+                            auto childWidget = generateWidget(child, nullptr, render);
+                            if(childWidget){
+                                sfg_cast(Table, newWidget)->Attach(childWidget, sf::Rect<std::uint32_t>( { col, row }, {crSpan.x, crSpan.y}));
+                            }
+                        }
+                        col++;
+                    }
+                }
+                row++;
+            }
+        }
+    }else if(!elementName.compare("togglebutton")){ // create ToggleButton widget
+        newWidget = sfg::ToggleButton::Create();
+
+        if(element->GetText()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(std::string(element->GetText()).begin(), std::string(element->GetText()).end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Button, newWidget)->SetLabel(str32.data());
+        }
+    }else if(!elementName.compare("window")){ // create Window widget
+        newWidget = sfg::Window::Create();
+        char style = sfg::Window::Style::TOPLEVEL;
+
+        // read and set window style
+        if(elementAttributes.find("style") != elementAttributes.end()){
+            std::string styles(elementAttributes["style"]);
+            if(styles.find("toplevel") == std::string::npos){
+                style = 0;
+
+                if(styles.find("no_style") != std::string::npos){ style += sfg::Window::Style::NO_STYLE; }
+                if(styles.find("titlebar") != std::string::npos){ style += sfg::Window::Style::TITLEBAR; }
+                if(styles.find("background") != std::string::npos){ style += sfg::Window::Style::BACKGROUND; }
+                if(styles.find("resize") != std::string::npos){ style += sfg::Window::Style::RESIZE; }
+                if(styles.find("shadow") != std::string::npos){ style += sfg::Window::Style::SHADOW; }
+                if(styles.find("close") != std::string::npos){ style += sfg::Window::Style::CLOSE; }
+
+                sfg_cast(Window, newWidget)->SetStyle(style);
+            }
+        }
+
+        if(elementAttributes.find("title") != elementAttributes.end()){
+            std::vector<char32_t> str32;
+            sf::Utf8::toUtf32(elementAttributes["title"].begin(), elementAttributes["title"].end(), std::back_inserter(str32));
+            str32.push_back(0); // needed to add end of string to str32
+
+            sfg_cast(Window, newWidget)->SetTitle(str32.data());
+
+        }
+
+        auto child = element->FirstChildElement();
+        if(child){
+            generateWidget(child, newWidget, render);
+        }
+    }else{
+        std::cerr << "Error to render \"" << element->Name() << "\"" << " component not exists!" << std::endl;
+        return nullptr;
+    }
+
+    for(auto attr: elementAttributes){
+        if(attr.first.compare(0, 2, "on-")){
+            if(sfg::ui::XMLLoader::SIGNAL.find(attr.first) != sfg::ui::XMLLoader::SIGNAL.end()){
+                const tinyxml2::XMLAttribute* buffAttr = nullptr;
+                for(buffAttr = element->FirstAttribute(); buffAttr != nullptr; buffAttr = buffAttr->Next()){
+                    if(!attr.first.compare(buffAttr->Name())) break;
+                }
+                if(buffAttr){
+                    newWidget->GetSignal(*sfg::ui::XMLLoader::SIGNAL[attr.first]).Connect([newWidget, buffAttr, render]{
+                        HMODULE handle = OpenSelf();
+                        if(handle){
+                            void (*callback)(sfg::Widget::Ptr, sf::RenderWindow*);
+                            callback = GetFunction(handle, buffAttr->Value());
+                            if(callback) callback(newWidget, render);
+                            CloseSelf(handle);
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    if(!widget){
+        widget = newWidget; // pass newWidget to widget as root widget if widget is null
+    }else{
+        std::string widgetName(widget->GetName());
+        // verify name of widget to know how to add childs
+        if(!widgetName.compare("Window")){
+            std::dynamic_pointer_cast<sfg::Window>(widget)->Add(newWidget);
+        }else if(!widgetName.compare("Box")){
+            std::dynamic_pointer_cast<sfg::Box>(widget)->Pack(newWidget);
+        }else if(!widgetName.compare("Frame")){
+            std::dynamic_pointer_cast<sfg::Frame>(widget)->Add(newWidget);
+        }else if(!widgetName.compare("ScrolledWindow")){
+            std::dynamic_pointer_cast<sfg::ScrolledWindow>(widget)->AddWithViewport(newWidget);
+        }else if(!widgetName.compare("Fixed")){
+            std::dynamic_pointer_cast<sfg::Fixed>(widget)->Put(newWidget, sf::Vector2f(0.0, 0.0));
+        }
+    }
+
+    // set basic attributes to newWidget, id, class, pos and size
+    if(elementAttributes.find("id") != elementAttributes.end()){
+        newWidget->SetId(elementAttributes["id"]);
+    }
+    if(elementAttributes.find("class") != elementAttributes.end()){
+        newWidget->SetClass(elementAttributes["class"]);
+    }
+    if(elementAttributes.find("pos") != elementAttributes.end()){
+        sf::Vector2f pos;
+        sscanf(elementAttributes["pos"].c_str(), "%f %f", &pos.x, &pos.y);
+        newWidget->SetPosition(pos);
+    }
+    if(elementAttributes.find("size") != elementAttributes.end()){
+        sf::Vector2f size;
+        sscanf(elementAttributes["size"].c_str(), "%f %f", &size.x, &size.y);
+        newWidget->SetRequisition(size);
+    }
+    if(elementAttributes.find("on-create") != elementAttributes.end()){
+        HMODULE handle = OpenSelf();
+        if(handle){
+            void (*callback)(sfg::Widget::Ptr, sf::RenderWindow*);
+            callback = GetFunction(handle, elementAttributes["on-create"].c_str());
+            if(callback) callback(newWidget, render);
+            CloseSelf(handle);
+        }
+    }
+
+
+    return widget;
+};
+
+namespace sfg{
+    namespace ui{
+        XMLLoader::XMLLoader() : tinyxml2::XMLDocument(true, tinyxml2::PRESERVE_WHITESPACE){
+            this->m_widget = nullptr;
+            this->m_reload = false;
+        }
+
+        std::shared_ptr<XMLLoader> XMLLoader::Create(){
+            XMLLoader::Ptr xmlLoader(new XMLLoader());
+            return xmlLoader;
+        }
+
+        bool XMLLoader::loadFromFile(std::string fileName, sf::RenderWindow* render){ // load xmlfile using tinyxml2
+            tinyxml2::XMLError result = LoadFile(fileName.c_str());
+            this->m_render = render;
+            if (result != tinyxml2::XML_SUCCESS) {
+                std::cerr << "Failed to load XML file: " << fileName << " (Error: " << result << ")" << std::endl;
+                return false;
+            }
+            this->m_reload = true;
+            return true;
+        }
+
+        std::shared_ptr<sfg::Widget> XMLLoader::getWidget(){
+            if(this->m_reload) this->parser();
+
+            return this->m_widget;
+        }
+
+        bool XMLLoader::parser(){ // make parse from xml to widget
+            tinyxml2::XMLElement* element = this->RootElement();
+
+            this->m_widget = generateWidget(element, nullptr, this->m_render);
+
+            this->m_reload = false;
+            return true;
+        }
+
+        // register events pointers to sync callbacks
+        std::map<std::string, sfg::Signal::SignalID*> XMLLoader::SIGNAL = {
+                {"on-state-change"          , &sfg::Widget::OnStateChange},
+                {"on-gain-focus"            , &sfg::Widget::OnGainFocus},
+                {"on-lost-focus"            , &sfg::Widget::OnLostFocus},
+                {"on-expose"                , &sfg::Widget::OnExpose},
+                {"on-size-allocate"         , &sfg::Widget::OnSizeAllocate},
+                {"on-size-request"          , &sfg::Widget::OnSizeRequest},
+                {"on-mouse-enter"           , &sfg::Widget::OnMouseEnter},
+                {"on-mouse-leave"           , &sfg::Widget::OnMouseLeave},
+                {"on-mouse-move"            , &sfg::Widget::OnMouseMove},
+                {"on-mouse-left-press"      , &sfg::Widget::OnMouseLeftPress},
+                {"on-mouse-right-press"     , &sfg::Widget::OnMouseRightPress},
+                {"on-mouse-left-release"    , &sfg::Widget::OnMouseLeftRelease},
+                {"on-mouse-right-release"   , &sfg::Widget::OnMouseRightRelease},
+                {"on-left-click"            , &sfg::Widget::OnLeftClick},
+                {"on-right-click"           , &sfg::Widget::OnRightClick},
+                {"on-key-press"             , &sfg::Widget::OnKeyPress},
+                {"on-key-release"           , &sfg::Widget::OnKeyRelease},
+                {"on-text"                  , &sfg::Widget::OnText},
+                {"on-select"                , &sfg::ComboBox::OnSelect},
+                {"on-open"                  , &sfg::ComboBox::OnOpen},
+                {"on-text-changed"          , &sfg::Entry::OnTextChanged},
+                {"on-tab-change"            , &sfg::Notebook::OnTabChange},
+                {"on-value-changed"         , &sfg::SpinButton::OnValueChanged},
+                {"on-toggle"                , &sfg::ToggleButton::OnToggle},
+                {"on-close-button"          , &sfg::Window::OnCloseButton},
+        };
+    }
+}
