@@ -132,7 +132,7 @@ sf::Vector2f Engine::GetTextStringMetrics( const std::u32string& string, const s
 
 	const static auto tab_spaces = 2.f;
 
-	std::uint32_t previous_character = 0;
+	char32_t previous_character = 0;
 
 	auto longest_line = 0.f;
 
@@ -178,7 +178,7 @@ sf::Vector2f Engine::GetTextStringMetrics( const sf::String& string, const sf::F
 
 	const static auto tab_spaces = 2.f;
 
-	std::uint32_t previous_character = 0;
+	char32_t previous_character = 0;
 
 	auto longest_line = 0.f;
 
