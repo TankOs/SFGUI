@@ -122,7 +122,7 @@ Primitive::Ptr Renderer::CreateText( const sf::Text& text ) {
 
 	const static auto tab_spaces = 2.f;
 
-	std::uint32_t previous_character = 0;
+	char32_t previous_character = 0;
 
 	auto primitive = std::make_shared<Primitive>( str.getSize() * 4 );
 
