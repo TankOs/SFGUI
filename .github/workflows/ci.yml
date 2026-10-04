@@ -15,7 +15,7 @@ defaults:
 
 jobs:
   build:
-    name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
+    name: ${{ matrix.platform.name }} ${{ matrix.config.name }} SFML ${{ matrix.sfml.version }}
     runs-on: ${{ matrix.platform.os }}
 
     strategy:
@@ -30,11 +30,14 @@ jobs:
         config:
         - { name: Shared, flags: -DBUILD_SHARED_LIBS=ON -DSFGUI_BUILD_SHARED_LIBS=ON -DSFML_STATIC_LIBRARIES=OFF }
         - { name: Static, flags: -DBUILD_SHARED_LIBS=OFF -DSFGUI_BUILD_SHARED_LIBS=OFF -DSFML_STATIC_LIBRARIES=ON }
+        sfml:
+        - { version: 3.0.2 }
+        - { version: 3.1.0 }
 
     steps:
     - name: Install Linux Dependencies
       if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libfreetype-dev
+      run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libfreetype-dev libharfbuzz-dev libmbedtls-dev libssh2-1-dev
 
     - name: SFGUI - Checkout Code
       uses: actions/checkout@v7
@@ -45,7 +48,7 @@ jobs:
       uses: actions/checkout@v7
       with:
         repository: SFML/SFML
-        ref: 3.0.1
+        ref: ${{ matrix.sfml.version }}
         path: SFML
         persist-credentials: false
 
