@@ -2,9 +2,16 @@ name: CI
 
 on: [push, pull_request, workflow_dispatch]
 
+permissions:
+  contents: read
+
 concurrency:
-  group: environment-${{github.ref}}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   build:
@@ -15,11 +22,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2022, os: windows-2022 }
-        - { name: Linux GCC,      os: ubuntu-24.04 }
-        - { name: Linux Clang,    os: ubuntu-24.04, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
-        - { name: macOS x64,      os: macos-13 }
-        - { name: macOS arm64,    os: macos-15 }
+        - { name: Windows VS2026, os: windows-2025 }
+        - { name: Linux GCC,      os: ubuntu-26.04 }
+        - { name: Linux Clang,    os: ubuntu-26.04, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        - { name: macOS x64,      os: macos-26-intel }
+        - { name: macOS arm64,    os: macos-26 }
         config:
         - { name: Shared, flags: -DBUILD_SHARED_LIBS=ON -DSFGUI_BUILD_SHARED_LIBS=ON -DSFML_STATIC_LIBRARIES=OFF }
         - { name: Static, flags: -DBUILD_SHARED_LIBS=OFF -DSFGUI_BUILD_SHARED_LIBS=OFF -DSFML_STATIC_LIBRARIES=ON }
@@ -30,28 +37,30 @@ jobs:
       run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libfreetype-dev
 
     - name: SFGUI - Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
+      with:
+        persist-credentials: false
 
     - name: SFML - Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
-        fetch-depth: 0
         repository: SFML/SFML
         ref: 3.0.1
         path: SFML
+        persist-credentials: false
 
     - name: SFML - Configure CMake
-      shell: bash
-      run: cmake -S $GITHUB_WORKSPACE/SFML -B $GITHUB_WORKSPACE/SFML/build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/SFML/install -DCMAKE_VERBOSE_MAKEFILE=ON ${{matrix.platform.flags}} ${{matrix.config.flags}}
+      env:
+        CMAKE_FLAGS: ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
+      run: cmake -S "$GITHUB_WORKSPACE/SFML" -B "$GITHUB_WORKSPACE/SFML/build" -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/SFML/install" -DCMAKE_VERBOSE_MAKEFILE=ON $CMAKE_FLAGS
 
     - name: SFML - Build
-      shell: bash
-      run: cmake --build $GITHUB_WORKSPACE/SFML/build --config Release --target install
+      run: cmake --build "$GITHUB_WORKSPACE/SFML/build" --config Release --target install
 
     - name: SFGUI - Configure CMake
-      shell: bash
-      run: cmake -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/install -DCMAKE_VERBOSE_MAKEFILE=ON -DSFGUI_BUILD_EXAMPLES=ON -DSFML_DIR=$GITHUB_WORKSPACE/SFML/install/lib/cmake/SFML ${{matrix.platform.flags}} ${{matrix.config.flags}}
+      env:
+        CMAKE_FLAGS: ${{ matrix.platform.flags }} ${{ matrix.config.flags }}
+      run: cmake -S "$GITHUB_WORKSPACE" -B "$GITHUB_WORKSPACE/build" -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" -DCMAKE_VERBOSE_MAKEFILE=ON -DSFGUI_BUILD_EXAMPLES=ON -DSFML_DIR="$GITHUB_WORKSPACE/SFML/install/lib/cmake/SFML" $CMAKE_FLAGS
 
     - name: SFGUI - Build
-      shell: bash
-      run: cmake --build $GITHUB_WORKSPACE/build --config Release --target install
+      run: cmake --build "$GITHUB_WORKSPACE/build" --config Release --target install
