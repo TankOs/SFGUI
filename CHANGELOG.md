@@ -1,5 +1,12 @@
 # Changelog
 
+## Release 1.0.1
+
+Fixes:
+
+  * Use chat32_t instead of std::uint32_t.
+  * Font kerning now respects the previous character properly.
+
 ## Release 1.0.0
 
 Enhancements:
